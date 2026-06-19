@@ -6,7 +6,7 @@ A simple project to practice using GitHub.
 
 Clone this repository and explore the code.
 
-## Fetures
+## Features
 
 - Easy to use
 - Well documented
@@ -14,4 +14,4 @@ Clone this repository and explore the code.
 
 ## Contributing
 
-Pull requests are wellcome!
+Pull requests are welcome!
