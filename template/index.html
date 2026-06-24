@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO: edit the description for each client (1-2 sentences with town + service) -->
+  <title>Salon Nordlys – Frisør i Aarhus</title>
+  <meta name="description"
+        content="Salon Nordlys er din lokale frisør i Aarhus. Klip, farve og styling. Ring og book tid i dag." />
+
+  <!-- Social sharing preview -->
+  <meta property="og:title" content="Salon Nordlys – Frisør i Aarhus" />
+  <meta property="og:description" content="Din lokale frisør i hjertet af Aarhus. Ring og book tid." />
+  <meta property="og:type" content="website" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a href="#top" class="brand" data-cfg="businessName">Salon Nordlys</a>
+
+      <nav class="nav" id="nav">
+        <a href="#services">Ydelser</a>
+        <a href="#about">Om os</a>
+        <a href="#gallery">Galleri</a>
+        <a href="#contact">Kontakt</a>
+        <a class="btn btn-call nav-call" data-tel href="tel:">
+          📞 <span data-cfg="phoneDisplay">Ring nu</span>
+        </a>
+      </nav>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <h1 data-cfg="businessName">Salon Nordlys</h1>
+      <p class="tagline" data-cfg="tagline">Din lokale frisør i hjertet af Aarhus</p>
+      <p class="hero-sub" data-cfg="heroSubtitle">
+        Klip, farve og styling med omhu — book din tid i dag.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" data-tel href="tel:">
+          <span data-cfg="primaryCtaText">Ring og book tid</span>
+        </a>
+        <a class="btn btn-ghost" href="#services" data-cfg="secondaryCtaText">Se ydelser</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SERVICES =====================
+       EDIT THESE CARDS per client: icon (emoji), title, text, optional price.
+       Add or remove .service-card blocks as needed. -->
+  <section class="section" id="services">
+    <div class="container">
+      <h2>Vores ydelser</h2>
+      <p class="section-lead">Det vi er bedst til — kvalitet og god service hver gang.</p>
+
+      <div class="cards">
+        <div class="service-card">
+          <div class="icon">✂️</div>
+          <h3>Klip</h3>
+          <p>Dame-, herre- og børneklip tilpasset dig og din hverdag.</p>
+          <span class="price">fra 295 kr.</span>
+        </div>
+        <div class="service-card">
+          <div class="icon">🎨</div>
+          <h3>Farve & striber</h3>
+          <p>Helfarve, striber og balayage med skånsomme produkter.</p>
+          <span class="price">fra 595 kr.</span>
+        </div>
+        <div class="service-card">
+          <div class="icon">💁</div>
+          <h3>Styling</h3>
+          <p>Opsætning og styling til fest, bryllup og store dage.</p>
+          <span class="price">fra 450 kr.</span>
+        </div>
+        <div class="service-card">
+          <div class="icon">🧴</div>
+          <h3>Behandlinger</h3>
+          <p>Kur og pleje, der giver håret glans og styrke.</p>
+          <span class="price">fra 250 kr.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT ===================== -->
+  <section class="section section-alt" id="about">
+    <div class="container about-grid">
+      <div class="about-photo" aria-hidden="true">
+        <!-- Replace with a real photo: put it in /assets and set as background in styles.css (.about-photo) -->
+        <span>Udskift med dit billede</span>
+      </div>
+      <div class="about-text">
+        <h2>Om os</h2>
+        <p>
+          Vi er et lille, dedikeret hold, der brænder for godt håndværk og god
+          stemning. Hos os er du i centrum — vi tager os tid til at finde det
+          look, der passer til netop dig.
+        </p>
+        <p>
+          Kig forbi, eller ring og hør, hvordan vi kan hjælpe. Vi glæder os til
+          at se dig.
+        </p>
+        <a class="btn btn-primary" data-tel href="tel:">
+          📞 <span data-cfg="phoneDisplay">Ring nu</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GALLERY =====================
+       Swap each placeholder for a real photo (see CUSTOMIZE.md). -->
+  <section class="section" id="gallery">
+    <div class="container">
+      <h2>Galleri</h2>
+      <p class="section-lead">Et udpluk af vores arbejde.</p>
+      <div class="gallery">
+        <div class="gallery-item"><span>Foto 1</span></div>
+        <div class="gallery-item"><span>Foto 2</span></div>
+        <div class="gallery-item"><span>Foto 3</span></div>
+        <div class="gallery-item"><span>Foto 4</span></div>
+        <div class="gallery-item"><span>Foto 5</span></div>
+        <div class="gallery-item"><span>Foto 6</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <section class="section section-alt" id="contact">
+    <div class="container contact-grid">
+
+      <div class="contact-info">
+        <h2>Kontakt & åbningstider</h2>
+
+        <p class="contact-line">
+          <strong>Telefon:</strong>
+          <a data-tel href="tel:"><span data-cfg="phoneDisplay">—</span></a>
+        </p>
+        <p class="contact-line">
+          <strong>E-mail:</strong>
+          <a data-email href="mailto:"><span data-cfg="email">—</span></a>
+        </p>
+        <p class="contact-line">
+          <strong>Adresse:</strong>
+          <span data-cfg="addressFull">—</span>
+        </p>
+
+        <table class="hours" id="hoursTable" aria-label="Åbningstider">
+          <!-- filled in by app.js from config.js -->
+        </table>
+      </div>
+
+      <div class="contact-form-wrap">
+        <h3>Skriv til os</h3>
+        <form id="contactForm" class="contact-form">
+          <label>Navn
+            <input type="text" name="name" required />
+          </label>
+          <label>Telefon eller e-mail
+            <input type="text" name="contact" required />
+          </label>
+          <label>Besked
+            <textarea name="message" rows="4" required></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary">Send besked</button>
+          <p class="form-status" id="formStatus" role="status"></p>
+        </form>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="map-wrap">
+        <iframe
+          id="mapFrame"
+          title="Kort"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong data-cfg="businessName">Salon Nordlys</strong><br />
+        <span data-cfg="addressFull">—</span>
+      </div>
+      <div class="footer-social" id="footerSocial"></div>
+      <div class="footer-meta">
+        <span id="cvrLine"></span>
+        <span>© <span id="year"></span> <span data-cfg="businessName">Salon Nordlys</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating "call" button (mobile) -->
+  <a class="float-call" data-tel href="tel:" aria-label="Ring nu">📞</a>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
