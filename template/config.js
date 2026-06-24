@@ -17,6 +17,10 @@ const siteConfig = {
   heroSubtitle:
     "Klip, farve og styling med omhu — book din tid i dag, eller ring og hør nærmere.",
 
+  // Google search description (1-2 sentences with town + service):
+  metaDescription:
+    "Salon Nordlys er din lokale frisør i Aarhus. Klip, farve og styling. Ring og book tid i dag.",
+
   // What kind of business is this? Used for Google's structured data.
   // Common options: "HairSalon", "Restaurant", "BeautySalon", "Plumber",
   // "Electrician", "Bakery", "AutoRepair", "Store", "LocalBusiness"

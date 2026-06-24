@@ -44,6 +44,11 @@
     const city = cfg.address ? cfg.address.city : "";
     document.title = `${cfg.businessName}${city ? " – " + city : ""}`;
   }
+  if (cfg.metaDescription) {
+    document.querySelectorAll(
+      'meta[name="description"], meta[property="og:description"]'
+    ).forEach((m) => m.setAttribute("content", cfg.metaDescription));
+  }
 
   // ---- Apply theme colors -------------------------------------------------
   if (cfg.theme) {
