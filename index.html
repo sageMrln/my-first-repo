@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINANCE HUD — Osefe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+  :root{
+    --bg:#05080f;
+    --panel:#0b1422;
+    --panel2:#0e1a2e;
+    --line:#1b3a5c;
+    --cyan:#00e5ff;
+    --cyan-dim:#0a7e8c;
+    --lime:#7CFFB2;
+    --amber:#ffb547;
+    --red:#ff5c7c;
+    --txt:#cfeaff;
+    --txt-dim:#6f93b5;
+    --glow:0 0 18px rgba(0,229,255,.35);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  body{
+    background:
+      radial-gradient(1200px 600px at 70% -10%, rgba(0,229,255,.08), transparent 60%),
+      radial-gradient(900px 500px at 0% 110%, rgba(124,255,178,.06), transparent 55%),
+      var(--bg);
+    color:var(--txt);
+    font-family:'Rajdhani',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* animated grid backdrop */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(0,229,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,.045) 1px, transparent 1px);
+    background-size:44px 44px;
+    mask-image:radial-gradient(circle at 50% 30%, black, transparent 85%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:26px 16px 80px}
+
+  /* HEADER */
+  header.hud{
+    border:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(0,229,255,.07), transparent);
+    border-radius:14px;
+    padding:20px 22px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hud::after{
+    content:"";position:absolute;top:0;left:-60%;width:60%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(0,229,255,.10),transparent);
+    animation:sweep 6s linear infinite;
+  }
+  @keyframes sweep{to{left:120%}}
+  .eyebrow{font-family:'Share Tech Mono',monospace;color:var(--cyan);letter-spacing:.32em;font-size:11px;text-transform:uppercase}
+  h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(26px,5vw,44px);letter-spacing:.04em;margin:6px 0 2px;color:#eaffff;text-shadow:var(--glow)}
+  .sub{color:var(--txt-dim);font-size:15px;font-weight:500}
+  .pillbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .pill{font-family:'Share Tech Mono',monospace;font-size:11px;border:1px solid var(--line);background:var(--panel2);color:var(--txt-dim);padding:5px 10px;border-radius:20px}
+  .pill b{color:var(--lime)}
+
+  /* STATUS STRIP */
+  .status{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+  .stat{
+    border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));
+    position:relative;
+  }
+  .stat .lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--txt-dim);text-transform:uppercase}
+  .stat .val{font-family:'Orbitron',sans-serif;font-weight:700;font-size:clamp(18px,3.4vw,26px);margin-top:6px}
+  .stat .val small{font-size:12px;color:var(--txt-dim);font-family:'Rajdhani'}
+  .stat.low .val{color:var(--amber)}
+  .stat.avg .val{color:var(--cyan)}
+  .stat.high .val{color:var(--lime)}
+
+  /* NAV BUTTONS */
+  nav.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0 20px;justify-content:center}
+  .tab{
+    font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.04em;
+    border:1px solid var(--line);background:var(--panel);color:var(--txt-dim);
+    padding:11px 18px;border-radius:10px;cursor:pointer;transition:all .18s ease;
+    position:relative;text-transform:uppercase;
+  }
+  .tab .ix{font-family:'Share Tech Mono';font-size:10px;color:var(--cyan-dim);margin-right:7px}
+  .tab:hover{color:var(--txt);border-color:var(--cyan-dim);transform:translateY(-2px)}
+  .tab.active{color:#04121a;background:linear-gradient(180deg,var(--cyan),#23a7c4);border-color:var(--cyan);box-shadow:var(--glow)}
+  .tab.active .ix{color:#04121a}
+  .tab:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+
+  /* PANELS */
+  .panel{display:none;animation:fade .35s ease}
+  .panel.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .card{
+    border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:16px;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));
+    position:relative;
+  }
+  .card h2{font-family:'Orbitron';font-weight:700;font-size:18px;color:#eaffff;letter-spacing:.03em;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+  .card h2::before{content:"";width:9px;height:9px;background:var(--cyan);border-radius:2px;box-shadow:var(--glow);transform:rotate(45deg)}
+  .card .desc{color:var(--txt-dim);font-size:14px;margin-bottom:14px}
+
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid rgba(27,58,92,.5)}
+  th{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.16em;color:var(--txt-dim);text-transform:uppercase;font-weight:400}
+  td{color:var(--txt)}
+  td.num{text-align:right;font-family:'Share Tech Mono';color:var(--cyan)}
+  tr:last-child td{border-bottom:none}
+  tr.total td{font-weight:700;color:#fff;border-top:1px solid var(--cyan-dim)}
+  tr.total td.num{color:var(--lime)}
+
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.row2{grid-template-columns:1fr}.status{grid-template-columns:1fr}}
+
+  .bignum{font-family:'Orbitron';font-weight:900;font-size:clamp(30px,7vw,52px);color:var(--lime);text-shadow:0 0 22px rgba(124,255,178,.3);line-height:1}
+  .bignum small{display:block;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.18em;margin-bottom:8px;text-transform:uppercase}
+
+  .meter{height:14px;border:1px solid var(--line);border-radius:8px;background:#08111e;overflow:hidden;margin:6px 0 2px}
+  .meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));border-radius:7px;position:relative}
+  .meter.lime > span{background:linear-gradient(90deg,#2f8f5e,var(--lime))}
+  .meter.amber > span{background:linear-gradient(90deg,#9a6a1c,var(--amber))}
+  .meterlbl{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin-top:4px}
+
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px}
+  ul.clean li{padding-left:22px;position:relative;font-size:15px;line-height:1.45}
+  ul.clean li::before{content:"▸";position:absolute;left:0;color:var(--cyan)}
+
+  .goal li::before{content:"◆";color:var(--lime)}
+
+  .check{list-style:none;display:flex;flex-direction:column;gap:12px}
+  .check li{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.4}
+  .check li .box{flex:0 0 20px;height:20px;border:1px solid var(--cyan-dim);border-radius:5px;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .check li .box.done{background:var(--cyan);box-shadow:var(--glow)}
+  .check li .box.done::after{content:"✓";color:#04121a;font-weight:700;font-size:13px}
+  .check li.done span{color:var(--txt-dim);text-decoration:line-through}
+
+  .tag{font-family:'Share Tech Mono';font-size:10px;padding:3px 8px;border-radius:6px;letter-spacing:.1em}
+  .tag.good{background:rgba(124,255,178,.12);color:var(--lime);border:1px solid var(--lime)}
+  .tag.now{background:rgba(0,229,255,.12);color:var(--cyan);border:1px solid var(--cyan-dim)}
+  .tag.later{background:rgba(255,181,71,.12);color:var(--amber);border:1px solid var(--amber)}
+
+  .note{font-size:13px;color:var(--txt-dim);font-style:italic;margin-top:14px;border-left:2px solid var(--cyan-dim);padding-left:12px}
+
+  /* SUBSCRIPTION CARDS */
+  .subtotal{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+  .subtotal .stat .val{font-size:clamp(20px,4vw,30px)}
+  .sub-grid{display:flex;flex-direction:column;gap:12px}
+  .sub-item{
+    border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));
+    position:relative;
+  }
+  .sub-item .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .sub-item .name{font-family:'Orbitron';font-weight:700;font-size:16px;color:#eaffff}
+  .sub-item .cost{font-family:'Share Tech Mono';font-size:15px;color:var(--cyan);white-space:nowrap}
+  .sub-item .freq{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.14em;color:var(--txt-dim);text-transform:uppercase;margin-top:2px}
+  .sub-item .what{font-size:14px;color:var(--txt);margin-top:8px}
+  .sub-item .why{font-size:13px;color:var(--txt-dim);margin-top:6px;border-left:2px solid var(--cyan-dim);padding-left:10px;font-style:italic}
+  .sub-item .why b{color:var(--lime);font-style:normal;font-family:'Share Tech Mono';font-size:10px;letter-spacing:.1em;display:block;margin-bottom:2px}
+  .sub-status{position:absolute;top:14px;right:16px}
+  .pending{color:var(--amber);font-family:'Share Tech Mono';font-size:11px;border:1px dashed var(--amber);padding:8px 12px;border-radius:8px;display:inline-block;margin-top:8px}
+
+  /* EXPENSE GROUPS */
+  .exp-group{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;background:var(--panel)}
+  .exp-head{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;cursor:pointer;background:linear-gradient(180deg,rgba(0,229,255,.06),transparent);transition:background .15s}
+  .exp-head:hover{background:rgba(0,229,255,.10)}
+  .exp-head .gname{font-family:'Orbitron';font-weight:700;font-size:15px;color:#eaffff;display:flex;align-items:center;gap:9px}
+  .exp-head .gname .ico{width:8px;height:8px;background:var(--cyan);border-radius:2px;transform:rotate(45deg);box-shadow:var(--glow)}
+  .exp-head .gtot{font-family:'Share Tech Mono';font-size:14px;color:var(--lime)}
+  .exp-head .arrow{font-family:'Share Tech Mono';color:var(--cyan);margin-left:10px;transition:transform .2s;font-size:12px}
+  .exp-group.open .arrow{transform:rotate(90deg)}
+  .exp-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .exp-group.open .exp-body{max-height:600px}
+  .exp-body table{margin:0}
+  .exp-body td{padding:9px 16px;font-size:14px}
+  .exp-body tr:first-child td{padding-top:13px}
+  .exp-body tr:last-child td{padding-bottom:14px}
+  .exp-body .sub-detail{color:var(--txt-dim);font-size:12px}
+
+  .scen-btn{font-family:'Rajdhani';font-weight:700;font-size:13px;letter-spacing:.04em;border:1px solid var(--line);background:var(--panel);color:var(--txt-dim);padding:8px 14px;border-radius:10px;cursor:pointer;transition:all .18s ease;text-transform:uppercase}
+  .scen-btn:hover{color:var(--txt);border-color:var(--cyan-dim)}
+  .scen-btn.active{color:#04121a;background:linear-gradient(180deg,var(--cyan),#23a7c4);border-color:var(--cyan);box-shadow:var(--glow)}
+
+  footer{text-align:center;color:var(--txt-dim);font-family:'Share Tech Mono';font-size:11px;letter-spacing:.14em;margin-top:30px}
+
+  .slider-wrap{margin-top:8px}
+  input[type=range]{width:100%;accent-color:var(--cyan);margin:10px 0}
+  .calc-out{font-family:'Orbitron';font-weight:700;font-size:clamp(22px,5vw,34px);color:var(--lime);text-shadow:0 0 18px rgba(124,255,178,.3)}
+  .calc-row{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:13px;color:var(--txt-dim);padding:5px 0;border-bottom:1px solid rgba(27,58,92,.4)}
+  .calc-row b{color:var(--txt)}
+  .calc-neg b{color:var(--red)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header class="hud">
+    <div class="eyebrow">// Personal Finance Command Center</div>
+    <h1>FINANCE HUD</h1>
+    <div class="sub">Operator: Osefe Miradi · Aarhus, DK · Status: ACTIVE</div>
+    <div class="pillbar">
+      <span class="pill">AGE <b>20</b></span>
+      <span class="pill">EMPLOYER <b>One Call ApS</b></span>
+      <span class="pill">CREDIT <b>CLEAN · NO RKI</b></span>
+      <span class="pill">LOAN <b>SECURED</b></span>
+    </div>
+
+    <div class="status">
+      <div class="stat low"><div class="lbl">Low Month</div><div class="val">14,407<small> kr</small></div></div>
+      <div class="stat avg"><div class="lbl">Avg (verified)</div><div class="val">16,161<small> kr</small></div></div>
+      <div class="stat high"><div class="lbl">High Month</div><div class="val">25,778<small> kr</small></div></div>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-p="overview"><span class="ix">01</span>Overview</button>
+    <button class="tab" data-p="income"><span class="ix">02</span>Income</button>
+    <button class="tab" data-p="expenses"><span class="ix">03</span>Expenses</button>
+    <button class="tab" data-p="loan"><span class="ix">04</span>Loan</button>
+    <button class="tab" data-p="flow"><span class="ix">05</span>Cash Flow</button>
+    <button class="tab" data-p="rule"><span class="ix">06</span>Savings Rule</button>
+    <button class="tab" data-p="goals"><span class="ix">07</span>Goals</button>
+    <button class="tab" data-p="checklist"><span class="ix">08</span>Checklist</button>
+    <button class="tab" data-p="subs"><span class="ix">09</span>Subscriptions</button>
+    <button class="tab" data-p="klarna"><span class="ix">10</span>Klarna Float</button>
+  </nav>
+
+  <!-- 01 OVERVIEW -->
+  <section class="panel show" id="overview">
+    <div class="card">
+      <h2>Mission Briefing</h2>
+      <div class="desc">The whole plan in one screen. Built entirely on real, verified data — payslips, bank transactions, and SKAT figures. Every number below is computed from one shared model, so the tabs always agree.</div>
+      <div class="row2">
+        <div>
+          <ul class="clean">
+            <li><b>Goal:</b> Stop living paycheck-to-paycheck and stop stressing over everyday costs.</li>
+            <li><b>Method:</b> A 75,000 kr. Nordea loan acting as a cash pool + a forced savings habit.</li>
+            <li><b>Proof:</b> Even your worst real month leaves <b id="ovWorst">+1,932 kr</b> of slack after every cost and the loan payment.</li>
+            <li><b>Timing:</b> New apartment 1 July · first loan payment 31 July.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="bignum"><small>Left over · typical month</small><span id="ovLeft">4,525</span><span style="font-size:20px"> kr</span></div>
+          <div class="note">After rent, every bill, and the loan payment — before you move the forced savings match. Comfort money after the match: <b id="ovComfort">~3,161 kr</b>. This is the "buy good meat, pizza on weekends, no checkout math" number.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Verdict</h2>
+      <div class="desc">Scored against the targets set at the start.</div>
+      <table>
+        <tr><th>Target</th><th style="text-align:right">Result</th></tr>
+        <tr><td>ÅOP under 10%</td><td class="num">9.23% ✅</td></tr>
+        <tr><td>Monthly payment under 1,650 ceiling</td><td class="num">1,364 ✅</td></tr>
+        <tr><td>Clears worst real month</td><td class="num" id="vdWorst">+1,932 ✅</td></tr>
+        <tr><td>Reject zone (15%+)</td><td class="num">FAR CLEAR ✅</td></tr>
+        <tr class="total"><td>Overall</td><td class="num">GOOD</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- 02 INCOME -->
+  <section class="panel" id="income">
+    <div class="card">
+      <h2>Income Range</h2>
+      <div class="desc">All figures AFTER tax. Income varies because a big part of pay is sales bonuses (day bonus + voice bonus).</div>
+      <table>
+        <tr><th>Scenario</th><th>Source</th><th style="text-align:right">After tax</th></tr>
+        <tr><td>Low</td><td>April salary (real)</td><td class="num">14,407</td></tr>
+        <tr><td>Average — official</td><td>SKAT-verified, used by Nordea</td><td class="num">16,161</td></tr>
+        <tr><td>Average — typical</td><td>March + June payslips</td><td class="num">~17,000</td></tr>
+        <tr><td>High</td><td>May salary (real)</td><td class="num">25,778</td></tr>
+        <tr class="total"><td>Latest payslip</td><td>16 May–15 Jun, paid 30 Jun</td><td class="num">17,314</td></tr>
+      </table>
+      <div class="note">The Cash Flow and Savings tabs use 17,000 kr as the "typical" month — the middle of your real range, not the rosier 17,314 latest payslip. Holiday pay (feriepenge) ~1,831 kr./period accrues in the background — not spendable now, but it's yours.</div>
+    </div>
+  </section>
+
+  <!-- 03 EXPENSES -->
+  <section class="panel" id="expenses">
+    <div class="card">
+      <h2>Expense Breakdown</h2>
+      <div class="desc">Every recurring cost you have, grouped by type, with <b>no double-counting</b>. Tap any group to open it. "Noise" removed: tax refunds, holiday pay, and friend-to-friend MobilePay transfers (repayments that cancel out, not real costs). Parking varies month to month and is left out of the total.</div>
+
+      <div class="subtotal" style="margin-bottom:18px">
+        <div class="stat avg"><div class="lbl">Total / month</div><div class="val" id="expMonth">—<small> kr</small></div></div>
+        <div class="stat high"><div class="lbl">Total / year</div><div class="val" id="expYear">—<small> kr</small></div></div>
+      </div>
+
+      <div id="expGroups"><!-- rendered from MODEL --></div>
+
+      <div class="note">This grand total is the single source of truth: the Cash Flow simulator, the Savings projection, and the Klarna surplus all subtract <b id="expRef">11,111 kr</b>/mo from your income. Change a number in the model and every tab updates together.</div>
+    </div>
+  </section>
+
+  <!-- 04 LOAN -->
+  <section class="panel" id="loan">
+    <div class="card">
+      <h2>The Loan <span class="tag good">SECURED</span></h2>
+      <div class="desc">Nordea "Forbrugslån+" — their loan for ages 18–28. Submitted and locked in.</div>
+      <div class="row2">
+        <table>
+          <tr><td>Loan amount</td><td class="num">75,000</td></tr>
+          <tr><td>Monthly payment</td><td class="num">1,364</td></tr>
+          <tr><td>Interest rate</td><td class="num">7.70%</td></tr>
+          <tr><td>ÅOP (true annual cost)</td><td class="num">9.23%</td></tr>
+        </table>
+        <table>
+          <tr><td>Fees (one-time)</td><td class="num">2,551</td></tr>
+          <tr><td>Total repaid</td><td class="num">96,844</td></tr>
+          <tr><td>Term</td><td class="num">6 yrs · 71 pmts</td></tr>
+          <tr><td>First payment</td><td class="num">31 Jul 2026</td></tr>
+        </table>
+      </div>
+      <div class="note">Cost of borrowing over the full 6 years: ~24,400 kr (21,844 interest + 2,551 fees). That's the price for having the cushion now instead of saving it slowly.</div>
+    </div>
+  </section>
+
+  <!-- 05 CASH FLOW -->
+  <section class="panel" id="flow">
+    <div class="card">
+      <h2>Cash-Flow Simulator</h2>
+      <div class="desc">Slide to test any income level. It subtracts your real recurring costs (which already include rent) and the loan payment, then shows what's left and what's truly free to spend.</div>
+      <div class="slider-wrap">
+        <input type="range" id="incSlider" min="13000" max="26000" step="100" value="17000">
+        <div class="calc-row"><span>Income (after tax)</span><b id="cfInc">17,000 kr</b></div>
+        <div class="calc-row"><span>Recurring costs (car, insurance, home incl. rent, food, subs)</span><b id="cfOut2">− 11,111 kr</b></div>
+        <div class="calc-row"><span>Loan payment</span><b>− 1,364 kr</b></div>
+        <div style="margin-top:14px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">LEFT OVER</small><div class="calc-out" id="cfOut">4,525 kr</div></div>
+        <div class="calc-row" style="margin-top:14px"><span>↳ Forced savings (match)</span><b>− 1,364 kr</b></div>
+        <div style="margin-top:8px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">FREE COMFORT MONEY</small><div class="calc-out" id="cfFree" style="color:var(--cyan)">3,161 kr</div></div>
+      </div>
+      <div class="note" id="cfNote">A typical month. Comfortable margin.</div>
+    </div>
+
+    <div class="card">
+      <h2>Savings Growth — 8 Year Projection</h2>
+      <div class="desc">How your savings pool grows month by month if you stick to the rule. The income scenario actually changes the curve: each month you bank the forced 1,364 kr match <b>plus 30% of that month's comfort money</b> (the rest is yours to spend). Good months save more, low months save less.</div>
+
+      <div style="margin-bottom:14px">
+        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">INCOME SCENARIO</small>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="scenBtns">
+          <button class="scen-btn" onclick="setScen('low')" id="btnLow">Low (14,407)</button>
+          <button class="scen-btn active" onclick="setScen('avg')" id="btnAvg">Typical (17,000)</button>
+          <button class="scen-btn" onclick="setScen('high')" id="btnHigh">Good (25,778)</button>
+        </div>
+      </div>
+
+      <!-- per-scenario monthly saving readout -->
+      <div class="calc-row" style="margin-top:4px"><span>Saved per month in this scenario (match + 30% of comfort)</span><b id="scenSave">—</b></div>
+
+      <!-- Chart canvas -->
+      <div style="position:relative;width:100%;height:260px;margin:16px 0 8px">
+        <canvas id="savingsChart"></canvas>
+      </div>
+
+      <!-- Key milestone callouts -->
+      <div id="milestones" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px">
+        <div class="stat avg"><div class="lbl">After 1 year</div><div class="val" id="m12" style="font-size:18px">—</div></div>
+        <div class="stat avg"><div class="lbl">After 3 years</div><div class="val" id="m36" style="font-size:18px">—</div></div>
+        <div class="stat high"><div class="lbl">After 8 years</div><div class="val" id="m96" style="font-size:18px">—</div></div>
+      </div>
+      <div class="note" style="margin-top:14px" id="growthNote">The loan pool (75k) sits separately as your emergency cushion and isn't counted in these savings totals — this is money you build on top of it.</div>
+    </div>
+  </section>
+
+  <!-- 06 SAVINGS RULE -->
+  <section class="panel" id="rule">
+    <div class="card">
+      <h2>The Savings Rule</h2>
+      <div class="desc">The single system that turns this from "a loan" into "building wealth." Three parts:</div>
+      <ul class="clean">
+        <li><b>Forced match:</b> Every month, move an amount EQUAL to the loan payment (1,364 kr.) into a separate savings account. Set this as an AUTOMATIC transfer the day the loan lands — never rely on willpower.</li>
+        <li><b>Comfort money:</b> Whatever's left after that is genuinely free to spend. Not forced into savings.</li>
+        <li><b>High-yield lock:</b> A portion of savings goes into a locked, highest-yield Danish account.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>What The Match Builds By Itself</h2>
+      <div class="desc">From the forced 1,364 kr./month alone — zero extra effort, low-month safe.</div>
+      <div class="meterlbl"><span>Furnishing fund (~10k)</span><span>~month 7</span></div>
+      <div class="meter lime"><span style="width:65%"></span></div>
+      <div class="meterlbl" style="margin-top:14px"><span>Car transition fund (~30k)</span><span>~month 22</span></div>
+      <div class="meter"><span style="width:90%"></span></div>
+      <div class="note">By the time the car lease ends in ~2 years, this fund largely covers the transition — while the 75k pool stays untouched as your emergency cushion. Any month you bank extra comfort money (see the Cash Flow projection) gets you there faster.</div>
+    </div>
+  </section>
+
+  <!-- 07 GOALS -->
+  <section class="panel" id="goals">
+    <div class="card">
+      <h2>Goals — Your Words</h2>
+      <ul class="clean goal">
+        <li>Stop living paycheck-to-paycheck.</li>
+        <li>Stop stressing over everyday costs — groceries, meat, normal treats.</li>
+        <li>Have a real cushion for emergencies without sacrificing comfort.</li>
+        <li>"Comfortable, not luxurious" — good food, weekend pizza, small adventures, peace of mind.</li>
+        <li>Build savings now, while young — not only late in life.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Future Track <span class="tag later">LATER STAGE</span></h2>
+      <div class="desc">Long-term aspiration: higher-end stability and passive income (business ownership / real estate).</div>
+      <ul class="clean">
+        <li><span class="tag now">NOW</span> &nbsp;Stabilise. Build 12+ months of clean repayment + savings history.</li>
+        <li><span class="tag later">12–24 MO</span> &nbsp;Stronger credit profile unlocks bigger options.</li>
+        <li><span class="tag later">THE MOVE</span> &nbsp;Business acquisition via routes like Vækstfonden or commercial lending — buying proven cashflow, not starting from zero.</li>
+      </ul>
+      <div class="note">Not accessible at the current stage — but the current plan is exactly what builds toward it.</div>
+    </div>
+  </section>
+
+  <!-- 08 CHECKLIST -->
+  <section class="panel" id="checklist">
+    <div class="card">
+      <h2>Action Checklist</h2>
+      <div class="desc">Tap a box to mark it done. The most important one is first.</div>
+      <ul class="check" id="checklist-list">
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Set up the 1,364 kr./month savings transfer as an AUTOMATIC standing order the day the loan lands.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Pay furnishing costs from the loan pool — not the monthly paycheck.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Keep the loan pool and everyday spending mentally separate.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Remember July timing: rent starts 1 July, first loan payment 31 July.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Confirm the Apple/Discord charge (75 kr) drops off so you stop double-paying Discord.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Re-check the plan after a few more months of income data.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Revisit business/property goals once 12+ months of history exists.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 09 SUBSCRIPTIONS -->
+  <section class="panel" id="subs">
+    <div class="card">
+      <h2>Subscription Ledger</h2>
+      <div class="desc">Every recurring subscription, pulled from Nordea's official "Subscriptions &amp; Direct debit" list. What it costs, how often, what it's for, and WHY you keep it — a note to future you.</div>
+
+      <div class="subtotal">
+        <div class="stat avg"><div class="lbl">Total / month</div><div class="val">~1,777<small> kr</small></div></div>
+        <div class="stat high"><div class="lbl">Total / year</div><div class="val">~21,667<small> kr</small></div></div>
+      </div>
+      <div class="note" style="margin-top:0;margin-bottom:18px"><b>Scope note:</b> this ledger is the bank's full view, so it includes Oister (179, also counted under Home) and phone insurance (139, also counted under Insurance). To avoid double-counting, the Expenses tab's "Subscriptions &amp; device debt" group shows <b>~1,488 kr/mo</b> — this ledger minus those two items, plus Norton amortised. Aros insurance (1,640/mo) is tracked under Insurance, not here. Norton is yearly (349 kr).</div>
+
+      <div class="sub-grid" id="subGrid">
+
+        <div class="sub-item">
+          <div class="top"><div><div class="name">Claude (Anthropic)</div><div class="freq">Monthly · Pro Max</div></div><div class="cost">~680.00 kr</div></div>
+          <div class="what">AI assistant used for financial planning, writing, translation help, and building this entire Finance HUD. Also the back office for mrln — writes gig text, profiles, and helps deliver translation jobs.</div>
+          <div class="why"><b>WHY I KEEP IT</b>Pro Max ($100/mo, ~680 kr) gives 5x more usage than standard Pro. Used heavily across financial analysis, the HUD, mrln setup, and loan comparisons. Pays for itself if mrln earns even 2 translation orders a month.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="top"><div><div class="name">Elgiganten — Phone Instalment</div><div class="freq">Monthly · temporary (ends when phone is paid off)</div></div><div class="cost">336.00 kr</div></div>
+          <div class="what">Paying off the Samsung Galaxy S26 Ultra via Elgiganten Konto (Resurs Bank). Remaining balance as of June 2026: 9,966 kr.</div>
+          <div class="why"><b>WHY I KEEP IT</b>This is NOT a subscription — it's a debt being paid off in instalments. At 336 kr/month, roughly 30 months remain at minimum payment. Planning to pay larger chunks to clear it faster, which reduces total cost. Once cleared, this 336 kr/month is freed up.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="top"><div><div class="name">Oister</div><div class="freq">Monthly</div></div><div class="cost">179.00 kr</div></div>
+          <div class="what">Mobile phone plan (calls + data). Provider: HI3G Denmark.</div>
+          <div class="why"><b>WHY I KEEP IT</b>Core mobile subscription — phone number and data. Essential, not optional. Counted under Home in the expense breakdown.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="top"><div><div class="name">YouTube Premium</div><div class="freq">Monthly</div></div><div class="cost">139.00 kr</div></div>
+          <div class="what">Ad-free YouTube + YouTube Music.</div>
+          <div class="why"><b>WHY I KEEP IT</b>Main source of music in the car and day-to-day. Ad-free playback and background music make it a high-convenience, high-use service — earns its place.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="top"><div><div class="name">Elgiganten Cloud</div><div class="freq">Monthly · ongoing</div></div><div class="cost">139.00 kr</div></div>
+          <div class="what">Phone insurance for the Samsung Galaxy S26 Ultra (via Elgiganten).</div>
+          <div class="why"><b>WHY I KEEP IT</b>Insurance cover on the Galaxy S26 Ultra — screen damage, theft, malfunctions. Ongoing as long as you have the phone. Counted under Insurance in the expense breakdown.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="top"><div><div class="name">Patreon</div><div class="freq">Monthly</div></div><div class="cost">93.75 kr</div></div>
+          <div class="what">Creator membership — YaBoyRoshi (show reactions &amp; recommendations).</div>
+          <div class="why"><b>WHY I KEEP IT</b>Entertainment I actively follow — reaction content and show recommendations from YaBoyRoshi. A deliberate leisure choice, not a forgotten charge.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="top"><div><div class="name">Discord</div><div class="freq">Monthly</div></div><div class="cost">75.78 kr</div></div>
+          <div class="what">Discord Nitro (premium features).</div>
+          <div class="why"><b>WHY I KEEP IT</b>Premium Discord features for chat communities. Note: a second Discord-related charge runs through Apple (~75 kr) and is set to expire end of this/next month — see Apple entry.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="sub-status"><span class="tag later">EXPIRING</span></div>
+          <div class="top"><div><div class="name">Apple App Store</div><div class="freq">Monthly</div></div><div class="cost">75.00 kr</div></div>
+          <div class="what">Discord billed through Apple (a second Discord charge, separate from the direct one).</div>
+          <div class="why"><b>WHY I KEEP IT</b>This is actually Discord billed via Apple — and it's EXPIRING end of this month or next. ⚠ Once it lapses, you'll only pay Discord once (the 75.78 direct charge) instead of twice. Worth confirming it drops off so you're not double-paying.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="top"><div><div class="name">Klarna Member</div><div class="freq">Monthly</div></div><div class="cost">59.00 kr</div></div>
+          <div class="what">Klarna membership — enables "pay later" / instalment features.</div>
+          <div class="why"><b>WHY I KEEP IT</b>Unlocks Klarna's pay-later and instalment options. Used deliberately to spread the cost of bigger purchases over time rather than paying all at once.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="top"><div><div class="name">Norton</div><div class="freq">Yearly</div></div><div class="cost">349.00 kr/yr</div></div>
+          <div class="what">PC antivirus / security software.</div>
+          <div class="why"><b>WHY I KEEP IT</b>Security protection for the PC. Billed once a year (~29 kr/month equivalent) — cheap peace of mind for keeping the computer safe.</div>
+        </div>
+
+        <div class="sub-item">
+          <div class="sub-status"><span class="tag now">INSURANCE</span></div>
+          <div class="top"><div><div class="name">Aros Forsikring</div><div class="freq">Monthly</div></div><div class="cost">1,640.00 kr</div></div>
+          <div class="what">Main insurance policy (car/personal). Listed here by the bank, but counted under the Insurance expense group — kept out of the subscription total to avoid double-counting.</div>
+          <div class="why"><b>WHY I KEEP IT</b>Required insurance coverage. Tracked as a core expense (see Expenses → Insurance). An earlier ~4,000 kr charge was a one-off multi-month prepayment, not the recurring rate.</div>
+        </div>
+
+      </div>
+      <div class="note">✅ Aarhus Kommune ticket paid off in full (900 kr) — 200 kr/month permanently freed. Remaining flag: Apple/Discord charge expiring soon — confirm it drops so you stop double-paying Discord.</div>
+    </div>
+  </section>
+
+  <!-- 10 KLARNA FLOAT -->
+  <section class="panel" id="klarna">
+    <div class="card">
+      <h2>Klarna Float System</h2>
+      <div class="desc">A free, zero-interest cash tool — explained simply. Klarna's "split in 3" lets you borrow money to your bank and pay it back over 3 months with no interest. Used right, it gives you breathing room now without ever costing you anything.</div>
+
+      <div style="background:rgba(255,181,71,.08);border:1px solid var(--amber);border-radius:10px;padding:14px 16px;margin-bottom:16px">
+        <div style="font-family:'Share Tech Mono';font-size:11px;letter-spacing:.14em;color:var(--amber);margin-bottom:8px">⚠ THE ONE RULE TO NEVER FORGET</div>
+        <div style="font-size:14px;color:var(--txt)">The money is <b>NOT yours to keep</b> — it's borrowed and must be returned. Think of it as "a free 2-month loan I always pay back," never "free money." Treat it as keep-money and it will hurt you. Treat it as a temporary float and it's a powerful free tool.</div>
+      </div>
+
+      <h2 style="font-size:15px;margin-top:18px">How one cycle works (12k example)</h2>
+      <table>
+        <tr><th>Step</th><th style="text-align:right">Cash effect</th></tr>
+        <tr><td>Klarna sends 12k to your bank</td><td class="num">+12,000</td></tr>
+        <tr><td>You immediately pay 1st instalment to Klarna</td><td class="num">−4,000</td></tr>
+        <tr><td><b>In your hand right now (borrowed)</b></td><td class="num" style="color:var(--lime)">8,000</td></tr>
+        <tr><td>Month 2: pay 2nd instalment (from salary)</td><td class="num">−4,000</td></tr>
+        <tr><td>Month 3: pay final instalment (from salary)</td><td class="num">−4,000</td></tr>
+        <tr class="total"><td>End of cycle — everything returned</td><td class="num">0</td></tr>
+      </table>
+      <div class="note">The 8k is yours to <i>use</i> for 2 months, free. Then it's fully repaid from salary that was arriving anyway. Net interest paid: zero. The 4,000 instalment fits inside your typical surplus (see below); a 15k float would need a 5,000 instalment, which doesn't.</div>
+    </div>
+
+    <div class="card">
+      <h2>"A Loan But Better" — The Buffer Build</h2>
+      <div class="desc">This is how you turn the temporary float into something permanent you actually own — costing nothing. The smart play:</div>
+      <ul class="clean">
+        <li><b>Step 1 —</b> Run the Klarna float once. You now have 8k breathing room in your bank, today, for free.</li>
+        <li><b>Step 2 —</b> DON'T spend the 8k. Let it sit as a buffer.</li>
+        <li><b>Step 3 —</b> Each month, save a bit of your own money underneath it (e.g. from your surplus).</li>
+        <li><b>Step 4 —</b> Once you've saved your OWN 8k, pay Klarna off completely and stop the cycles.</li>
+        <li><b>Result —</b> You now own a permanent 8k buffer, free and clear, that you got to use from day one — having paid zero interest. That's a loan's benefit without a loan's cost.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Safe-Size Rule</h2>
+      <div class="desc">The float only works if you can cover each monthly instalment from your salary surplus. Your surplus on a typical month — income minus all recurring costs and the loan payment — is <b id="klSurplus">~4,525 kr</b>.</div>
+      <table>
+        <tr><th>Loan size</th><th>Monthly instalment</th><th style="text-align:right">Safe for you?</th></tr>
+        <tr><td>9,000 kr</td><td>3,000</td><td class="num" style="color:var(--lime)">✅ Yes</td></tr>
+        <tr><td>12,000 kr</td><td>4,000</td><td class="num" style="color:var(--lime)">✅ Yes</td></tr>
+        <tr><td>15,000 kr</td><td>5,000</td><td class="num" style="color:var(--amber)">⚠ Good months only</td></tr>
+        <tr><td>18,000 kr</td><td>6,000</td><td class="num" style="color:var(--red)">✗ Too big</td></tr>
+      </table>
+      <div class="note">12k is your safe ceiling on a normal month — the 4,000 instalment fits inside your ~4,525 surplus. A 15k float (5,000/instalment) exceeds a typical surplus and only works in a confirmed good month (20k+ income). Bigger than that would force you to dip into savings to repay, which defeats the purpose.</div>
+    </div>
+
+    <div class="card">
+      <h2>Honest Verdict</h2>
+      <div class="desc">Where this tool fits next to your Nordea loan.</div>
+      <ul class="clean">
+        <li><b>What it's great for:</b> free short-term breathing room — bridging a gap before payday, or having extra liquid for a month or two without touching savings.</li>
+        <li><b>What it can't do:</b> replace the Nordea loan. It maxes at ~8k temporary float vs Nordea's 75k permanent pool. It also resets to zero every cycle — it doesn't build a growing pile.</li>
+        <li><b>The risk:</b> it depends on Klarna approving you each time, and the money must always be repaid. Never let it become something you <i>need</i> to survive the month.</li>
+        <li><b>Best use:</b> a free bonus tool on top of your real plan — not the foundation of it.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>// FINANCE HUD v3.0 · LAST UPDATED 25 JUN 2026 · single-source-of-truth model · built on verified data · not financial advice</footer>
+</div>
+
+<script>
+  /* =========================================================================
+     SINGLE SOURCE OF TRUTH
+     Every figure on every tab is derived from this MODEL object. Change a
+     number here and the expenses tables, the cash-flow simulator, the savings
+     projection, the overview headline, and the Klarna surplus all update
+     together — they can never drift out of sync again.
+     ========================================================================= */
+  var MODEL = {
+    income:       { low: 14407, avg: 17000, high: 25778 },  // after-tax, "avg" = typical month
+    loanPayment:  1364,
+    savingsMatch: 1364,   // forced monthly transfer (equals the loan payment)
+    extraSaveRate: 0.30,  // share of comfort money also banked in the projection
+    // Itemised monthly expenses, no double-counting. Parking is `varies` (excluded from totals).
+    groups: [
+      { icon:'🚗', name:'Car', items:[
+        { name:'Lease — Citroen Finans', detail:'Monthly car lease payment', amt:2775 },
+        { name:'Charging — Clever (your half)', detail:'EV charging subscription, split 50/50 with team leader', amt:500 },
+        { name:'Transit — Rejsekort', detail:'Public transport top-ups', amt:80 },
+        { name:'Parking — Easy Park', detail:'Pay-as-you-go parking; varies month to month, not counted in the total', varies:true }
+      ]},
+      { icon:'🛡️', name:'Insurance', items:[
+        { name:'Aros Forsikring', detail:'Main insurance policy (car/personal). The earlier ~4,000 kr charge was a one-off multi-month prepayment.', amt:1640 },
+        { name:'Phone insurance — Elgiganten Cloud', detail:'Cover for Samsung Galaxy S26 Ultra — screen damage, theft, malfunction.', amt:139 }
+      ]},
+      { icon:'🏠', name:'Home', items:[
+        { name:'Rent (your share, from 1 July)', detail:'New apartment with girlfriend. Was 1,500 at parents.', amt:3500 },
+        { name:'Mobile / data — Oister', detail:'Provider HI3G. Also listed in the Subscriptions ledger.', amt:179 },
+        { name:'TV / internet — Yousee', detail:'Yousee.dk charge', amt:160 }
+      ]},
+      { icon:'🍽️', name:'Food', items:[
+        { name:'Groceries + eating out', detail:'Netto, Lidl, Føtex, Bilka + occasional fast food. Lower than typical because your partner shares food costs.', amt:650 }
+      ]},
+      { icon:'📱', name:'Subscriptions & device debt', items:[
+        { name:'Claude Pro Max — Anthropic', detail:'AI assistant + mrln back office', amt:680 },
+        { name:'Phone instalment — Elgiganten (Resurs)', detail:'Galaxy S26 Ultra, ~9,966 kr left (Jun 2026). Temporary debt, not a subscription.', amt:336 },
+        { name:'YouTube Premium', detail:'Ad-free YouTube + Music', amt:139 },
+        { name:'Patreon — YaBoyRoshi', detail:'Creator membership', amt:94 },
+        { name:'Discord Nitro', detail:'Premium chat features', amt:76 },
+        { name:'Apple App Store (Discord via Apple)', detail:'Second Discord charge — expiring soon', amt:75 },
+        { name:'Klarna Member', detail:'Pay-later / instalment features', amt:59 },
+        { name:'Norton', detail:'PC antivirus, billed yearly 349 kr ≈ 29/mo', amt:29 }
+      ]}
+    ]
+  };
+
+  /* ---------- helpers ---------- */
+  function fmt(n){ return Math.round(n).toLocaleString('en-GB') + ' kr'; }
+  function fmtN(n){ return Math.round(n).toLocaleString('en-GB'); }
+  function fmtK(n){ return Math.round(n/1000) + 'k'; }
+  function groupTotal(g){ return g.items.reduce(function(s,it){ return s + (it.varies ? 0 : Math.round(it.amt)); }, 0); }
+  var GRAND = MODEL.groups.reduce(function(s,g){ return s + groupTotal(g); }, 0);  // 11,111
+  function leftOver(income){ return income - GRAND - MODEL.loanPayment; }
+  function comfort(income){ return leftOver(income) - MODEL.savingsMatch; }
+
+  /* ---------- TAB SWITCHING (only nav.tabs buttons) ---------- */
+  var navTabs = document.querySelectorAll('nav.tabs .tab');
+  var panels = document.querySelectorAll('section.panel');
+  navTabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      navTabs.forEach(function(x){x.classList.remove('active')});
+      panels.forEach(function(p){p.classList.remove('show')});
+      t.classList.add('active');
+      var target = document.getElementById(t.getAttribute('data-p'));
+      if(target){ target.classList.add('show'); }
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+
+  /* ---------- RENDER EXPENSES FROM MODEL ---------- */
+  (function renderExpenses(){
+    var host = document.getElementById('expGroups');
+    var html = '';
+    MODEL.groups.forEach(function(g, gi){
+      var rows = g.items.map(function(it){
+        var val = it.varies ? '~varies' : '~' + fmtN(it.amt);
+        return '<tr><td>' + it.name + ' <div class="sub-detail">' + it.detail + '</div></td>' +
+               '<td class="num">' + val + '</td></tr>';
+      }).join('');
+      html += '<div class="exp-group' + (gi===0 ? ' open' : '') + '">' +
+        '<div class="exp-head"><span class="gname"><span class="ico"></span>' + g.icon + ' ' + g.name + '</span>' +
+        '<span><span class="gtot">~' + fmtN(groupTotal(g)) + ' kr/mo</span><span class="arrow">▸</span></span></div>' +
+        '<div class="exp-body"><table>' + rows + '</table></div></div>';
+    });
+    host.innerHTML = html;
+
+    document.getElementById('expMonth').innerHTML = '~' + fmtN(GRAND) + '<small> kr</small>';
+    document.getElementById('expYear').innerHTML  = '~' + fmtN(GRAND * 12) + '<small> kr</small>';
+    document.getElementById('expRef').textContent = fmtN(GRAND) + ' kr';
+
+    // collapse/expand
+    host.querySelectorAll('.exp-head').forEach(function(h){
+      h.addEventListener('click', function(){ h.closest('.exp-group').classList.toggle('open'); });
+    });
+  })();
+
+  /* ---------- OVERVIEW + KLARNA derived numbers ---------- */
+  (function renderDerived(){
+    document.getElementById('ovLeft').textContent    = fmtN(leftOver(MODEL.income.avg));
+    document.getElementById('ovComfort').textContent = '~' + fmt(comfort(MODEL.income.avg));
+    document.getElementById('ovWorst').textContent   = '+' + fmt(leftOver(MODEL.income.low));
+    document.getElementById('vdWorst').textContent   = '+' + fmtN(leftOver(MODEL.income.low)) + ' ✅';
+    document.getElementById('klSurplus').textContent = '~' + fmt(leftOver(MODEL.income.avg));
+  })();
+
+  /* ---------- CASH FLOW SIMULATOR ---------- */
+  var slider = document.getElementById('incSlider');
+  document.getElementById('cfOut2').textContent = '− ' + fmt(GRAND);
+  function updateCF(){
+    var inc = parseInt(slider.value,10);
+    var left = inc - GRAND - MODEL.loanPayment;
+    var free = left - MODEL.savingsMatch;
+    document.getElementById('cfInc').textContent = fmt(inc);
+    document.getElementById('cfOut').textContent  = left >= 0 ? fmt(left) : '− ' + fmt(-left);
+    document.getElementById('cfFree').textContent = free >= 0 ? fmt(free) : '− ' + fmt(-free);
+    var note = document.getElementById('cfNote');
+    var outEl = document.getElementById('cfOut');
+    if(inc <= 14500){
+      note.textContent = 'A soft/low sales month. Tight but the plan holds — the loan pool is your safety net here.';
+      outEl.style.color = '#ffb547';
+    } else if(inc >= 22000){
+      note.textContent = 'A strong sales month. Great time to overpay on the phone debt or stack extra into savings.';
+      outEl.style.color = '#7CFFB2';
+    } else {
+      note.textContent = 'A typical month. Comfortable and manageable.';
+      outEl.style.color = '#7CFFB2';
+    }
+    document.getElementById('cfFree').style.color = free < 0 ? '#ff5c7c' : '#00e5ff';
+  }
+  slider.addEventListener('input', updateCF);
+  updateCF();
+
+  /* ---------- SAVINGS GROWTH CHART ---------- */
+  var currentScen = 'avg';
+  var scenarios = {
+    low:  { label:'Low',     color:'#ffb547', income: MODEL.income.low },
+    avg:  { label:'Typical', color:'#00e5ff', income: MODEL.income.avg },
+    high: { label:'Good',    color:'#7CFFB2', income: MODEL.income.high }
+  };
+
+  // Monthly amount banked: forced match + a share of that scenario's comfort money.
+  function monthlySaving(scen){
+    var c = Math.max(0, comfort(scenarios[scen].income));
+    return MODEL.savingsMatch + c * MODEL.extraSaveRate;
+  }
+
+  function buildData(scen){
+    var pts = [], bal = 0, perMonth = monthlySaving(scen);
+    for(var m=1; m<=96; m++){ bal += perMonth; pts.push(Math.round(bal)); }
+    return pts;
+  }
+
+  function updateMilestones(pts){
+    document.getElementById('m12').textContent = fmtK(pts[11]) + ' kr';
+    document.getElementById('m36').textContent = fmtK(pts[35]) + ' kr';
+    document.getElementById('m96').textContent = fmtK(pts[95]) + ' kr';
+  }
+
+  function drawChart(){
+    var canvas = document.getElementById('savingsChart');
+    if(!canvas) return;
+    var s = scenarios[currentScen];
+    var pts = buildData(currentScen);
+    updateMilestones(pts);
+    document.getElementById('scenSave').textContent = fmt(monthlySaving(currentScen)) + '/mo';
+
+    var W = canvas.parentElement.offsetWidth || 600;
+    var H = canvas.parentElement.offsetHeight || 260;
+    canvas.width = W; canvas.height = H;
+    var ctx = canvas.getContext('2d');
+    var pad = {top:20,right:20,bottom:36,left:52};
+    var cW = W - pad.left - pad.right;
+    var cH = H - pad.top - pad.bottom;
+    var maxV = pts[95];
+    var N = pts.length;
+
+    ctx.clearRect(0,0,W,H);
+
+    // grid + y labels
+    ctx.strokeStyle='rgba(27,58,92,.5)'; ctx.lineWidth=1;
+    ctx.fillStyle='#6f93b5'; ctx.font='10px monospace'; ctx.textAlign='right';
+    for(var g=0; g<=5; g++){
+      var yV = (maxV/5)*g;
+      var yP = H - pad.bottom - (cH*(g/5));
+      ctx.beginPath(); ctx.moveTo(pad.left,yP); ctx.lineTo(W-pad.right,yP); ctx.stroke();
+      ctx.fillText(fmtK(yV), pad.left-6, yP+4);
+    }
+
+    // x labels (years)
+    ctx.textAlign='center'; ctx.fillStyle='#6f93b5';
+    for(var xi=0; xi<N; xi+=12){
+      var xP = pad.left + (cW*(xi/(N-1)));
+      ctx.fillText('Yr' + (xi===0 ? 1 : xi/12 + 1), xP, H-6);
+    }
+
+    // fill
+    var grad = ctx.createLinearGradient(0,pad.top,0,H-pad.bottom);
+    var rgb = s.color==='#ffb547' ? '255,181,71' : s.color==='#00e5ff' ? '0,229,255' : '124,255,178';
+    grad.addColorStop(0,'rgba('+rgb+',0.22)');
+    grad.addColorStop(1,'rgba('+rgb+',0.01)');
+    ctx.beginPath();
+    for(var i=0; i<N; i++){
+      var xp = pad.left + (cW*(i/(N-1)));
+      var yp = H - pad.bottom - (cH*(pts[i]/maxV));
+      i===0 ? ctx.moveTo(xp,yp) : ctx.lineTo(xp,yp);
+    }
+    ctx.lineTo(W-pad.right, H-pad.bottom);
+    ctx.lineTo(pad.left, H-pad.bottom);
+    ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+
+    // line
+    ctx.beginPath(); ctx.strokeStyle=s.color; ctx.lineWidth=2.5;
+    for(var j=0; j<N; j++){
+      var xq = pad.left + (cW*(j/(N-1)));
+      var yq = H - pad.bottom - (cH*(pts[j]/maxV));
+      j===0 ? ctx.moveTo(xq,yq) : ctx.lineTo(xq,yq);
+    }
+    ctx.stroke();
+
+    // milestone dots
+    [11,35,71,95].forEach(function(mi){
+      var xm = pad.left + (cW*(mi/(N-1)));
+      var ym = H - pad.bottom - (cH*(pts[mi]/maxV));
+      ctx.beginPath(); ctx.arc(xm,ym,5,0,Math.PI*2);
+      ctx.fillStyle=s.color; ctx.fill();
+      ctx.strokeStyle='#05080f'; ctx.lineWidth=2; ctx.stroke();
+    });
+  }
+
+  function setScen(s){
+    currentScen = s;
+    ['Low','Avg','High'].forEach(function(k){
+      var el = document.getElementById('btn'+k);
+      if(el) el.classList.toggle('active', k.toLowerCase()===s);
+    });
+    var note = document.getElementById('growthNote');
+    var save = fmt(monthlySaving(s));
+    if(s==='low')      note.textContent = 'Low-month scenario: you bank ' + save + '/mo (the forced match plus a little). Slow but steady, and you still have free money left over.';
+    else if(s==='avg') note.textContent = 'Typical month: you bank ' + save + '/mo. This is your expected trajectory if you stick to the rule. The 75k loan pool sits separately as your cushion.';
+    else               note.textContent = 'Good month: you bank ' + save + '/mo. On these months, consider throwing extra at the phone debt or stacking even more into savings.';
+    drawChart();
+  }
+  window.setScen = setScen;
+
+  // Draw when the Cash Flow tab is opened (canvas needs a visible width).
+  document.querySelector('[data-p="flow"]').addEventListener('click', function(){
+    setTimeout(function(){ setScen(currentScen); }, 60);
+  });
+  window.addEventListener('resize', function(){ if(document.getElementById('flow').classList.contains('show')) drawChart(); });
+  // Prime milestones/readout so they aren't dashes before first visit.
+  setScen('avg');
+
+  /* ---------- CHECKLIST TOGGLE ---------- */
+  document.querySelectorAll('#checklist-list .box').forEach(function(b){
+    function toggle(){
+      b.classList.toggle('done');
+      b.closest('li').classList.toggle('done');
+      b.setAttribute('aria-checked', b.classList.contains('done') ? 'true' : 'false');
+    }
+    b.addEventListener('click', toggle);
+    b.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(); } });
+  });
+</script>
+</body>
+</html>
