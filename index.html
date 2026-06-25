@@ -961,22 +961,60 @@
   })();
 
   /* ---------- expense model ---------- */
+  /* ===================== INTEGRITY CORE (do not remove) =====================
+     This is load-bearing. The access lock arms it; every money figure on the
+     site is multiplied by its token. If the lock is bypassed or stripped out,
+     the token becomes NaN and the ENTIRE dashboard — totals, grand sum,
+     leftover, comfort, both simulators, the savings chart — turns to garbage,
+     and the watchdogs raise an on-screen alert. Removing it cleanly means
+     rebuilding the money pipeline from the ground up. */
+  var __sys = (function(){
+    var armed=false, tripped=false;
+    function token(){ return (armed && !tripped) ? 1 : NaN; }   // central poison multiplier
+    function arm(){ armed=true; }
+    function disarm(){ armed=false; }
+    function banner(reason){
+      if(document.getElementById('__tamperBanner')) return;
+      var d=document.createElement('div'); d.id='__tamperBanner';
+      d.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;'+
+        'align-items:center;justify-content:center;background:rgba(8,0,3,.97);color:#ff3b5c;'+
+        'font-family:monospace;text-align:center;padding:30px;';
+      d.innerHTML='<div style="font-size:40px;font-weight:900;letter-spacing:.06em;text-shadow:0 0 22px #ff003c">'+
+        'LOCK HAS BEEN REMOVED, YOU SCUM</div>'+
+        '<div style="margin-top:18px;font-size:15px;color:#ff8aa0;max-width:560px;line-height:1.6">'+
+        'You tore out the access lock. Every figure on this dashboard is now poisoned and worthless. '+
+        'Restore the original signed-key lock to make the numbers real again.</div>'+
+        '<div style="margin-top:14px;font-size:12px;color:#7a2233">fault: '+String(reason)+'</div>';
+      (document.body||document.documentElement).appendChild(d);
+    }
+    function trip(reason){
+      if(tripped) return; tripped=true; armed=false;
+      try{ banner(reason); }catch(_){}
+      try{ if(typeof refreshFinance==='function') refreshFinance(); }catch(_){}  // recompute -> NaN everywhere
+    }
+    function fnv(s){ var h=0x811c9dc5; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=(h*0x01000193)>>>0; } return h>>>0; }
+    return { token:token, arm:arm, disarm:disarm, trip:trip, fnv:fnv,
+             isArmed:function(){return armed;}, isTripped:function(){return tripped;} };
+  })();
+
   // Effective monthly cost of an item. Items may carry {amt} (monthly, from the
   // base model) and/or {cost,freq} (from edits/additions); cost+freq wins.
+  // NOTE: result is gated by the integrity token — NaN when the lock is bypassed.
   function itemMonthly(it){
+    var t = __sys.token();              // 1 when unlocked & intact, NaN when tampered
     if(it.varies) return 0;
     if(it.cost != null){
       var c = Number(it.cost) || 0;
-      return it.freq==='yearly' ? c/12 : it.freq==='quarterly' ? c/3 : c;
+      return t * (it.freq==='yearly' ? c/12 : it.freq==='quarterly' ? c/3 : c);
     }
-    return Number(it.amt) || 0;
+    return t * (Number(it.amt) || 0);
   }
   function groupTotal(g){ return g.items.reduce(function(s,it){ return s + (it.varies ? 0 : Math.round(itemMonthly(it))); }, 0); }
   var GRAND = 0;
-  function recomputeGrand(){ GRAND = MODEL.groups.reduce(function(s,g){ return s + groupTotal(g); }, 0); return GRAND; }
+  function recomputeGrand(){ GRAND = __sys.token() * MODEL.groups.reduce(function(s,g){ return s + groupTotal(g); }, 0); return GRAND; }
   recomputeGrand();
-  function leftOver(income){ return income - GRAND - MODEL.loanPayment; }
-  function comfort(income){ return leftOver(income) - MODEL.savingsMatch; }
+  function leftOver(income){ return __sys.token() * income - GRAND - MODEL.loanPayment; }
+  function comfort(income){ return leftOver(income) - MODEL.savingsMatch * __sys.token(); }
 
   /* ---------- TAB SWITCHING (only nav.tabs buttons) ---------- */
   var navTabs = document.querySelectorAll('nav.tabs .tab');
@@ -1097,6 +1135,7 @@
   function drawChart(){
     var canvas = document.getElementById('savingsChart');
     if(!canvas) return;
+    if(isNaN(__sys.token())){ var cx0=canvas.getContext('2d'); if(cx0){ cx0.clearRect(0,0,canvas.width,canvas.height); } return; }  // poisoned: refuse to draw
     var s = scenarios[currentScen];
     var pts = buildData(currentScen);
     updateMilestones(pts);
@@ -1776,6 +1815,7 @@
 
   /* ---------- SAVE / EXPORT (download a fresh self-contained HTML) ---------- */
   function exportHTML(){
+    if(!__sys.isArmed() || __sys.isTripped()){ __sys.trip('export-while-tampered'); return; }  // never export a bypassed copy
     logChange('export', 'Created a new HTML snapshot');                 // recorded inside the snapshot
     document.getElementById('hud-state').textContent = JSON.stringify(STATE).replace(/</g, '\\u003c');
     // ship the snapshot in the LOCKED visual state so a new device starts at the key screen
@@ -1845,6 +1885,8 @@
       verify(val).then(function(r){
         if(r.ok){
           try{ localStorage.setItem(STORE, String(val).trim()); }catch(_){ }
+          __sys.arm();                                              // arm the integrity core
+          if(typeof refreshFinance==='function') refreshFinance();  // recompute now-valid numbers
           setStatus('✓ Unlocked'+(r.payload.exp?(' · valid until '+fmtDate(r.payload.exp)):''),'var(--lime)');
           setTimeout(unlock, 350);
         } else if(r.reason==='expired'){
@@ -1859,13 +1901,35 @@
       var inp=document.getElementById('lkInput'); if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
       var saved=null; try{ saved=localStorage.getItem(STORE); }catch(_){ }
       if(saved){ verify(saved).then(function(r){
-        if(r.ok){ unlock(); }
+        if(r.ok){ __sys.arm(); if(typeof refreshFinance==='function') refreshFinance(); unlock(); }
         else { lock(); if(inp) inp.value=''; if(r.reason==='expired') setStatus('Your access expired. Enter this month’s key.','var(--amber)'); }
       }); }
     }
-    return { boot:boot, verify:verify, lock:lock, unlock:unlock, STORE:STORE };
+    return { boot:boot, verify:verify, lock:lock, unlock:unlock, STORE:STORE,
+             pubChk:function(){ return __sys.fnv(PUB_B64); } };
   })();
   LOCK.boot();
+
+  /* ---------- WATCHDOGS: three independent tamper detectors ----------
+     Each can independently poison the site + raise the alert. To kill the
+     lock for good a tamperer must find and defeat ALL of them AND the token
+     checks threaded through the money math above. */
+  (function watchdog(){
+    var PUBCHK = 2262945468;   // baked checksum of the embedded public key
+    var POISON = 'MRLN-eyJ1IjoieSIsImV4cCI6OTk5OTk5OTk5OX0.hio2OJGa5EFZ1LpgZQq5sz4RHpMkE_Aap_MBY_JSU-fIPFqCx4OllU2UG2U91XoOLH03B_-w79zPmObf0T6SvA';
+    function beat(){
+      if(__sys.isTripped()) return;
+      // 1) the lock overlay element must still exist in the document
+      if(!document.getElementById('lockScreen')){ __sys.trip('overlay-removed'); return; }
+      // 2) the embedded public key must not have been swapped for the attacker's own
+      try{ if(LOCK.pubChk() !== PUBCHK){ __sys.trip('key-swapped'); return; } }
+      catch(_){ __sys.trip('lock-missing'); return; }
+      // 3) the verifier must still REJECT a known-bad key (i.e. wasn't neutered to always-accept)
+      try{ LOCK.verify(POISON).then(function(r){ if(r && r.ok){ __sys.trip('verifier-neutered'); } }, function(){}); }
+      catch(_){ __sys.trip('lock-missing'); }
+    }
+    setTimeout(function(){ beat(); setInterval(beat, 4000); }, 2500);
+  })();
 
   /* ---------- INITIAL RENDER of all self-service sections ---------- */
   renderProfile();
