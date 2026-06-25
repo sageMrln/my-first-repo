@@ -374,6 +374,99 @@
   @media(prefers-reduced-motion:reduce){
     *,*::before,*::after{animation:none !important;transition:none !important}
   }
+
+  /* ===================== COLLAPSIBLE CARDS ===================== */
+  .card[data-collapse] > h2{cursor:pointer;user-select:none}
+  .card[data-collapse] > h2 .chev{margin-left:auto;font-size:13px;color:var(--cyan);transition:transform .2s;flex:0 0 auto}
+  .card[data-collapse].collapsed > h2 .chev{transform:rotate(-90deg)}
+  .card[data-collapse].collapsed > *:not(h2){display:none !important}
+  .card[data-collapse] > h2{margin-bottom:4px}
+
+  /* example-only narrative (hidden for clean/new users; shown for returning users
+     and after loading the sample data) */
+  body.clean-mode .demo-only{display:none !important}
+  body:not(.clean-mode) #goalsGeneric,
+  body:not(.clean-mode) #incomeGeneric,
+  body:not(.clean-mode) #loanGeneric{display:none !important}
+
+  /* ===================== MODAL / CONFIRM ===================== */
+  .modal-back{position:fixed;inset:0;z-index:90000;display:none;align-items:center;justify-content:center;padding:20px;
+    background:rgba(3,7,14,.78);backdrop-filter:blur(3px)}
+  .modal-back.show{display:flex}
+  .modal{width:100%;max-width:420px;border:1px solid var(--line);border-radius:16px;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 20px 60px rgba(0,0,0,.6);padding:24px 22px}
+  .modal h3{font-family:'Orbitron';font-size:17px;color:#eaffff;margin-bottom:10px;display:flex;align-items:center;gap:9px}
+  .modal .mwarn{font-size:14px;color:var(--txt);line-height:1.5}
+  .modal .mwarn b{color:var(--amber)}
+  .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;flex-wrap:wrap}
+  .modal-actions button{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.03em;border-radius:10px;padding:10px 16px;cursor:pointer;border:1px solid var(--line);transition:all .15s}
+  .modal-actions .mcancel{background:var(--panel2);color:var(--txt)}
+  .modal-actions .mcancel:hover{border-color:var(--cyan);color:#eaffff}
+  .modal-actions .mok{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:#04222a;border-color:var(--cyan)}
+  .modal-actions .mok.danger{background:linear-gradient(180deg,#ff5c7c,#b22a45);border-color:#ff5c7c;color:#fff}
+  .modal-actions button:hover{transform:translateY(-1px)}
+
+  /* ===================== ONBOARDING WIZARD ===================== */
+  #onboard{position:fixed;inset:0;z-index:95000;display:none;align-items:center;justify-content:center;padding:18px;
+    background:radial-gradient(1000px 600px at 50% -10%, rgba(0,229,255,.10), transparent 60%), rgba(3,7,14,.92);overflow-y:auto}
+  #onboard.show{display:flex}
+  .wiz{width:100%;max-width:460px;border:1px solid var(--line);border-radius:18px;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 24px 70px rgba(0,0,0,.65);padding:26px 24px;margin:auto}
+  .wiz .wlogo{font-family:'Orbitron';font-weight:900;font-size:24px;letter-spacing:.14em;color:#eaffff;text-shadow:var(--glow);text-align:center}
+  .wiz .wstepd{font-family:'Share Tech Mono';font-size:11px;color:var(--cyan);letter-spacing:.06em;text-align:center;margin:4px 0 2px}
+  .wiz .wbar{height:5px;border-radius:4px;background:#0a1a2b;overflow:hidden;margin:12px 0 18px}
+  .wiz .wbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width .3s}
+  .wiz h2{font-family:'Orbitron';font-size:18px;color:#eaffff;margin-bottom:6px}
+  .wiz p.wsub{color:var(--txt-dim);font-size:13.5px;line-height:1.5;margin-bottom:16px}
+  .wiz label{display:block;font-size:12px;font-weight:600;color:var(--txt);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 5px}
+  .wiz input,.wiz select{width:100%;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);
+    font-family:'Rajdhani';font-size:15px;padding:11px 12px;outline:none}
+  .wiz input:focus,.wiz select:focus{border-color:var(--cyan);box-shadow:var(--glow)}
+  .wiz .wrow{display:flex;gap:10px}.wiz .wrow > div{flex:1;min-width:0}
+  .wiz .chips{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 6px}
+  .wiz .chip{font-family:'Rajdhani';font-weight:600;font-size:12.5px;border:1px solid var(--cyan-dim);background:var(--panel);color:var(--cyan);
+    padding:6px 11px;border-radius:20px;cursor:pointer;transition:all .15s}
+  .wiz .chip:hover{border-color:var(--cyan);box-shadow:var(--glow);color:#eaffff}
+  .wiz .wlist{margin:8px 0 4px;display:flex;flex-direction:column;gap:7px;max-height:34vh;overflow-y:auto}
+  .wiz .wexp{display:flex;align-items:center;gap:8px;justify-content:space-between;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--panel)}
+  .wiz .wexp .nm{font-size:14px;color:var(--txt)}
+  .wiz .wexp .am{font-family:'Share Tech Mono';font-size:13px;color:var(--cyan);white-space:nowrap}
+  .wiz .wexp .x{background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;line-height:1;padding:0 2px}
+  .wiz .wtot{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:13px;color:var(--txt-dim);border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
+  .wiz .wtot b{color:var(--lime)}
+  .wiz .wsum{display:flex;flex-direction:column;gap:9px;margin:8px 0}
+  .wiz .wsum .r{display:flex;justify-content:space-between;font-size:14px;color:var(--txt);border-bottom:1px solid rgba(27,58,92,.5);padding-bottom:8px}
+  .wiz .wsum .r .v{font-family:'Share Tech Mono';color:var(--cyan)}
+  .wiz .wsum .r.big .v{color:var(--lime);font-size:16px}
+  .wiz .wact{display:flex;gap:10px;margin-top:20px}
+  .wiz .wact button{flex:1;font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.03em;text-transform:uppercase;
+    border-radius:11px;padding:13px;cursor:pointer;border:1px solid var(--line);transition:all .15s}
+  .wiz .wact .wnext{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:#04222a;border-color:var(--cyan);box-shadow:0 0 20px rgba(0,229,255,.35)}
+  .wiz .wact .wback{background:var(--panel2);color:var(--txt-dim);flex:0 0 auto;padding:13px 18px}
+  .wiz .wact button:hover{transform:translateY(-1px);filter:brightness(1.06)}
+  .wiz .wskip{display:block;width:100%;text-align:center;margin-top:14px;background:none;border:none;color:var(--txt-dim);font-size:12.5px;cursor:pointer;text-decoration:underline}
+  .wiz .wskip:hover{color:var(--cyan)}
+  .wiz .wmsg{font-size:12px;color:var(--red);margin-top:8px;min-height:15px}
+
+  /* ===================== GUIDED TOUR ===================== */
+  #tourRing{position:fixed;z-index:96000;border-radius:12px;pointer-events:none;display:none;
+    box-shadow:0 0 0 4px var(--cyan), 0 0 0 9999px rgba(3,7,14,.78);transition:all .25s ease}
+  #tourTip{position:fixed;z-index:96001;max-width:300px;width:calc(100vw - 28px);display:none;
+    border:1px solid var(--cyan);border-radius:13px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 14px 40px rgba(0,0,0,.6);padding:16px 16px 14px}
+  #tourTip .tt-txt{font-size:14px;color:var(--txt);line-height:1.5}
+  #tourTip .tt-txt b{color:#eaffff}
+  #tourTip .tt-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
+  #tourTip .tt-step{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim)}
+  #tourTip .tt-btns{display:flex;gap:8px}
+  #tourTip button{font-family:'Rajdhani';font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--txt);transition:all .15s}
+  #tourTip button.tt-next{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:#04222a;border-color:var(--cyan)}
+  #tourTip button:hover{transform:translateY(-1px)}
+  #tourTip .tt-skip{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--txt-dim);font-size:15px;padding:2px 5px}
+
+  /* help / setup buttons in locale bar */
+  .localebar .iconbtn{border:1px solid var(--line);background:var(--panel2);color:var(--cyan);font-family:'Share Tech Mono';font-size:12px;
+    border-radius:8px;padding:6px 10px;cursor:pointer;transition:all .15s;white-space:nowrap}
+  .localebar .iconbtn:hover{border-color:var(--cyan);box-shadow:var(--glow);color:#eaffff}
 </style>
 </head>
 <body>
@@ -398,6 +491,48 @@
     <button class="lk-btn" id="lkBtn" data-i18n="Unlock">Unlock</button>
     <div class="lk-status" id="lkStatus"></div>
     <div class="lk-foot" data-i18n="Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.">Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.</div>
+  </div>
+</div>
+
+<!-- THEMED CONFIRM MODAL (every destructive action routes through this) -->
+<div class="modal-back" id="confirmBack">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 id="confirmTitle">⚠️ Are you sure?</h3>
+    <div class="mwarn" id="confirmMsg"></div>
+    <div class="modal-actions">
+      <button class="mcancel" id="confirmNo">Cancel</button>
+      <button class="mok danger" id="confirmYes">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- GUIDED TOUR -->
+<div id="tourRing"></div>
+<div id="tourTip">
+  <button class="tt-skip" id="ttSkip" title="Close tour">✕</button>
+  <div class="tt-txt" id="ttTxt"></div>
+  <div class="tt-bar">
+    <span class="tt-step" id="ttStep"></span>
+    <div class="tt-btns">
+      <button id="ttBack">Back</button>
+      <button class="tt-next" id="ttNext">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING WIZARD (first run for a brand-new user) -->
+<div id="onboard">
+  <div class="wiz">
+    <div class="wlogo">MRLN</div>
+    <div class="wstepd" id="wStepLbl">Step 1 of 5</div>
+    <div class="wbar"><i id="wBar" style="width:20%"></i></div>
+    <div id="wBody"></div>
+    <div class="wmsg" id="wMsg"></div>
+    <div class="wact">
+      <button class="wback" id="wBack">Back</button>
+      <button class="wnext" id="wNext">Next</button>
+    </div>
+    <button class="wskip" id="wSkip">Skip setup — I'll fill things in myself</button>
   </div>
 </div>
 
@@ -430,6 +565,8 @@
       </select></div>
     <div class="lc"><label data-i18n="Country" for="countryInp">Country</label>
       <input id="countryInp" type="text" placeholder="Country" autocomplete="off" maxlength="40"></div>
+    <button class="iconbtn" id="tourBtn" title="Replay the tour" data-i18n="❔ Tour">❔ Tour</button>
+    <button class="iconbtn" id="setupBtn" title="Re-run setup / start fresh" data-i18n="⚙ Setup">⚙ Setup</button>
   </div>
 
 
@@ -441,14 +578,14 @@
     <div class="pillbar">
       <span class="pill">AGE <b id="hdrAge">20</b></span>
       <span class="pill">EMPLOYER <b id="hdrEmployer">One Call ApS</b></span>
-      <span class="pill">CREDIT <b>CLEAN · NO RKI</b></span>
-      <span class="pill">LOAN <b>SECURED</b></span>
+      <span class="pill demo-only">CREDIT <b>CLEAN · NO RKI</b></span>
+      <span class="pill demo-only">LOAN <b>SECURED</b></span>
     </div>
 
     <div class="status">
-      <div class="stat low"><div class="lbl">Low Month</div><div class="val">14,407<small> kr</small></div></div>
-      <div class="stat avg"><div class="lbl">Avg (verified)</div><div class="val">16,161<small> kr</small></div></div>
-      <div class="stat high"><div class="lbl">High Month</div><div class="val">25,778<small> kr</small></div></div>
+      <div class="stat low"><div class="lbl">Low Month</div><div class="val" id="stLow">—</div></div>
+      <div class="stat avg"><div class="lbl">Typical</div><div class="val" id="stAvg">—</div></div>
+      <div class="stat high"><div class="lbl">High Month</div><div class="val" id="stHigh">—</div></div>
     </div>
   </header>
 
@@ -473,14 +610,13 @@
   <section class="panel show" id="overview">
     <div class="card">
       <h2>Mission Briefing</h2>
-      <div class="desc">The whole plan in one screen. Built entirely on real, verified data — payslips, bank transactions, and SKAT figures. Every number below is computed from one shared model, so the tabs always agree.</div>
+      <div class="desc">Your whole plan in one screen. Built from your own figures — income, bills and subscriptions. Every number below is computed from one shared model, so the tabs always agree.</div>
       <div class="row2">
         <div>
           <ul class="clean">
-            <li><b>Goal:</b> Stop living paycheck-to-paycheck and stop stressing over everyday costs.</li>
-            <li><b>Method:</b> A 75,000 kr. Nordea loan acting as a cash pool + a forced savings habit.</li>
-            <li><b>Proof:</b> Even your worst real month leaves <b id="ovWorst">+1,932 kr</b> of slack after every cost and the loan payment.</li>
-            <li><b>Timing:</b> New apartment 1 July · first loan payment 31 July.</li>
+            <li><b>Goal:</b> Stop living paycheck-to-paycheck and know exactly where your money goes.</li>
+            <li><b>Reality check:</b> Even a slow month leaves <b id="ovWorst">—</b> after every cost and any loan payment.</li>
+            <li><b>The plan:</b> Spend with confidence, then move your savings amount automatically each month.</li>
           </ul>
         </div>
         <div>
@@ -489,7 +625,7 @@
         </div>
       </div>
     </div>
-    <div class="card">
+    <div class="card demo-only">
       <h2>Verdict</h2>
       <div class="desc">Scored against the targets set at the start.</div>
       <table>
@@ -505,7 +641,18 @@
 
   <!-- 02 INCOME -->
   <section class="panel" id="income">
-    <div class="card">
+    <div class="card" id="incomeGeneric">
+      <h2>Your Income</h2>
+      <div class="desc">Your monthly take-home (after tax). Change these anytime with <b>⚙ Setup</b> or <b>💬 Quick Update</b>.</div>
+      <table>
+        <tr><th>Scenario</th><th style="text-align:right">Per month</th></tr>
+        <tr><td>A slow month</td><td class="num" id="incLow">—</td></tr>
+        <tr class="total"><td>Typical month</td><td class="num" id="incAvg">—</td></tr>
+        <tr><td>A good month</td><td class="num" id="incHigh">—</td></tr>
+      </table>
+      <div class="note">Your simulators and savings projection use the <b>typical</b> month as the baseline.</div>
+    </div>
+    <div class="card demo-only">
       <h2>Income Range</h2>
       <div class="desc">All figures AFTER tax. Income varies because a big part of pay is sales bonuses (day bonus + voice bonus).</div>
       <table>
@@ -539,7 +686,16 @@
 
   <!-- 04 LOAN -->
   <section class="panel" id="loan">
-    <div class="card">
+    <div class="card" id="loanGeneric">
+      <h2>Loan &amp; Savings</h2>
+      <div class="desc">If you have a loan or a monthly savings target, they show here. Change them with <b>⚙ Setup</b> or <b>💬 Quick Update</b>.</div>
+      <table>
+        <tr><td>Monthly loan / debt payment</td><td class="num" id="lnPay">—</td></tr>
+        <tr class="total"><td>Monthly savings target</td><td class="num" id="lnSave">—</td></tr>
+      </table>
+      <div class="note">Tip: keep borrowed money mentally separate from spending money, and automate your savings transfer so it happens without thinking.</div>
+    </div>
+    <div class="card demo-only">
       <h2>The Loan <span class="tag good">SECURED</span></h2>
       <div class="desc">Nordea "Forbrugslån+" — their loan for ages 18–28. Submitted and locked in.</div>
       <div class="row2">
@@ -632,7 +788,7 @@
 
   <!-- 07 GOALS -->
   <section class="panel" id="goals">
-    <div class="card">
+    <div class="card demo-only">
       <h2>Goals — Your Words</h2>
       <ul class="clean goal">
         <li>Stop living paycheck-to-paycheck.</li>
@@ -642,7 +798,7 @@
         <li>Build savings now, while young — not only late in life.</li>
       </ul>
     </div>
-    <div class="card">
+    <div class="card demo-only">
       <h2>Future Track <span class="tag later">LATER STAGE</span></h2>
       <div class="desc">Long-term aspiration: higher-end stability and passive income (business ownership / real estate).</div>
       <ul class="clean">
@@ -652,6 +808,16 @@
       </ul>
       <div class="note">Not accessible at the current stage — but the current plan is exactly what builds toward it.</div>
     </div>
+    <div class="card" id="goalsGeneric">
+      <h2>Your Goals</h2>
+      <div class="desc">Use the <b>💬 Quick Update</b> button to jot goals, or keep them in the Calendar as dated notes. Some good starters:</div>
+      <ul class="clean goal">
+        <li>Stop living paycheck-to-paycheck.</li>
+        <li>Build a 3-month emergency cushion.</li>
+        <li>Save a fixed amount automatically every month.</li>
+        <li>Know exactly where every krone / euro / dollar goes.</li>
+      </ul>
+    </div>
   </section>
 
   <!-- 08 CHECKLIST -->
@@ -660,20 +826,20 @@
       <h2>Action Checklist</h2>
       <div class="desc">Tap a box to mark it done. The most important one is first.</div>
       <ul class="check" id="checklist-list">
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Set up the 1,364 kr./month savings transfer as an AUTOMATIC standing order the day the loan lands.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Pay furnishing costs from the loan pool — not the monthly paycheck.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Keep the loan pool and everyday spending mentally separate.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Remember July timing: rent starts 1 July, first loan payment 31 July.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Confirm the Apple/Discord charge (75 kr) drops off so you stop double-paying Discord.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Re-check the plan after a few more months of income data.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Revisit business/property goals once 12+ months of history exists.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Add all your real monthly costs in the <b>Expenses</b> tab so your numbers are accurate.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Set up an <b>automatic</b> monthly transfer to savings — pay yourself first.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Build a cushion of at least <b>3 months</b> of expenses for emergencies.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Review every subscription — cancel anything you don't truly use.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Keep borrowed money (loans/Klarna) mentally separate from spending money.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Re-check your plan after a few months of real income data.</span></li>
+        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Press <b>💾 Save / Export</b> to keep a backup of your file.</span></li>
       </ul>
     </div>
   </section>
 
   <!-- 09 SUBSCRIPTIONS -->
   <section class="panel" id="subs">
-    <div class="card">
+    <div class="card" data-collapse data-collapsed>
       <h2>Add a Subscription / Recurring Cost</h2>
       <div class="desc">Add anything new to an existing category. It updates your <b>live</b> numbers everywhere — grand total, cash-flow simulator, Klarna surplus, and the savings projection all recompute instantly.</div>
       <div class="form-row">
@@ -689,7 +855,7 @@
       <div id="addMsg" class="note" style="display:none"></div>
     </div>
 
-    <div class="card">
+    <div class="card" data-collapse data-collapsed>
       <h2>Manage Items &amp; Categories</h2>
       <div class="desc">Every cost in your model, grouped by category. <b>Edit a price</b> or <b>delete</b> any item — base or added — and your live numbers recompute instantly. Add or remove whole categories at the bottom.</div>
       <div id="customList"></div>
@@ -700,7 +866,7 @@
       <button class="btn ghost" id="addCatBtn">+ Add category</button>
     </div>
 
-    <div class="card">
+    <div class="card demo-only" data-collapse data-collapsed>
       <h2>Subscription Ledger</h2>
       <div class="desc">Every recurring subscription, pulled from Nordea's official "Subscriptions &amp; Direct debit" list. What it costs, how often, what it's for, and WHY you keep it — a note to future you.</div>
 
@@ -1084,12 +1250,29 @@
       (g.items||[]).forEach(function(it){ if(!it.id) it.id = uid(); });
     });
   }
+  // A clean starter model for a brand-new user — zero numbers, empty common
+  // categories ready to fill. No personal data baked in.
+  function blankModel(){
+    return {
+      income:{ low:0, avg:0, high:0 }, loanPayment:0, savingsMatch:0, extraSaveRate:0.30,
+      profile:{ age:'', employer:'', name:'', location:'' },
+      groups:[
+        { id:'g'+uid(), icon:'🏠', name:'Housing',       items:[] },
+        { id:'g'+uid(), icon:'🍽️', name:'Food',          items:[] },
+        { id:'g'+uid(), icon:'🚗', name:'Transport',      items:[] },
+        { id:'g'+uid(), icon:'📱', name:'Subscriptions',  items:[] },
+        { id:'g'+uid(), icon:'✦',  name:'Other',          items:[] }
+      ]
+    };
+  }
+  window.__DEMO_MODEL = DEFAULT_MODEL;   // Osefe's data, kept as loadable sample/example
   (function adoptModel(){
     if(STATE.cfg){
-      MODEL = STATE.cfg;
+      MODEL = STATE.cfg;                 // returning user — load their saved config
     } else {
-      MODEL = DEFAULT_MODEL;
-      // migrate legacy customItems (older exports stored them separately)
+      MODEL = blankModel();              // brand-new user starts clean (no Miradi data)
+      STATE.fresh = true;                // triggers the onboarding wizard after unlock
+      if(STATE.cleanMode==null) STATE.cleanMode = true;   // hide example-only narrative cards
       (STATE.customItems || []).forEach(function(c){
         var g = MODEL.groups.filter(function(x){ return x.name === c.category; })[0] || MODEL.groups[MODEL.groups.length-1];
         g.items.push({ id: c.id || uid(), name: c.name, detail: c.note || 'Added by you', cost: Number(c.cost), freq: c.freq || 'monthly', custom: true });
@@ -1097,7 +1280,7 @@
       STATE.cfg = MODEL;
     }
     delete STATE.customItems;
-    if(!MODEL.profile) MODEL.profile = { age:'20', employer:'One Call ApS', name:'Osefe Miradi', location:'Aarhus, DK' };
+    if(!MODEL.profile) MODEL.profile = { age:'', employer:'', name:'', location:'' };
     ensureIds(MODEL);
   })();
 
@@ -1253,6 +1436,12 @@
     scenarios.low.income = MODEL.income.low;
     scenarios.avg.income = MODEL.income.avg;
     scenarios.high.income = MODEL.income.high;
+    // reflect income everywhere it's shown (header cards, income tab, scenario buttons)
+    function setTxt(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; }
+    setTxt('stLow', fmt(MODEL.income.low)); setTxt('stAvg', fmt(MODEL.income.avg)); setTxt('stHigh', fmt(MODEL.income.high));
+    setTxt('incLow', fmt(MODEL.income.low)); setTxt('incAvg', fmt(MODEL.income.avg)); setTxt('incHigh', fmt(MODEL.income.high));
+    setTxt('btnLow','Low ('+fmtN(MODEL.income.low)+')'); setTxt('btnAvg','Typical ('+fmtN(MODEL.income.avg)+')'); setTxt('btnHigh','Good ('+fmtN(MODEL.income.high)+')');
+    setTxt('klBtnLow','Low ('+fmtN(MODEL.income.low)+')'); setTxt('klBtnAvg','Typical ('+fmtN(MODEL.income.avg)+')'); setTxt('klBtnHigh','Good ('+fmtN(MODEL.income.high)+')');
   };
 
   // Monthly amount banked: forced match + a share of that scenario's comfort money.
@@ -1430,6 +1619,8 @@
     renderExpenses();
     renderDerived();
     var c2 = document.getElementById('cfOut2'); if(c2) c2.textContent = '− ' + fmt(GRAND);
+    var lp=document.getElementById('lnPay'); if(lp) lp.textContent = fmt(MODEL.loanPayment||0);
+    var ls=document.getElementById('lnSave'); if(ls) ls.textContent = fmt(MODEL.savingsMatch||0);
     if(typeof updateCF==='function') updateCF();
     if(typeof window.klRefresh==='function') window.klRefresh();
     if(typeof drawChart==='function') drawChart();
@@ -1536,10 +1727,10 @@
     var list = document.getElementById('customList');
     if(list) list.addEventListener('click', function(e){
       var t = e.target;
-      var del = t.closest('[data-del]');     if(del){ removeItem(del.getAttribute('data-del')); return; }
+      var del = t.closest('[data-del]');     if(del){ var did=del.getAttribute('data-del'); var df=findItem(did); uiConfirm({title:'🗑️ Delete item?', message:'Delete <b>'+esc(df?df.it.name:'this item')+'</b> from your finances? This can’t be undone.'}, function(){ removeItem(did); }); return; }
       var ed  = t.closest('[data-edit]');    if(ed){ editId = ed.getAttribute('data-edit'); renderManage(); return; }
       var ca  = t.closest('[data-cancel]');  if(ca){ editId = null; renderManage(); return; }
-      var dc  = t.closest('[data-delcat]');  if(dc){ if(confirm('Remove category "'+dc.getAttribute('data-delcat')+'" and all its items?')) removeCategory(dc.getAttribute('data-delcat')); return; }
+      var dc  = t.closest('[data-delcat]');  if(dc){ var cn=dc.getAttribute('data-delcat'); var cg=MODEL.groups.filter(function(x){return x.name===cn;})[0]; uiConfirm({title:'🗑️ Delete category?', message:'Delete <b>'+esc(cn)+'</b> and its '+(cg?cg.items.length:0)+' item(s)? This can’t be undone.'}, function(){ removeCategory(cn); }); return; }
       var sv  = t.closest('[data-save]');
       if(sv){
         var id = sv.getAttribute('data-save');
@@ -1584,10 +1775,13 @@
   /* ---------- profile + core-number setters (shared by manual + AI) ---------- */
   function renderProfile(){
     var p = MODEL.profile || {};
-    var a = document.getElementById('hdrAge'); if(a && p.age) a.textContent = p.age;
-    var e = document.getElementById('hdrEmployer'); if(e && p.employer) e.textContent = p.employer;
+    var a = document.getElementById('hdrAge'); if(a) a.textContent = p.age || '—';
+    var e = document.getElementById('hdrEmployer'); if(e) e.textContent = p.employer || '—';
     var s = document.getElementById('hdrSub');
-    if(s) s.textContent = 'Operator: ' + (p.name||'') + ' · ' + (p.location||'') + ' · Status: ACTIVE';
+    if(s){
+      var bits = [p.name||'Operator', p.location].filter(function(x){ return x; });
+      s.textContent = bits.join(' · ') + ' · Status: ACTIVE';
+    }
   }
   function setProfile(field, value){
     if(!MODEL.profile) MODEL.profile = {};
@@ -1620,7 +1814,7 @@
     });
     var list = document.getElementById('wkList');
     if(list) list.addEventListener('click', function(e){
-      var d = e.target.closest('[data-del]'); if(d) removeWorkout(d.getAttribute('data-del'));
+      var d = e.target.closest('[data-del]'); if(d){ var wid=d.getAttribute('data-del'); uiConfirm({title:'🗑️ Delete workout?', message:'Delete this workout entry? This can’t be undone.'}, function(){ removeWorkout(wid); }); }
     });
   })();
   function removeWorkout(id){
@@ -1664,7 +1858,7 @@
     });
     var dn = document.getElementById('dayNotes');
     if(dn) dn.addEventListener('click', function(e){
-      var d = e.target.closest('[data-del]'); if(d) removeEvent(selDate, d.getAttribute('data-del'));
+      var d = e.target.closest('[data-del]'); if(d){ var nid=d.getAttribute('data-del'); uiConfirm({title:'🗑️ Delete note?', message:'Delete this calendar note? This can’t be undone.'}, function(){ removeEvent(selDate, nid); }); }
     });
     var dadd = document.getElementById('dayAdd');
     if(dadd) dadd.addEventListener('click', addDayNote);
@@ -1672,7 +1866,7 @@
     if(dinput) dinput.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addDayNote(); } });
     var ev = document.getElementById('evList');
     if(ev) ev.addEventListener('click', function(e){
-      var d = e.target.closest('[data-del]'); if(d) removeEvent(d.getAttribute('data-date'), d.getAttribute('data-del'));
+      var d = e.target.closest('[data-del]'); if(d){ var dd=d.getAttribute('data-date'), nid=d.getAttribute('data-del'); uiConfirm({title:'🗑️ Delete note?', message:'Delete this calendar note? This can’t be undone.'}, function(){ removeEvent(dd, nid); }); }
     });
   })();
   function renderCalendar(){
@@ -2029,7 +2223,7 @@
           __sys.arm();                                              // arm the integrity core
           if(typeof refreshFinance==='function') refreshFinance();  // recompute now-valid numbers
           setStatus('✓ Unlocked'+(r.payload.exp?(' · valid until '+fmtDate(r.payload.exp)):''),'var(--lime)');
-          setTimeout(unlock, 350);
+          setTimeout(function(){ unlock(); if(window.__afterUnlock) window.__afterUnlock(); }, 350);
         } else if(r.reason==='expired'){
           setStatus('✗ This key expired'+(r.payload&&r.payload.exp?(' on '+fmtDate(r.payload.exp)):'')+'. Get a new one in Discord.','var(--red)');
         } else {
@@ -2042,7 +2236,7 @@
       var inp=document.getElementById('lkInput'); if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
       var saved=null; try{ saved=localStorage.getItem(STORE); }catch(_){ }
       if(saved){ verify(saved).then(function(r){
-        if(r.ok){ __sys.arm(); if(typeof refreshFinance==='function') refreshFinance(); unlock(); }
+        if(r.ok){ __sys.arm(); if(typeof refreshFinance==='function') refreshFinance(); unlock(); if(window.__afterUnlock) setTimeout(window.__afterUnlock, 300); }
         else { lock(); if(inp) inp.value=''; if(r.reason==='expired') setStatus('Your access expired. Enter this month’s key.','var(--amber)'); }
       }); }
     }
@@ -2200,6 +2394,290 @@
     }
   }
 
+  /* ===================== THEMED CONFIRM =====================
+     Every destructive action routes through this — always asks, always warns. */
+  var uiConfirm = (function(){
+    var back=document.getElementById('confirmBack'), titleEl=document.getElementById('confirmTitle'),
+        msgEl=document.getElementById('confirmMsg'), yes=document.getElementById('confirmYes'), no=document.getElementById('confirmNo');
+    var cb=null;
+    function close(){ if(back) back.classList.remove('show'); cb=null; }
+    if(no) no.addEventListener('click', close);
+    if(back) back.addEventListener('click', function(e){ if(e.target===back) close(); });
+    if(yes) yes.addEventListener('click', function(){ var f=cb; close(); if(typeof f==='function') f(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape' && back && back.classList.contains('show')) close(); });
+    return function(opts, onYes){
+      opts=opts||{};
+      if(titleEl) titleEl.textContent = opts.title || '⚠️ Are you sure?';
+      if(msgEl) msgEl.innerHTML = opts.message || 'This cannot be undone.';
+      if(yes){ yes.textContent = opts.confirmText || 'Delete'; yes.className = 'mok ' + (opts.danger===false?'':'danger'); }
+      cb = onYes;
+      if(back) back.classList.add('show');
+    };
+  })();
+
+  /* ===================== COLLAPSIBLE EDITOR CARDS ===================== */
+  (function initCollapse(){
+    document.querySelectorAll('.card[data-collapse]').forEach(function(card){
+      var h=card.querySelector('h2'); if(!h) return;
+      if(!h.querySelector('.chev')){ var c=document.createElement('span'); c.className='chev'; c.textContent='▾'; h.appendChild(c); }
+      if(card.hasAttribute('data-collapsed')) card.classList.add('collapsed');
+      h.addEventListener('click', function(){ card.classList.toggle('collapsed'); });
+    });
+  })();
+
+  /* ===================== NEW-USER MODE / DEMO / RESET ===================== */
+  function applyCleanModeClass(){ document.body.classList[STATE.cleanMode ? 'add' : 'remove']('clean-mode'); }
+  function collectExpenses(m){
+    var out=[]; (m.groups||[]).forEach(function(g){ (g.items||[]).forEach(function(it){
+      if(it.varies) return;
+      out.push({ name:it.name, cat:g.name, cost:(it.cost!=null?it.cost:Math.round(Number(it.amt)||0)), freq:it.freq||'monthly' });
+    }); }); return out;
+  }
+  function refreshEverything(){
+    if(typeof populateCatSelect==='function') populateCatSelect();
+    if(window.rebuildScenarios) window.rebuildScenarios();
+    if(typeof refreshFinance==='function') refreshFinance();
+    if(typeof renderManage==='function') renderManage();
+    if(typeof renderProfile==='function') renderProfile();
+    if(typeof initLocale==='function'){ var ci=document.getElementById('countryInp'); if(ci) ci.value=STATE.prefs.country||''; }
+  }
+  function loadDemoData(){
+    MODEL = JSON.parse(JSON.stringify(window.__DEMO_MODEL));
+    ensureIds(MODEL); STATE.cfg = MODEL;
+    STATE.demo=true; STATE.fresh=false; STATE.cleanMode=false;
+    applyCleanModeClass(); refreshEverything(); autosave();
+    logChange('demo', 'Loaded sample data');
+  }
+  function resetAll(){
+    uiConfirm({ title:'⚠️ Start completely fresh?',
+      message:'This wipes <b>all data on this device</b> — income, expenses, profile, calendar and logs — and restarts setup. Your exported files and your access key are not affected.',
+      confirmText:'Wipe & restart' }, function(){
+      var blank = Object.assign({}, DEFAULTS, { savedAt:nowISO(), cfg:null, cleanMode:true, fresh:true, prefs:STATE.prefs, log:[], calendar:{}, workouts:[] });
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(blank)); }catch(_){}
+      location.reload();
+    });
+  }
+
+  /* ===================== ONBOARDING WIZARD ===================== */
+  var WIZ = (function(){
+    var STEPS=['welcome','profile','income','expenses','review'];
+    var el = {
+      box:document.getElementById('onboard'), body:document.getElementById('wBody'), bar:document.getElementById('wBar'),
+      stepLbl:document.getElementById('wStepLbl'), back:document.getElementById('wBack'), next:document.getElementById('wNext'),
+      skip:document.getElementById('wSkip'), msg:document.getElementById('wMsg')
+    };
+    var i=0, data=null;
+    function catOptions(sel){
+      return (MODEL.groups||[]).map(function(g){ return '<option value="'+esc(g.name)+'"'+(g.name===sel?' selected':'')+'>'+esc(g.icon+' '+g.name)+'</option>'; }).join('');
+    }
+    function freshData(prefill){
+      var p=STATE.prefs||{}, m=prefill?MODEL:null;
+      return {
+        lang:p.lang||'en', currency:p.currency||'DKK', country:p.country||'',
+        name:m?(m.profile.name||''):'', age:m?(m.profile.age||''):'', employer:m?(m.profile.employer||''):'',
+        incomeAvg:m&&m.income.avg?m.income.avg:'', incomeLow:m&&m.income.low?m.income.low:'', incomeHigh:m&&m.income.high?m.income.high:'',
+        loan:m&&m.loanPayment?m.loanPayment:'', save:m&&m.savingsMatch?m.savingsMatch:'',
+        expenses:m?collectExpenses(m):[]
+      };
+    }
+    var CHIPS=[ ['Rent','Housing'],['Groceries','Food'],['Phone','Subscriptions'],['Transport','Transport'],
+                ['Electricity','Housing'],['Internet','Housing'],['Streaming','Subscriptions'],['Insurance','Other'],['Gym','Other'] ];
+    function render(){
+      var s=STEPS[i];
+      el.stepLbl.textContent='Step '+(i+1)+' of '+STEPS.length;
+      el.bar.style.width=Math.round((i+1)/STEPS.length*100)+'%';
+      el.msg.textContent='';
+      el.back.style.visibility = i===0 ? 'hidden':'visible';
+      el.next.textContent = (i===STEPS.length-1) ? 'Open my dashboard' : 'Next';
+      var h='';
+      if(s==='welcome'){
+        h='<h2>Welcome 👋</h2><p class="wsub">Let’s set this up in under a minute. First, how should it read?</p>'+
+          '<label>Language</label><select id="wLang">'+langOpts(data.lang)+'</select>'+
+          '<div class="wrow"><div><label>Currency</label><select id="wCur">'+curOpts(data.currency)+'</select></div>'+
+          '<div><label>Country</label><input id="wCountry" value="'+esc(data.country)+'" placeholder="e.g. Spain"></div></div>'+
+          '<button class="chip" id="wDemo" style="margin-top:16px">👀 Just show me a filled example</button>';
+      } else if(s==='profile'){
+        h='<h2>About you</h2><p class="wsub">Just a name is enough — the rest is optional.</p>'+
+          '<label>Your name</label><input id="wName" value="'+esc(data.name)+'" placeholder="e.g. Alex">'+
+          '<div class="wrow"><div><label>Age (optional)</label><input id="wAge" type="number" min="0" max="120" value="'+esc(data.age)+'" placeholder="—"></div>'+
+          '<div><label>Work (optional)</label><input id="wEmp" value="'+esc(data.employer)+'" placeholder="Employer / self"></div></div>';
+      } else if(s==='income'){
+        h='<h2>Your income</h2><p class="wsub">Your typical <b>monthly take-home</b> (after tax). You can change it anytime.</p>'+
+          '<label>Typical monthly income</label><input id="wInc" type="number" min="0" step="1" value="'+esc(data.incomeAvg)+'" placeholder="e.g. 2500">'+
+          '<div class="wrow"><div><label>A slow month (optional)</label><input id="wIncLow" type="number" min="0" value="'+esc(data.incomeLow)+'" placeholder="lowest"></div>'+
+          '<div><label>A good month (optional)</label><input id="wIncHigh" type="number" min="0" value="'+esc(data.incomeHigh)+'" placeholder="highest"></div></div>'+
+          '<label>Monthly debt/loan payment (optional)</label><input id="wLoan" type="number" min="0" value="'+esc(data.loan)+'" placeholder="0">'+
+          '<label>Amount you want to save each month (optional)</label><input id="wSave" type="number" min="0" value="'+esc(data.save)+'" placeholder="0">';
+      } else if(s==='expenses'){
+        h='<h2>Your expenses</h2><p class="wsub">Add your regular costs. Tap a quick-add, or type your own. You can always edit later.</p>'+
+          '<div class="chips" id="wChips">'+CHIPS.map(function(c,idx){ return '<button class="chip" data-chip="'+idx+'">+ '+c[0]+'</button>'; }).join('')+'</div>'+
+          '<div class="wrow"><div style="flex:2"><label>What is it?</label><input id="wExpName" placeholder="e.g. Rent"></div>'+
+          '<div><label>Amount</label><input id="wExpCost" type="number" min="0" step="1" placeholder="0"></div></div>'+
+          '<div class="wrow"><div><label>Category</label><select id="wExpCat">'+catOptions('Housing')+'</select></div>'+
+          '<div><label>How often</label><select id="wExpFreq"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="yearly">Yearly</option></select></div></div>'+
+          '<button class="chip" id="wExpAdd" style="margin-top:10px">＋ Add this expense</button>'+
+          '<div class="wlist" id="wExpList"></div>'+
+          '<div class="wtot"><span>Monthly expenses so far</span><b id="wExpTot">'+fmt(0)+'</b></div>';
+      } else if(s==='review'){
+        var avg=Number(data.incomeAvg)||0, exp=expTotal(), loan=Number(data.loan)||0, save=Number(data.save)||0;
+        var left=avg-exp-loan;
+        h='<h2>You’re all set 🎉</h2><p class="wsub">Here’s your starting picture. Everything stays editable — and only on your device.</p>'+
+          '<div class="wsum">'+
+          '<div class="r"><span>Name</span><span class="v">'+esc(data.name||'—')+'</span></div>'+
+          '<div class="r"><span>Monthly income</span><span class="v">'+fmt(avg)+'</span></div>'+
+          '<div class="r"><span>Monthly expenses</span><span class="v">'+fmt(exp)+'</span></div>'+
+          (loan?'<div class="r"><span>Debt/loan payment</span><span class="v">'+fmt(loan)+'</span></div>':'')+
+          '<div class="r big"><span>Left over each month</span><span class="v">'+fmt(left)+'</span></div>'+
+          '</div><p class="wsub" style="margin-top:6px">Tip: press <b>💾 Save / Export</b> often to keep a backup file.</p>';
+      }
+      el.body.innerHTML=h;
+      wire(s);
+    }
+    function langOpts(sel){ return [['en','English'],['es','Español'],['da','Dansk'],['de','Deutsch'],['sv','Svenska'],['nb','Norsk']].map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+o[1]+'</option>'; }).join(''); }
+    function curOpts(sel){ return ['USD','EUR','GBP','DKK','SEK','NOK','CHF','CAD','AUD','JPY'].map(function(c){ return '<option value="'+c+'"'+(c===sel?' selected':'')+'>'+c+'</option>'; }).join(''); }
+    function expTotal(){ return data.expenses.reduce(function(s,e){ var c=Number(e.cost)||0; return s + (e.freq==='yearly'?c/12:e.freq==='quarterly'?c/3:c); },0); }
+    function renderExpList(){
+      var host=document.getElementById('wExpList'); if(!host) return;
+      host.innerHTML = data.expenses.length ? data.expenses.map(function(e,idx){
+        var m=(e.freq==='yearly'?Number(e.cost)/12:e.freq==='quarterly'?Number(e.cost)/3:Number(e.cost))||0;
+        return '<div class="wexp"><span class="nm">'+esc(e.name)+' <span style="color:var(--txt-dim);font-size:11px">'+esc(e.cat)+'</span></span>'+
+          '<span class="am">'+fmt(m)+'/mo</span><button class="x" data-x="'+idx+'" title="Remove">✕</button></div>';
+      }).join('') : '<div class="empty" style="font-size:13px">No expenses yet — add a few above (or skip and do it later).</div>';
+      var tot=document.getElementById('wExpTot'); if(tot) tot.textContent=fmt(expTotal());
+    }
+    function wire(s){
+      if(s==='welcome'){
+        var demo=document.getElementById('wDemo');
+        if(demo) demo.addEventListener('click', function(){ collect(s); loadDemoData(); hide(); setTimeout(function(){ if(!STATE.tourDone && window.TOURSTART) window.TOURSTART(); },300); });
+      }
+      if(s==='expenses'){
+        renderExpList();
+        var chips=document.getElementById('wChips');
+        if(chips) chips.addEventListener('click', function(e){ var b=e.target.closest('[data-chip]'); if(!b) return; var c=CHIPS[+b.getAttribute('data-chip')]; var nm=document.getElementById('wExpName'); var cat=document.getElementById('wExpCat'); nm.value=c[0]; if(cat){ for(var k=0;k<cat.options.length;k++){ if(cat.options[k].value.toLowerCase()===c[1].toLowerCase()){ cat.selectedIndex=k; break; } } } document.getElementById('wExpCost').focus(); });
+        var add=document.getElementById('wExpAdd');
+        if(add) add.addEventListener('click', function(){
+          var nm=(document.getElementById('wExpName').value||'').trim();
+          var cost=parseFloat(document.getElementById('wExpCost').value);
+          if(!nm || !(cost>=0) || isNaN(cost)){ el.msg.textContent='Type a name and an amount (0 or more).'; return; }
+          el.msg.textContent='';
+          data.expenses.push({ name:nm, cat:document.getElementById('wExpCat').value, cost:cost, freq:document.getElementById('wExpFreq').value });
+          document.getElementById('wExpName').value=''; document.getElementById('wExpCost').value=''; document.getElementById('wExpName').focus();
+          renderExpList();
+        });
+        var list=document.getElementById('wExpList');
+        if(list) list.addEventListener('click', function(e){ var x=e.target.closest('[data-x]'); if(x){ data.expenses.splice(+x.getAttribute('data-x'),1); renderExpList(); } });
+      }
+    }
+    function collect(s){
+      if(s==='welcome'){ data.lang=val('wLang',data.lang); data.currency=val('wCur',data.currency); data.country=val('wCountry',data.country); }
+      else if(s==='profile'){ data.name=val('wName',data.name); data.age=val('wAge',data.age); data.employer=val('wEmp',data.employer); }
+      else if(s==='income'){ data.incomeAvg=val('wInc',data.incomeAvg); data.incomeLow=val('wIncLow',data.incomeLow); data.incomeHigh=val('wIncHigh',data.incomeHigh); data.loan=val('wLoan',data.loan); data.save=val('wSave',data.save); }
+    }
+    function val(id,dflt){ var e=document.getElementById(id); return e?e.value:dflt; }
+    function validate(s){
+      if(s==='income'){ if(!(Number(data.incomeAvg)>0)){ el.msg.textContent='Please enter your typical monthly income (a number above 0).'; return false; } }
+      return true;
+    }
+    function finish(){
+      // language / currency / country
+      STATE.prefs.lang=data.lang; STATE.prefs.currency=data.currency; STATE.prefs.country=(data.country||'').trim();
+      // profile
+      MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim() };
+      // income
+      var avg=Number(data.incomeAvg)||0, low=Number(data.incomeLow)||avg, high=Number(data.incomeHigh)||avg;
+      MODEL.income={ low:low, avg:avg, high:high };
+      MODEL.loanPayment=Number(data.loan)||0; MODEL.savingsMatch=Number(data.save)||0;
+      // expenses -> fresh category groups (authoritative; avoids duplicates on re-run)
+      var base=blankModel().groups, byName={}; base.forEach(function(g){ byName[g.name.toLowerCase()]=g; });
+      data.expenses.forEach(function(e){
+        var key=(e.cat||'Other').toLowerCase(), g=byName[key];
+        if(!g){ g={id:'g'+uid(), icon:'✦', name:e.cat||'Other', items:[]}; base.push(g); byName[key]=g; }
+        g.items.push({ id:uid(), name:e.name, cost:Number(e.cost)||0, freq:e.freq||'monthly', detail:'Added in setup', custom:true });
+      });
+      MODEL.groups=base; ensureIds(MODEL);
+      STATE.fresh=false; STATE.cfg=MODEL;
+      // sync locale selects
+      var ls=document.getElementById('langSel'), cs=document.getElementById('curSel'), ci=document.getElementById('countryInp'), lk=document.getElementById('lkLangSel');
+      if(ls)ls.value=data.lang; if(lk)lk.value=data.lang; if(cs)cs.value=data.currency; if(ci)ci.value=STATE.prefs.country;
+      if(typeof applyLang==='function') applyLang(data.lang);
+      applyCleanModeClass();
+      refreshEverything();
+      logChange('onboard','Completed setup — '+data.expenses.length+' expense(s)'); autosave();
+      hide();
+      if(!STATE.tourDone && window.TOURSTART) setTimeout(window.TOURSTART, 350);
+    }
+    function show(){ el.box.classList.add('show'); }
+    function hide(){ el.box.classList.remove('show'); }
+    function go(dir){
+      var s=STEPS[i]; collect(s);
+      if(dir>0 && !validate(s)) return;
+      if(dir>0 && i===STEPS.length-1){ finish(); return; }
+      i=Math.max(0, Math.min(STEPS.length-1, i+dir)); render();
+    }
+    if(el.next) el.next.addEventListener('click', function(){ go(1); });
+    if(el.back) el.back.addEventListener('click', function(){ go(-1); });
+    if(el.skip) el.skip.addEventListener('click', function(){ collect(STEPS[i]); STATE.fresh=false; autosave(); hide(); if(!STATE.tourDone && window.TOURSTART) setTimeout(window.TOURSTART, 300); });
+    return { open:function(prefill){ data=freshData(prefill); i=0; render(); show(); } };
+  })();
+
+  /* ===================== GUIDED TOUR (plays once; replayable) ===================== */
+  var TOUR = (function(){
+    var STEPS=[
+      {sel:'#tabs', text:'<b>Your sections.</b> Swipe or scroll these tabs to move around — income, expenses, simulators, calendar and more.'},
+      {sel:'#tabs .tab[data-p="expenses"]', text:'<b>Expenses</b> is your money map. Open it to add or edit any cost — every number updates instantly.'},
+      {sel:'#chatToggle', text:'<b>Quick Update.</b> Type changes in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions”.'},
+      {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'},
+      {sel:'#langSel', text:'<b>Language & currency.</b> Switch these to whatever suits you. Your data always stays on your device.'},
+      {sel:'#tourBtn', text:'<b>All done! 🎉</b> Tap here any time to replay this tour.'}
+    ];
+    var i=0, active=false, ring=document.getElementById('tourRing'), tip=document.getElementById('tourTip');
+    function place(){
+      var s=STEPS[i], el=document.querySelector(s.sel);
+      if(!el){ if(i<STEPS.length-1){ i++; place(); return; } end(); return; }
+      try{ el.scrollIntoView({block:'center', inline:'center'}); }catch(_){ }
+      setTimeout(function(){
+        var r=el.getBoundingClientRect(), pad=8;
+        ring.style.display='block';
+        ring.style.left=(r.left-pad)+'px'; ring.style.top=(r.top-pad)+'px';
+        ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
+        tip.style.display='block';
+        document.getElementById('ttTxt').innerHTML=s.text;
+        document.getElementById('ttStep').textContent='Step '+(i+1)+' of '+STEPS.length;
+        document.getElementById('ttBack').style.visibility = i===0?'hidden':'visible';
+        document.getElementById('ttNext').textContent = i===STEPS.length-1?'Done':'Next';
+        var tr=tip.getBoundingClientRect();
+        var top=r.bottom+12; if(top+tr.height > window.innerHeight-10) top=Math.max(10, r.top-tr.height-12);
+        var left=Math.min(Math.max(10, r.left), Math.max(10, window.innerWidth-tr.width-10));
+        tip.style.top=top+'px'; tip.style.left=left+'px';
+      }, 240);
+    }
+    function start(){ if(active) return; active=true; i=0; place(); }
+    function end(){ active=false; ring.style.display='none'; tip.style.display='none'; if(!STATE.tourDone){ STATE.tourDone=true; autosave(); } }
+    function nextStep(){ if(i>=STEPS.length-1){ end(); return; } i++; place(); }
+    function prevStep(){ if(i>0){ i--; place(); } }
+    var n=document.getElementById('ttNext'), b=document.getElementById('ttBack'), sk=document.getElementById('ttSkip');
+    if(n) n.addEventListener('click', nextStep);
+    if(b) b.addEventListener('click', prevStep);
+    if(sk) sk.addEventListener('click', end);
+    window.addEventListener('resize', function(){ if(active) place(); });
+    window.addEventListener('scroll', function(){ if(active) place(); }, true);
+    return { start:start, end:end };
+  })();
+  window.TOURSTART = TOUR.start;
+
+  /* toolbar buttons + after-unlock routing */
+  (function(){
+    var tb=document.getElementById('tourBtn'); if(tb) tb.addEventListener('click', function(){ TOUR.start(); });
+    var sb=document.getElementById('setupBtn'); if(sb) sb.addEventListener('click', function(){
+      uiConfirm({ title:'⚙ Re-run setup?', message:'Reopen the setup wizard pre-filled with your current details. Finishing will <b>replace</b> your current income & expenses with what you enter. Nothing is deleted until you finish.', confirmText:'Open setup', danger:false }, function(){ WIZ.open(true); });
+    });
+  })();
+  window.__afterUnlock = function(){
+    applyCleanModeClass();
+    if(STATE.fresh && !STATE.demo){ WIZ.open(false); return; }
+    if(!STATE.tourDone){ setTimeout(function(){ TOUR.start(); }, 500); }
+  };
+
   /* ---------- INITIAL RENDER of all self-service sections ---------- */
   renderProfile();
   renderManage();
@@ -2209,6 +2687,7 @@
   renderEvents();
   renderLog();
   initLocale();       // language / currency / country — apply saved prefs + wire pickers
+  applyCleanModeClass();   // hide example-only narrative for clean/new users
   if(window.rebuildScenarios) window.rebuildScenarios();
   refreshFinance();   // ensure totals/simulators reflect any loaded user items
 </script>
