@@ -255,6 +255,17 @@
     padding:13px 20px;border-radius:12px;cursor:pointer;box-shadow:0 0 22px rgba(124,255,178,.4);transition:all .15s}
   .savebar .savebtn:hover{filter:brightness(1.08);transform:translateY(-2px)}
   .savebar .badge{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;max-width:260px;text-align:right}
+  .chattoggle{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--cyan-dim);background:var(--panel2);color:var(--cyan);padding:10px 16px;border-radius:12px;cursor:pointer;transition:all .15s}
+  .chattoggle:hover{border-color:var(--cyan);box-shadow:var(--glow);color:#eaffff}
+  .chatwidget{width:340px;max-width:calc(100vw - 36px);max-height:72vh;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 14px 44px rgba(0,0,0,.55);text-align:left}
+  .chathead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);font-family:'Orbitron';font-weight:700;font-size:13px;color:#eaffff;position:sticky;top:0;background:var(--panel2);z-index:1}
+  .chatx{background:none;border:none;color:var(--txt-dim);font-size:15px;cursor:pointer;line-height:1;padding:2px 4px}
+  .chatx:hover{color:var(--red)}
+  .chatbody{padding:14px}
+  .chathint{font-size:12px;color:var(--txt);margin-bottom:10px;line-height:1.45}
+  .chathint .dim{color:var(--txt-dim);font-family:'Share Tech Mono';font-size:10px;letter-spacing:.02em}
+  .chatbody textarea{width:100%;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:'Rajdhani';font-size:15px;padding:9px 11px;outline:none;resize:vertical;min-height:54px;margin-bottom:10px}
+  .chatbody textarea:focus{border-color:var(--cyan);box-shadow:var(--glow)}
 
   .logtable td{font-size:13px;vertical-align:top}
   .logtable .ts{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);white-space:nowrap}
@@ -298,7 +309,6 @@
     <button class="tab" data-p="gym"><span class="ix">11</span>Gym Plan</button>
     <button class="tab" data-p="calendar"><span class="ix">12</span>Calendar</button>
     <button class="tab" data-p="log"><span class="ix">13</span>Change Log</button>
-    <button class="tab" data-p="ai"><span class="ix">14</span>AI Updater</button>
   </nav>
 
   <!-- 01 OVERVIEW -->
@@ -771,45 +781,35 @@
     </div>
   </section>
 
-  <!-- 14 AI UPDATER -->
-  <section class="panel" id="ai">
-    <div class="card">
-      <h2>AI Updater</h2>
-      <div class="desc">Describe a change in plain language — "my salary is now 18,500", "add Spotify 99/mo", "rent went up to 3,800", "cancelled Patreon" — or paste a payslip/screenshot, and the assistant proposes the exact edits. <b>Nothing changes until you review and confirm.</b></div>
+  <footer>// FINANCE HUD v5 · SELF-SUFFICIENT · free offline quick-update · auto-save + export · in-file audit log · not financial advice</footer>
+</div>
 
-      <div style="background:rgba(255,181,71,.08);border:1px solid var(--amber);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--txt)">
-        ⚠ <b>For simple, single changes, the manual tabs are safer</b> — edit a price in "Manage Items", add a note in Calendar, etc. Use the AI for bulk updates or when reading off a document. Always check the proposed changes before applying; the AI can misread numbers.
-      </div>
-
-      <div class="field"><label>Anthropic API key <span style="text-transform:none;letter-spacing:0">(stored only in this browser, never exported)</span></label><input id="aiKey" type="password" placeholder="sk-ant-..."></div>
-      <div class="field"><label>Model</label><select id="aiModel">
-        <option value="claude-opus-4-8">Opus 4.8 — most capable ($5/$25 per Mtok)</option>
-        <option value="claude-sonnet-4-6">Sonnet 4.6 — balanced ($3/$15)</option>
-        <option value="claude-haiku-4-5">Haiku 4.5 — cheapest ($1/$5)</option>
-      </select></div>
-      <div class="field"><label>What changed?</label><textarea id="aiText" placeholder="e.g. New salary is 18,500 after tax on a typical month. Also add a gym membership, 299 kr/month, under a new 'Health' category."></textarea></div>
-      <div class="field"><label>Attach images (optional — payslip, bank screenshot)</label><input id="aiImages" type="file" accept="image/*" multiple></div>
-      <button class="btn" id="aiSend">Ask the assistant</button>
-      <div id="aiStatus" class="note" style="display:none"></div>
-
-      <div id="aiProposal" style="display:none;margin-top:16px;border:1px solid var(--cyan-dim);border-radius:12px;padding:16px;background:var(--panel)">
-        <div style="font-family:'Orbitron';font-weight:700;font-size:15px;color:#eaffff;margin-bottom:6px">Proposed changes</div>
-        <div id="aiSummary" style="font-size:14px;color:var(--txt);margin-bottom:10px"></div>
+<!-- Floating: quick-update chat (opens above) + save/export -->
+<div class="savebar">
+  <div class="chatwidget" id="chatWidget" style="display:none">
+    <div class="chathead">
+      <span>💬 Quick Update <span class="tag good" style="font-size:8px;padding:1px 5px">FREE · OFFLINE</span></span>
+      <button class="chatx" id="chatClose" title="Close">✕</button>
+    </div>
+    <div class="chatbody">
+      <div class="chathint">One change per line — interpreted free, in your browser. Nothing changes until you confirm.
+        <br><span class="dim">salary is now 18500 · add Gym 299/mo to Health · rent is now 3800 · cancel Patreon · note 2026-07-15 Mum's birthday · employer is now Telenor</span></div>
+      <textarea id="aiText" rows="3" placeholder="salary is now 18500&#10;add Gym 299 per month to Health&#10;cancel Patreon"></textarea>
+      <button class="btn" id="aiSend" style="width:100%">Interpret changes</button>
+      <div id="aiStatus" class="note" style="display:none;margin-top:8px"></div>
+      <div id="aiProposal" style="display:none;margin-top:12px;border:1px solid var(--cyan-dim);border-radius:10px;padding:12px;background:var(--panel2)">
+        <div style="font-family:'Orbitron';font-weight:700;font-size:13px;color:#eaffff;margin-bottom:6px">Proposed changes</div>
+        <div id="aiSummary" style="font-size:13px;color:var(--txt);margin-bottom:8px"></div>
         <div id="aiChanges"></div>
-        <div id="aiRec" class="note" style="margin-top:10px"></div>
-        <div style="display:flex;gap:10px;margin-top:14px">
-          <button class="btn" id="aiApply">✓ Apply these changes</button>
+        <div id="aiRec" class="note" style="margin-top:8px"></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" id="aiApply" style="flex:1">✓ Apply</button>
           <button class="btn ghost" id="aiCancel">Cancel</button>
         </div>
       </div>
     </div>
-  </section>
-
-  <footer>// FINANCE HUD v5.0 · SELF-SUFFICIENT + AI UPDATER · auto-save + export · in-file audit log · not financial advice</footer>
-</div>
-
-<!-- Floating save / export -->
-<div class="savebar">
+  </div>
+  <button class="chattoggle" id="chatToggle">💬 Quick Update</button>
   <div class="badge" id="saveBadge">loaded</div>
   <button class="savebtn" id="saveBtn">💾 Save / Export</button>
 </div>
@@ -1263,7 +1263,9 @@
   }
   // exposed for the AI updater + manual UI
   function addItem(name, cat, cost, freq, note){
-    var g = MODEL.groups.filter(function(x){ return x.name===cat; })[0] || MODEL.groups[MODEL.groups.length-1];
+    var g = cat ? MODEL.groups.filter(function(x){ return x.name.toLowerCase()===String(cat).toLowerCase(); })[0] : null;
+    if(!g && cat){ g = { id:'g'+uid(), icon:'•', name:cat, items:[] }; MODEL.groups.push(g); logChange('add-category', cat); populateCatSelect(); }
+    if(!g) g = MODEL.groups[MODEL.groups.length-1];
     var item = { id:uid(), name:name, detail:(note||'Added by you'), cost:Number(cost), freq:(freq||'monthly'), custom:true };
     g.items.push(item);
     logChange('add-cost', name + ' → ' + g.name + ' (' + fmtN(itemMonthly(item)) + ' kr/mo' + (freq!=='monthly'?', '+freq:'') + ')');
@@ -1541,9 +1543,9 @@
   }
 
   /* ============================================================
-     AI UPDATER — natural-language / document → reviewed edits
+     QUICK UPDATE — free, offline natural-language → reviewed edits
+     A local rule-based parser. No API, no key, no network, no cost.
      ============================================================ */
-  var KEY_STORE = 'financeHudApiKey';
   function findItemByName(q){
     q = (q||'').toLowerCase().trim(); if(!q) return null;
     for(var i=0;i<MODEL.groups.length;i++){
@@ -1578,101 +1580,153 @@
       default: return 'unknown op: '+c.op;
     }
   }
-  function snapshotForAI(){
+  /* ---------- free, offline natural-language parser ---------- */
+  function _num(s){
+    // First standalone number not glued to a preceding letter/digit (so "Norton2 349" reads 349, not 2349).
+    var m = String(s).match(/(?:^|[^A-Za-z\d.])(\d[\d.,]*\d|\d)(k)?/i);
+    if(!m) return null;
+    var raw = m[1].replace(/,/g,'').replace(/\.(?=\d{3}\b)/g,'').replace(/\.(?!\d)/g,'');
+    var v = parseFloat(raw); if(isNaN(v)) return null; if(m[2]) v *= 1000;
+    return Math.round(v);
+  }
+  function _freq(s){
+    if(/year|annual|\/\s?yr|\bp\.?a\b/i.test(s)) return 'yearly';
+    if(/quarter|\/\s?q\b/i.test(s)) return 'quarterly';
+    return 'monthly';
+  }
+  function _esc(re){ return re.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+  function _matchCategory(s){
+    s = s.toLowerCase();
+    for(var i=0;i<MODEL.groups.length;i++){
+      var full = MODEL.groups[i].name.toLowerCase();
+      var first = MODEL.groups[i].name.split(/[\s&]+/)[0].toLowerCase();
+      if(s.indexOf(full)>=0 || (first.length>=3 && new RegExp('\\b'+_esc(first)+'\\b').test(s))) return MODEL.groups[i].name;
+    }
+    return null;
+  }
+  function _matchItem(s){
+    s = s.toLowerCase(); var best=null, bestLen=0;
+    MODEL.groups.forEach(function(g){ g.items.forEach(function(it){
+      var key = it.name.toLowerCase().split(/[\s—–-]+/)[0];
+      if(key.length>=3 && new RegExp('\\b'+_esc(key)+'\\b').test(s) && key.length>bestLen){ best={g:g,it:it}; bestLen=key.length; }
+    }); });
+    return best;
+  }
+  function _cleanName(clause){
+    var s = clause.replace(/^\s*(?:add|new|include|got|signed up for)\s+/i,'');
+    s = s.replace(/\s+(?:to|under|in|into)\s+[\w&'’ ]+$/i,'');
+    s = s.replace(/\b\d[\d.,]*\b/g,' ');
+    s = s.replace(/\b(?:kr|kroner|dkk|per|month|months|monthly|mo|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of)\b/gi,' ');
+    s = s.replace(/[\/,]/g,' ').replace(/\s{2,}/g,' ').trim();
+    return s;
+  }
+  function parseClause(c){
+    c = c.trim(); if(!c) return null;
+    var low = c.toLowerCase(), m;
+    if((m = c.match(/^(?:remove|delete|drop)\s+(?:the\s+)?category\s+(.+)$/i))){
+      var nm = m[1].trim().replace(/[.\s]+$/,'');
+      return { op:'removeCategory', name:nm, description:'Remove category “'+nm+'” and its items' };
+    }
+    if((m = c.match(/^(?:add|new|create)\s+(?:a\s+)?category\s+(.+)$/i))){
+      var rest = m[1].trim(), em = rest.match(/([^\w\s].*)$/);
+      var icon = em ? em[1].trim().slice(0,2) : '•';
+      var nm2 = (em ? rest.slice(0, em.index) : rest).trim().replace(/[.\s]+$/,'');
+      return { op:'addCategory', name:nm2, icon:icon, description:'Add category “'+nm2+'” '+icon };
+    }
+    if((m = c.match(/^(?:add\s+)?note\s+(?:on\s+|for\s+)?(\d{4}-\d{2}-\d{2})[\s:,–-]+(.+)$/i))){
+      return { op:'addNote', date:m[1], text:m[2].trim(), description:'Calendar note on '+m[1]+': '+m[2].trim() };
+    }
+    if((m = c.match(/^(?:add\s+)?workout\s+(.+)$/i))){
+      var w = m[1].trim(), parts = w.split(/:/);
+      var day = parts.length>1 ? parts[0].trim() : w, body = parts.length>1 ? parts.slice(1).join(':').trim() : '';
+      return { op:'addWorkout', day:day, body:body, description:'Add workout “'+day+'”'+(body?' — '+body:'') };
+    }
+    if((m = c.match(/\b(?:employer|company)\b[^a-z0-9]*(?:is\s*)?(?:now\s+)?(.+)$/i)) || (m = c.match(/\bwork(?:s|ing)?\s+(?:at|for)\s+(.+)$/i))){
+      var emp = m[1].trim().replace(/[.\s]+$/,'');
+      return { op:'setProfile', field:'employer', value:emp, description:'Set employer → '+emp };
+    }
+    if(/\bage\b|\bi(?:'m| am)\b/.test(low)){
+      var an = (c.match(/(\d{1,3})/)||[])[1];
+      if(an && /\bage\b|\byears?\b|\bi(?:'m| am)\b/.test(low)) return { op:'setProfile', field:'age', value:an, description:'Set age → '+an };
+    }
+    if((m = c.match(/^(?:my\s+)?name\s+is\s+(.+)$/i))){ var nn=m[1].trim(); return { op:'setProfile', field:'name', value:nn, description:'Set name → '+nn }; }
+    if((m = c.match(/\b(?:i\s+(?:live|moved)\s+(?:in|to)|location\s+is|moved\s+to)\s+(.+)$/i))){ var loc=m[1].trim().replace(/[.\s]+$/,''); return { op:'setProfile', field:'location', value:loc, description:'Set location → '+loc }; }
+    if(/\bloan\b/.test(low) && /\b(?:payment|repayment|instal)/.test(low)){ var lv=_num(c); if(lv!=null) return { op:'setLoanPayment', value:lv, description:'Set loan payment → '+fmtN(lv)+' kr/mo' }; }
+    if(/\bsavings?\s+(?:match|transfer)\b|\bforced\s+(?:savings?|match)\b/.test(low) || /\bsave\b.*\bper\s+month\b/.test(low)){ var sv=_num(c); if(sv!=null) return { op:'setSavingsMatch', value:sv, description:'Set savings match → '+fmtN(sv)+' kr/mo' }; }
+    if(/\b(?:salary|income|wage|paycheck|after[\s-]?tax)\b/.test(low) || /\bi\s+(?:earn|make|get paid)\b/.test(low) || /\b(?:low|good|high|typical|average)\s+month\b/.test(low)){
+      var iv=_num(c);
+      if(iv!=null){
+        var key = /\b(?:low|bad|worst|slow|soft)\b/.test(low) ? 'low' : /\b(?:high|good|best|great|strong)\b/.test(low) ? 'high' : 'avg';
+        return { op:'setIncome', key:key, value:iv, description:'Set '+(key==='avg'?'typical':key)+' income → '+fmtN(iv)+' kr' };
+      }
+    }
+    if((m = c.match(/^(?:cancel|cancell?ed|remove|delete|stop|drop|quit|got rid of)\s+(.+)$/i))){
+      var rn = m[1].trim().replace(/\b(?:subscription|membership|my|the)\b/gi,'').replace(/[.\s]+$/,'').trim();
+      var rf = findItemByName(rn);
+      return { op:'removeItem', match:(rf?rf.it.name:rn), description:'Remove '+(rf?rf.it.name:rn)+(rf?'':' (no exact match — skipped if not found)') };
+    }
+    if(/^(?:add|new|include|got|signed up for)\b/i.test(c) && _num(c)!=null){
+      var amt=_num(c), fq=_freq(c);
+      var catPhrase=(c.match(/\s+(?:to|under|in|into)\s+([\w&'’ ]+)$/i)||[])[1];
+      var cat=_matchCategory(c) || (catPhrase?catPhrase.trim():null);
+      var name=_cleanName(c);
+      if(name) return { op:'addItem', name:name, category:cat, cost:amt, freq:fq, description:'Add '+name+' — '+fmtN(amt)+' kr/'+(fq==='yearly'?'yr':fq==='quarterly'?'q':'mo')+(cat?' to '+cat:'') };
+    }
+    var f=_matchItem(c), uv=_num(c);
+    if(f && uv!=null && /\b(?:now|to|costs?|is|=|went up|increased|raised|dropped|decreased|changed|updated)\b/.test(low)){
+      var ufq=_freq(c);
+      return { op:'updateItem', match:f.it.name, cost:uv, freq:ufq, description:'Update '+f.it.name+' → '+fmtN(uv)+' kr/'+(ufq==='yearly'?'yr':ufq==='quarterly'?'q':'mo') };
+    }
+    return null;
+  }
+  function parseInstructions(text){
+    var clauses = String(text).split(/\n|;|\s+and\s+/i).map(function(x){ return x.trim(); }).filter(Boolean);
+    var changes=[], unparsed=[];
+    clauses.forEach(function(cl){ var ch=parseClause(cl); if(ch) changes.push(ch); else unparsed.push(cl); });
+    var rec;
+    if(changes.length===1){
+      var hint = { setIncome:'income changes flow through automatically', addItem:'Manage Items', updateItem:'Manage Items', removeItem:'Manage Items', addCategory:'Manage Items', removeCategory:'Manage Items', addNote:'the Calendar tab', addWorkout:'the Gym Plan tab', setProfile:'the header' }[changes[0].op] || 'the matching tab';
+      rec = 'Single change — you could also do this manually (' + hint + '). Always double-check the number before applying.';
+    } else if(changes.length>1){
+      rec = changes.length + ' changes parsed. Review each line; for one-off edits the manual tabs are safer.';
+    } else {
+      rec = 'Nothing recognised. Use one instruction per line — e.g. “salary is now 18500” or “add Spotify 99/mo”.';
+    }
+    if(unparsed.length) rec += ' Couldn’t read: “' + unparsed.join('”, “') + '”.';
     return {
-      income: MODEL.income, loanPayment: MODEL.loanPayment, savingsMatch: MODEL.savingsMatch,
-      profile: MODEL.profile,
-      categories: MODEL.groups.map(function(g){
-        return { name:g.name, items:g.items.map(function(it){ return { name:it.name, monthly:Math.round(itemMonthly(it)), freq:(it.freq||'monthly') }; }) };
-      })
+      summary: changes.length ? ('Parsed ' + changes.length + ' change' + (changes.length>1?'s':'') + ' from your text.') : 'No changes recognised.',
+      recommendation: rec, changes: changes, unparsed: unparsed
     };
   }
-  var AI_TOOL = {
-    name:'propose_updates',
-    description:'Propose a reviewed set of edits to the user’s finance app. The user confirms before anything is applied.',
-    input_schema:{
-      type:'object',
-      additionalProperties:false,
-      properties:{
-        summary:{ type:'string', description:'One or two sentences describing what you are about to change.' },
-        recommendation:{ type:'string', description:'Your honest recommendation. If the request is a single simple change, gently recommend doing it manually in the relevant tab instead, and say which tab.' },
-        changes:{ type:'array', description:'The list of edits. Empty if nothing actionable.', items:{
-          type:'object', additionalProperties:false,
-          properties:{
-            op:{ type:'string', enum:['setIncome','setLoanPayment','setSavingsMatch','addItem','updateItem','removeItem','addCategory','removeCategory','addNote','addWorkout','setProfile'] },
-            description:{ type:'string', description:'Plain-language description of this one change for the user to review.' },
-            key:{ type:'string', enum:['low','avg','high'] }, value:{ type:'number' },
-            name:{ type:'string' }, match:{ type:'string', description:'Existing item/category name to match for update/remove.' },
-            category:{ type:'string' }, cost:{ type:'number' }, freq:{ type:'string', enum:['monthly','quarterly','yearly'] }, note:{ type:'string' }, icon:{ type:'string' },
-            date:{ type:'string', description:'YYYY-MM-DD' }, text:{ type:'string' },
-            day:{ type:'string' }, title:{ type:'string' }, body:{ type:'string' },
-            field:{ type:'string', enum:['age','employer','name','location'] }
-          },
-          required:['op','description']
-        } }
-      },
-      required:['summary','recommendation','changes']
-    }
-  };
-  function readFileAsBase64(file){
-    return new Promise(function(resolve,reject){
-      var r = new FileReader();
-      r.onload = function(){ var d = String(r.result); resolve(d.slice(d.indexOf(',')+1)); };
-      r.onerror = reject; r.readAsDataURL(file);
-    });
-  }
-  var aiProposal = null;
-  (function initAI(){
-    var keyEl = document.getElementById('aiKey'); if(!keyEl) return;
-    try{ var saved = localStorage.getItem(KEY_STORE); if(saved) keyEl.value = saved; }catch(_){}
-    keyEl.addEventListener('change', function(){ try{ localStorage.setItem(KEY_STORE, keyEl.value.trim()); }catch(_){} });
 
+  var aiProposal = null;
+  (function initQuickUpdate(){
+    var sendBtn = document.getElementById('aiSend'); if(!sendBtn) return;
     var statusEl = document.getElementById('aiStatus');
     function status(msg, color){ statusEl.style.display='block'; statusEl.style.color=color||'var(--txt-dim)'; statusEl.textContent=msg; }
-
-    document.getElementById('aiSend').addEventListener('click', async function(){
-      var key = (keyEl.value||'').trim();
+    // open / close the floating chat widget
+    var toggle = document.getElementById('chatToggle'), widget = document.getElementById('chatWidget'), closeB = document.getElementById('chatClose');
+    function setOpen(open){ if(!widget) return; widget.style.display = open ? 'block' : 'none'; if(toggle) toggle.textContent = open ? '▾ Quick Update' : '💬 Quick Update'; if(open) document.getElementById('aiText').focus(); }
+    if(toggle) toggle.addEventListener('click', function(){ setOpen(widget.style.display === 'none'); });
+    if(closeB) closeB.addEventListener('click', function(){ setOpen(false); });
+    sendBtn.addEventListener('click', function(){
       var text = (document.getElementById('aiText').value||'').trim();
-      var model = document.getElementById('aiModel').value;
-      var files = document.getElementById('aiImages').files;
-      if(!key){ status('Enter your Anthropic API key first.', 'var(--red)'); return; }
-      if(!text && !files.length){ status('Describe a change or attach an image.', 'var(--red)'); return; }
       document.getElementById('aiProposal').style.display='none';
-      status('Thinking…');
-      try{ try{ localStorage.setItem(KEY_STORE, key); }catch(_){}
-        var content = [];
-        for(var i=0;i<files.length;i++){
-          var b64 = await readFileAsBase64(files[i]);
-          content.push({ type:'image', source:{ type:'base64', media_type:(files[i].type||'image/png'), data:b64 } });
-        }
-        content.push({ type:'text', text:
-          'Here is my current finance data (amounts are monthly kr unless freq says otherwise):\n' +
-          JSON.stringify(snapshotForAI()) +
-          '\n\nMy request: ' + (text || '(see attached image — extract the relevant updated numbers)') });
-        var sys = 'You are the update assistant inside a personal finance web app. Translate the user’s request (and any attached payslip/screenshot) into a precise list of edits using the propose_updates tool. Rules: only propose changes the user clearly asked for or that are unambiguous from a document; never invent numbers; match existing items/categories by their exact names from the snapshot when updating or removing; use op setIncome with key avg for a normal/typical monthly salary; amounts are after-tax kr. In your recommendation field, if the whole request is a single simple change, recommend the user make it manually in the matching tab (Manage Items for prices, Calendar for notes, Gym for workouts) to avoid mistakes — but still propose it. Be concise.';
-        var resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method:'POST',
-          headers:{ 'content-type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
-          body: JSON.stringify({ model:model, max_tokens:1500, system:sys, tools:[AI_TOOL], tool_choice:{ type:'tool', name:'propose_updates' }, messages:[{ role:'user', content:content }] })
-        });
-        if(!resp.ok){ var errt = await resp.text(); status('API error '+resp.status+': '+errt.slice(0,300), 'var(--red)'); return; }
-        var data = await resp.json();
-        var tool = (data.content||[]).filter(function(b){ return b.type==='tool_use'; })[0];
-        if(!tool){ status('No structured response returned. Try rephrasing.', 'var(--amber)'); return; }
-        showProposal(tool.input);
-        status('Review the proposed changes below.', 'var(--lime)');
-      }catch(e){ status('Request failed: '+(e && e.message ? e.message : e)+' (a browser CORS block or bad key are the usual causes).', 'var(--red)'); }
+      if(!text){ status('Type at least one instruction.', 'var(--red)'); return; }
+      var p = parseInstructions(text);
+      showProposal(p);
+      if(p.changes.length) status('Review the proposed changes below, then Apply.', 'var(--lime)');
+      else status(p.recommendation, 'var(--amber)');
     });
-
     document.getElementById('aiCancel').addEventListener('click', function(){ aiProposal=null; document.getElementById('aiProposal').style.display='none'; });
     document.getElementById('aiApply').addEventListener('click', function(){
-      if(!aiProposal || !aiProposal.changes) return;
+      if(!aiProposal || !aiProposal.changes || !aiProposal.changes.length) return;
       var results = aiProposal.changes.map(function(c){ return applyChange(c); });
-      logChange('ai-apply', (aiProposal.summary||'AI update') + ' [' + results.join('; ') + ']');
+      logChange('quick-update', (aiProposal.summary||'update') + ' [' + results.join('; ') + ']');
       autosave(); refreshFinance(); renderManage(); renderProfile();
       document.getElementById('aiProposal').style.display='none'; aiProposal=null;
-      status('✓ Applied. Monthly total is now '+fmtN(GRAND)+' kr. Don’t forget to Save / Export.', 'var(--lime)');
-      document.getElementById('aiText').value=''; document.getElementById('aiImages').value='';
+      status('✓ Applied. Monthly total is now ' + fmtN(GRAND) + ' kr. Don’t forget to Save / Export to keep it.', 'var(--lime)');
+      document.getElementById('aiText').value='';
     });
   })();
   function showProposal(p){
