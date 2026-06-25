@@ -297,6 +297,83 @@
   .localebar select,.localebar input{background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:'Share Tech Mono';font-size:12px;padding:6px 9px;outline:none;max-width:180px}
   .localebar select:focus,.localebar input:focus{border-color:var(--cyan);box-shadow:var(--glow)}
   .localebar .globe{color:var(--cyan);font-size:14px}
+
+  /* ===================== RESPONSIVE / DEVICE-ADAPTIVE =====================
+     Lay out comfortably from wide desktop down to a 320px phone; nothing
+     should feel crowded. Existing breakpoints (.row2/.status @720,
+     .form-row @560) are kept and extended below. */
+
+  /* tablet and below: trim the generous desktop padding */
+  @media(max-width:900px){
+    .wrap{padding:20px 14px 96px}
+    header.hud{padding:16px 16px}
+    .card{padding:18px 16px}
+    .status{gap:10px}
+  }
+
+  /* phone: the big layout shift */
+  @media(max-width:620px){
+    .wrap{padding:16px 11px 104px}
+    .eyebrow{letter-spacing:.22em;font-size:10px}
+    .sub{font-size:13px}
+    .pillbar{gap:6px}
+    .pill{font-size:10px;padding:4px 8px}
+
+    /* tab bar becomes ONE swipeable strip instead of a tall wrapped block */
+    nav.tabs{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;gap:8px;
+      margin:16px -11px 14px;padding:2px 11px 10px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+    nav.tabs::-webkit-scrollbar{height:4px}
+    nav.tabs::-webkit-scrollbar-thumb{background:var(--cyan-dim);border-radius:4px}
+    .tab{flex:0 0 auto;scroll-snap-align:start;padding:9px 13px;font-size:13px}
+    .tab:hover{transform:none}
+
+    .card{padding:15px 13px;border-radius:12px}
+    .card h2{font-size:16px}
+    table{font-size:13.5px}
+    th,td{padding:8px 5px}
+
+    /* language / currency / country controls fill the row tidily, no overlap */
+    .localebar{justify-content:flex-start;gap:8px 10px}
+    .localebar .lc{flex:1 1 130px}
+    .localebar select,.localebar input{flex:1;max-width:none;min-width:0;width:100%}
+
+    /* calendar becomes a clean date-picker: day + dot only, details show
+       in the panel below on tap — no cramped event text inside tiny cells */
+    .cal-nav .lbl{font-size:15px;min-width:0;flex:1}
+    .cal-nav button{width:34px;height:34px}
+    .cal-grid{gap:4px}
+    .cal-cell{min-height:44px;padding:3px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .cal-cell .dnum{font-size:13px}
+    .cal-cell .ev,.cal-cell .more{display:none}            /* hide in-cell text on phone */
+    .cal-cell .cal-dot{position:static;top:auto;right:auto;margin-top:4px}
+    .cal-dow{font-size:9px;padding:3px 0}
+
+    /* floating controls span the width cleanly instead of cramming a corner */
+    .savebar{right:11px;left:11px;bottom:11px;align-items:stretch}
+    .savebar .badge{max-width:none;text-align:center}
+    .savebar .savebtn,.chattoggle{width:100%;text-align:center}
+    .chatwidget{width:100%;max-width:none;max-height:64vh}
+
+    .subtotal{grid-template-columns:1fr}
+  }
+
+  /* small phone */
+  @media(max-width:400px){
+    h1{font-size:26px}
+    .tab{font-size:12px;padding:8px 11px}
+    .card{padding:13px 11px}
+    .stat{padding:12px 12px}
+    .lockcard{padding:24px 18px}
+  }
+
+  /* inline 3-up grids (milestones) step down gracefully */
+  @media(max-width:480px){ #milestones{grid-template-columns:1fr 1fr !important} }
+  @media(max-width:330px){ #milestones{grid-template-columns:1fr !important} }
+
+  /* respect users who prefer less motion — calmer, less busy UI */
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none !important;transition:none !important}
+  }
 </style>
 </head>
 <body>
