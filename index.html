@@ -268,10 +268,10 @@
   <header class="hud">
     <div class="eyebrow">// Personal Finance Command Center</div>
     <h1>FINANCE HUD</h1>
-    <div class="sub">Operator: Osefe Miradi · Aarhus, DK · Status: ACTIVE</div>
+    <div class="sub" id="hdrSub">Operator: Osefe Miradi · Aarhus, DK · Status: ACTIVE</div>
     <div class="pillbar">
-      <span class="pill">AGE <b>20</b></span>
-      <span class="pill">EMPLOYER <b>One Call ApS</b></span>
+      <span class="pill">AGE <b id="hdrAge">20</b></span>
+      <span class="pill">EMPLOYER <b id="hdrEmployer">One Call ApS</b></span>
       <span class="pill">CREDIT <b>CLEAN · NO RKI</b></span>
       <span class="pill">LOAN <b>SECURED</b></span>
     </div>
@@ -298,6 +298,7 @@
     <button class="tab" data-p="gym"><span class="ix">11</span>Gym Plan</button>
     <button class="tab" data-p="calendar"><span class="ix">12</span>Calendar</button>
     <button class="tab" data-p="log"><span class="ix">13</span>Change Log</button>
+    <button class="tab" data-p="ai"><span class="ix">14</span>AI Updater</button>
   </nav>
 
   <!-- 01 OVERVIEW -->
@@ -513,7 +514,7 @@
       </div>
       <div class="form-row">
         <div class="field"><label>Cost (kr)</label><input id="addCost" type="number" min="0" step="1" placeholder="99"></div>
-        <div class="field"><label>Billing</label><select id="addFreq"><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
+        <div class="field"><label>Billing</label><select id="addFreq"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="yearly">Yearly</option></select></div>
       </div>
       <div class="field"><label>Note (optional)</label><input id="addNote" placeholder="What it's for / why you keep it"></div>
       <button class="btn" id="addBtn">+ Add to my finances</button>
@@ -521,9 +522,14 @@
     </div>
 
     <div class="card">
-      <h2>Items You've Added</h2>
-      <div class="desc">Your own additions on top of the verified base model. Delete any to remove it from every calculation.</div>
-      <div id="customList"><div class="empty">Nothing added yet — use the form above.</div></div>
+      <h2>Manage Items &amp; Categories</h2>
+      <div class="desc">Every cost in your model, grouped by category. <b>Edit a price</b> or <b>delete</b> any item — base or added — and your live numbers recompute instantly. Add or remove whole categories at the bottom.</div>
+      <div id="customList"></div>
+      <div class="form-row" style="margin-top:14px">
+        <div class="field"><label>New category name</label><input id="newCatName" placeholder="e.g. Pets"></div>
+        <div class="field"><label>Icon (emoji)</label><input id="newCatIcon" placeholder="🐾" maxlength="2"></div>
+      </div>
+      <button class="btn ghost" id="addCatBtn">+ Add category</button>
     </div>
 
     <div class="card">
@@ -765,7 +771,41 @@
     </div>
   </section>
 
-  <footer>// FINANCE HUD v4.0 · SELF-SUFFICIENT BUILD · auto-save + export · in-file audit log · not financial advice</footer>
+  <!-- 14 AI UPDATER -->
+  <section class="panel" id="ai">
+    <div class="card">
+      <h2>AI Updater</h2>
+      <div class="desc">Describe a change in plain language — "my salary is now 18,500", "add Spotify 99/mo", "rent went up to 3,800", "cancelled Patreon" — or paste a payslip/screenshot, and the assistant proposes the exact edits. <b>Nothing changes until you review and confirm.</b></div>
+
+      <div style="background:rgba(255,181,71,.08);border:1px solid var(--amber);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--txt)">
+        ⚠ <b>For simple, single changes, the manual tabs are safer</b> — edit a price in "Manage Items", add a note in Calendar, etc. Use the AI for bulk updates or when reading off a document. Always check the proposed changes before applying; the AI can misread numbers.
+      </div>
+
+      <div class="field"><label>Anthropic API key <span style="text-transform:none;letter-spacing:0">(stored only in this browser, never exported)</span></label><input id="aiKey" type="password" placeholder="sk-ant-..."></div>
+      <div class="field"><label>Model</label><select id="aiModel">
+        <option value="claude-opus-4-8">Opus 4.8 — most capable ($5/$25 per Mtok)</option>
+        <option value="claude-sonnet-4-6">Sonnet 4.6 — balanced ($3/$15)</option>
+        <option value="claude-haiku-4-5">Haiku 4.5 — cheapest ($1/$5)</option>
+      </select></div>
+      <div class="field"><label>What changed?</label><textarea id="aiText" placeholder="e.g. New salary is 18,500 after tax on a typical month. Also add a gym membership, 299 kr/month, under a new 'Health' category."></textarea></div>
+      <div class="field"><label>Attach images (optional — payslip, bank screenshot)</label><input id="aiImages" type="file" accept="image/*" multiple></div>
+      <button class="btn" id="aiSend">Ask the assistant</button>
+      <div id="aiStatus" class="note" style="display:none"></div>
+
+      <div id="aiProposal" style="display:none;margin-top:16px;border:1px solid var(--cyan-dim);border-radius:12px;padding:16px;background:var(--panel)">
+        <div style="font-family:'Orbitron';font-weight:700;font-size:15px;color:#eaffff;margin-bottom:6px">Proposed changes</div>
+        <div id="aiSummary" style="font-size:14px;color:var(--txt);margin-bottom:10px"></div>
+        <div id="aiChanges"></div>
+        <div id="aiRec" class="note" style="margin-top:10px"></div>
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <button class="btn" id="aiApply">✓ Apply these changes</button>
+          <button class="btn ghost" id="aiCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>// FINANCE HUD v5.0 · SELF-SUFFICIENT + AI UPDATER · auto-save + export · in-file audit log · not financial advice</footer>
 </div>
 
 <!-- Floating save / export -->
@@ -785,7 +825,7 @@
      projection, the overview headline, and the Klarna surplus all update
      together — they can never drift out of sync again.
      ========================================================================= */
-  var MODEL = {
+  var DEFAULT_MODEL = {
     income:       { low: 14407, avg: 17000, high: 25778 },  // after-tax, "avg" = typical month
     loanPayment:  1364,
     savingsMatch: 1364,   // forced monthly transfer (equals the loan payment)
@@ -834,7 +874,7 @@
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:1, savedAt:null, customItems:[], workouts:[], calendar:{}, log:[] };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[] };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -864,17 +904,43 @@
     if(typeof renderLog==='function') renderLog();
   }
 
-  /* ---------- expense model incl. user-added items ---------- */
-  function customForCategory(cat){
-    return STATE.customItems.filter(function(c){ return c.category===cat; }).map(function(c){
-      var monthly = c.freq==='yearly' ? Number(c.cost)/12 : Number(c.cost);
-      var det = (c.note ? c.note : 'Added by you')
-              + (c.freq==='yearly' ? ' · billed yearly ' + fmtN(c.cost) + ' kr ≈ ' + fmtN(monthly) + '/mo' : '');
-      return { name:c.name, detail:det, amt:monthly, custom:true, id:c.id };
+  /* ---------- adopt MODEL as the persisted, mutable config ---------- */
+  var MODEL;
+  function ensureIds(m){
+    (m.groups||[]).forEach(function(g, gi){
+      if(!g.id) g.id = 'g' + gi + Math.random().toString(36).slice(2,5);
+      (g.items||[]).forEach(function(it){ if(!it.id) it.id = uid(); });
     });
   }
-  function mergedItems(g){ return g.items.concat(customForCategory(g.name)); }
-  function groupTotal(g){ return mergedItems(g).reduce(function(s,it){ return s + (it.varies ? 0 : Math.round(it.amt)); }, 0); }
+  (function adoptModel(){
+    if(STATE.cfg){
+      MODEL = STATE.cfg;
+    } else {
+      MODEL = DEFAULT_MODEL;
+      // migrate legacy customItems (older exports stored them separately)
+      (STATE.customItems || []).forEach(function(c){
+        var g = MODEL.groups.filter(function(x){ return x.name === c.category; })[0] || MODEL.groups[MODEL.groups.length-1];
+        g.items.push({ id: c.id || uid(), name: c.name, detail: c.note || 'Added by you', cost: Number(c.cost), freq: c.freq || 'monthly', custom: true });
+      });
+      STATE.cfg = MODEL;
+    }
+    delete STATE.customItems;
+    if(!MODEL.profile) MODEL.profile = { age:'20', employer:'One Call ApS', name:'Osefe Miradi', location:'Aarhus, DK' };
+    ensureIds(MODEL);
+  })();
+
+  /* ---------- expense model ---------- */
+  // Effective monthly cost of an item. Items may carry {amt} (monthly, from the
+  // base model) and/or {cost,freq} (from edits/additions); cost+freq wins.
+  function itemMonthly(it){
+    if(it.varies) return 0;
+    if(it.cost != null){
+      var c = Number(it.cost) || 0;
+      return it.freq==='yearly' ? c/12 : it.freq==='quarterly' ? c/3 : c;
+    }
+    return Number(it.amt) || 0;
+  }
+  function groupTotal(g){ return g.items.reduce(function(s,it){ return s + (it.varies ? 0 : Math.round(itemMonthly(it))); }, 0); }
   var GRAND = 0;
   function recomputeGrand(){ GRAND = MODEL.groups.reduce(function(s,g){ return s + groupTotal(g); }, 0); return GRAND; }
   recomputeGrand();
@@ -905,11 +971,13 @@
     var firstRender = host.children.length === 0;
     var html = '';
     MODEL.groups.forEach(function(g, gi){
-      var rows = mergedItems(g).map(function(it){
-        var val = it.varies ? '~varies' : '~' + fmtN(it.amt);
+      var rows = g.items.map(function(it){
+        var val = it.varies ? '~varies' : '~' + fmtN(itemMonthly(it));
         var badge = it.custom ? ' <span class="tag now" style="font-size:8px;padding:1px 5px">ADDED</span>' : '';
+        var freqNote = (it.cost!=null && it.freq && it.freq!=='monthly')
+          ? ' <span class="sub-detail">(' + fmtN(it.cost) + ' kr/' + (it.freq==='yearly'?'yr':'q') + ')</span>' : '';
         return '<tr><td>' + esc(it.name) + badge + ' <div class="sub-detail">' + esc(it.detail) + '</div></td>' +
-               '<td class="num">' + val + '</td></tr>';
+               '<td class="num">' + val + freqNote + '</td></tr>';
       }).join('');
       var isOpen = firstRender ? (gi===0) : !!openNames[(g.icon + ' ' + g.name)];
       html += '<div class="exp-group' + (isOpen ? ' open' : '') + '">' +
@@ -970,6 +1038,11 @@
     low:  { label:'Low',     color:'#ffb547', income: MODEL.income.low },
     avg:  { label:'Typical', color:'#00e5ff', income: MODEL.income.avg },
     high: { label:'Good',    color:'#7CFFB2', income: MODEL.income.high }
+  };
+  window.rebuildScenarios = function(){
+    scenarios.low.income = MODEL.income.low;
+    scenarios.avg.income = MODEL.income.avg;
+    scenarios.high.income = MODEL.income.high;
   };
 
   // Monthly amount banked: forced match + a share of that scenario's comfort money.
@@ -1168,16 +1241,63 @@
   var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-  /* ---------- ADD SUBSCRIPTION / COST ---------- */
-  (function initSubsForm(){
-    var sel = document.getElementById('addCat');
-    if(sel){
-      MODEL.groups.forEach(function(g){
-        var o = document.createElement('option'); o.value = g.name; o.textContent = g.icon + ' ' + g.name;
-        if(g.name.indexOf('Subscriptions') === 0) o.selected = true;
-        sel.appendChild(o);
-      });
+  /* ---------- ADD / EDIT / DELETE ITEMS & CATEGORIES ---------- */
+  var editId = null;
+  function populateCatSelect(){
+    var sel = document.getElementById('addCat'); if(!sel) return;
+    var cur = sel.value;
+    sel.innerHTML = MODEL.groups.map(function(g){
+      return '<option value="' + esc(g.name) + '">' + esc(g.icon + ' ' + g.name) + '</option>';
+    }).join('');
+    if(cur) sel.value = cur; else {
+      var subs = MODEL.groups.filter(function(g){ return g.name.indexOf('Subscriptions')===0; })[0];
+      if(subs) sel.value = subs.name;
     }
+  }
+  function findItem(id){
+    for(var i=0;i<MODEL.groups.length;i++){
+      var it = MODEL.groups[i].items.filter(function(x){ return x.id===id; })[0];
+      if(it) return { g:MODEL.groups[i], it:it };
+    }
+    return null;
+  }
+  // exposed for the AI updater + manual UI
+  function addItem(name, cat, cost, freq, note){
+    var g = MODEL.groups.filter(function(x){ return x.name===cat; })[0] || MODEL.groups[MODEL.groups.length-1];
+    var item = { id:uid(), name:name, detail:(note||'Added by you'), cost:Number(cost), freq:(freq||'monthly'), custom:true };
+    g.items.push(item);
+    logChange('add-cost', name + ' → ' + g.name + ' (' + fmtN(itemMonthly(item)) + ' kr/mo' + (freq!=='monthly'?', '+freq:'') + ')');
+    refreshFinance(); renderManage(); return item;
+  }
+  function updateItemPrice(id, cost, freq){
+    var f = findItem(id); if(!f) return;
+    f.it.cost = Number(cost); if(freq) f.it.freq = freq;
+    logChange('update-cost', f.it.name + ' → ' + fmtN(itemMonthly(f.it)) + ' kr/mo');
+    refreshFinance(); renderManage();
+  }
+  function removeItem(id){
+    var f = findItem(id); if(!f) return;
+    f.g.items = f.g.items.filter(function(x){ return x.id!==id; });
+    logChange('remove-cost', f.it.name + ' (' + f.g.name + ')');
+    refreshFinance(); renderManage();
+  }
+  function addCategory(name, icon){
+    name = (name||'').trim(); if(!name) return null;
+    if(MODEL.groups.some(function(g){ return g.name.toLowerCase()===name.toLowerCase(); })) return null;
+    var g = { id:'g'+uid(), icon:(icon||'•'), name:name, items:[] };
+    MODEL.groups.push(g);
+    logChange('add-category', name);
+    populateCatSelect(); refreshFinance(); renderManage(); return g;
+  }
+  function removeCategory(name){
+    var g = MODEL.groups.filter(function(x){ return x.name===name; })[0]; if(!g) return;
+    MODEL.groups = MODEL.groups.filter(function(x){ return x.name!==name; });
+    logChange('remove-category', name + ' (' + g.items.length + ' items)');
+    populateCatSelect(); refreshFinance(); renderManage();
+  }
+
+  (function initSubsForm(){
+    populateCatSelect();
     var btn = document.getElementById('addBtn');
     if(btn) btn.addEventListener('click', function(){
       var name = (document.getElementById('addName').value||'').trim();
@@ -1190,38 +1310,87 @@
         msg.style.display='block'; msg.style.color='var(--red)';
         msg.textContent='Enter a name and a valid cost (0 or more).'; return;
       }
-      var item = { id:uid(), category:cat, name:name, cost:cost, freq:freq, note:note };
-      STATE.customItems.push(item);
-      var monthly = freq==='yearly' ? cost/12 : cost;
-      logChange('add-cost', name + ' → ' + cat + ' (' + fmtN(monthly) + ' kr/mo' + (freq==='yearly'?', billed yearly':'') + ')');
-      refreshFinance(); renderCustomList();
+      addItem(name, cat, cost, freq, note);
       document.getElementById('addName').value=''; document.getElementById('addCost').value=''; document.getElementById('addNote').value='';
       msg.style.display='block'; msg.style.color='var(--lime)';
       msg.textContent='Added "'+name+'". Monthly total is now '+fmtN(GRAND)+' kr — all simulators updated.';
     });
+    var addCatBtn = document.getElementById('addCatBtn');
+    if(addCatBtn) addCatBtn.addEventListener('click', function(){
+      var n = document.getElementById('newCatName').value, ic = document.getElementById('newCatIcon').value;
+      if(addCategory(n, ic)){ document.getElementById('newCatName').value=''; document.getElementById('newCatIcon').value=''; }
+    });
     var list = document.getElementById('customList');
     if(list) list.addEventListener('click', function(e){
-      var d = e.target.closest('[data-del]'); if(d) removeCustom(d.getAttribute('data-del'));
+      var t = e.target;
+      var del = t.closest('[data-del]');     if(del){ removeItem(del.getAttribute('data-del')); return; }
+      var ed  = t.closest('[data-edit]');    if(ed){ editId = ed.getAttribute('data-edit'); renderManage(); return; }
+      var ca  = t.closest('[data-cancel]');  if(ca){ editId = null; renderManage(); return; }
+      var dc  = t.closest('[data-delcat]');  if(dc){ if(confirm('Remove category "'+dc.getAttribute('data-delcat')+'" and all its items?')) removeCategory(dc.getAttribute('data-delcat')); return; }
+      var sv  = t.closest('[data-save]');
+      if(sv){
+        var id = sv.getAttribute('data-save');
+        var costEl = list.querySelector('[data-cost="'+id+'"]'), freqEl = list.querySelector('[data-freq="'+id+'"]');
+        var c = parseFloat(costEl.value);
+        if(!(c>=0) || isNaN(c)){ costEl.style.borderColor='var(--red)'; return; }
+        editId = null; updateItemPrice(id, c, freqEl.value);
+      }
     });
   })();
 
-  function removeCustom(id){
-    var it = STATE.customItems.filter(function(c){ return c.id===id; })[0];
-    STATE.customItems = STATE.customItems.filter(function(c){ return c.id!==id; });
-    if(it) logChange('remove-cost', it.name + ' (' + it.category + ')');
-    refreshFinance(); renderCustomList();
-  }
-  function renderCustomList(){
+  function renderManage(){
     var host = document.getElementById('customList'); if(!host) return;
-    if(!STATE.customItems.length){ host.innerHTML = '<div class="empty">Nothing added yet — use the form above.</div>'; return; }
-    host.innerHTML = STATE.customItems.map(function(c){
-      var monthly = c.freq==='yearly' ? Number(c.cost)/12 : Number(c.cost);
-      return '<div class="item-row"><div class="meta">' + esc(c.name) +
-        '<small>' + esc(c.category) + ' · ' + (c.freq==='yearly' ? fmtN(c.cost)+' kr/yr ≈ ' : '') + fmtN(monthly) + ' kr/mo' +
-        (c.note ? ' · ' + esc(c.note) : '') + '</small></div>' +
-        '<button class="btn danger" data-del="' + c.id + '">Delete</button></div>';
+    host.innerHTML = MODEL.groups.map(function(g){
+      var head = '<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px">' +
+        '<b style="font-family:\'Orbitron\';font-size:14px;color:#eaffff">' + esc(g.icon + ' ' + g.name) + '</b>' +
+        '<button class="btn danger" data-delcat="' + esc(g.name) + '" style="padding:3px 8px;font-size:11px">✕ category</button></div>';
+      var rows = g.items.length ? g.items.map(function(it){
+        if(it.id === editId){
+          return '<div class="item-row"><div class="meta" style="flex:1">' + esc(it.name) +
+            '<div style="display:flex;gap:8px;margin-top:6px">' +
+            '<input data-cost="' + it.id + '" type="number" min="0" step="1" value="' + (it.cost!=null?it.cost:Math.round(itemMonthly(it))) + '" style="max-width:120px;background:#08111e;border:1px solid var(--cyan);border-radius:6px;color:var(--txt);padding:6px 8px;font-family:Rajdhani">' +
+            '<select data-freq="' + it.id + '" style="background:#08111e;border:1px solid var(--line);border-radius:6px;color:var(--txt);padding:6px">' +
+            ['monthly','quarterly','yearly'].map(function(f){ return '<option value="'+f+'"'+((it.freq||'monthly')===f?' selected':'')+'>'+f+'</option>'; }).join('') +
+            '</select></div></div>' +
+            '<div style="display:flex;flex-direction:column;gap:6px">' +
+            '<button class="btn" data-save="' + it.id + '" style="padding:5px 10px;font-size:12px">Save</button>' +
+            '<button class="btn ghost" data-cancel="1" style="padding:5px 10px;font-size:12px">Cancel</button></div></div>';
+        }
+        var sub = it.varies ? 'varies (not counted)' :
+          (it.cost!=null && it.freq && it.freq!=='monthly' ? fmtN(it.cost)+' kr/'+(it.freq==='yearly'?'yr':'q')+' ≈ ' : '') + fmtN(itemMonthly(it)) + ' kr/mo';
+        return '<div class="item-row"><div class="meta">' + esc(it.name) + (it.custom?' <span class="tag now" style="font-size:8px">ADDED</span>':'') +
+          '<small>' + sub + '</small></div><div style="display:flex;gap:6px">' +
+          (it.varies ? '' : '<button class="btn ghost" data-edit="' + it.id + '" style="padding:5px 10px;font-size:12px">Edit</button>') +
+          '<button class="btn danger" data-del="' + it.id + '">Delete</button></div></div>';
+      }).join('') : '<div class="empty">No items in this category.</div>';
+      return head + rows;
     }).join('');
   }
+  function renderCustomList(){ renderManage(); }   // back-compat alias for initial render
+
+  /* ---------- profile + core-number setters (shared by manual + AI) ---------- */
+  function renderProfile(){
+    var p = MODEL.profile || {};
+    var a = document.getElementById('hdrAge'); if(a && p.age) a.textContent = p.age;
+    var e = document.getElementById('hdrEmployer'); if(e && p.employer) e.textContent = p.employer;
+    var s = document.getElementById('hdrSub');
+    if(s) s.textContent = 'Operator: ' + (p.name||'') + ' · ' + (p.location||'') + ' · Status: ACTIVE';
+  }
+  function setProfile(field, value){
+    if(!MODEL.profile) MODEL.profile = {};
+    MODEL.profile[field] = value;
+    logChange('set-profile', field + ' → ' + value);
+    renderProfile();
+  }
+  function setIncome(key, value){
+    if(['low','avg','high'].indexOf(key) < 0) return;
+    MODEL.income[key] = Number(value);
+    logChange('set-income', key + ' → ' + fmtN(value) + ' kr');
+    if(window.rebuildScenarios) window.rebuildScenarios();
+    refreshFinance();
+  }
+  function setLoanPayment(value){ MODEL.loanPayment = Number(value); logChange('set-loan-payment', fmtN(value)+' kr/mo'); refreshFinance(); }
+  function setSavingsMatch(value){ MODEL.savingsMatch = Number(value); logChange('set-savings-match', fmtN(value)+' kr/mo'); refreshFinance(); }
 
   /* ---------- GYM / WORKOUTS ---------- */
   (function initGym(){
@@ -1371,6 +1540,155 @@
     }).join('') : '<tr><td class="empty" colspan="3">No changes recorded yet.</td></tr>';
   }
 
+  /* ============================================================
+     AI UPDATER — natural-language / document → reviewed edits
+     ============================================================ */
+  var KEY_STORE = 'financeHudApiKey';
+  function findItemByName(q){
+    q = (q||'').toLowerCase().trim(); if(!q) return null;
+    for(var i=0;i<MODEL.groups.length;i++){
+      var its = MODEL.groups[i].items;
+      for(var j=0;j<its.length;j++){
+        var n = (its[j].name||'').toLowerCase();
+        if(n===q || n.indexOf(q)>=0 || q.indexOf(n)>=0) return { g:MODEL.groups[i], it:its[j] };
+      }
+    }
+    return null;
+  }
+  function addCalendarNote(dateKey, text){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(dateKey||'')) return false;
+    STATE.calendar[dateKey] = STATE.calendar[dateKey] || [];
+    STATE.calendar[dateKey].push({ id:uid(), text:text });
+    return true;
+  }
+  // Apply ONE change object. Returns a short result string.
+  function applyChange(c){
+    switch(c.op){
+      case 'setIncome':       if(['low','avg','high'].indexOf(c.key)>=0){ setIncome(c.key, c.value); return 'income.'+c.key+' = '+fmtN(c.value); } return 'skipped (bad income key)';
+      case 'setLoanPayment':  setLoanPayment(c.value); return 'loan payment = '+fmtN(c.value);
+      case 'setSavingsMatch': setSavingsMatch(c.value); return 'savings match = '+fmtN(c.value);
+      case 'addItem':         addItem(c.name, c.category || (MODEL.groups[MODEL.groups.length-1]||{}).name, c.cost, c.freq||'monthly', c.note); return 'added '+c.name;
+      case 'updateItem': { var f=findItemByName(c.match||c.name); if(!f) return 'NOT FOUND: '+(c.match||c.name); updateItemPrice(f.it.id, c.cost, c.freq); return 'updated '+f.it.name; }
+      case 'removeItem': { var r=findItemByName(c.match||c.name); if(!r) return 'NOT FOUND: '+(c.match||c.name); removeItem(r.it.id); return 'removed '+r.it.name; }
+      case 'addCategory':     return addCategory(c.name, c.icon) ? 'category '+c.name : 'skipped (exists/invalid)';
+      case 'removeCategory':  removeCategory(c.name||c.match); return 'removed category '+(c.name||c.match);
+      case 'addNote':         if(addCalendarNote(c.date, c.text)){ logChange('add-note', c.date+': '+c.text); renderCalendar(); renderEvents(); return 'note on '+c.date; } return 'skipped (bad date)';
+      case 'addWorkout':      STATE.workouts.push({ id:uid(), day:c.day||'', title:c.title||'', body:c.body||'' }); logChange('add-workout', c.day||c.title||''); renderWorkouts(); return 'workout added';
+      case 'setProfile':      setProfile(c.field, c.value); return c.field+' = '+c.value;
+      default: return 'unknown op: '+c.op;
+    }
+  }
+  function snapshotForAI(){
+    return {
+      income: MODEL.income, loanPayment: MODEL.loanPayment, savingsMatch: MODEL.savingsMatch,
+      profile: MODEL.profile,
+      categories: MODEL.groups.map(function(g){
+        return { name:g.name, items:g.items.map(function(it){ return { name:it.name, monthly:Math.round(itemMonthly(it)), freq:(it.freq||'monthly') }; }) };
+      })
+    };
+  }
+  var AI_TOOL = {
+    name:'propose_updates',
+    description:'Propose a reviewed set of edits to the user’s finance app. The user confirms before anything is applied.',
+    input_schema:{
+      type:'object',
+      additionalProperties:false,
+      properties:{
+        summary:{ type:'string', description:'One or two sentences describing what you are about to change.' },
+        recommendation:{ type:'string', description:'Your honest recommendation. If the request is a single simple change, gently recommend doing it manually in the relevant tab instead, and say which tab.' },
+        changes:{ type:'array', description:'The list of edits. Empty if nothing actionable.', items:{
+          type:'object', additionalProperties:false,
+          properties:{
+            op:{ type:'string', enum:['setIncome','setLoanPayment','setSavingsMatch','addItem','updateItem','removeItem','addCategory','removeCategory','addNote','addWorkout','setProfile'] },
+            description:{ type:'string', description:'Plain-language description of this one change for the user to review.' },
+            key:{ type:'string', enum:['low','avg','high'] }, value:{ type:'number' },
+            name:{ type:'string' }, match:{ type:'string', description:'Existing item/category name to match for update/remove.' },
+            category:{ type:'string' }, cost:{ type:'number' }, freq:{ type:'string', enum:['monthly','quarterly','yearly'] }, note:{ type:'string' }, icon:{ type:'string' },
+            date:{ type:'string', description:'YYYY-MM-DD' }, text:{ type:'string' },
+            day:{ type:'string' }, title:{ type:'string' }, body:{ type:'string' },
+            field:{ type:'string', enum:['age','employer','name','location'] }
+          },
+          required:['op','description']
+        } }
+      },
+      required:['summary','recommendation','changes']
+    }
+  };
+  function readFileAsBase64(file){
+    return new Promise(function(resolve,reject){
+      var r = new FileReader();
+      r.onload = function(){ var d = String(r.result); resolve(d.slice(d.indexOf(',')+1)); };
+      r.onerror = reject; r.readAsDataURL(file);
+    });
+  }
+  var aiProposal = null;
+  (function initAI(){
+    var keyEl = document.getElementById('aiKey'); if(!keyEl) return;
+    try{ var saved = localStorage.getItem(KEY_STORE); if(saved) keyEl.value = saved; }catch(_){}
+    keyEl.addEventListener('change', function(){ try{ localStorage.setItem(KEY_STORE, keyEl.value.trim()); }catch(_){} });
+
+    var statusEl = document.getElementById('aiStatus');
+    function status(msg, color){ statusEl.style.display='block'; statusEl.style.color=color||'var(--txt-dim)'; statusEl.textContent=msg; }
+
+    document.getElementById('aiSend').addEventListener('click', async function(){
+      var key = (keyEl.value||'').trim();
+      var text = (document.getElementById('aiText').value||'').trim();
+      var model = document.getElementById('aiModel').value;
+      var files = document.getElementById('aiImages').files;
+      if(!key){ status('Enter your Anthropic API key first.', 'var(--red)'); return; }
+      if(!text && !files.length){ status('Describe a change or attach an image.', 'var(--red)'); return; }
+      document.getElementById('aiProposal').style.display='none';
+      status('Thinking…');
+      try{ try{ localStorage.setItem(KEY_STORE, key); }catch(_){}
+        var content = [];
+        for(var i=0;i<files.length;i++){
+          var b64 = await readFileAsBase64(files[i]);
+          content.push({ type:'image', source:{ type:'base64', media_type:(files[i].type||'image/png'), data:b64 } });
+        }
+        content.push({ type:'text', text:
+          'Here is my current finance data (amounts are monthly kr unless freq says otherwise):\n' +
+          JSON.stringify(snapshotForAI()) +
+          '\n\nMy request: ' + (text || '(see attached image — extract the relevant updated numbers)') });
+        var sys = 'You are the update assistant inside a personal finance web app. Translate the user’s request (and any attached payslip/screenshot) into a precise list of edits using the propose_updates tool. Rules: only propose changes the user clearly asked for or that are unambiguous from a document; never invent numbers; match existing items/categories by their exact names from the snapshot when updating or removing; use op setIncome with key avg for a normal/typical monthly salary; amounts are after-tax kr. In your recommendation field, if the whole request is a single simple change, recommend the user make it manually in the matching tab (Manage Items for prices, Calendar for notes, Gym for workouts) to avoid mistakes — but still propose it. Be concise.';
+        var resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method:'POST',
+          headers:{ 'content-type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+          body: JSON.stringify({ model:model, max_tokens:1500, system:sys, tools:[AI_TOOL], tool_choice:{ type:'tool', name:'propose_updates' }, messages:[{ role:'user', content:content }] })
+        });
+        if(!resp.ok){ var errt = await resp.text(); status('API error '+resp.status+': '+errt.slice(0,300), 'var(--red)'); return; }
+        var data = await resp.json();
+        var tool = (data.content||[]).filter(function(b){ return b.type==='tool_use'; })[0];
+        if(!tool){ status('No structured response returned. Try rephrasing.', 'var(--amber)'); return; }
+        showProposal(tool.input);
+        status('Review the proposed changes below.', 'var(--lime)');
+      }catch(e){ status('Request failed: '+(e && e.message ? e.message : e)+' (a browser CORS block or bad key are the usual causes).', 'var(--red)'); }
+    });
+
+    document.getElementById('aiCancel').addEventListener('click', function(){ aiProposal=null; document.getElementById('aiProposal').style.display='none'; });
+    document.getElementById('aiApply').addEventListener('click', function(){
+      if(!aiProposal || !aiProposal.changes) return;
+      var results = aiProposal.changes.map(function(c){ return applyChange(c); });
+      logChange('ai-apply', (aiProposal.summary||'AI update') + ' [' + results.join('; ') + ']');
+      autosave(); refreshFinance(); renderManage(); renderProfile();
+      document.getElementById('aiProposal').style.display='none'; aiProposal=null;
+      status('✓ Applied. Monthly total is now '+fmtN(GRAND)+' kr. Don’t forget to Save / Export.', 'var(--lime)');
+      document.getElementById('aiText').value=''; document.getElementById('aiImages').value='';
+    });
+  })();
+  function showProposal(p){
+    aiProposal = p;
+    document.getElementById('aiSummary').textContent = p.summary || '';
+    var host = document.getElementById('aiChanges');
+    var list = (p.changes||[]);
+    host.innerHTML = list.length ? list.map(function(c){
+      return '<div class="item-row"><div class="meta">' + esc(c.description||c.op) + '<small>' + esc(c.op) + '</small></div></div>';
+    }).join('') : '<div class="empty">The assistant proposed no changes.</div>';
+    var rec = document.getElementById('aiRec');
+    rec.textContent = p.recommendation ? ('Assistant note: ' + p.recommendation) : '';
+    document.getElementById('aiApply').style.display = list.length ? '' : 'none';
+    document.getElementById('aiProposal').style.display='block';
+  }
+
   /* ---------- SAVE / EXPORT (download a fresh self-contained HTML) ---------- */
   function exportHTML(){
     logChange('export', 'Created a new HTML snapshot');                 // recorded inside the snapshot
@@ -1395,12 +1713,14 @@
   })();
 
   /* ---------- INITIAL RENDER of all self-service sections ---------- */
-  renderCustomList();
+  renderProfile();
+  renderManage();
   renderWorkouts();
   renderCalendar();
   renderDay();
   renderEvents();
   renderLog();
+  if(window.rebuildScenarios) window.rebuildScenarios();
   refreshFinance();   // ensure totals/simulators reflect any loaded user items
 </script>
 </body>
