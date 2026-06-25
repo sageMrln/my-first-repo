@@ -876,6 +876,7 @@
   <button class="chattoggle" id="chatToggle" data-i18n="💬 Quick Update">💬 Quick Update</button>
   <label class="bakechk" id="bakeKeyWrap" title="Saves your key inside the file so it opens without re-typing. Turn off if you'll share the file."><input type="checkbox" id="bakeKey" checked> <span data-i18n="keep me signed in">keep me signed in</span></label>
   <div class="badge" id="saveBadge">loaded</div>
+  <button class="chattoggle" id="shareBlankBtn" title="Download an empty copy (no data, no key) — safe to give to a new person" data-i18n="📤 Blank copy to share">📤 Blank copy to share</button>
   <button class="savebtn" id="saveBtn" data-i18n="💾 Save / Export">💾 Save / Export</button>
 </div>
 
@@ -1869,8 +1870,47 @@
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
     var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ exported ' + fname; b.style.color = 'var(--lime)'; }
   }
+  // Export a GUARANTEED-CLEAN copy to give to a new person: no data, no key.
+  // It temporarily blanks the live view, serialises, then restores your data.
+  function renderAll(){
+    if(typeof renderProfile==='function') renderProfile();
+    if(typeof renderManage==='function') renderManage();
+    if(typeof renderWorkouts==='function') renderWorkouts();
+    if(typeof renderCalendar==='function') renderCalendar();
+    if(typeof renderDay==='function') renderDay();
+    if(typeof renderEvents==='function') renderEvents();
+    if(typeof renderLog==='function') renderLog();
+    if(window.rebuildScenarios) window.rebuildScenarios();
+    if(typeof refreshFinance==='function') refreshFinance();
+  }
+  function exportBlank(){
+    var hs = document.getElementById('hud-state');
+    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log;
+    try{
+      // 1) blank every data-bearing thing and re-render so NO personal text remains
+      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = [];
+      renderAll();
+      // 2) empty embedded state (fresh user on open) + locked, no baked key
+      hs.textContent = '';
+      var lockEl = document.getElementById('lockScreen'); var wasU = lockEl && lockEl.classList.contains('unlocked');
+      if(lockEl) lockEl.classList.remove('unlocked');
+      var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      if(lockEl && wasU) lockEl.classList.add('unlocked');
+      var blob = new Blob([html], { type:'text/html' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = url; a.download = 'finance-hud-START.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+      var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ blank copy downloaded — safe to share'; b.style.color = 'var(--cyan)'; }
+    } finally {
+      // 3) restore YOUR data exactly as it was
+      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL;
+      renderAll();
+    }
+  }
   (function initSave(){
     var btn = document.getElementById('saveBtn'); if(btn) btn.addEventListener('click', exportHTML);
+    var sbb = document.getElementById('shareBlankBtn'); if(sbb) sbb.addEventListener('click', exportBlank);
     var bk = document.getElementById('bakeKey');
     if(bk){
       bk.checked = (STATE.bakeKey !== false);   // default ON
