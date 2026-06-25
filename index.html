@@ -203,6 +203,62 @@
   .calc-row{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:13px;color:var(--txt-dim);padding:5px 0;border-bottom:1px solid rgba(27,58,92,.4)}
   .calc-row b{color:var(--txt)}
   .calc-neg b{color:var(--red)}
+
+  /* ---- SELF-SERVICE UI (forms, calendar, save, log) ---- */
+  .field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+  .field label{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.16em;color:var(--txt-dim);text-transform:uppercase}
+  .field input,.field select,.field textarea{
+    background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);
+    font-family:'Rajdhani';font-size:15px;font-weight:500;padding:9px 11px;outline:none;width:100%;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan);box-shadow:var(--glow)}
+  .field textarea{resize:vertical;min-height:54px}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.form-row{grid-template-columns:1fr}}
+  .btn{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;
+    border:1px solid var(--cyan);background:linear-gradient(180deg,var(--cyan),#23a7c4);color:#04121a;
+    padding:10px 18px;border-radius:10px;cursor:pointer;transition:all .15s;box-shadow:var(--glow)}
+  .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn.ghost{background:var(--panel);color:var(--txt-dim);border-color:var(--line);box-shadow:none}
+  .btn.ghost:hover{color:var(--txt);border-color:var(--cyan-dim)}
+  .btn.danger{background:var(--panel);color:var(--red);border-color:var(--red);box-shadow:none;padding:5px 10px;font-size:12px}
+  .btn.danger:hover{background:rgba(255,92,124,.12)}
+
+  .item-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:8px}
+  .item-row .meta{font-size:14px;color:var(--txt)}
+  .item-row .meta small{display:block;color:var(--txt-dim);font-family:'Share Tech Mono';font-size:11px;margin-top:2px}
+  .item-row .amt{font-family:'Share Tech Mono';color:var(--cyan);white-space:nowrap}
+  .empty{color:var(--txt-dim);font-style:italic;font-size:14px;padding:8px 2px}
+
+  /* calendar */
+  .cal-nav{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .cal-nav button{font-family:'Share Tech Mono';font-size:14px;border:1px solid var(--line);background:var(--panel);color:var(--cyan);width:38px;height:38px;border-radius:9px;cursor:pointer;transition:all .15s}
+  .cal-nav button:hover{border-color:var(--cyan);box-shadow:var(--glow)}
+  .cal-nav .lbl{font-family:'Orbitron';font-weight:700;font-size:18px;color:#eaffff;min-width:190px;text-align:center}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal-dow{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.1em;color:var(--txt-dim);text-align:center;padding:4px 0;text-transform:uppercase}
+  .cal-cell{min-height:62px;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:6px;cursor:pointer;transition:all .12s;position:relative;overflow:hidden}
+  .cal-cell:hover{border-color:var(--cyan-dim);background:rgba(0,229,255,.06)}
+  .cal-cell.empty-cell{background:transparent;border:1px solid transparent;cursor:default}
+  .cal-cell.today{border-color:var(--cyan);box-shadow:inset 0 0 0 1px var(--cyan-dim)}
+  .cal-cell.sel{border-color:var(--lime);box-shadow:0 0 12px rgba(124,255,178,.3)}
+  .cal-cell .dnum{font-family:'Share Tech Mono';font-size:12px;color:var(--txt-dim)}
+  .cal-cell.today .dnum{color:var(--cyan)}
+  .cal-cell .ev{font-size:10px;line-height:1.25;color:var(--lime);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal-cell .more{font-size:9px;color:var(--txt-dim)}
+  .cal-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 6px var(--lime)}
+
+  /* floating save */
+  .savebar{position:fixed;right:18px;bottom:18px;z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .savebar .savebtn{font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;
+    border:1px solid var(--lime);background:linear-gradient(180deg,var(--lime),#3fae74);color:#04121a;
+    padding:13px 20px;border-radius:12px;cursor:pointer;box-shadow:0 0 22px rgba(124,255,178,.4);transition:all .15s}
+  .savebar .savebtn:hover{filter:brightness(1.08);transform:translateY(-2px)}
+  .savebar .badge{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;max-width:260px;text-align:right}
+
+  .logtable td{font-size:13px;vertical-align:top}
+  .logtable .ts{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);white-space:nowrap}
+  .logtable .act{font-family:'Share Tech Mono';font-size:11px;color:var(--cyan);text-transform:uppercase}
 </style>
 </head>
 <body>
@@ -239,6 +295,9 @@
     <button class="tab" data-p="checklist"><span class="ix">08</span>Checklist</button>
     <button class="tab" data-p="subs"><span class="ix">09</span>Subscriptions</button>
     <button class="tab" data-p="klarna"><span class="ix">10</span>Klarna Float</button>
+    <button class="tab" data-p="gym"><span class="ix">11</span>Gym Plan</button>
+    <button class="tab" data-p="calendar"><span class="ix">12</span>Calendar</button>
+    <button class="tab" data-p="log"><span class="ix">13</span>Change Log</button>
   </nav>
 
   <!-- 01 OVERVIEW -->
@@ -446,6 +505,28 @@
   <!-- 09 SUBSCRIPTIONS -->
   <section class="panel" id="subs">
     <div class="card">
+      <h2>Add a Subscription / Recurring Cost</h2>
+      <div class="desc">Add anything new to an existing category. It updates your <b>live</b> numbers everywhere — grand total, cash-flow simulator, Klarna surplus, and the savings projection all recompute instantly.</div>
+      <div class="form-row">
+        <div class="field"><label>Name</label><input id="addName" placeholder="e.g. Spotify"></div>
+        <div class="field"><label>Category</label><select id="addCat"></select></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Cost (kr)</label><input id="addCost" type="number" min="0" step="1" placeholder="99"></div>
+        <div class="field"><label>Billing</label><select id="addFreq"><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
+      </div>
+      <div class="field"><label>Note (optional)</label><input id="addNote" placeholder="What it's for / why you keep it"></div>
+      <button class="btn" id="addBtn">+ Add to my finances</button>
+      <div id="addMsg" class="note" style="display:none"></div>
+    </div>
+
+    <div class="card">
+      <h2>Items You've Added</h2>
+      <div class="desc">Your own additions on top of the verified base model. Delete any to remove it from every calculation.</div>
+      <div id="customList"><div class="empty">Nothing added yet — use the form above.</div></div>
+    </div>
+
+    <div class="card">
       <h2>Subscription Ledger</h2>
       <div class="desc">Every recurring subscription, pulled from Nordea's official "Subscriptions &amp; Direct debit" list. What it costs, how often, what it's for, and WHY you keep it — a note to future you.</div>
 
@@ -625,8 +706,76 @@
     </div>
   </section>
 
-  <footer>// FINANCE HUD v3.0 · LAST UPDATED 25 JUN 2026 · single-source-of-truth model · built on verified data · not financial advice</footer>
+  <!-- 11 GYM PLAN -->
+  <section class="panel" id="gym">
+    <div class="card">
+      <h2>Gym &amp; Workout Plan</h2>
+      <div class="desc">A place to map out your training. Add workout days now or build it out later — everything you enter is saved and travels with your file. (We'll deepen this section — progressions, targets, history — when you're ready.)</div>
+      <div class="form-row">
+        <div class="field"><label>Day / focus</label><input id="wkDay" placeholder="e.g. Monday — Push"></div>
+        <div class="field"><label>Title</label><input id="wkTitle" placeholder="e.g. Chest &amp; Triceps"></div>
+      </div>
+      <div class="field"><label>Exercises / notes</label><textarea id="wkBody" placeholder="Bench 4x8, Incline DB 3x10, Cable fly 3x12 ..."></textarea></div>
+      <button class="btn" id="wkAdd">+ Add workout</button>
+    </div>
+    <div class="card">
+      <h2>Your Workouts</h2>
+      <div id="wkList"><div class="empty">No workouts yet — add your first above.</div></div>
+    </div>
+  </section>
+
+  <!-- 12 CALENDAR -->
+  <section class="panel" id="calendar">
+    <div class="card">
+      <h2>Calendar</h2>
+      <div class="desc">Map out birthdays, events, and plans across any year. Use the arrows to move between months and years, click a day to open it, and pocket as many notes inside a day as you like. Everything saves with your file.</div>
+      <div class="cal-nav">
+        <button id="calPrevY" title="Previous year">«</button>
+        <button id="calPrevM" title="Previous month">‹</button>
+        <div class="lbl" id="calLabel">—</div>
+        <button id="calNextM" title="Next month">›</button>
+        <button id="calNextY" title="Next year">»</button>
+      </div>
+      <div class="cal-grid" id="calDow"></div>
+      <div class="cal-grid" id="calGrid" style="margin-top:6px"></div>
+      <button class="btn ghost" id="calToday" style="margin-top:12px">Jump to today</button>
+    </div>
+
+    <div class="card" id="dayCard">
+      <h2 id="dayTitle">Select a day</h2>
+      <div class="desc" id="dayHint">Click any day in the calendar above to add notes to it.</div>
+      <div id="dayNotes"></div>
+      <div class="field" style="margin-top:10px"><label>New note for this day</label><input id="dayInput" placeholder="e.g. Mum's birthday 🎂 / Rent due / Dentist 14:00"></div>
+      <button class="btn" id="dayAdd">+ Add note</button>
+    </div>
+
+    <div class="card">
+      <h2>All Planned Items</h2>
+      <div class="desc">Everything you've noted, soonest first.</div>
+      <div id="evList"><div class="empty">Nothing planned yet.</div></div>
+    </div>
+  </section>
+
+  <!-- 13 CHANGE LOG -->
+  <section class="panel" id="log">
+    <div class="card">
+      <h2>Change Log <span class="tag now" id="logCount">0</span></h2>
+      <div class="desc">An audit trail of every change ever made — add, edit, delete, export. Stored inside this file and carried into every export, so the full history travels with you. (When this becomes the hosted product, the same log lives on a real server.)</div>
+      <table class="logtable"><tbody id="logBody"></tbody></table>
+    </div>
+  </section>
+
+  <footer>// FINANCE HUD v4.0 · SELF-SUFFICIENT BUILD · auto-save + export · in-file audit log · not financial advice</footer>
 </div>
+
+<!-- Floating save / export -->
+<div class="savebar">
+  <div class="badge" id="saveBadge">loaded</div>
+  <button class="savebtn" id="saveBtn">💾 Save / Export</button>
+</div>
+
+<!-- Persisted user state (read on load, rewritten on export). Do not edit by hand. -->
+<script id="hud-state" type="application/json"></script>
 
 <script>
   /* =========================================================================
@@ -678,8 +827,57 @@
   function fmt(n){ return Math.round(n).toLocaleString('en-GB') + ' kr'; }
   function fmtN(n){ return Math.round(n).toLocaleString('en-GB'); }
   function fmtK(n){ return Math.round(n/1000) + 'k'; }
-  function groupTotal(g){ return g.items.reduce(function(s,it){ return s + (it.varies ? 0 : Math.round(it.amt)); }, 0); }
-  var GRAND = MODEL.groups.reduce(function(s,g){ return s + groupTotal(g); }, 0);  // 11,111
+  function pad2(n){ return (n<10?'0':'') + n; }
+  function uid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4); }
+  function nowISO(){ return new Date().toISOString(); }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
+  var STORE_KEY = 'financeHudState';
+  var DEFAULTS = { version:1, savedAt:null, customItems:[], workouts:[], calendar:{}, log:[] };
+  function readEmbedded(){
+    try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
+  }
+  function readLocal(){
+    try{ var l=localStorage.getItem(STORE_KEY); if(l) return JSON.parse(l); }catch(_){ } return null;
+  }
+  function loadState(){
+    var e=readEmbedded(), l=readLocal(), pick=null;
+    if(e && l) pick = ((l.savedAt||'') >= (e.savedAt||'')) ? l : e;   // newest wins
+    else pick = e || l;
+    return Object.assign({}, DEFAULTS, pick||{}, {
+      customItems:(pick&&pick.customItems)||[], workouts:(pick&&pick.workouts)||[],
+      calendar:(pick&&pick.calendar)||{}, log:(pick&&pick.log)||[]
+    });
+  }
+  var STATE = loadState();
+  function autosave(){
+    STATE.savedAt = nowISO();
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); }catch(_){ }
+    var b=document.getElementById('saveBadge');
+    if(b){ b.textContent='● unsaved — auto-saved locally'; b.style.color='var(--amber)'; }
+  }
+  function logChange(action, detail){
+    STATE.log.unshift({ ts:nowISO(), action:action, detail:detail||'' });
+    if(STATE.log.length>3000) STATE.log.length=3000;
+    autosave();
+    if(typeof renderLog==='function') renderLog();
+  }
+
+  /* ---------- expense model incl. user-added items ---------- */
+  function customForCategory(cat){
+    return STATE.customItems.filter(function(c){ return c.category===cat; }).map(function(c){
+      var monthly = c.freq==='yearly' ? Number(c.cost)/12 : Number(c.cost);
+      var det = (c.note ? c.note : 'Added by you')
+              + (c.freq==='yearly' ? ' · billed yearly ' + fmtN(c.cost) + ' kr ≈ ' + fmtN(monthly) + '/mo' : '');
+      return { name:c.name, detail:det, amt:monthly, custom:true, id:c.id };
+    });
+  }
+  function mergedItems(g){ return g.items.concat(customForCategory(g.name)); }
+  function groupTotal(g){ return mergedItems(g).reduce(function(s,it){ return s + (it.varies ? 0 : Math.round(it.amt)); }, 0); }
+  var GRAND = 0;
+  function recomputeGrand(){ GRAND = MODEL.groups.reduce(function(s,g){ return s + groupTotal(g); }, 0); return GRAND; }
+  recomputeGrand();
   function leftOver(income){ return income - GRAND - MODEL.loanPayment; }
   function comfort(income){ return leftOver(income) - MODEL.savingsMatch; }
 
@@ -697,41 +895,47 @@
     });
   });
 
-  /* ---------- RENDER EXPENSES FROM MODEL ---------- */
-  (function renderExpenses(){
+  /* ---------- RENDER EXPENSES FROM MODEL (+ user items) ---------- */
+  function renderExpenses(){
     var host = document.getElementById('expGroups');
+    if(!host) return;
+    // preserve which groups are open across re-render
+    var openNames = {};
+    host.querySelectorAll('.exp-group.open .gname').forEach(function(n){ openNames[n.textContent.trim()] = true; });
+    var firstRender = host.children.length === 0;
     var html = '';
     MODEL.groups.forEach(function(g, gi){
-      var rows = g.items.map(function(it){
+      var rows = mergedItems(g).map(function(it){
         var val = it.varies ? '~varies' : '~' + fmtN(it.amt);
-        return '<tr><td>' + it.name + ' <div class="sub-detail">' + it.detail + '</div></td>' +
+        var badge = it.custom ? ' <span class="tag now" style="font-size:8px;padding:1px 5px">ADDED</span>' : '';
+        return '<tr><td>' + esc(it.name) + badge + ' <div class="sub-detail">' + esc(it.detail) + '</div></td>' +
                '<td class="num">' + val + '</td></tr>';
       }).join('');
-      html += '<div class="exp-group' + (gi===0 ? ' open' : '') + '">' +
+      var isOpen = firstRender ? (gi===0) : !!openNames[(g.icon + ' ' + g.name)];
+      html += '<div class="exp-group' + (isOpen ? ' open' : '') + '">' +
         '<div class="exp-head"><span class="gname"><span class="ico"></span>' + g.icon + ' ' + g.name + '</span>' +
         '<span><span class="gtot">~' + fmtN(groupTotal(g)) + ' kr/mo</span><span class="arrow">▸</span></span></div>' +
         '<div class="exp-body"><table>' + rows + '</table></div></div>';
     });
     host.innerHTML = html;
-
     document.getElementById('expMonth').innerHTML = '~' + fmtN(GRAND) + '<small> kr</small>';
     document.getElementById('expYear').innerHTML  = '~' + fmtN(GRAND * 12) + '<small> kr</small>';
     document.getElementById('expRef').textContent = fmtN(GRAND) + ' kr';
-
-    // collapse/expand
     host.querySelectorAll('.exp-head').forEach(function(h){
       h.addEventListener('click', function(){ h.closest('.exp-group').classList.toggle('open'); });
     });
-  })();
+  }
 
   /* ---------- OVERVIEW + KLARNA derived numbers ---------- */
-  (function renderDerived(){
+  function renderDerived(){
     document.getElementById('ovLeft').textContent    = fmtN(leftOver(MODEL.income.avg));
     document.getElementById('ovComfort').textContent = '~' + fmt(comfort(MODEL.income.avg));
     document.getElementById('ovWorst').textContent   = '+' + fmt(leftOver(MODEL.income.low));
     document.getElementById('vdWorst').textContent   = '+' + fmtN(leftOver(MODEL.income.low)) + ' ✅';
     document.getElementById('klSurplus').textContent = '~' + fmt(leftOver(MODEL.income.avg));
-  })();
+  }
+  renderExpenses();
+  renderDerived();
 
   /* ---------- CASH FLOW SIMULATOR ---------- */
   var slider = document.getElementById('incSlider');
@@ -932,8 +1136,20 @@
       render();
     };
     amt.addEventListener('input', render);
+    window.klRefresh = render;
     render();
   })();
+
+  /* ---------- CENTRAL FINANCE REFRESH (after any cost change) ---------- */
+  function refreshFinance(){
+    recomputeGrand();
+    renderExpenses();
+    renderDerived();
+    var c2 = document.getElementById('cfOut2'); if(c2) c2.textContent = '− ' + fmt(GRAND);
+    if(typeof updateCF==='function') updateCF();
+    if(typeof window.klRefresh==='function') window.klRefresh();
+    if(typeof drawChart==='function') drawChart();
+  }
 
   /* ---------- CHECKLIST TOGGLE ---------- */
   document.querySelectorAll('#checklist-list .box').forEach(function(b){
@@ -945,6 +1161,247 @@
     b.addEventListener('click', toggle);
     b.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(); } });
   });
+
+  /* ============================================================
+     SELF-SUFFICIENT MODULES: subscriptions, gym, calendar, log, export
+     ============================================================ */
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  /* ---------- ADD SUBSCRIPTION / COST ---------- */
+  (function initSubsForm(){
+    var sel = document.getElementById('addCat');
+    if(sel){
+      MODEL.groups.forEach(function(g){
+        var o = document.createElement('option'); o.value = g.name; o.textContent = g.icon + ' ' + g.name;
+        if(g.name.indexOf('Subscriptions') === 0) o.selected = true;
+        sel.appendChild(o);
+      });
+    }
+    var btn = document.getElementById('addBtn');
+    if(btn) btn.addEventListener('click', function(){
+      var name = (document.getElementById('addName').value||'').trim();
+      var cat  = document.getElementById('addCat').value;
+      var cost = parseFloat(document.getElementById('addCost').value);
+      var freq = document.getElementById('addFreq').value;
+      var note = (document.getElementById('addNote').value||'').trim();
+      var msg = document.getElementById('addMsg');
+      if(!name || !(cost >= 0) || isNaN(cost)){
+        msg.style.display='block'; msg.style.color='var(--red)';
+        msg.textContent='Enter a name and a valid cost (0 or more).'; return;
+      }
+      var item = { id:uid(), category:cat, name:name, cost:cost, freq:freq, note:note };
+      STATE.customItems.push(item);
+      var monthly = freq==='yearly' ? cost/12 : cost;
+      logChange('add-cost', name + ' → ' + cat + ' (' + fmtN(monthly) + ' kr/mo' + (freq==='yearly'?', billed yearly':'') + ')');
+      refreshFinance(); renderCustomList();
+      document.getElementById('addName').value=''; document.getElementById('addCost').value=''; document.getElementById('addNote').value='';
+      msg.style.display='block'; msg.style.color='var(--lime)';
+      msg.textContent='Added "'+name+'". Monthly total is now '+fmtN(GRAND)+' kr — all simulators updated.';
+    });
+    var list = document.getElementById('customList');
+    if(list) list.addEventListener('click', function(e){
+      var d = e.target.closest('[data-del]'); if(d) removeCustom(d.getAttribute('data-del'));
+    });
+  })();
+
+  function removeCustom(id){
+    var it = STATE.customItems.filter(function(c){ return c.id===id; })[0];
+    STATE.customItems = STATE.customItems.filter(function(c){ return c.id!==id; });
+    if(it) logChange('remove-cost', it.name + ' (' + it.category + ')');
+    refreshFinance(); renderCustomList();
+  }
+  function renderCustomList(){
+    var host = document.getElementById('customList'); if(!host) return;
+    if(!STATE.customItems.length){ host.innerHTML = '<div class="empty">Nothing added yet — use the form above.</div>'; return; }
+    host.innerHTML = STATE.customItems.map(function(c){
+      var monthly = c.freq==='yearly' ? Number(c.cost)/12 : Number(c.cost);
+      return '<div class="item-row"><div class="meta">' + esc(c.name) +
+        '<small>' + esc(c.category) + ' · ' + (c.freq==='yearly' ? fmtN(c.cost)+' kr/yr ≈ ' : '') + fmtN(monthly) + ' kr/mo' +
+        (c.note ? ' · ' + esc(c.note) : '') + '</small></div>' +
+        '<button class="btn danger" data-del="' + c.id + '">Delete</button></div>';
+    }).join('');
+  }
+
+  /* ---------- GYM / WORKOUTS ---------- */
+  (function initGym(){
+    var btn = document.getElementById('wkAdd');
+    if(btn) btn.addEventListener('click', function(){
+      var day = (document.getElementById('wkDay').value||'').trim();
+      var title = (document.getElementById('wkTitle').value||'').trim();
+      var body = (document.getElementById('wkBody').value||'').trim();
+      if(!day && !title){ return; }
+      STATE.workouts.push({ id:uid(), day:day, title:title, body:body });
+      logChange('add-workout', (day || title) + (title && day ? ' — ' + title : ''));
+      renderWorkouts();
+      document.getElementById('wkDay').value=''; document.getElementById('wkTitle').value=''; document.getElementById('wkBody').value='';
+    });
+    var list = document.getElementById('wkList');
+    if(list) list.addEventListener('click', function(e){
+      var d = e.target.closest('[data-del]'); if(d) removeWorkout(d.getAttribute('data-del'));
+    });
+  })();
+  function removeWorkout(id){
+    var w = STATE.workouts.filter(function(x){ return x.id===id; })[0];
+    STATE.workouts = STATE.workouts.filter(function(x){ return x.id!==id; });
+    if(w) logChange('remove-workout', w.day || w.title);
+    renderWorkouts();
+  }
+  function renderWorkouts(){
+    var host = document.getElementById('wkList'); if(!host) return;
+    if(!STATE.workouts.length){ host.innerHTML = '<div class="empty">No workouts yet — add your first above.</div>'; return; }
+    host.innerHTML = STATE.workouts.map(function(w){
+      return '<div class="item-row"><div class="meta"><b>' + esc(w.day||'') + (w.day&&w.title?' — ':'') + esc(w.title||'') + '</b>' +
+        (w.body ? '<small>' + esc(w.body).replace(/\n/g,'<br>') + '</small>' : '') + '</div>' +
+        '<button class="btn danger" data-del="' + w.id + '">Delete</button></div>';
+    }).join('');
+  }
+
+  /* ---------- CALENDAR ---------- */
+  var today = new Date();
+  var calView = { y: today.getFullYear(), m: today.getMonth() };
+  var selDate = null;
+  function dateKey(y,m,d){ return y + '-' + pad2(m+1) + '-' + pad2(d); }
+  function todayKey(){ return dateKey(today.getFullYear(), today.getMonth(), today.getDate()); }
+  (function initCalendar(){
+    var dow = document.getElementById('calDow');
+    if(dow) dow.innerHTML = DOW.map(function(d){ return '<div class="cal-dow">'+d+'</div>'; }).join('');
+    function go(dy,dm){ calView.m += dm; calView.y += dy;
+      while(calView.m>11){ calView.m-=12; calView.y++; } while(calView.m<0){ calView.m+=12; calView.y--; }
+      renderCalendar(); }
+    var pY=document.getElementById('calPrevY'), nY=document.getElementById('calNextY'),
+        pM=document.getElementById('calPrevM'), nM=document.getElementById('calNextM'), tB=document.getElementById('calToday');
+    if(pY) pY.addEventListener('click', function(){ go(-1,0); });
+    if(nY) nY.addEventListener('click', function(){ go(1,0); });
+    if(pM) pM.addEventListener('click', function(){ go(0,-1); });
+    if(nM) nM.addEventListener('click', function(){ go(0,1); });
+    if(tB) tB.addEventListener('click', function(){ calView={y:today.getFullYear(),m:today.getMonth()}; selDate=todayKey(); renderCalendar(); renderDay(); });
+    var grid = document.getElementById('calGrid');
+    if(grid) grid.addEventListener('click', function(e){
+      var c = e.target.closest('[data-date]'); if(c){ selDate = c.getAttribute('data-date'); renderCalendar(); renderDay(); }
+    });
+    var dn = document.getElementById('dayNotes');
+    if(dn) dn.addEventListener('click', function(e){
+      var d = e.target.closest('[data-del]'); if(d) removeEvent(selDate, d.getAttribute('data-del'));
+    });
+    var dadd = document.getElementById('dayAdd');
+    if(dadd) dadd.addEventListener('click', addDayNote);
+    var dinput = document.getElementById('dayInput');
+    if(dinput) dinput.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addDayNote(); } });
+    var ev = document.getElementById('evList');
+    if(ev) ev.addEventListener('click', function(e){
+      var d = e.target.closest('[data-del]'); if(d) removeEvent(d.getAttribute('data-date'), d.getAttribute('data-del'));
+    });
+  })();
+  function renderCalendar(){
+    var grid = document.getElementById('calGrid'); if(!grid) return;
+    document.getElementById('calLabel').textContent = MONTHS[calView.m] + ' ' + calView.y;
+    var first = new Date(calView.y, calView.m, 1);
+    var lead = (first.getDay() + 6) % 7;                 // Monday-first offset
+    var days = new Date(calView.y, calView.m+1, 0).getDate();
+    var cells = '';
+    for(var i=0;i<lead;i++) cells += '<div class="cal-cell empty-cell"></div>';
+    for(var d=1; d<=days; d++){
+      var key = dateKey(calView.y, calView.m, d);
+      var evs = STATE.calendar[key] || [];
+      var cls = 'cal-cell' + (key===todayKey()?' today':'') + (key===selDate?' sel':'');
+      var preview = evs.slice(0,2).map(function(e){ return '<div class="ev">• ' + esc(e.text) + '</div>'; }).join('');
+      var more = evs.length>2 ? '<div class="more">+' + (evs.length-2) + ' more</div>' : '';
+      var dot = evs.length ? '<span class="cal-dot"></span>' : '';
+      cells += '<div class="' + cls + '" data-date="' + key + '">' + dot +
+        '<div class="dnum">' + d + '</div>' + preview + more + '</div>';
+    }
+    grid.innerHTML = cells;
+  }
+  function prettyDate(key){
+    var p = key.split('-'); var dt = new Date(+p[0], +p[1]-1, +p[2]);
+    return DOW[(dt.getDay()+6)%7] + ', ' + (+p[2]) + ' ' + MONTHS[+p[1]-1] + ' ' + p[0];
+  }
+  function renderDay(){
+    var title = document.getElementById('dayTitle'), hint = document.getElementById('dayHint'), notes = document.getElementById('dayNotes');
+    if(!title) return;
+    if(!selDate){ title.textContent='Select a day'; hint.style.display='block'; notes.innerHTML=''; return; }
+    hint.style.display='none';
+    title.textContent = prettyDate(selDate);
+    var evs = STATE.calendar[selDate] || [];
+    notes.innerHTML = evs.length ? evs.map(function(e){
+      return '<div class="item-row"><div class="meta">' + esc(e.text) + '</div>' +
+        '<button class="btn danger" data-del="' + e.id + '">Delete</button></div>';
+    }).join('') : '<div class="empty">No notes for this day yet.</div>';
+  }
+  function addDayNote(){
+    if(!selDate){ selDate = todayKey(); }
+    var input = document.getElementById('dayInput');
+    var text = (input.value||'').trim(); if(!text) return;
+    STATE.calendar[selDate] = STATE.calendar[selDate] || [];
+    STATE.calendar[selDate].push({ id:uid(), text:text });
+    logChange('add-note', prettyDate(selDate) + ': ' + text);
+    input.value='';
+    renderCalendar(); renderDay(); renderEvents();
+  }
+  function removeEvent(key, id){
+    if(!key || !STATE.calendar[key]) return;
+    var ev = STATE.calendar[key].filter(function(e){ return e.id===id; })[0];
+    STATE.calendar[key] = STATE.calendar[key].filter(function(e){ return e.id!==id; });
+    if(!STATE.calendar[key].length) delete STATE.calendar[key];
+    if(ev) logChange('remove-note', prettyDate(key) + ': ' + ev.text);
+    renderCalendar(); renderDay(); renderEvents();
+  }
+  function renderEvents(){
+    var host = document.getElementById('evList'); if(!host) return;
+    var all = [];
+    Object.keys(STATE.calendar).forEach(function(k){
+      (STATE.calendar[k]||[]).forEach(function(e){ all.push({ key:k, id:e.id, text:e.text }); });
+    });
+    all.sort(function(a,b){ return a.key < b.key ? -1 : a.key > b.key ? 1 : 0; });
+    host.innerHTML = all.length ? all.map(function(e){
+      return '<div class="item-row"><div class="meta">' + esc(e.text) +
+        '<small>' + prettyDate(e.key) + '</small></div>' +
+        '<button class="btn danger" data-del="' + e.id + '" data-date="' + e.key + '">Delete</button></div>';
+    }).join('') : '<div class="empty">Nothing planned yet.</div>';
+  }
+
+  /* ---------- CHANGE LOG ---------- */
+  function renderLog(){
+    var body = document.getElementById('logBody'); if(!body) return;
+    document.getElementById('logCount').textContent = STATE.log.length;
+    body.innerHTML = STATE.log.length ? STATE.log.map(function(e){
+      var when; try{ when = new Date(e.ts).toLocaleString('en-GB'); }catch(_){ when = e.ts; }
+      return '<tr><td class="ts">' + esc(when) + '</td><td class="act">' + esc(e.action) + '</td><td>' + esc(e.detail) + '</td></tr>';
+    }).join('') : '<tr><td class="empty" colspan="3">No changes recorded yet.</td></tr>';
+  }
+
+  /* ---------- SAVE / EXPORT (download a fresh self-contained HTML) ---------- */
+  function exportHTML(){
+    logChange('export', 'Created a new HTML snapshot');                 // recorded inside the snapshot
+    document.getElementById('hud-state').textContent = JSON.stringify(STATE).replace(/</g, '\\u003c');
+    var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    var blob = new Blob([html], { type:'text/html' });
+    var url = URL.createObjectURL(blob);
+    var d = new Date();
+    var fname = 'finance-hud-' + d.getFullYear() + pad2(d.getMonth()+1) + pad2(d.getDate()) + '-' + pad2(d.getHours()) + pad2(d.getMinutes()) + '.html';
+    var a = document.createElement('a'); a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ exported ' + fname; b.style.color = 'var(--lime)'; }
+  }
+  (function initSave(){
+    var btn = document.getElementById('saveBtn'); if(btn) btn.addEventListener('click', exportHTML);
+    var b = document.getElementById('saveBadge');
+    if(b){
+      if(STATE.savedAt){ try{ b.textContent = 'last saved ' + new Date(STATE.savedAt).toLocaleString('en-GB'); }catch(_){ b.textContent='loaded'; } }
+      else b.textContent = 'new file — nothing saved yet';
+    }
+  })();
+
+  /* ---------- INITIAL RENDER of all self-service sections ---------- */
+  renderCustomList();
+  renderWorkouts();
+  renderCalendar();
+  renderDay();
+  renderEvents();
+  renderLog();
+  refreshFinance();   // ensure totals/simulators reflect any loaded user items
 </script>
 </body>
 </html>
