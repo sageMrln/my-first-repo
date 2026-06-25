@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MRLN · Key Maker (PRIVATE — never share this file)</title>
+<style>
+  :root{--bg:#05080f;--panel:#0b1422;--panel2:#0e1a2e;--line:#1b3a5c;--cyan:#00e5ff;--cyan-dim:#0a7e8c;--lime:#7CFFB2;--amber:#ffb547;--red:#ff5c7c;--txt:#cfeaff;--txt-dim:#6f93b5;--glow:0 0 18px rgba(0,229,255,.35)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:radial-gradient(1000px 600px at 50% -10%, rgba(0,229,255,.08), transparent 60%), var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:30px 18px}
+  .card{width:100%;max-width:560px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 18px 60px rgba(0,0,0,.6);padding:28px 26px}
+  h1{font-family:'Courier New',monospace;font-weight:900;font-size:24px;letter-spacing:.12em;color:#eaffff;text-shadow:var(--glow)}
+  .sub{font-family:'Courier New',monospace;font-size:11px;color:var(--txt-dim);margin:6px 0 4px;letter-spacing:.04em}
+  .warn{margin:14px 0 22px;font-size:12px;color:var(--amber);background:rgba(255,181,71,.08);border:1px solid rgba(255,181,71,.3);border-radius:10px;padding:10px 12px;line-height:1.5}
+  label{display:block;font-size:12px;font-weight:600;color:var(--txt);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.05em}
+  input,select{width:100%;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:'Courier New',monospace;font-size:14px;padding:11px 12px;outline:none}
+  input:focus,select:focus{border-color:var(--cyan);box-shadow:var(--glow)}
+  .row{display:flex;gap:12px}.row>div{flex:1}
+  button{margin-top:18px;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;padding:13px 16px;background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:#04222a;box-shadow:0 0 22px rgba(0,229,255,.35);transition:all .15s}
+  button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  button.ghost{background:none;border:1px solid var(--line);color:var(--txt-dim);box-shadow:none}
+  button.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+  .out{margin-top:20px;border-top:1px solid var(--line);padding-top:18px}
+  .out label{margin-top:0}
+  .keybox{width:100%;background:#06101c;border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Courier New',monospace;font-size:13px;padding:12px;word-break:break-all;line-height:1.5;min-height:54px}
+  .meta{font-family:'Courier New',monospace;font-size:12px;color:var(--txt-dim);margin-top:8px}
+  .rotate{margin-top:26px;border-top:1px dashed var(--line);padding-top:18px}
+  .rotate h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--amber)}
+  .rotate p{font-size:12px;color:var(--txt-dim);line-height:1.5;margin-top:6px}
+  pre{background:#06101c;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:11px;color:var(--txt);word-break:break-all;white-space:pre-wrap;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>MRLN · KEY MAKER</h1>
+  <div class="sub">// signs monthly access keys with your private key</div>
+  <div class="warn"><b>Keep this file private.</b> It holds your secret signing key. Never send <code>keymaker.html</code> to a customer — only send the keys it produces. Anyone with this file can mint unlimited keys.</div>
+
+  <label for="name">Member name / handle</label>
+  <input id="name" type="text" placeholder="e.g. osefe#1234" autocomplete="off">
+
+  <div class="row">
+    <div>
+      <label for="days">Valid for (days)</label>
+      <input id="days" type="number" value="30" min="1" max="3660">
+    </div>
+    <div>
+      <label for="preset">Quick preset</label>
+      <select id="preset">
+        <option value="30">1 month (30)</option>
+        <option value="31">31 days</option>
+        <option value="7">1 week (7)</option>
+        <option value="90">3 months (90)</option>
+        <option value="365">1 year (365)</option>
+        <option value="3650">Owner / 10 years</option>
+      </select>
+    </div>
+  </div>
+
+  <button id="make">Generate key</button>
+
+  <div class="out" id="out" style="display:none">
+    <label>Access key — copy &amp; send in Discord</label>
+    <div class="keybox" id="keyOut"></div>
+    <div class="meta" id="meta"></div>
+    <button class="ghost" id="copy">Copy key</button>
+  </div>
+
+  <div class="rotate">
+    <h2>Rotate keys (advanced)</h2>
+    <p>Generates a brand-new key pair. Paste the new PUBLIC line into <code>index.html</code> (the <code>PUB_B64</code> value) and the new PRIVATE line into this file (<code>PRIV_B64</code>). This invalidates every key you ever issued — only do it if your private key leaked.</p>
+    <button class="ghost" id="rotate">Generate new key pair</button>
+    <pre id="rotateOut" style="display:none"></pre>
+  </div>
+</div>
+
+<script>
+  // ====== YOUR PRIVATE SIGNING KEY (pkcs8, base64). NEVER SHARE THIS FILE. ======
+  var PRIV_B64 = 'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgw5Td65j2tA0yI5ekRhDFl6PZS6JcSaKTr2Bd+bgLHOahRANCAASt8g9zwP2APp4iTLDpeznfK98bBzdalnatA7uzaNWwKVnWGD7qnuniEcO1F+y9u+LUBABuFiuGBq2AM7CeIPnA';
+  var PREFIX = 'MRLN-';
+
+  function b64ToBytes(s){ var bin=atob(s); var b=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i); return b; }
+  function bytesToB64url(buf){ var b=new Uint8Array(buf), s=''; for(var i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+  function strToB64url(str){ var bytes=new TextEncoder().encode(str); return bytesToB64url(bytes); }
+
+  var privP=null;
+  function priv(){ if(!privP) privP=crypto.subtle.importKey('pkcs8', b64ToBytes(PRIV_B64), {name:'ECDSA',namedCurve:'P-256'}, false, ['sign']); return privP; }
+
+  function fmtDate(sec){ return new Date(sec*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+
+  document.getElementById('preset').addEventListener('change', function(){ document.getElementById('days').value=this.value; });
+
+  document.getElementById('make').addEventListener('click', function(){
+    var name=(document.getElementById('name').value||'').trim();
+    var days=parseInt(document.getElementById('days').value,10);
+    if(!name){ alert('Enter a member name first.'); return; }
+    if(!days||days<1){ alert('Enter a valid number of days.'); return; }
+    var exp=Math.floor(Date.now()/1000)+days*86400;
+    var payloadStr=JSON.stringify({u:name, exp:exp});
+    var payloadB64=strToB64url(payloadStr);
+    var payloadBytes=new TextEncoder().encode(payloadStr);
+    priv().then(function(pk){
+      crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'}, pk, payloadBytes).then(function(sig){
+        var key=PREFIX+payloadB64+'.'+bytesToB64url(sig);
+        document.getElementById('keyOut').textContent=key;
+        document.getElementById('meta').textContent='For '+name+' · expires '+fmtDate(exp)+' ('+days+' days)';
+        document.getElementById('out').style.display='block';
+      });
+    });
+  });
+
+  document.getElementById('copy').addEventListener('click', function(){
+    var t=document.getElementById('keyOut').textContent;
+    navigator.clipboard.writeText(t).then(function(){ var b=document.getElementById('copy'); b.textContent='Copied ✓'; setTimeout(function(){ b.textContent='Copy key'; },1400); });
+  });
+
+  document.getElementById('rotate').addEventListener('click', function(){
+    if(!confirm('This makes a NEW key pair and invalidates every key you already gave out. Continue?')) return;
+    crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'}, true, ['sign','verify']).then(function(kp){
+      Promise.all([crypto.subtle.exportKey('spki',kp.publicKey), crypto.subtle.exportKey('pkcs8',kp.privateKey)]).then(function(r){
+        function b64(buf){ var b=new Uint8Array(buf),s=''; for(var i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s); }
+        var pub=b64(r[0]), prv=b64(r[1]);
+        var el=document.getElementById('rotateOut');
+        el.style.display='block';
+        el.textContent='1) Paste into index.html  →  var PUB_B64 =\n'+pub+'\n\n2) Paste into keymaker.html  →  var PRIV_B64 =\n'+prv;
+      });
+    });
+  });
+</script>
+</body>
+</html>

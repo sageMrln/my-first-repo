@@ -270,9 +270,40 @@
   .logtable td{font-size:13px;vertical-align:top}
   .logtable .ts{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);white-space:nowrap}
   .logtable .act{font-family:'Share Tech Mono';font-size:11px;color:var(--cyan);text-transform:uppercase}
+
+  /* ---- ACCESS LOCK ---- */
+  #lockScreen{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:radial-gradient(1000px 600px at 50% -10%, rgba(0,229,255,.10), transparent 60%), var(--bg)}
+  #lockScreen.unlocked{display:none}
+  .lockcard{width:100%;max-width:380px;border:1px solid var(--line);border-radius:16px;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 18px 60px rgba(0,0,0,.6);padding:30px 26px;text-align:center}
+  .lockcard .lk-logo{font-family:'Orbitron';font-weight:900;font-size:26px;letter-spacing:.16em;color:#eaffff;text-shadow:var(--glow)}
+  .lockcard .lk-sub{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin:6px 0 24px;letter-spacing:.05em}
+  .lockcard label{display:block;font-family:'Rajdhani';font-weight:600;font-size:13px;color:var(--txt);text-align:left;margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em}
+  .lockcard input{width:100%;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:'Share Tech Mono';font-size:13px;padding:12px 13px;outline:none}
+  .lockcard input:focus{border-color:var(--cyan);box-shadow:var(--glow)}
+  .lockcard .lk-btn{width:100%;margin-top:16px;font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;
+    border:none;border-radius:10px;cursor:pointer;padding:13px;background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:#04222a;box-shadow:0 0 22px rgba(0,229,255,.4);transition:all .15s}
+  .lockcard .lk-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .lockcard .lk-status{min-height:18px;margin-top:14px;font-family:'Share Tech Mono';font-size:12px;line-height:1.5}
+  .lockcard .lk-foot{margin-top:20px;font-size:11px;color:var(--txt-dim);line-height:1.55}
 </style>
 </head>
 <body>
+
+<!-- ACCESS LOCK (signed monthly key; verified entirely in this browser) -->
+<div id="lockScreen">
+  <div class="lockcard">
+    <div class="lk-logo">MRLN</div>
+    <div class="lk-sub">// SECURE ACCESS · MONTHLY KEY</div>
+    <label for="lkInput">Access key</label>
+    <input id="lkInput" type="text" placeholder="MRLN-..." autocomplete="off" spellcheck="false">
+    <button class="lk-btn" id="lkBtn">Unlock</button>
+    <div class="lk-status" id="lkStatus"></div>
+    <div class="lk-foot">Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.</div>
+  </div>
+</div>
+
 <div class="wrap">
 
   <!-- HEADER -->
@@ -1747,7 +1778,12 @@
   function exportHTML(){
     logChange('export', 'Created a new HTML snapshot');                 // recorded inside the snapshot
     document.getElementById('hud-state').textContent = JSON.stringify(STATE).replace(/</g, '\\u003c');
+    // ship the snapshot in the LOCKED visual state so a new device starts at the key screen
+    var lockEl = document.getElementById('lockScreen');
+    var wasUnlocked = lockEl && lockEl.classList.contains('unlocked');
+    if(lockEl) lockEl.classList.remove('unlocked');
     var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if(lockEl && wasUnlocked) lockEl.classList.add('unlocked');
     var blob = new Blob([html], { type:'text/html' });
     var url = URL.createObjectURL(blob);
     var d = new Date();
@@ -1765,6 +1801,71 @@
       else b.textContent = 'new file — nothing saved yet';
     }
   })();
+
+  /* ---------- ACCESS LOCK (verifies a signed monthly key in-browser) ----------
+     The site holds only the PUBLIC key, so it can CHECK a key but never MINT one.
+     New keys are made with keymaker.html (kept private) and handed out via Discord. */
+  var LOCK = (function(){
+    var PUB_B64 = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErfIPc8D9gD6eIkyw6Xs53yvfGwc3WpZ2rQO7s2jVsClZ1hg+6p7p4hHDtRfsvbvi1AQAbhYrhgatgDOwniD5wA==';
+    var PREFIX = 'MRLN-';
+    var STORE = 'mrln_access_key';
+    function b64ToBytes(s){ var bin=atob(s); var b=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i); return b; }
+    function b64urlToBytes(s){ s=String(s).replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; return b64ToBytes(s); }
+    var pubP=null;
+    function pub(){ if(!pubP) pubP=crypto.subtle.importKey('spki', b64ToBytes(PUB_B64), {name:'ECDSA',namedCurve:'P-256'}, false, ['verify']); return pubP; }
+    function verify(keyStr){
+      return new Promise(function(resolve){
+        try{
+          var s=String(keyStr||'').trim();
+          if(s.indexOf(PREFIX)===0) s=s.slice(PREFIX.length);
+          var parts=s.split('.');
+          if(parts.length!==2){ resolve({ok:false,reason:'format'}); return; }
+          var payloadBytes=b64urlToBytes(parts[0]);
+          var sigBytes=b64urlToBytes(parts[1]);
+          pub().then(function(pk){
+            crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'}, pk, sigBytes, payloadBytes).then(function(valid){
+              if(!valid){ resolve({ok:false,reason:'signature'}); return; }
+              var payload; try{ payload=JSON.parse(new TextDecoder().decode(payloadBytes)); }catch(_){ resolve({ok:false,reason:'corrupt'}); return; }
+              var now=Math.floor(Date.now()/1000);
+              if(payload.exp && now>payload.exp){ resolve({ok:false,reason:'expired',payload:payload}); return; }
+              resolve({ok:true,payload:payload});
+            }, function(){ resolve({ok:false,reason:'error'}); });
+          }, function(){ resolve({ok:false,reason:'error'}); });
+        }catch(e){ resolve({ok:false,reason:'error'}); }
+      });
+    }
+    function unlock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.add('unlocked'); }
+    function lock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.remove('unlocked'); }
+    function fmtDate(sec){ try{ return new Date(sec*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(_){ return ''; } }
+    function setStatus(msg,color){ var s=document.getElementById('lkStatus'); if(s){ s.textContent=msg||''; s.style.color=color||'var(--txt-dim)'; } }
+    function submit(){
+      var inp=document.getElementById('lkInput'); if(!inp) return;
+      var val=inp.value;
+      setStatus('Checking…','var(--txt-dim)');
+      verify(val).then(function(r){
+        if(r.ok){
+          try{ localStorage.setItem(STORE, String(val).trim()); }catch(_){ }
+          setStatus('✓ Unlocked'+(r.payload.exp?(' · valid until '+fmtDate(r.payload.exp)):''),'var(--lime)');
+          setTimeout(unlock, 350);
+        } else if(r.reason==='expired'){
+          setStatus('✗ This key expired'+(r.payload&&r.payload.exp?(' on '+fmtDate(r.payload.exp)):'')+'. Get a new one in Discord.','var(--red)');
+        } else {
+          setStatus('✗ Invalid key. Make sure you copied the whole thing.','var(--red)');
+        }
+      });
+    }
+    function boot(){
+      var btn=document.getElementById('lkBtn'); if(btn) btn.addEventListener('click', submit);
+      var inp=document.getElementById('lkInput'); if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
+      var saved=null; try{ saved=localStorage.getItem(STORE); }catch(_){ }
+      if(saved){ verify(saved).then(function(r){
+        if(r.ok){ unlock(); }
+        else { lock(); if(inp) inp.value=''; if(r.reason==='expired') setStatus('Your access expired. Enter this month’s key.','var(--amber)'); }
+      }); }
+    }
+    return { boot:boot, verify:verify, lock:lock, unlock:unlock, STORE:STORE };
+  })();
+  LOCK.boot();
 
   /* ---------- INITIAL RENDER of all self-service sections ---------- */
   renderProfile();
