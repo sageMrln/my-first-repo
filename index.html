@@ -386,8 +386,7 @@
      and after loading the sample data) */
   body.clean-mode .demo-only{display:none !important}
   body:not(.clean-mode) #goalsGeneric,
-  body:not(.clean-mode) #incomeGeneric,
-  body:not(.clean-mode) #loanGeneric{display:none !important}
+  body:not(.clean-mode) #incomeGeneric{display:none !important}
 
   /* ===================== MODAL / CONFIRM ===================== */
   .modal-back{position:fixed;inset:0;z-index:90000;display:none;align-items:center;justify-content:center;padding:20px;
@@ -594,16 +593,14 @@
     <button class="tab active" data-p="overview"><span class="ix">01</span>Overview</button>
     <button class="tab" data-p="income"><span class="ix">02</span>Income</button>
     <button class="tab" data-p="expenses"><span class="ix">03</span>Expenses</button>
-    <button class="tab" data-p="loan"><span class="ix">04</span>Loan</button>
-    <button class="tab" data-p="flow"><span class="ix">05</span>Cash Flow</button>
-    <button class="tab" data-p="rule"><span class="ix">06</span>Savings Rule</button>
-    <button class="tab" data-p="goals"><span class="ix">07</span>Goals</button>
-    <button class="tab" data-p="checklist"><span class="ix">08</span>Checklist</button>
-    <button class="tab" data-p="subs"><span class="ix">09</span>Subscriptions</button>
-    <button class="tab" data-p="klarna"><span class="ix">10</span>Klarna Float</button>
-    <button class="tab" data-p="gym"><span class="ix">11</span>Gym Plan</button>
-    <button class="tab" data-p="calendar"><span class="ix">12</span>Calendar</button>
-    <button class="tab" data-p="log"><span class="ix">13</span>Change Log</button>
+    <button class="tab" data-p="flow"><span class="ix">04</span>Cash Flow</button>
+    <button class="tab" data-p="rule"><span class="ix">05</span>Savings Rule</button>
+    <button class="tab" data-p="goals"><span class="ix">06</span>Goals</button>
+    <button class="tab" data-p="checklist"><span class="ix">07</span>Checklist</button>
+    <button class="tab" data-p="subs"><span class="ix">08</span>Subscriptions</button>
+    <button class="tab" data-p="gym"><span class="ix">09</span>Gym Plan</button>
+    <button class="tab" data-p="calendar"><span class="ix">10</span>Calendar</button>
+    <button class="tab" data-p="log"><span class="ix">11</span>Change Log</button>
   </nav>
 
   <!-- 01 OVERVIEW -->
@@ -684,39 +681,7 @@
     </div>
   </section>
 
-  <!-- 04 LOAN -->
-  <section class="panel" id="loan">
-    <div class="card" id="loanGeneric">
-      <h2>Loan &amp; Savings</h2>
-      <div class="desc">If you have a loan or a monthly savings target, they show here. Change them with <b>⚙ Setup</b> or <b>💬 Quick Update</b>.</div>
-      <table>
-        <tr><td>Monthly loan / debt payment</td><td class="num" id="lnPay">—</td></tr>
-        <tr class="total"><td>Monthly savings target</td><td class="num" id="lnSave">—</td></tr>
-      </table>
-      <div class="note">Tip: keep borrowed money mentally separate from spending money, and automate your savings transfer so it happens without thinking.</div>
-    </div>
-    <div class="card demo-only">
-      <h2>The Loan <span class="tag good">SECURED</span></h2>
-      <div class="desc">Nordea "Forbrugslån+" — their loan for ages 18–28. Submitted and locked in.</div>
-      <div class="row2">
-        <table>
-          <tr><td>Loan amount</td><td class="num">75,000</td></tr>
-          <tr><td>Monthly payment</td><td class="num">1,364</td></tr>
-          <tr><td>Interest rate</td><td class="num">7.70%</td></tr>
-          <tr><td>ÅOP (true annual cost)</td><td class="num">9.23%</td></tr>
-        </table>
-        <table>
-          <tr><td>Fees (one-time)</td><td class="num">2,551</td></tr>
-          <tr><td>Total repaid</td><td class="num">96,844</td></tr>
-          <tr><td>Term</td><td class="num">6 yrs · 71 pmts</td></tr>
-          <tr><td>First payment</td><td class="num">31 Jul 2026</td></tr>
-        </table>
-      </div>
-      <div class="note">Cost of borrowing over the full 6 years: ~24,400 kr (21,844 interest + 2,551 fees). That's the price for having the cushion now instead of saving it slowly.</div>
-    </div>
-  </section>
-
-  <!-- 05 CASH FLOW -->
+  <!-- 04 CASH FLOW -->
   <section class="panel" id="flow">
     <div class="card">
       <h2>Cash-Flow Simulator</h2>
@@ -764,7 +729,7 @@
     </div>
   </section>
 
-  <!-- 06 SAVINGS RULE -->
+  <!-- 05 SAVINGS RULE -->
   <section class="panel" id="rule">
     <div class="card">
       <h2>The Savings Rule</h2>
@@ -786,7 +751,7 @@
     </div>
   </section>
 
-  <!-- 07 GOALS -->
+  <!-- 06 GOALS -->
   <section class="panel" id="goals">
     <div class="card demo-only">
       <h2>Goals — Your Words</h2>
@@ -820,7 +785,7 @@
     </div>
   </section>
 
-  <!-- 08 CHECKLIST -->
+  <!-- 07 CHECKLIST -->
   <section class="panel" id="checklist">
     <div class="card">
       <h2>Action Checklist</h2>
@@ -837,7 +802,7 @@
     </div>
   </section>
 
-  <!-- 09 SUBSCRIPTIONS -->
+  <!-- 08 SUBSCRIPTIONS -->
   <section class="panel" id="subs">
     <div class="card" data-collapse data-collapsed>
       <h2>Add a Subscription / Recurring Cost</h2>
@@ -949,104 +914,7 @@
     </div>
   </section>
 
-  <!-- 10 KLARNA FLOAT -->
-  <section class="panel" id="klarna">
-    <div class="card">
-      <h2>Klarna Float System</h2>
-      <div class="desc">A free, zero-interest cash tool — explained simply. Klarna sends the <b>full amount</b> to your bank now, and you pay it back over the next 2 months in two equal, interest-free instalments. Because there's no interest, you return <b>exactly</b> what you borrowed — it's really just borrowing from your own future salary and bringing it forward to today, for free.</div>
-
-      <div style="background:rgba(255,181,71,.08);border:1px solid var(--amber);border-radius:10px;padding:14px 16px;margin-bottom:16px">
-        <div style="font-family:'Share Tech Mono';font-size:11px;letter-spacing:.14em;color:var(--amber);margin-bottom:8px">⚠ THE ONE RULE TO NEVER FORGET</div>
-        <div style="font-size:14px;color:var(--txt)">The money is <b>NOT yours to keep</b> — it's your own future salary pulled forward, and you return every krone over the next 2 months. Think "borrowing from myself, interest-free," never "free money." Treat it as keep-money and it will hurt you; treat it as a short bridge and it's a powerful free tool.</div>
-      </div>
-
-      <h2 style="font-size:15px;margin-top:18px">How one cycle works (10k example)</h2>
-      <table>
-        <tr><th>Step</th><th style="text-align:right">Cash effect</th></tr>
-        <tr><td>Klarna sends the full 10k to your bank</td><td class="num">+10,000</td></tr>
-        <tr><td><b>In your hand right now (borrowed in full)</b></td><td class="num" style="color:var(--lime)">10,000</td></tr>
-        <tr><td>Month 1: repay 1st half (from salary)</td><td class="num">−5,000</td></tr>
-        <tr><td>Month 2: repay 2nd half (from salary)</td><td class="num">−5,000</td></tr>
-        <tr class="total"><td>End — exactly what you borrowed, returned</td><td class="num">0</td></tr>
-      </table>
-      <div class="note">You get the whole 10k on day one and repay it interest-free over the next two months — 5,000 each — from salary that was arriving anyway. Total interest: zero; total repaid: exactly 10,000. The only thing that matters is that each 5,000 instalment fits inside your monthly surplus (see Safe-Size below).</div>
-    </div>
-
-    <div class="card">
-      <h2>"A Loan But Better" — The Buffer Build</h2>
-      <div class="desc">How to turn the short bridge into something permanent you actually own — costing nothing. Using an 8k example (comfortably inside your surplus):</div>
-      <ul class="clean">
-        <li><b>Step 1 —</b> Borrow 8k from Klarna. You have the full 8k in your bank today.</li>
-        <li><b>Step 2 —</b> DON'T spend it. Let it sit as a buffer.</li>
-        <li><b>Step 3 —</b> Repay the two 4k instalments from your salary surplus over the next 2 months — <i>not</i> from the 8k you're holding.</li>
-        <li><b>Result —</b> After 2 months Klarna is fully repaid and you still hold the original 8k, free and clear. You've simply pulled 2 months of saving forward into instant, interest-free liquidity — a buffer you got to use from day one at zero cost.</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h2>Safe-Size Rule</h2>
-      <div class="desc">The bridge only works if you can cover each instalment from your salary surplus — and since repayment is split over 2 months, each instalment is <b>half the amount borrowed</b>. Your surplus on a typical month — income minus all recurring costs and the loan payment — is <b id="klSurplus">~4,525 kr</b>.</div>
-      <table>
-        <tr><th>Amount borrowed</th><th>Instalment (×2 months)</th><th style="text-align:right">Safe for you?</th></tr>
-        <tr><td>6,000 kr</td><td>3,000</td><td class="num" style="color:var(--lime)">✅ Yes</td></tr>
-        <tr><td>8,000 kr</td><td>4,000</td><td class="num" style="color:var(--lime)">✅ Yes</td></tr>
-        <tr><td>9,000 kr</td><td>4,500</td><td class="num" style="color:var(--lime)">✅ Yes (just fits)</td></tr>
-        <tr><td>10,000 kr</td><td>5,000</td><td class="num" style="color:var(--amber)">⚠ Edge — needs a typical-or-better month</td></tr>
-        <tr><td>12,000 kr</td><td>6,000</td><td class="num" style="color:var(--red)">✗ Too big</td></tr>
-      </table>
-      <div class="note">~9k is your comfortable ceiling on a typical month — a 4,500 instalment fits inside your ~4,525 surplus. The 10k example needs 5,000 free in <i>each</i> of two months — about 475 over a strictly average month — so treat 10k as the edge: fine when income is at or above typical, tight on a low month. Anything that forces you to dip into savings to make an instalment defeats the purpose.</div>
-    </div>
-
-    <div class="card">
-      <h2>Klarna Cash-Flow Simulator</h2>
-      <div class="desc">Pick the kind of month, then slide the amount you'd borrow. It shows the two repayments, whether they fit your cash after every expense and the loan payment, and a clear good→bad signal. Your surplus changes a lot with income, so the month matters.</div>
-
-      <div style="margin-bottom:14px">
-        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">WHICH KIND OF MONTH?</small>
-        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="klScenBtns">
-          <button class="scen-btn" onclick="klSetScen('low')" id="klBtnLow">Low (14,407)</button>
-          <button class="scen-btn active" onclick="klSetScen('avg')" id="klBtnAvg">Typical (17,000)</button>
-          <button class="scen-btn" onclick="klSetScen('high')" id="klBtnHigh">Good (25,778)</button>
-        </div>
-      </div>
-
-      <div class="slider-wrap">
-        <input type="range" id="klAmt" min="1000" max="15000" step="500" value="10000">
-        <div class="calc-row"><span>Amount you borrow (received now, in full)</span><b id="klRecv">10,000 kr</b></div>
-        <div class="calc-row"><span>Repayment — month 1</span><b id="klM1">− 5,000 kr</b></div>
-        <div class="calc-row"><span>Repayment — month 2</span><b id="klM2">− 5,000 kr</b></div>
-        <div class="calc-row"><span>Total repaid (= exactly what you borrowed)</span><b id="klTot">10,000 kr</b></div>
-        <div class="calc-row"><span>Your surplus this month (after all costs + loan)</span><b id="klSurp">4,525 kr</b></div>
-        <div class="calc-row"><span>Left each month after the instalment</span><b id="klAfter">− 475 kr</b></div>
-      </div>
-
-      <div id="klVerdict" style="margin-top:16px;border-radius:12px;padding:16px 18px;border:1px solid var(--amber);background:rgba(255,181,71,.08)">
-        <div style="font-family:'Orbitron';font-weight:700;font-size:22px;color:var(--amber)" id="klVtag">⚠ TIGHT</div>
-        <div style="font-size:14px;color:var(--txt);margin-top:6px" id="klVmsg">Right at your limit.</div>
-      </div>
-
-      <h2 style="font-size:15px;margin-top:22px">Examples at this income level</h2>
-      <table>
-        <tr><th>Borrow</th><th>Instalment ×2</th><th>Left after instalment</th><th style="text-align:right">Verdict</th></tr>
-        <tbody id="klExamples"></tbody>
-      </table>
-      <div class="note">"Left after instalment" is what remains of your monthly surplus after one repayment, <i>before</i> setting aside the 1,364 savings match. Negative means a single instalment already eats your whole surplus — you'd be paying Klarna out of savings. GOOD = fits in free money · OK = fits if you skip the savings transfer that month · TIGHT = dips into savings · BAD = exceeds your surplus.</div>
-    </div>
-
-    <div class="card">
-      <h2>Honest Verdict</h2>
-      <div class="desc">Where this tool fits next to your Nordea loan.</div>
-      <ul class="clean">
-        <li><b>What it really is:</b> interest-free borrowing from your own future salary — you receive the full amount now and return exactly that over 2 months. No more, no less.</li>
-        <li><b>What it's great for:</b> free short-term breathing room — bridging a gap before payday, or pulling a buffer forward without touching savings.</li>
-        <li><b>What it can't do:</b> replace the Nordea loan. It tops out around ~9k and must be cleared within 2 months, vs Nordea's 75k pool over 6 years. It resets to zero each cycle — it never builds a growing pile by itself.</li>
-        <li><b>The risk:</b> Klarna has to approve you each time, and every krone must come back within 2 months. Never let it become something you <i>need</i> to survive the month.</li>
-        <li><b>Best use:</b> a free bonus tool on top of your real plan — not the foundation of it.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- 11 GYM PLAN -->
+  <!-- 09 GYM PLAN -->
   <section class="panel" id="gym">
     <div class="card">
       <h2>Gym &amp; Workout Plan</h2>
@@ -1064,7 +932,7 @@
     </div>
   </section>
 
-  <!-- 12 CALENDAR -->
+  <!-- 10 CALENDAR -->
   <section class="panel" id="calendar">
     <div class="card">
       <h2>Calendar</h2>
@@ -1096,7 +964,7 @@
     </div>
   </section>
 
-  <!-- 13 CHANGE LOG -->
+  <!-- 11 CHANGE LOG -->
   <section class="panel" id="log">
     <div class="card">
       <h2>Change Log <span class="tag now" id="logCount">0</span></h2>
@@ -1387,13 +1255,13 @@
     });
   }
 
-  /* ---------- OVERVIEW + KLARNA derived numbers ---------- */
+  /* ---------- OVERVIEW derived numbers ---------- */
   function renderDerived(){
-    document.getElementById('ovLeft').textContent    = fmtN(leftOver(MODEL.income.avg));
-    document.getElementById('ovComfort').textContent = '~' + fmt(comfort(MODEL.income.avg));
-    document.getElementById('ovWorst').textContent   = '+' + fmt(leftOver(MODEL.income.low));
-    document.getElementById('vdWorst').textContent   = '+' + fmtN(leftOver(MODEL.income.low)) + ' ✅';
-    document.getElementById('klSurplus').textContent = '~' + fmt(leftOver(MODEL.income.avg));
+    function set(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; }
+    set('ovLeft',    fmtN(leftOver(MODEL.income.avg)));
+    set('ovComfort', '~' + fmt(comfort(MODEL.income.avg)));
+    set('ovWorst',   '+' + fmt(leftOver(MODEL.income.low)));
+    set('vdWorst',   '+' + fmtN(leftOver(MODEL.income.low)) + ' ✅');
   }
   renderExpenses();
   renderDerived();
@@ -1441,7 +1309,6 @@
     setTxt('stLow', fmt(MODEL.income.low)); setTxt('stAvg', fmt(MODEL.income.avg)); setTxt('stHigh', fmt(MODEL.income.high));
     setTxt('incLow', fmt(MODEL.income.low)); setTxt('incAvg', fmt(MODEL.income.avg)); setTxt('incHigh', fmt(MODEL.income.high));
     setTxt('btnLow','Low ('+fmtN(MODEL.income.low)+')'); setTxt('btnAvg','Typical ('+fmtN(MODEL.income.avg)+')'); setTxt('btnHigh','Good ('+fmtN(MODEL.income.high)+')');
-    setTxt('klBtnLow','Low ('+fmtN(MODEL.income.low)+')'); setTxt('klBtnAvg','Typical ('+fmtN(MODEL.income.avg)+')'); setTxt('klBtnHigh','Good ('+fmtN(MODEL.income.high)+')');
   };
 
   // Monthly amount banked: forced match + a share of that scenario's comfort money.
@@ -1557,72 +1424,13 @@
   // Prime milestones/readout so they aren't dashes before first visit.
   setScen('avg');
 
-  /* ---------- KLARNA FLOAT SIMULATOR ---------- */
-  (function(){
-    var amt = document.getElementById('klAmt');
-    if(!amt) return;
-    var scen = 'avg';
-    var EX = [3000,5000,8000,10000,12000,15000];
-    function surplus(){ return leftOver(MODEL.income[scen]); } // before the savings match
-    function freeMoney(){ return comfort(MODEL.income[scen]); } // after the savings match
-    function verdict(I){
-      var s = surplus(), c = freeMoney();
-      if(I <= c)        return {tag:'✅ GOOD',  rgb:'124,255,178', msg:'Easily affordable — pay both instalments from spare cash and still set money aside.'};
-      if(I <= s)        return {tag:'☑ OK',     rgb:'0,229,255',   msg:'Affordable if you pause this month’s savings transfer. Essentials and the loan pool stay untouched.'};
-      if(I <= s*1.15)   return {tag:'⚠ TIGHT',  rgb:'255,181,71',  msg:'Right at your limit — you’d dip slightly into savings to cover it. Only in a typical-or-better month.'};
-      return                   {tag:'⛔ BAD',    rgb:'255,92,124',  msg:'Too big — the instalments exceed your surplus, so you’d have to raid savings or the loan pool. Don’t.'};
-    }
-    function signed(n){ return n >= 0 ? fmtN(n) : '−' + fmtN(-n); }
-    function render(){
-      var borrow = parseInt(amt.value,10);
-      var I = borrow/2;
-      var s = surplus();
-      var after = s - I;
-      document.getElementById('klRecv').textContent = fmt(borrow);
-      document.getElementById('klM1').textContent  = '− ' + fmt(I);
-      document.getElementById('klM2').textContent  = '− ' + fmt(I);
-      document.getElementById('klTot').textContent = fmt(borrow);
-      document.getElementById('klSurp').textContent = fmt(s);
-      var afterEl = document.getElementById('klAfter');
-      afterEl.textContent = after >= 0 ? fmt(after) : '− ' + fmt(-after);
-      afterEl.style.color = after < 0 ? '#ff5c7c' : '';
-      var v = verdict(I);
-      var box = document.getElementById('klVerdict');
-      box.style.borderColor = 'rgb(' + v.rgb + ')';
-      box.style.background  = 'rgba(' + v.rgb + ',0.08)';
-      var tagEl = document.getElementById('klVtag');
-      tagEl.textContent = v.tag; tagEl.style.color = 'rgb(' + v.rgb + ')';
-      document.getElementById('klVmsg').textContent = v.msg;
-      document.getElementById('klExamples').innerHTML = EX.map(function(b){
-        var i = b/2, a = s - i, vv = verdict(i);
-        return '<tr><td>' + fmtN(b) + ' kr</td>' +
-          '<td class="num">' + fmtN(i) + '</td>' +
-          '<td class="num" style="color:' + (a<0 ? '#ff5c7c' : 'var(--cyan)') + '">' + signed(a) + '</td>' +
-          '<td class="num" style="color:rgb(' + vv.rgb + ')">' + vv.tag + '</td></tr>';
-      }).join('');
-    }
-    window.klSetScen = function(s){
-      scen = s;
-      [['low','klBtnLow'],['avg','klBtnAvg'],['high','klBtnHigh']].forEach(function(p){
-        var el = document.getElementById(p[1]); if(el) el.classList.toggle('active', p[0]===s);
-      });
-      render();
-    };
-    amt.addEventListener('input', render);
-    window.klRefresh = render;
-    render();
-  })();
-
   /* ---------- CENTRAL FINANCE REFRESH (after any cost change) ---------- */
   function refreshFinance(){
     recomputeGrand();
     renderExpenses();
     renderDerived();
     var c2 = document.getElementById('cfOut2'); if(c2) c2.textContent = '− ' + fmt(GRAND);
-    var lp=document.getElementById('lnPay'); if(lp) lp.textContent = fmt(MODEL.loanPayment||0);
-    var ls=document.getElementById('lnSave'); if(ls) ls.textContent = fmt(MODEL.savingsMatch||0);
     if(typeof updateCF==='function') updateCF();
-    if(typeof window.klRefresh==='function') window.klRefresh();
     if(typeof drawChart==='function') drawChart();
   }
 
