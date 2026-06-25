@@ -577,6 +577,42 @@
     </div>
 
     <div class="card">
+      <h2>Klarna Cash-Flow Simulator</h2>
+      <div class="desc">Pick the kind of month, then slide the amount you'd borrow. It shows the two repayments, whether they fit your cash after every expense and the loan payment, and a clear good→bad signal. Your surplus changes a lot with income, so the month matters.</div>
+
+      <div style="margin-bottom:14px">
+        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">WHICH KIND OF MONTH?</small>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="klScenBtns">
+          <button class="scen-btn" onclick="klSetScen('low')" id="klBtnLow">Low (14,407)</button>
+          <button class="scen-btn active" onclick="klSetScen('avg')" id="klBtnAvg">Typical (17,000)</button>
+          <button class="scen-btn" onclick="klSetScen('high')" id="klBtnHigh">Good (25,778)</button>
+        </div>
+      </div>
+
+      <div class="slider-wrap">
+        <input type="range" id="klAmt" min="1000" max="15000" step="500" value="10000">
+        <div class="calc-row"><span>Amount you borrow (received now, in full)</span><b id="klRecv">10,000 kr</b></div>
+        <div class="calc-row"><span>Repayment — month 1</span><b id="klM1">− 5,000 kr</b></div>
+        <div class="calc-row"><span>Repayment — month 2</span><b id="klM2">− 5,000 kr</b></div>
+        <div class="calc-row"><span>Total repaid (= exactly what you borrowed)</span><b id="klTot">10,000 kr</b></div>
+        <div class="calc-row"><span>Your surplus this month (after all costs + loan)</span><b id="klSurp">4,525 kr</b></div>
+        <div class="calc-row"><span>Left each month after the instalment</span><b id="klAfter">− 475 kr</b></div>
+      </div>
+
+      <div id="klVerdict" style="margin-top:16px;border-radius:12px;padding:16px 18px;border:1px solid var(--amber);background:rgba(255,181,71,.08)">
+        <div style="font-family:'Orbitron';font-weight:700;font-size:22px;color:var(--amber)" id="klVtag">⚠ TIGHT</div>
+        <div style="font-size:14px;color:var(--txt);margin-top:6px" id="klVmsg">Right at your limit.</div>
+      </div>
+
+      <h2 style="font-size:15px;margin-top:22px">Examples at this income level</h2>
+      <table>
+        <tr><th>Borrow</th><th>Instalment ×2</th><th>Left after instalment</th><th style="text-align:right">Verdict</th></tr>
+        <tbody id="klExamples"></tbody>
+      </table>
+      <div class="note">"Left after instalment" is what remains of your monthly surplus after one repayment, <i>before</i> setting aside the 1,364 savings match. Negative means a single instalment already eats your whole surplus — you'd be paying Klarna out of savings. GOOD = fits in free money · OK = fits if you skip the savings transfer that month · TIGHT = dips into savings · BAD = exceeds your surplus.</div>
+    </div>
+
+    <div class="card">
       <h2>Honest Verdict</h2>
       <div class="desc">Where this tool fits next to your Nordea loan.</div>
       <ul class="clean">
@@ -843,6 +879,61 @@
   window.addEventListener('resize', function(){ if(document.getElementById('flow').classList.contains('show')) drawChart(); });
   // Prime milestones/readout so they aren't dashes before first visit.
   setScen('avg');
+
+  /* ---------- KLARNA FLOAT SIMULATOR ---------- */
+  (function(){
+    var amt = document.getElementById('klAmt');
+    if(!amt) return;
+    var scen = 'avg';
+    var EX = [3000,5000,8000,10000,12000,15000];
+    function surplus(){ return leftOver(MODEL.income[scen]); } // before the savings match
+    function freeMoney(){ return comfort(MODEL.income[scen]); } // after the savings match
+    function verdict(I){
+      var s = surplus(), c = freeMoney();
+      if(I <= c)        return {tag:'✅ GOOD',  rgb:'124,255,178', msg:'Easily affordable — pay both instalments from spare cash and still set money aside.'};
+      if(I <= s)        return {tag:'☑ OK',     rgb:'0,229,255',   msg:'Affordable if you pause this month’s savings transfer. Essentials and the loan pool stay untouched.'};
+      if(I <= s*1.15)   return {tag:'⚠ TIGHT',  rgb:'255,181,71',  msg:'Right at your limit — you’d dip slightly into savings to cover it. Only in a typical-or-better month.'};
+      return                   {tag:'⛔ BAD',    rgb:'255,92,124',  msg:'Too big — the instalments exceed your surplus, so you’d have to raid savings or the loan pool. Don’t.'};
+    }
+    function signed(n){ return n >= 0 ? fmtN(n) : '−' + fmtN(-n); }
+    function render(){
+      var borrow = parseInt(amt.value,10);
+      var I = borrow/2;
+      var s = surplus();
+      var after = s - I;
+      document.getElementById('klRecv').textContent = fmt(borrow);
+      document.getElementById('klM1').textContent  = '− ' + fmt(I);
+      document.getElementById('klM2').textContent  = '− ' + fmt(I);
+      document.getElementById('klTot').textContent = fmt(borrow);
+      document.getElementById('klSurp').textContent = fmt(s);
+      var afterEl = document.getElementById('klAfter');
+      afterEl.textContent = after >= 0 ? fmt(after) : '− ' + fmt(-after);
+      afterEl.style.color = after < 0 ? '#ff5c7c' : '';
+      var v = verdict(I);
+      var box = document.getElementById('klVerdict');
+      box.style.borderColor = 'rgb(' + v.rgb + ')';
+      box.style.background  = 'rgba(' + v.rgb + ',0.08)';
+      var tagEl = document.getElementById('klVtag');
+      tagEl.textContent = v.tag; tagEl.style.color = 'rgb(' + v.rgb + ')';
+      document.getElementById('klVmsg').textContent = v.msg;
+      document.getElementById('klExamples').innerHTML = EX.map(function(b){
+        var i = b/2, a = s - i, vv = verdict(i);
+        return '<tr><td>' + fmtN(b) + ' kr</td>' +
+          '<td class="num">' + fmtN(i) + '</td>' +
+          '<td class="num" style="color:' + (a<0 ? '#ff5c7c' : 'var(--cyan)') + '">' + signed(a) + '</td>' +
+          '<td class="num" style="color:rgb(' + vv.rgb + ')">' + vv.tag + '</td></tr>';
+      }).join('');
+    }
+    window.klSetScen = function(s){
+      scen = s;
+      [['low','klBtnLow'],['avg','klBtnAvg'],['high','klBtnHigh']].forEach(function(p){
+        var el = document.getElementById(p[1]); if(el) el.classList.toggle('active', p[0]===s);
+      });
+      render();
+    };
+    amt.addEventListener('input', render);
+    render();
+  })();
 
   /* ---------- CHECKLIST TOGGLE ---------- */
   document.querySelectorAll('#checklist-list .box').forEach(function(b){
