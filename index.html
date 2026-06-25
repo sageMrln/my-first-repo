@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FINANCE HUD — Osefe</title>
+<title>FINANCE HUD</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
 
@@ -382,11 +382,9 @@
   .card[data-collapse].collapsed > *:not(h2){display:none !important}
   .card[data-collapse] > h2{margin-bottom:4px}
 
-  /* example-only narrative (hidden for clean/new users; shown for returning users
-     and after loading the sample data) */
+  /* (legacy) example-only narrative — all personal cards have been removed, so
+     this only keeps any future demo-only element hidden for clean users */
   body.clean-mode .demo-only{display:none !important}
-  body:not(.clean-mode) #goalsGeneric,
-  body:not(.clean-mode) #incomeGeneric{display:none !important}
 
   /* ===================== MODAL / CONFIRM ===================== */
   .modal-back{position:fixed;inset:0;z-index:90000;display:none;align-items:center;justify-content:center;padding:20px;
@@ -573,12 +571,10 @@
   <header class="hud">
     <div class="eyebrow">// Personal Finance Command Center</div>
     <h1>FINANCE HUD</h1>
-    <div class="sub" id="hdrSub">Operator: Osefe Miradi · Aarhus, DK · Status: ACTIVE</div>
+    <div class="sub" id="hdrSub">Operator · Status: ACTIVE</div>
     <div class="pillbar">
-      <span class="pill">AGE <b id="hdrAge">20</b></span>
-      <span class="pill">EMPLOYER <b id="hdrEmployer">One Call ApS</b></span>
-      <span class="pill demo-only">CREDIT <b>CLEAN · NO RKI</b></span>
-      <span class="pill demo-only">LOAN <b>SECURED</b></span>
+      <span class="pill">AGE <b id="hdrAge">—</b></span>
+      <span class="pill">WORK <b id="hdrEmployer">—</b></span>
     </div>
 
     <div class="status">
@@ -617,22 +613,10 @@
           </ul>
         </div>
         <div>
-          <div class="bignum"><small>Left over · typical month</small><span id="ovLeft">4,525</span><span style="font-size:20px"> kr</span></div>
-          <div class="note">After rent, every bill, and the loan payment — before you move the forced savings match. Comfort money after the match: <b id="ovComfort">~3,161 kr</b>. This is the "buy good meat, pizza on weekends, no checkout math" number.</div>
+          <div class="bignum"><small>Left over · typical month</small><span id="ovLeft">—</span><span style="font-size:20px"> kr</span></div>
+          <div class="note">What's left after every bill and any debt payment, before you move money to savings. Comfort money after savings: <b id="ovComfort">—</b>. This is the "spend without doing checkout math" number.</div>
         </div>
       </div>
-    </div>
-    <div class="card demo-only">
-      <h2>Verdict</h2>
-      <div class="desc">Scored against the targets set at the start.</div>
-      <table>
-        <tr><th>Target</th><th style="text-align:right">Result</th></tr>
-        <tr><td>ÅOP under 10%</td><td class="num">9.23% ✅</td></tr>
-        <tr><td>Monthly payment under 1,650 ceiling</td><td class="num">1,364 ✅</td></tr>
-        <tr><td>Clears worst real month</td><td class="num" id="vdWorst">+1,932 ✅</td></tr>
-        <tr><td>Reject zone (15%+)</td><td class="num">FAR CLEAR ✅</td></tr>
-        <tr class="total"><td>Overall</td><td class="num">GOOD</td></tr>
-      </table>
     </div>
   </section>
 
@@ -649,26 +633,13 @@
       </table>
       <div class="note">Your simulators and savings projection use the <b>typical</b> month as the baseline.</div>
     </div>
-    <div class="card demo-only">
-      <h2>Income Range</h2>
-      <div class="desc">All figures AFTER tax. Income varies because a big part of pay is sales bonuses (day bonus + voice bonus).</div>
-      <table>
-        <tr><th>Scenario</th><th>Source</th><th style="text-align:right">After tax</th></tr>
-        <tr><td>Low</td><td>April salary (real)</td><td class="num">14,407</td></tr>
-        <tr><td>Average — official</td><td>SKAT-verified, used by Nordea</td><td class="num">16,161</td></tr>
-        <tr><td>Average — typical</td><td>March + June payslips</td><td class="num">~17,000</td></tr>
-        <tr><td>High</td><td>May salary (real)</td><td class="num">25,778</td></tr>
-        <tr class="total"><td>Latest payslip</td><td>16 May–15 Jun, paid 30 Jun</td><td class="num">17,314</td></tr>
-      </table>
-      <div class="note">The Cash Flow and Savings tabs use 17,000 kr as the "typical" month — the middle of your real range, not the rosier 17,314 latest payslip. Holiday pay (feriepenge) ~1,831 kr./period accrues in the background — not spendable now, but it's yours.</div>
-    </div>
   </section>
 
   <!-- 03 EXPENSES -->
   <section class="panel" id="expenses">
     <div class="card">
       <h2>Expense Breakdown</h2>
-      <div class="desc">Every recurring cost you have, grouped by type, with <b>no double-counting</b>. Tap any group to open it. "Noise" removed: tax refunds, holiday pay, and friend-to-friend MobilePay transfers (repayments that cancel out, not real costs). Parking varies month to month and is left out of the total.</div>
+      <div class="desc">Every recurring cost you have, grouped by type. Tap any group to open it. Add, edit or delete anything in the <b>Subscriptions</b> tab — items marked as "varies" are left out of the total.</div>
 
       <div class="subtotal" style="margin-bottom:18px">
         <div class="stat avg"><div class="lbl">Total / month</div><div class="val" id="expMonth">—<small> kr</small></div></div>
@@ -677,7 +648,7 @@
 
       <div id="expGroups"><!-- rendered from MODEL --></div>
 
-      <div class="note">This grand total is the single source of truth: the Cash Flow simulator, the Savings projection, and the Klarna surplus all subtract <b id="expRef">11,111 kr</b>/mo from your income. Change a number in the model and every tab updates together.</div>
+      <div class="note">This grand total is the single source of truth: the Cash Flow simulator and the Savings projection both subtract your total monthly costs from your income. Change a number anywhere and every tab updates together.</div>
     </div>
   </section>
 
@@ -685,29 +656,29 @@
   <section class="panel" id="flow">
     <div class="card">
       <h2>Cash-Flow Simulator</h2>
-      <div class="desc">Slide to test any income level. It subtracts your real recurring costs (which already include rent) and the loan payment, then shows what's left and what's truly free to spend.</div>
+      <div class="desc">Slide to test any income level. It subtracts your recurring costs and any debt payment, then shows what's left and what's truly free to spend.</div>
       <div class="slider-wrap">
-        <input type="range" id="incSlider" min="13000" max="26000" step="100" value="17000">
-        <div class="calc-row"><span>Income (after tax)</span><b id="cfInc">17,000 kr</b></div>
-        <div class="calc-row"><span>Recurring costs (car, insurance, home incl. rent, food, subs)</span><b id="cfOut2">− 11,111 kr</b></div>
-        <div class="calc-row"><span>Loan payment</span><b>− 1,364 kr</b></div>
-        <div style="margin-top:14px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">LEFT OVER</small><div class="calc-out" id="cfOut">4,525 kr</div></div>
-        <div class="calc-row" style="margin-top:14px"><span>↳ Forced savings (match)</span><b>− 1,364 kr</b></div>
-        <div style="margin-top:8px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">FREE COMFORT MONEY</small><div class="calc-out" id="cfFree" style="color:var(--cyan)">3,161 kr</div></div>
+        <input type="range" id="incSlider" min="0" max="40000" step="100" value="0">
+        <div class="calc-row"><span>Income (after tax)</span><b id="cfInc">—</b></div>
+        <div class="calc-row"><span>Recurring costs (all your bills &amp; subscriptions)</span><b id="cfOut2">—</b></div>
+        <div class="calc-row" id="cfLoanRow"><span>Loan / debt payment</span><b id="cfLoan">—</b></div>
+        <div style="margin-top:14px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">LEFT OVER</small><div class="calc-out" id="cfOut">—</div></div>
+        <div class="calc-row" id="cfMatchRow" style="margin-top:14px"><span>↳ Savings transfer</span><b id="cfMatch">—</b></div>
+        <div style="margin-top:8px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">FREE TO SPEND</small><div class="calc-out" id="cfFree" style="color:var(--cyan)">—</div></div>
       </div>
-      <div class="note" id="cfNote">A typical month. Comfortable margin.</div>
+      <div class="note" id="cfNote">Slide to see any month.</div>
     </div>
 
     <div class="card">
       <h2>Savings Growth — 8 Year Projection</h2>
-      <div class="desc">How your savings pool grows month by month if you stick to the rule. The income scenario actually changes the curve: each month you bank the forced 1,364 kr match <b>plus 30% of that month's comfort money</b> (the rest is yours to spend). Good months save more, low months save less.</div>
+      <div class="desc">How your savings pool grows month by month if you stick to the rule. The income scenario changes the curve: each month you bank your savings transfer <b>plus 30% of that month's spare money</b> (the rest is yours to spend). Good months save more, low months save less.</div>
 
       <div style="margin-bottom:14px">
         <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">INCOME SCENARIO</small>
         <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="scenBtns">
-          <button class="scen-btn" onclick="setScen('low')" id="btnLow">Low (14,407)</button>
-          <button class="scen-btn active" onclick="setScen('avg')" id="btnAvg">Typical (17,000)</button>
-          <button class="scen-btn" onclick="setScen('high')" id="btnHigh">Good (25,778)</button>
+          <button class="scen-btn" onclick="setScen('low')" id="btnLow">Low</button>
+          <button class="scen-btn active" onclick="setScen('avg')" id="btnAvg">Typical</button>
+          <button class="scen-btn" onclick="setScen('high')" id="btnHigh">Good</button>
         </div>
       </div>
 
@@ -725,7 +696,7 @@
         <div class="stat avg"><div class="lbl">After 3 years</div><div class="val" id="m36" style="font-size:18px">—</div></div>
         <div class="stat high"><div class="lbl">After 8 years</div><div class="val" id="m96" style="font-size:18px">—</div></div>
       </div>
-      <div class="note" style="margin-top:14px" id="growthNote">The loan pool (75k) sits separately as your emergency cushion and isn't counted in these savings totals — this is money you build on top of it.</div>
+      <div class="note" style="margin-top:14px" id="growthNote">Any emergency cushion or borrowed money you hold sits separately and isn't counted here — this is money you build on top of it.</div>
     </div>
   </section>
 
@@ -733,46 +704,27 @@
   <section class="panel" id="rule">
     <div class="card">
       <h2>The Savings Rule</h2>
-      <div class="desc">The single system that turns this from "a loan" into "building wealth." Three parts:</div>
+      <div class="desc">A simple system that turns "just getting by" into building wealth. Three parts:</div>
       <ul class="clean">
-        <li><b>Forced match:</b> Every month, move an amount EQUAL to the loan payment (1,364 kr.) into a separate savings account. Set this as an AUTOMATIC transfer the day the loan lands — never rely on willpower.</li>
-        <li><b>Comfort money:</b> Whatever's left after that is genuinely free to spend. Not forced into savings.</li>
-        <li><b>High-yield lock:</b> A portion of savings goes into a locked, highest-yield Danish account.</li>
+        <li><b>Pay yourself first:</b> Every month, move a fixed amount into a separate savings account. Make it an AUTOMATIC transfer on payday — never rely on willpower.</li>
+        <li><b>Spend the rest freely:</b> Whatever's left after that is genuinely yours to spend, guilt-free.</li>
+        <li><b>Keep it earning:</b> Park savings in a separate high-interest account so it grows on its own.</li>
       </ul>
+      <div class="note">Set your monthly savings amount in <b>⚙ Setup</b> or <b>💬 Quick Update</b> — the projection below uses it.</div>
     </div>
     <div class="card">
-      <h2>What The Match Builds By Itself</h2>
-      <div class="desc">From the forced 1,364 kr./month alone — zero extra effort, low-month safe.</div>
-      <div class="meterlbl"><span>Furnishing fund (~10k)</span><span>~month 7</span></div>
-      <div class="meter lime"><span style="width:65%"></span></div>
-      <div class="meterlbl" style="margin-top:14px"><span>Car transition fund (~30k)</span><span>~month 22</span></div>
-      <div class="meter"><span style="width:90%"></span></div>
-      <div class="note">By the time the car lease ends in ~2 years, this fund largely covers the transition — while the 75k pool stays untouched as your emergency cushion. Any month you bank extra comfort money (see the Cash Flow projection) gets you there faster.</div>
+      <h2>Why Automating It Works</h2>
+      <div class="desc">A fixed automatic transfer, every month, compounds quietly in the background — no extra effort.</div>
+      <ul class="clean">
+        <li><b>It removes the decision.</b> Money you never see in your spending account never gets spent.</li>
+        <li><b>Small adds up fast.</b> Even a modest monthly amount becomes a real cushion within a year.</li>
+        <li><b>Good months accelerate it.</b> Any month you bank extra spare money (see the Cash Flow projection) gets you there faster.</li>
+      </ul>
     </div>
   </section>
 
   <!-- 06 GOALS -->
   <section class="panel" id="goals">
-    <div class="card demo-only">
-      <h2>Goals — Your Words</h2>
-      <ul class="clean goal">
-        <li>Stop living paycheck-to-paycheck.</li>
-        <li>Stop stressing over everyday costs — groceries, meat, normal treats.</li>
-        <li>Have a real cushion for emergencies without sacrificing comfort.</li>
-        <li>"Comfortable, not luxurious" — good food, weekend pizza, small adventures, peace of mind.</li>
-        <li>Build savings now, while young — not only late in life.</li>
-      </ul>
-    </div>
-    <div class="card demo-only">
-      <h2>Future Track <span class="tag later">LATER STAGE</span></h2>
-      <div class="desc">Long-term aspiration: higher-end stability and passive income (business ownership / real estate).</div>
-      <ul class="clean">
-        <li><span class="tag now">NOW</span> &nbsp;Stabilise. Build 12+ months of clean repayment + savings history.</li>
-        <li><span class="tag later">12–24 MO</span> &nbsp;Stronger credit profile unlocks bigger options.</li>
-        <li><span class="tag later">THE MOVE</span> &nbsp;Business acquisition via routes like Vækstfonden or commercial lending — buying proven cashflow, not starting from zero.</li>
-      </ul>
-      <div class="note">Not accessible at the current stage — but the current plan is exactly what builds toward it.</div>
-    </div>
     <div class="card" id="goalsGeneric">
       <h2>Your Goals</h2>
       <div class="desc">Use the <b>💬 Quick Update</b> button to jot goals, or keep them in the Calendar as dated notes. Some good starters:</div>
@@ -806,7 +758,7 @@
   <section class="panel" id="subs">
     <div class="card" data-collapse data-collapsed>
       <h2>Add a Subscription / Recurring Cost</h2>
-      <div class="desc">Add anything new to an existing category. It updates your <b>live</b> numbers everywhere — grand total, cash-flow simulator, Klarna surplus, and the savings projection all recompute instantly.</div>
+      <div class="desc">Add anything new to an existing category. It updates your <b>live</b> numbers everywhere — grand total, cash-flow simulator and the savings projection all recompute instantly.</div>
       <div class="form-row">
         <div class="field"><label>Name</label><input id="addName" placeholder="e.g. Spotify"></div>
         <div class="field"><label>Category</label><select id="addCat"></select></div>
@@ -829,88 +781,6 @@
         <div class="field"><label>Icon (emoji)</label><input id="newCatIcon" placeholder="🐾" maxlength="2"></div>
       </div>
       <button class="btn ghost" id="addCatBtn">+ Add category</button>
-    </div>
-
-    <div class="card demo-only" data-collapse data-collapsed>
-      <h2>Subscription Ledger</h2>
-      <div class="desc">Every recurring subscription, pulled from Nordea's official "Subscriptions &amp; Direct debit" list. What it costs, how often, what it's for, and WHY you keep it — a note to future you.</div>
-
-      <div class="subtotal">
-        <div class="stat avg"><div class="lbl">Total / month</div><div class="val">~1,777<small> kr</small></div></div>
-        <div class="stat high"><div class="lbl">Total / year</div><div class="val">~21,667<small> kr</small></div></div>
-      </div>
-      <div class="note" style="margin-top:0;margin-bottom:18px"><b>Scope note:</b> this ledger is the bank's full view, so it includes Oister (179, also counted under Home) and phone insurance (139, also counted under Insurance). To avoid double-counting, the Expenses tab's "Subscriptions &amp; device debt" group shows <b>~1,488 kr/mo</b> — this ledger minus those two items, plus Norton amortised. Aros insurance (1,640/mo) is tracked under Insurance, not here. Norton is yearly (349 kr).</div>
-
-      <div class="sub-grid" id="subGrid">
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Claude (Anthropic)</div><div class="freq">Monthly · Pro Max</div></div><div class="cost">~680.00 kr</div></div>
-          <div class="what">AI assistant used for financial planning, writing, translation help, and building this entire Finance HUD. Also the back office for mrln — writes gig text, profiles, and helps deliver translation jobs.</div>
-          <div class="why"><b>WHY I KEEP IT</b>Pro Max ($100/mo, ~680 kr) gives 5x more usage than standard Pro. Used heavily across financial analysis, the HUD, mrln setup, and loan comparisons. Pays for itself if mrln earns even 2 translation orders a month.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Elgiganten — Phone Instalment</div><div class="freq">Monthly · temporary (ends when phone is paid off)</div></div><div class="cost">336.00 kr</div></div>
-          <div class="what">Paying off the Samsung Galaxy S26 Ultra via Elgiganten Konto (Resurs Bank). Remaining balance as of June 2026: 9,966 kr.</div>
-          <div class="why"><b>WHY I KEEP IT</b>This is NOT a subscription — it's a debt being paid off in instalments. At 336 kr/month, roughly 30 months remain at minimum payment. Planning to pay larger chunks to clear it faster, which reduces total cost. Once cleared, this 336 kr/month is freed up.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Oister</div><div class="freq">Monthly</div></div><div class="cost">179.00 kr</div></div>
-          <div class="what">Mobile phone plan (calls + data). Provider: HI3G Denmark.</div>
-          <div class="why"><b>WHY I KEEP IT</b>Core mobile subscription — phone number and data. Essential, not optional. Counted under Home in the expense breakdown.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">YouTube Premium</div><div class="freq">Monthly</div></div><div class="cost">139.00 kr</div></div>
-          <div class="what">Ad-free YouTube + YouTube Music.</div>
-          <div class="why"><b>WHY I KEEP IT</b>Main source of music in the car and day-to-day. Ad-free playback and background music make it a high-convenience, high-use service — earns its place.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Elgiganten Cloud</div><div class="freq">Monthly · ongoing</div></div><div class="cost">139.00 kr</div></div>
-          <div class="what">Phone insurance for the Samsung Galaxy S26 Ultra (via Elgiganten).</div>
-          <div class="why"><b>WHY I KEEP IT</b>Insurance cover on the Galaxy S26 Ultra — screen damage, theft, malfunctions. Ongoing as long as you have the phone. Counted under Insurance in the expense breakdown.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Patreon</div><div class="freq">Monthly</div></div><div class="cost">93.75 kr</div></div>
-          <div class="what">Creator membership — YaBoyRoshi (show reactions &amp; recommendations).</div>
-          <div class="why"><b>WHY I KEEP IT</b>Entertainment I actively follow — reaction content and show recommendations from YaBoyRoshi. A deliberate leisure choice, not a forgotten charge.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Discord</div><div class="freq">Monthly</div></div><div class="cost">75.78 kr</div></div>
-          <div class="what">Discord Nitro (premium features).</div>
-          <div class="why"><b>WHY I KEEP IT</b>Premium Discord features for chat communities. Note: a second Discord-related charge runs through Apple (~75 kr) and is set to expire end of this/next month — see Apple entry.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Apple App Store <span class="tag later">EXPIRING</span></div><div class="freq">Monthly</div></div><div class="cost">75.00 kr</div></div>
-          <div class="what">Discord billed through Apple (a second Discord charge, separate from the direct one).</div>
-          <div class="why"><b>WHY I KEEP IT</b>This is actually Discord billed via Apple — and it's EXPIRING end of this month or next. ⚠ Once it lapses, you'll only pay Discord once (the 75.78 direct charge) instead of twice. Worth confirming it drops off so you're not double-paying.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Klarna Member</div><div class="freq">Monthly</div></div><div class="cost">59.00 kr</div></div>
-          <div class="what">Klarna membership — enables "pay later" / instalment features.</div>
-          <div class="why"><b>WHY I KEEP IT</b>Unlocks Klarna's pay-later and instalment options. Used deliberately to spread the cost of bigger purchases over time rather than paying all at once.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Norton</div><div class="freq">Yearly</div></div><div class="cost">349.00 kr/yr</div></div>
-          <div class="what">PC antivirus / security software.</div>
-          <div class="why"><b>WHY I KEEP IT</b>Security protection for the PC. Billed once a year (~29 kr/month equivalent) — cheap peace of mind for keeping the computer safe.</div>
-        </div>
-
-        <div class="sub-item">
-          <div class="top"><div><div class="name">Aros Forsikring <span class="tag now">INSURANCE</span></div><div class="freq">Monthly</div></div><div class="cost">1,640.00 kr</div></div>
-          <div class="what">Main insurance policy (car/personal). Listed here by the bank, but counted under the Insurance expense group — kept out of the subscription total to avoid double-counting.</div>
-          <div class="why"><b>WHY I KEEP IT</b>Required insurance coverage. Tracked as a core expense (see Expenses → Insurance). An earlier ~4,000 kr charge was a one-off multi-month prepayment, not the recurring rate.</div>
-        </div>
-
-      </div>
-      <div class="note">✅ Aarhus Kommune ticket paid off in full (900 kr) — 200 kr/month permanently freed. Remaining flag: Apple/Discord charge expiring soon — confirm it drops so you stop double-paying Discord.</div>
     </div>
   </section>
 
@@ -985,8 +855,8 @@
     </div>
     <div class="chatbody">
       <div class="chathint">One change per line — interpreted free, in your browser. Nothing changes until you confirm.
-        <br><span class="dim">salary is now 18500 · add Gym 299/mo to Health · rent is now 3800 · cancel Patreon · note 2026-07-15 Mum's birthday · employer is now Telenor</span></div>
-      <textarea id="aiText" rows="3" placeholder="salary is now 18500&#10;add Gym 299 per month to Health&#10;cancel Patreon"></textarea>
+        <br><span class="dim">income is now 2600 · add Gym 29/mo to Other · rent is now 1200 · cancel Netflix · note 2026-07-15 Mum's birthday · work is now Acme Ltd</span></div>
+      <textarea id="aiText" rows="3" placeholder="income is now 2600&#10;add Gym 29 per month to Other&#10;cancel Netflix"></textarea>
       <button class="btn" id="aiSend" style="width:100%">Interpret changes</button>
       <div id="aiStatus" class="note" style="display:none;margin-top:8px"></div>
       <div id="aiProposal" style="display:none;margin-top:12px;border:1px solid var(--cyan-dim);border-radius:10px;padding:12px;background:var(--panel2)">
@@ -1017,40 +887,36 @@
      projection, the overview headline, and the Klarna surplus all update
      together — they can never drift out of sync again.
      ========================================================================= */
+  // A neutral sample profile shown when a user taps "show me a filled example".
+  // Round, made-up numbers — no real person's data.
   var DEFAULT_MODEL = {
-    income:       { low: 14407, avg: 17000, high: 25778 },  // after-tax, "avg" = typical month
-    loanPayment:  1364,
-    savingsMatch: 1364,   // forced monthly transfer (equals the loan payment)
-    extraSaveRate: 0.30,  // share of comfort money also banked in the projection
-    // Itemised monthly expenses, no double-counting. Parking is `varies` (excluded from totals).
+    income:       { low: 2400, avg: 2800, high: 3400 },
+    loanPayment:  0,
+    savingsMatch: 300,
+    extraSaveRate: 0.30,
+    profile: { age:'', employer:'', name:'Sample', location:'' },
     groups: [
-      { icon:'🚗', name:'Car', items:[
-        { name:'Lease — Citroen Finans', detail:'Monthly car lease payment', amt:2775 },
-        { name:'Charging — Clever (your half)', detail:'EV charging subscription, split 50/50 with team leader', amt:500 },
-        { name:'Transit — Rejsekort', detail:'Public transport top-ups', amt:80 },
-        { name:'Parking — Easy Park', detail:'Pay-as-you-go parking; varies month to month, not counted in the total', varies:true }
-      ]},
-      { icon:'🛡️', name:'Insurance', items:[
-        { name:'Aros Forsikring', detail:'Main insurance policy (car/personal). The earlier ~4,000 kr charge was a one-off multi-month prepayment.', amt:1640 },
-        { name:'Phone insurance — Elgiganten Cloud', detail:'Cover for Samsung Galaxy S26 Ultra — screen damage, theft, malfunction.', amt:139 }
-      ]},
-      { icon:'🏠', name:'Home', items:[
-        { name:'Rent (your share, from 1 July)', detail:'New apartment with girlfriend. Was 1,500 at parents.', amt:3500 },
-        { name:'Mobile / data — Oister', detail:'Provider HI3G. Also listed in the Subscriptions ledger.', amt:179 },
-        { name:'TV / internet — Yousee', detail:'Yousee.dk charge', amt:160 }
+      { icon:'🏠', name:'Housing', items:[
+        { name:'Rent', detail:'Monthly rent', amt:1000 },
+        { name:'Electricity', detail:'Power bill', amt:60 },
+        { name:'Internet', detail:'Home broadband', amt:40 }
       ]},
       { icon:'🍽️', name:'Food', items:[
-        { name:'Groceries + eating out', detail:'Netto, Lidl, Føtex, Bilka + occasional fast food. Lower than typical because your partner shares food costs.', amt:650 }
+        { name:'Groceries', detail:'Weekly shopping', amt:350 },
+        { name:'Eating out', detail:'Restaurants & takeaway', amt:120 }
       ]},
-      { icon:'📱', name:'Subscriptions & device debt', items:[
-        { name:'Claude Pro Max — Anthropic', detail:'AI assistant + mrln back office', amt:680 },
-        { name:'Phone instalment — Elgiganten (Resurs)', detail:'Galaxy S26 Ultra, ~9,966 kr left (Jun 2026). Temporary debt, not a subscription.', amt:336 },
-        { name:'YouTube Premium', detail:'Ad-free YouTube + Music', amt:139 },
-        { name:'Patreon — YaBoyRoshi', detail:'Creator membership', amt:94 },
-        { name:'Discord Nitro', detail:'Premium chat features', amt:76 },
-        { name:'Apple App Store (Discord via Apple)', detail:'Second Discord charge — expiring soon', amt:75 },
-        { name:'Klarna Member', detail:'Pay-later / instalment features', amt:59 },
-        { name:'Norton', detail:'PC antivirus, billed yearly 349 kr ≈ 29/mo', amt:29 }
+      { icon:'🚗', name:'Transport', items:[
+        { name:'Fuel / transit', detail:'Getting around', amt:120 },
+        { name:'Parking', detail:'Pay-as-you-go; varies, not counted', varies:true }
+      ]},
+      { icon:'📱', name:'Subscriptions', items:[
+        { name:'Phone plan', detail:'Calls + data', amt:30 },
+        { name:'Streaming', detail:'Video subscription', amt:15 },
+        { name:'Music', detail:'Music subscription', amt:10 },
+        { name:'Insurance', detail:'Billed yearly', cost:240, freq:'yearly' }
+      ]},
+      { icon:'✦', name:'Other', items:[
+        { name:'Gym', detail:'Membership', amt:30 }
       ]}
     ]
   };
@@ -1133,12 +999,12 @@
       ]
     };
   }
-  window.__DEMO_MODEL = DEFAULT_MODEL;   // Osefe's data, kept as loadable sample/example
+  window.__DEMO_MODEL = DEFAULT_MODEL;   // neutral sample, shown via "filled example"
   (function adoptModel(){
     if(STATE.cfg){
       MODEL = STATE.cfg;                 // returning user — load their saved config
     } else {
-      MODEL = blankModel();              // brand-new user starts clean (no Miradi data)
+      MODEL = blankModel();              // brand-new user starts clean (no personal data)
       STATE.fresh = true;                // triggers the onboarding wizard after unlock
       if(STATE.cleanMode==null) STATE.cleanMode = true;   // hide example-only narrative cards
       (STATE.customItems || []).forEach(function(c){
@@ -1236,20 +1102,20 @@
         var val = it.varies ? '~varies' : '~' + fmtN(itemMonthly(it));
         var badge = it.custom ? ' <span class="tag now" style="font-size:8px;padding:1px 5px">ADDED</span>' : '';
         var freqNote = (it.cost!=null && it.freq && it.freq!=='monthly')
-          ? ' <span class="sub-detail">(' + fmtN(it.cost) + ' kr/' + (it.freq==='yearly'?'yr':'q') + ')</span>' : '';
+          ? ' <span class="sub-detail">(' + fmtN(it.cost) + ' ' + curInfo().sym + '/' + (it.freq==='yearly'?'yr':'q') + ')</span>' : '';
         return '<tr><td>' + esc(it.name) + badge + ' <div class="sub-detail">' + esc(it.detail) + '</div></td>' +
                '<td class="num">' + val + freqNote + '</td></tr>';
       }).join('');
       var isOpen = firstRender ? (gi===0) : !!openNames[(g.icon + ' ' + g.name)];
       html += '<div class="exp-group' + (isOpen ? ' open' : '') + '">' +
         '<div class="exp-head"><span class="gname"><span class="ico"></span>' + g.icon + ' ' + g.name + '</span>' +
-        '<span><span class="gtot">~' + fmtN(groupTotal(g)) + ' kr/mo</span><span class="arrow">▸</span></span></div>' +
+        '<span><span class="gtot">~' + fmtN(groupTotal(g)) + ' ' + curInfo().sym + '/mo</span><span class="arrow">▸</span></span></div>' +
         '<div class="exp-body"><table>' + rows + '</table></div></div>';
     });
     host.innerHTML = html;
-    document.getElementById('expMonth').innerHTML = '~' + fmtN(GRAND) + '<small> kr</small>';
-    document.getElementById('expYear').innerHTML  = '~' + fmtN(GRAND * 12) + '<small> kr</small>';
-    document.getElementById('expRef').textContent = fmtN(GRAND) + ' kr';
+    var sym = curInfo().sym;
+    document.getElementById('expMonth').innerHTML = '~' + fmtN(GRAND) + '<small> ' + sym + '</small>';
+    document.getElementById('expYear').innerHTML  = '~' + fmtN(GRAND * 12) + '<small> ' + sym + '</small>';
     host.querySelectorAll('.exp-head').forEach(function(h){
       h.addEventListener('click', function(){ h.closest('.exp-group').classList.toggle('open'); });
     });
@@ -1270,23 +1136,30 @@
   var slider = document.getElementById('incSlider');
   document.getElementById('cfOut2').textContent = '− ' + fmt(GRAND);
   function updateCF(){
-    var inc = parseInt(slider.value,10);
+    var inc = parseInt(slider.value,10) || 0;
     var left = inc - GRAND - MODEL.loanPayment;
     var free = left - MODEL.savingsMatch;
     document.getElementById('cfInc').textContent = fmt(inc);
+    var cfO2 = document.getElementById('cfOut2'); if(cfO2) cfO2.textContent = '− ' + fmt(GRAND);
+    var cfL = document.getElementById('cfLoan'); if(cfL) cfL.textContent = '− ' + fmt(MODEL.loanPayment||0);
+    var cfM = document.getElementById('cfMatch'); if(cfM) cfM.textContent = '− ' + fmt(MODEL.savingsMatch||0);
+    // hide the debt / savings rows entirely when they're zero (keeps it uncluttered)
+    var lr=document.getElementById('cfLoanRow'); if(lr) lr.style.display = (MODEL.loanPayment>0)?'':'none';
+    var mr=document.getElementById('cfMatchRow'); if(mr) mr.style.display = (MODEL.savingsMatch>0)?'':'none';
     document.getElementById('cfOut').textContent  = left >= 0 ? fmt(left) : '− ' + fmt(-left);
     document.getElementById('cfFree').textContent = free >= 0 ? fmt(free) : '− ' + fmt(-free);
     var note = document.getElementById('cfNote');
     var outEl = document.getElementById('cfOut');
-    if(inc <= 14500){
-      note.textContent = 'A soft/low sales month. Tight but the plan holds — the loan pool is your safety net here.';
+    var avg = MODEL.income.avg || 0;
+    if(avg && inc <= avg*0.85){
+      note.textContent = 'A lean month — tighter, but the plan holds if you ease off savings.';
       outEl.style.color = '#ffb547';
-    } else if(inc >= 22000){
-      note.textContent = 'A strong sales month. Great time to overpay on the phone debt or stack extra into savings.';
+    } else if(avg && inc >= avg*1.25){
+      note.textContent = 'A strong month — a great time to pay down debt faster or save extra.';
       outEl.style.color = '#7CFFB2';
     } else {
       note.textContent = 'A typical month. Comfortable and manageable.';
-      outEl.style.color = '#7CFFB2';
+      outEl.style.color = left < 0 ? '#ff5c7c' : '#7CFFB2';
     }
     document.getElementById('cfFree').style.color = free < 0 ? '#ff5c7c' : '#00e5ff';
   }
@@ -1309,6 +1182,14 @@
     setTxt('stLow', fmt(MODEL.income.low)); setTxt('stAvg', fmt(MODEL.income.avg)); setTxt('stHigh', fmt(MODEL.income.high));
     setTxt('incLow', fmt(MODEL.income.low)); setTxt('incAvg', fmt(MODEL.income.avg)); setTxt('incHigh', fmt(MODEL.income.high));
     setTxt('btnLow','Low ('+fmtN(MODEL.income.low)+')'); setTxt('btnAvg','Typical ('+fmtN(MODEL.income.avg)+')'); setTxt('btnHigh','Good ('+fmtN(MODEL.income.high)+')');
+    // adapt the cash-flow slider range to the user's actual income
+    var sl=document.getElementById('incSlider');
+    if(sl){
+      var avg=MODEL.income.avg||0, lo=MODEL.income.low||avg, hi=MODEL.income.high||avg;
+      var min=Math.max(0, Math.floor(Math.min(lo,avg)*0.7/100)*100);
+      var max=Math.ceil(Math.max(hi,avg)*1.3/100)*100; if(max<=min) max=min+ (avg>0?Math.round(avg):1000)+1000;
+      sl.min=min; sl.max=max; sl.step=Math.max(10, Math.round((max-min)/200/10)*10)||50; sl.value=avg||min;
+    }
   };
 
   // Monthly amount banked: forced match + a share of that scenario's comfort money.
@@ -1795,7 +1676,7 @@
   }
   /* ---------- free, offline natural-language parser ---------- */
   function _num(s){
-    // First standalone number not glued to a preceding letter/digit (so "Norton2 349" reads 349, not 2349).
+    // First standalone number not glued to a preceding letter/digit (so "Antivirus2 349" reads 349, not 2349).
     var m = String(s).match(/(?:^|[^A-Za-z\d.])(\d[\d.,]*\d|\d)(k)?/i);
     if(!m) return null;
     var raw = m[1].replace(/,/g,'').replace(/\.(?=\d{3}\b)/g,'').replace(/\.(?!\d)/g,'');
