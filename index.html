@@ -255,6 +255,8 @@
     padding:13px 20px;border-radius:12px;cursor:pointer;box-shadow:0 0 22px rgba(124,255,178,.4);transition:all .15s}
   .savebar .savebtn:hover{filter:brightness(1.08);transform:translateY(-2px)}
   .savebar .badge{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;max-width:260px;text-align:right}
+  .bakechk{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;cursor:pointer;user-select:none}
+  .bakechk input{accent-color:var(--cyan);cursor:pointer;margin:0}
   .chattoggle{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--cyan-dim);background:var(--panel2);color:var(--cyan);padding:10px 16px;border-radius:12px;cursor:pointer;transition:all .15s}
   .chattoggle:hover{border-color:var(--cyan);box-shadow:var(--glow);color:#eaffff}
   .chatwidget{width:340px;max-width:calc(100vw - 36px);max-height:72vh;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 14px 44px rgba(0,0,0,.55);text-align:left}
@@ -872,6 +874,7 @@
     </div>
   </div>
   <button class="chattoggle" id="chatToggle" data-i18n="💬 Quick Update">💬 Quick Update</button>
+  <label class="bakechk" id="bakeKeyWrap" title="Saves your key inside the file so it opens without re-typing. Turn off if you'll share the file."><input type="checkbox" id="bakeKey" checked> <span data-i18n="keep me signed in">keep me signed in</span></label>
   <div class="badge" id="saveBadge">loaded</div>
   <button class="savebtn" id="saveBtn" data-i18n="💾 Save / Export">💾 Save / Export</button>
 </div>
@@ -1841,7 +1844,16 @@
   function exportHTML(){
     if(!__sys.isArmed() || __sys.isTripped()){ __sys.trip('export-while-tampered'); return; }  // never export a bypassed copy
     logChange('export', 'Created a new HTML snapshot');                 // recorded inside the snapshot
-    document.getElementById('hud-state').textContent = JSON.stringify(STATE).replace(/</g, '\\u003c');
+    // optionally bake the current key into the file so it re-opens without
+    // re-typing (needed on phones that wipe storage each open). Off => safe to share.
+    var stateForFile = STATE;
+    if(STATE.bakeKey !== false){
+      var k=null; try{ k=localStorage.getItem('mrln_access_key'); }catch(_){ }
+      if(k) stateForFile = Object.assign({}, STATE, { k:k });
+    } else {
+      stateForFile = Object.assign({}, STATE); delete stateForFile.k;   // strip any baked key
+    }
+    document.getElementById('hud-state').textContent = JSON.stringify(stateForFile).replace(/</g, '\\u003c');
     // ship the snapshot in the LOCKED visual state so a new device starts at the key screen
     var lockEl = document.getElementById('lockScreen');
     var wasUnlocked = lockEl && lockEl.classList.contains('unlocked');
@@ -1859,6 +1871,11 @@
   }
   (function initSave(){
     var btn = document.getElementById('saveBtn'); if(btn) btn.addEventListener('click', exportHTML);
+    var bk = document.getElementById('bakeKey');
+    if(bk){
+      bk.checked = (STATE.bakeKey !== false);   // default ON
+      bk.addEventListener('change', function(){ STATE.bakeKey = bk.checked; autosave(); });
+    }
     var b = document.getElementById('saveBadge');
     if(b){
       if(STATE.savedAt){ try{ b.textContent = 'last saved ' + new Date(STATE.savedAt).toLocaleString('en-GB'); }catch(_){ b.textContent='loaded'; } }
@@ -1978,8 +1995,11 @@
       var btn=document.getElementById('lkBtn'); if(btn) btn.addEventListener('click', submit);
       var inp=document.getElementById('lkInput'); if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
       var saved=null; try{ saved=localStorage.getItem(STORE); }catch(_){ }
+      // fall back to a key baked into the file (so phones that wipe storage on
+      // every open — content:// in Chrome/Android — still auto-unlock)
+      if(!saved && typeof STATE==='object' && STATE && STATE.k) saved = STATE.k;
       if(saved){ verify(saved).then(function(r){
-        if(r.ok){ __sys.arm(); if(typeof refreshFinance==='function') refreshFinance(); unlock(); if(window.__afterUnlock) setTimeout(window.__afterUnlock, 300); }
+        if(r.ok){ try{ localStorage.setItem(STORE, saved); }catch(_){ } __sys.arm(); if(typeof refreshFinance==='function') refreshFinance(); unlock(); if(window.__afterUnlock) setTimeout(window.__afterUnlock, 300); }
         else { lock(); if(inp) inp.value=''; if(r.reason==='expired') setStatus('Your access expired. Enter this month’s key.','var(--amber)'); }
       }); }
     }
