@@ -1875,8 +1875,65 @@
     var STORE = 'mrln_access_key';
     function b64ToBytes(s){ var bin=atob(s); var b=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i); return b; }
     function b64urlToBytes(s){ s=String(s).replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; return b64ToBytes(s); }
-    var pubP=null;
-    function pub(){ if(!pubP) pubP=crypto.subtle.importKey('spki', b64ToBytes(PUB_B64), {name:'ECDSA',namedCurve:'P-256'}, false, ['verify']); return pubP; }
+    /* ---- pure-JS key verification (NO crypto.subtle) ----
+       Web Crypto is unavailable in non-secure contexts — exactly what happens
+       when a phone opens this file from content:// or file://. So we verify the
+       signed key with a self-contained SHA-256 + P-256 ECDSA implementation that
+       runs in any browser. Same signatures, same security — just no dependency
+       on a secure context. */
+    function _sha256(bytes){
+      function rotr(n,x){return (x>>>n)|(x<<(32-n));}
+      var K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+      var H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+      var l=bytes.length, bl=l*8, withOne=l+1, k=(56-withOne%64+64)%64, total=withOne+k+8;
+      var m=new Uint8Array(total); m.set(bytes); m[l]=0x80;
+      m[total-4]=(bl>>>24)&0xff; m[total-3]=(bl>>>16)&0xff; m[total-2]=(bl>>>8)&0xff; m[total-1]=bl&0xff;
+      var w=new Array(64);
+      for(var i=0;i<total;i+=64){
+        for(var t=0;t<16;t++) w[t]=(m[i+t*4]<<24)|(m[i+t*4+1]<<16)|(m[i+t*4+2]<<8)|(m[i+t*4+3]);
+        for(t=16;t<64;t++){ var s0=rotr(7,w[t-15])^rotr(18,w[t-15])^(w[t-15]>>>3); var s1=rotr(17,w[t-2])^rotr(19,w[t-2])^(w[t-2]>>>10); w[t]=(w[t-16]+s0+w[t-7]+s1)|0; }
+        var a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+        for(t=0;t<64;t++){ var S1=rotr(6,e)^rotr(11,e)^rotr(25,e); var ch=(e&f)^((~e)&g); var t1=(h+S1+ch+K[t]+w[t])|0; var S0=rotr(2,a)^rotr(13,a)^rotr(22,a); var maj=(a&b)^(a&c)^(b&c); var t2=(S0+maj)|0; h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0; }
+        H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+      }
+      var out=new Uint8Array(32);
+      for(i=0;i<8;i++){ out[i*4]=(H[i]>>>24)&0xff; out[i*4+1]=(H[i]>>>16)&0xff; out[i*4+2]=(H[i]>>>8)&0xff; out[i*4+3]=H[i]&0xff; }
+      return out;
+    }
+    var _P=0xffffffff00000001000000000000000000000000ffffffffffffffffffffffffn,
+        _A=_P-3n,
+        _N=0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n,
+        _GX=0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296n,
+        _GY=0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5n;
+    function _mod(a,m){ a%=m; return a<0n?a+m:a; }
+    function _egcd(a,b){ if(a===0n) return [b,0n,1n]; var r=_egcd(_mod(b,a),a); return [r[0], r[2]-(b/a)*r[1], r[1]]; }
+    function _inv(a,m){ var r=_egcd(_mod(a,m),m); return _mod(r[1],m); }
+    function _jdbl(pt){ var X1=pt[0],Y1=pt[1],Z1=pt[2]; if(Y1===0n) return [0n,1n,0n];
+      var Y1sq=_mod(Y1*Y1,_P), S=_mod(4n*X1*Y1sq,_P), Z1sq=_mod(Z1*Z1,_P), Z1q=_mod(Z1sq*Z1sq,_P);
+      var M=_mod(3n*_mod(X1*X1,_P)+_mod(_A*Z1q,_P),_P);
+      var X3=_mod(M*M-2n*S,_P), Y3=_mod(M*(S-X3)-8n*_mod(Y1sq*Y1sq,_P),_P), Z3=_mod(2n*Y1*Z1,_P);
+      return [X3,Y3,Z3]; }
+    function _jadd(p1,p2){ var X1=p1[0],Y1=p1[1],Z1=p1[2],X2=p2[0],Y2=p2[1],Z2=p2[2];
+      if(Z1===0n) return p2; if(Z2===0n) return p1;
+      var Z1sq=_mod(Z1*Z1,_P), Z2sq=_mod(Z2*Z2,_P), U1=_mod(X1*Z2sq,_P), U2=_mod(X2*Z1sq,_P);
+      var Sa=_mod(_mod(Y1*Z2sq,_P)*Z2,_P), Sb=_mod(_mod(Y2*Z1sq,_P)*Z1,_P);
+      if(U1===U2){ if(Sa!==Sb) return [0n,1n,0n]; return _jdbl(p1); }
+      var Hh=_mod(U2-U1,_P), R=_mod(Sb-Sa,_P), H2=_mod(Hh*Hh,_P), H3=_mod(H2*Hh,_P);
+      var X3=_mod(R*R-H3-2n*U1*H2,_P), Y3=_mod(R*(U1*H2-X3)-Sa*H3,_P), Z3=_mod(_mod(Hh*Z1,_P)*Z2,_P);
+      return [X3,Y3,Z3]; }
+    function _jmul(k,pt){ var r=[0n,1n,0n], a=pt; while(k>0n){ if(k&1n) r=_jadd(r,a); a=_jdbl(a); k>>=1n; } return r; }
+    function _big(b){ var x=0n; for(var i=0;i<b.length;i++) x=(x<<8n)|BigInt(b[i]); return x; }
+    var _Q=null;
+    function _pubXY(){ if(!_Q){ var spki=b64ToBytes(PUB_B64), pt=spki.subarray(spki.length-65); _Q=[_big(pt.subarray(1,33)), _big(pt.subarray(33,65))]; } return _Q; }
+    function _ecVerify(sig, msg){
+      var Q=_pubXY(), r=_big(sig.subarray(0,32)), s=_big(sig.subarray(32,64));
+      if(r<=0n||r>=_N||s<=0n||s>=_N) return false;
+      var e=_big(_sha256(msg)), w=_inv(s,_N), u1=_mod(e*w,_N), u2=_mod(r*w,_N);
+      var R=_jadd(_jmul(u1,[_GX,_GY,1n]), _jmul(u2,[Q[0],Q[1],1n]));
+      if(R[2]===0n) return false;
+      var zi=_inv(R[2],_P), x=_mod(R[0]*_mod(zi*zi,_P),_P);
+      return _mod(x,_N)===_mod(r,_N);
+    }
     function verify(keyStr){
       return new Promise(function(resolve){
         try{
@@ -1886,15 +1943,12 @@
           if(parts.length!==2){ resolve({ok:false,reason:'format'}); return; }
           var payloadBytes=b64urlToBytes(parts[0]);
           var sigBytes=b64urlToBytes(parts[1]);
-          pub().then(function(pk){
-            crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'}, pk, sigBytes, payloadBytes).then(function(valid){
-              if(!valid){ resolve({ok:false,reason:'signature'}); return; }
-              var payload; try{ payload=JSON.parse(new TextDecoder().decode(payloadBytes)); }catch(_){ resolve({ok:false,reason:'corrupt'}); return; }
-              var now=Math.floor(Date.now()/1000);
-              if(payload.exp && now>payload.exp){ resolve({ok:false,reason:'expired',payload:payload}); return; }
-              resolve({ok:true,payload:payload});
-            }, function(){ resolve({ok:false,reason:'error'}); });
-          }, function(){ resolve({ok:false,reason:'error'}); });
+          if(sigBytes.length!==64){ resolve({ok:false,reason:'signature'}); return; }
+          if(!_ecVerify(sigBytes, payloadBytes)){ resolve({ok:false,reason:'signature'}); return; }
+          var payload; try{ payload=JSON.parse(new TextDecoder().decode(payloadBytes)); }catch(_){ resolve({ok:false,reason:'corrupt'}); return; }
+          var now=Math.floor(Date.now()/1000);
+          if(payload.exp && now>payload.exp){ resolve({ok:false,reason:'expired',payload:payload}); return; }
+          resolve({ok:true,payload:payload});
         }catch(e){ resolve({ok:false,reason:'error'}); }
       });
     }
