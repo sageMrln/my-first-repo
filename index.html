@@ -1237,6 +1237,14 @@
     });
   }
   var STATE = loadState();
+  // HOSTED MODE: when the app is opened as a web link, the File ID rides in the
+  // URL hash (…/hud#F-7K2P9X) instead of being baked into a downloaded file. This
+  // lets one hosted page serve every customer while keeping each key bound to its
+  // own File ID. A baked file fid (local file) always wins if present.
+  try{
+    var _hf = (location.hash||'').toUpperCase().match(/F-[A-Z0-9]{4,}/);
+    if(_hf && !STATE.fid){ STATE.fid = _hf[0]; }
+  }catch(_){}
   if(!STATE.prefs || typeof STATE.prefs!=='object') STATE.prefs = { lang:'en', currency:'DKK', country:'' };
   if(!STATE.prefs.lang) STATE.prefs.lang='en';
   if(!STATE.prefs.currency) STATE.prefs.currency='DKK';
@@ -2567,7 +2575,7 @@
      The site holds only the PUBLIC key, so it can CHECK a key but never MINT one.
      New keys are made with keymaker.html (kept private) and handed out via Discord. */
   var LOCK = (function(){
-    var PUB_B64 = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErfIPc8D9gD6eIkyw6Xs53yvfGwc3WpZ2rQO7s2jVsClZ1hg+6p7p4hHDtRfsvbvi1AQAbhYrhgatgDOwniD5wA==';
+    var PUB_B64 = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEpuqBG4bYoW449dcKsmIdwmoKCXN2Y+BoCiNxIGEZRUxQ0tOl5/tPXW0iCS24IHxDVV+rcjiRaJfilcgK8JBrMw==';
     var PREFIX = 'MRLN-';
     var STORE = 'mrln_access_key';
     function b64ToBytes(s){ var bin=atob(s); var b=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i); return b; }
@@ -2702,7 +2710,7 @@
      lock for good a tamperer must find and defeat ALL of them AND the token
      checks threaded through the money math above. */
   (function watchdog(){
-    var PUBCHK = 2262945468;   // baked checksum of the embedded public key
+    var PUBCHK = 4047293148;   // baked checksum of the embedded public key
     var POISON = 'MRLN-eyJ1IjoieSIsImV4cCI6OTk5OTk5OTk5OX0.hio2OJGa5EFZ1LpgZQq5sz4RHpMkE_Aap_MBY_JSU-fIPFqCx4OllU2UG2U91XoOLH03B_-w79zPmObf0T6SvA';
     function beat(){
       if(__sys.isTripped()) return;
