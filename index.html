@@ -280,8 +280,11 @@
 
   /* ---- ACCESS LOCK ---- */
   #lockScreen{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:24px;
-    background:radial-gradient(1000px 600px at 50% -10%, rgba(0,229,255,.10), transparent 60%), var(--bg)}
+    background:radial-gradient(1000px 600px at 50% -10%, rgba(0,229,255,.10), transparent 60%), var(--bg);
+    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   #lockScreen.unlocked{display:none}
+  /* while locked, freeze the page behind the overlay so a fast/overscroll can't flash the app or save bar through */
+  html.lk-noscroll, html.lk-noscroll body{overflow:hidden;overscroll-behavior:none;height:100%}
   .lockcard{width:100%;max-width:380px;border:1px solid var(--line);border-radius:16px;
     background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 18px 60px rgba(0,0,0,.6);padding:30px 26px;text-align:center}
   .lockcard .lk-logo{font-family:'Orbitron';font-weight:900;font-size:26px;letter-spacing:.16em;color:#eaffff;text-shadow:var(--glow)}
@@ -2660,8 +2663,8 @@
         }catch(e){ resolve({ok:false,reason:'error'}); }
       });
     }
-    function unlock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.add('unlocked'); }
-    function lock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.remove('unlocked'); }
+    function unlock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.add('unlocked'); document.documentElement.classList.remove('lk-noscroll'); }
+    function lock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.remove('unlocked'); document.documentElement.classList.add('lk-noscroll'); }
     function fmtDate(sec){ try{ return new Date(sec*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(_){ return ''; } }
     function setStatus(msg,color){ var s=document.getElementById('lkStatus'); if(s){ s.textContent=msg||''; s.style.color=color||'var(--txt-dim)'; } }
     function submit(){
@@ -2685,6 +2688,7 @@
       });
     }
     function boot(){
+      document.documentElement.classList.add('lk-noscroll');   // page loads locked; unlock() lifts this
       var btn=document.getElementById('lkBtn'); if(btn) btn.addEventListener('click', submit);
       var inp=document.getElementById('lkInput'); if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
       var saved=null;
