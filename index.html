@@ -1129,6 +1129,7 @@
         <div class="field"><label>Time</label><input id="remTime" type="time"></div>
         <div class="field"><label>Label</label><input id="remLabel" placeholder="e.g. Log today's spending"></div>
       </div>
+      <label class="loantoggle" id="remAgendaWrap" style="margin:4px 0 8px"><input type="checkbox" id="remAgenda" checked> <b>📅 Also read out what's on my calendar that day</b></label>
       <div style="display:flex;gap:8px"><button class="btn" id="remAdd" style="flex:1">+ Add reminder</button><button class="btn ghost" id="remTest">🔊 Test sound</button></div>
       <div id="remList" style="margin-top:12px"></div>
     </div>
@@ -3595,15 +3596,26 @@
     var host=document.getElementById('remList'); if(!host) return;
     var R=STATE.reminders||[];
     host.innerHTML = R.length ? R.slice().sort(function(a,b){ return a.time<b.time?-1:1; }).map(function(r){
-      return '<div class="sub-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b style="font-family:\'Share Tech Mono\'">'+esc(r.time)+'</b> · '+esc(r.label||'Reminder')+'</div>'+
+      return '<div class="sub-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b style="font-family:\'Share Tech Mono\'">'+esc(r.time)+'</b> · '+esc(r.label||'Reminder')+(r.agenda?' <span class="tag now" style="font-size:8px;padding:1px 5px">📅 agenda</span>':'')+'</div>'+
         '<button class="btn ghost" data-delrem="'+r.id+'" style="padding:4px 10px">✕</button></div>';
     }).join('') : '<div class="empty">No reminders yet.</div>';
     host.querySelectorAll('[data-delrem]').forEach(function(b){ b.addEventListener('click', function(){ var id=b.getAttribute('data-delrem'); STATE.reminders=(STATE.reminders||[]).filter(function(x){ return x.id!==id; }); autosave(); renderReminders(); }); });
   }
+  function todaysAgenda(){
+    if(typeof eventsOn!=='function') return [];
+    var n=new Date();
+    return eventsOn(n.getFullYear(), n.getMonth(), n.getDate()).map(function(e){ return e.text; });
+  }
   function fireReminder(r){
     playChime('reminder');
-    toast('🔔 '+(r.label||'Reminder')+'  ·  '+r.time);
-    try{ if(window.Notification && Notification.permission==='granted') new Notification('🔔 '+(r.label||'Reminder'), { body:'It\'s '+r.time }); }catch(_){ }
+    var head='🔔 '+(r.label||'Reminder');
+    var body='It\'s '+r.time;
+    if(r.agenda){
+      var ag=todaysAgenda();
+      if(ag.length){ var line='📅 Today: '+ag.join(' · '); toast(head+'  ·  '+line); body=line; }
+      else { toast(head+'  ·  '+r.time+'  ·  nothing on your calendar today'); }
+    } else { toast(head+'  ·  '+r.time); }
+    try{ if(window.Notification && Notification.permission==='granted') new Notification(head, { body:body }); }catch(_){ }
     r.lastFired=dayStr(); autosave();
   }
   function startReminders(){
@@ -3621,7 +3633,8 @@
       if(!t){ var n=document.getElementById('remNote'); if(n) n.textContent='Pick a time first.'; return; }
       audioReady();   // unlock audio on this user gesture
       try{ if(window.Notification && Notification.permission==='default') Notification.requestPermission(); }catch(_){ }
-      STATE.reminders=STATE.reminders||[]; STATE.reminders.push({ id:uid(), time:t, label:lab, lastFired:'' });
+      var ag=document.getElementById('remAgenda'); var agenda = ag? ag.checked : true;
+      STATE.reminders=STATE.reminders||[]; STATE.reminders.push({ id:uid(), time:t, label:lab, agenda:agenda, lastFired:'' });
       document.getElementById('remTime').value=''; document.getElementById('remLabel').value='';
       var n=document.getElementById('remNote'); if(n) n.textContent='';
       autosave(); renderReminders();
