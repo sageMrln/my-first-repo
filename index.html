@@ -726,10 +726,10 @@
         <div class="field"><label>Monthly savings target</label><input id="loanSave" type="number" min="0" step="1" placeholder="0"></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>Loan amount <span style="color:var(--txt-dim)">(optional)</span></label><input id="loanAmount" type="number" min="0" placeholder="e.g. 75000"></div>
-        <div class="field"><label>Interest rate % <span style="color:var(--txt-dim)">(optional)</span></label><input id="loanRate" type="number" min="0" step="0.01" placeholder="e.g. 7.70"></div>
+        <div class="field"><label>Loan amount <span style="color:var(--txt-dim)">(optional)</span></label><input id="loanAmount" type="number" min="0" placeholder="e.g. 50000"></div>
+        <div class="field"><label>Interest rate % <span style="color:var(--txt-dim)">(optional)</span></label><input id="loanRate" type="number" min="0" step="0.01" placeholder="e.g. 8.5"></div>
       </div>
-      <div class="field"><label>Notes <span style="color:var(--txt-dim)">(terms, lender, payoff plan — anything)</span></label><textarea id="loanNote" placeholder="e.g. Nordea Forbrugslån+ · ÅOP 9.23% · 6 yr · first payment 31 Jul"></textarea></div>
+      <div class="field"><label>Notes <span style="color:var(--txt-dim)">(terms, lender, payoff plan — anything)</span></label><textarea id="loanNote" placeholder="e.g. lender name · APR · term length · first payment date"></textarea></div>
       <button class="btn" id="loanSaveBtn">Save loan details</button>
       <div class="status" style="margin-top:16px">
         <div class="stat low"><div class="lbl">Monthly payment</div><div class="val" id="loanOutPay" style="font-size:18px">—</div></div>
@@ -1699,7 +1699,7 @@
     var os=document.getElementById('loanOutSave'); if(os) os.textContent = fmt(MODEL.savingsMatch||0);
     var oo=document.getElementById('loanOutOn'); if(oo){ oo.textContent = on?'Yes — counted':'No — ignored'; oo.style.color = on?'var(--lime)':'var(--txt-dim)'; }
     var no=document.getElementById('loanNoteOut');
-    if(no){ if(MODEL.loan.note){ no.style.display=''; no.textContent=MODEL.loan.note; } else no.style.display='none'; }
+    if(no){ if(MODEL.loan.note){ no.style.display=''; no.textContent=MODEL.loan.note; } else { no.style.display='none'; no.textContent=''; } }   // clear text too, so a Blank copy can't leak the previous note
   }
   (function(){
     var cb=document.getElementById('loanOn');
@@ -2517,10 +2517,13 @@
       hs.textContent = JSON.stringify({ __fresh:true, prefs:{ lang:STATE.prefs.lang, currency:STATE.prefs.currency } });
       var lockEl = document.getElementById('lockScreen'); var wasU = lockEl && lockEl.classList.contains('unlocked');
       if(lockEl) lockEl.classList.remove('unlocked');
-      // 3) the blank shouldn't carry the "Blank copy" button (owner-only tool)
+      // 3) the blank shouldn't carry the owner-only tools (Blank copy + Mint key buttons)
       var sbb = document.getElementById('shareBlankBtn'); var sbbParent=null, sbbNext=null;
       if(sbb){ sbbParent=sbb.parentNode; sbbNext=sbb.nextSibling; sbb.parentNode.removeChild(sbb); }
+      var mb = document.getElementById('mintBtn'); var mbDisp = mb ? mb.style.display : null;
+      if(mb) mb.style.display = 'none';   // initMint may have shown it on the owner's file; a Blank must never show it
       var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      if(mb) mb.style.display = mbDisp;   // restore the live owner app
       if(sbb && sbbParent){ sbbParent.insertBefore(sbb, sbbNext); }   // put it back in the live app
       if(lockEl && wasU) lockEl.classList.add('unlocked');
       var blob = new Blob([html], { type:'text/html' });
