@@ -666,6 +666,7 @@
     <div class="pillbar">
       <span class="pill">AGE <b id="hdrAge">—</b></span>
       <span class="pill">WORK <b id="hdrEmployer">—</b></span>
+      <span class="pill" id="hdrGradePill" title="Your overall life grade — tap Stats for the full breakdown">GRADE <b id="hdrGrade">—</b></span>
     </div>
 
     <div class="status">
@@ -689,7 +690,8 @@
     <button class="tab" data-p="klarna" style="display:none"><span class="ix">10</span>Klarna Float</button>
     <button class="tab" data-p="gym"><span class="ix">11</span>Gym Plan</button>
     <button class="tab" data-p="calendar"><span class="ix">12</span>Calendar</button>
-    <button class="tab" data-p="log"><span class="ix">13</span>Change Log</button>
+    <button class="tab" data-p="stats"><span class="ix">13</span>Stats &amp; Grades</button>
+    <button class="tab" data-p="log"><span class="ix">14</span>Change Log</button>
   </nav>
 
   <!-- 01 OVERVIEW -->
@@ -1008,6 +1010,7 @@
     <div class="card">
       <h2>Body Stats</h2>
       <div class="desc">Your numbers power the calorie simulator below. All optional — fill in what you know. Everything saves with your file.</div>
+      <label class="loantoggle" id="bodyOnWrap" style="margin:4px 0 12px"><input type="checkbox" id="bodyOn" checked> <b>Count my body &amp; health in my overall life grade</b></label>
       <div class="form-row">
         <div class="field"><label>Sex (for calorie formula)</label><select id="bSex"><option value="male">Male</option><option value="female">Female</option></select></div>
         <div class="field"><label>Age</label><input id="bAge" type="number" min="10" max="100" placeholder="years"></div>
@@ -1177,6 +1180,14 @@
   </section>
 
   <!-- 13 CHANGE LOG -->
+  <section class="panel" id="stats">
+    <div class="card">
+      <h2>Stats &amp; Grades <span class="tag now" id="statsOverall" style="font-size:11px">—</span></h2>
+      <div class="desc">Every grade, what it means, and exactly <b>why</b> you got it — all from your own numbers. Each comes with a trusted source you can read. Grades run <b>S → E</b>.</div>
+      <div id="statsBody"></div>
+    </div>
+  </section>
+
   <section class="panel" id="log">
     <div class="card">
       <h2>Time on the HUD ⏱</h2>
@@ -1856,17 +1867,25 @@
     var bigCat='', bigVal=0; (MODEL.groups||[]).forEach(function(g){ var t=groupTotal(g); if(t>bigVal){ bigVal=t; bigCat=g.name; } });
     var dataComplete = avg>0 && costs>0;
 
-    var score=0;
-    if(leftLow>=0) score+=22; else if(leftAvg>=0) score+=10;
-    score += Math.min(28, Math.round(saveRate/0.20*28));
-    if(costRate<=0.55) score+=22; else if(costRate<=0.70) score+=14; else if(costRate<=0.85) score+=7;
-    if(comfortAvg>0) score+=16; else if(leftAvg>0) score+=8;
-    if(hasJob) score+=12;
+    var Ff=function(n){ return fmt(Math.round(n)); };
+    var factors=[];
+    function fac(key,label,earned,max,value,why){ factors.push({ key:key, label:label, earned:Math.round(earned), max:max, value:value, why:why, source:({resilience:'budget',savings:'savings',costs:'budget',surplus:'savings',income:'budget'})[key] }); }
+    var rS = leftLow>=0?22:(leftAvg>=0?10:0);
+    fac('resilience','Slow-month resilience', rS, 22, (leftLow>=0?'+'+Ff(leftLow):'−'+Ff(-leftLow))+' on a low month', leftLow>=0?'You stay in the black even in a bad month — the mark of a stable, shock-proof plan.':'A slow month tips you into the red, so the plan is fragile until you build a buffer or cut costs.');
+    var sS = Math.min(28, Math.round(saveRate/0.20*28));
+    fac('savings','Savings rate', sS, 28, Math.round(saveRate*100)+'% of income', 'Putting aside ~20% of income is the classic wealth-building target. You\'re at '+Math.round(saveRate*100)+'%.');
+    var cS = costRate<=0.55?22:costRate<=0.70?14:costRate<=0.85?7:0;
+    fac('costs','Fixed costs vs income', cS, 22, Math.round(costRate*100)+'% goes to fixed costs', 'Keeping needs/fixed costs under ~50–55% of income (the 50/30/20 idea) leaves room to save and absorb surprises.');
+    var fmS = comfortAvg>0?16:(leftAvg>0?8:0);
+    fac('surplus','Free cash each month', fmS, 16, comfortAvg>0?('+'+Ff(comfortAvg)+' truly free'):'nothing free after the basics', 'What\'s left after costs, debt and savings is the fuel that actually builds wealth.');
+    var jS = hasJob?12:0;
+    fac('income','Income source', jS, 12, hasJob?(prof.employer||'on file'):'none on file', 'A reliable income is the floor everything else stands on.');
+    var score = rS+sS+cS+fmS+jS;
     score=Math.max(0,Math.min(100,Math.round(score)));
     if(!dataComplete) score=Math.min(score,25);
     var tier = tierOf(score);
 
-    var F=function(n){ return fmt(Math.round(n)); }, sym=curInfo().sym, items=[];
+    var F=Ff, sym=curInfo().sym, items=[];
     function add(key,w,title,detail){ items.push({ key:key, w:w, title:title, detail:detail }); }
 
     if(avg<=0) add('income',100,'Add your income','Put your typical monthly take-home into the Income tab — the whole plan is built on it.');
@@ -1892,16 +1911,19 @@
     add('backup',20,'Back up your data','Hit 💾 Save / Export (or ⇄ Backup) so your plan is safe and travels with you.');
 
     items.sort(function(a,b){ return b.w-a.w; });
-    return { tier:tier, score:score, dataComplete:dataComplete, body:B, items:items };
+    return { tier:tier, score:score, dataComplete:dataComplete, body:B, items:items, factors:factors };
   }
   function renderMissions(){
     var ul=document.getElementById('checklist-list'); if(!ul) return;
     var M=computeMissions();
     STATE.missionsDone = STATE.missionsDone || {};
-    // OVERALL = finance blended with body (when body stats exist)
+    // OVERALL = finance blended with body (when body stats exist AND the body toggle is on)
     var fin=M.score, B=M.body||{ok:false};
-    var overall = B.ok ? Math.round(fin*0.55 + B.score*0.45) : fin;
+    var useBody = B.ok && bodyIncluded();
+    var overall = useBody ? Math.round(fin*0.55 + B.score*0.45) : fin;
     var oTier = tierOf(overall), c=tierRGB(oTier);
+    var gp=document.getElementById('hdrGrade'); if(gp){ gp.textContent=M.dataComplete?oTier:'—'; gp.style.color='rgb('+c+')'; }   // header GRADE pill
+    if(typeof renderStats==='function') renderStats();
     var badge=document.getElementById('tierBadge'); if(badge){ badge.textContent=oTier+'-TIER · '+overall+'/100'; badge.style.background='rgba('+c+',.15)'; badge.style.color='rgb('+c+')'; badge.style.border='1px solid rgb('+c+')'; }
     var bar=document.getElementById('tierBar'); if(bar){ bar.style.width=overall+'%'; bar.style.background='rgb('+c+')'; }
     var msg=document.getElementById('tierMsg');
@@ -1913,7 +1935,10 @@
         : oTier==='C' ? 'On your way. Focus on the very top item — it\'s the one holding you back most right now.'
         : oTier==='D' ? 'Early days — and that\'s fine. Start at the top: get the basics in and stop the leaks.'
         : 'Rock bottom is just the start of the climb. Do the top item this week — small wins stack fast.';
-      var sub = '<div style="margin-top:8px;font-style:normal;font-family:\'Share Tech Mono\';font-size:11px">💰 Finance <b style="color:rgb('+tierRGB(M.tier)+')">'+M.tier+' · '+fin+'</b>'+(B.ok?('   ·   💪 Body <b style="color:rgb('+tierRGB(B.tier)+')">'+B.tier+' · '+B.score+'</b>'):'   ·   💪 Body <span style="color:var(--txt-dim)">add stats in Gym</span>')+'</div>';
+      var bodyBit = !B.ok ? '   ·   💪 Body <span style="color:var(--txt-dim)">add stats in Gym</span>'
+        : !bodyIncluded() ? '   ·   💪 Body <span style="color:var(--txt-dim)">'+B.tier+' (off — not counted)</span>'
+        : '   ·   💪 Body <b style="color:rgb('+tierRGB(B.tier)+')">'+B.tier+' · '+B.score+'</b>';
+      var sub = '<div style="margin-top:8px;font-style:normal;font-family:\'Share Tech Mono\';font-size:11px">💰 Finance <b style="color:rgb('+tierRGB(M.tier)+')">'+M.tier+' · '+fin+'</b>'+bodyBit+'</div>';
       msg.innerHTML='<b>'+esc(oTier)+'-tier · '+overall+'/100 overall.</b> '+line+sub;
     }
     ul.innerHTML = M.items.map(function(it){
@@ -1926,6 +1951,71 @@
       b.addEventListener('click', toggle);
       b.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(); } });
     });
+  }
+  function bodyIncluded(){ return STATE.bodyOn !== false; }
+
+  /* ===================== STATS & GRADES (with trusted sources) ===================== */
+  var GRADE_SOURCES = {
+    budget:  { label:'Investopedia · the 50/30/20 budget rule', url:'https://www.investopedia.com/ask/answers/022916/what-502030-budget-rule.asp' },
+    savings: { label:'Investopedia · emergency funds & saving', url:'https://www.investopedia.com/terms/e/emergency_fund.asp' },
+    bmi:     { label:'World Health Organization · healthy weight & BMI', url:'https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight' },
+    bodyfat: { label:'American Council on Exercise · body-fat norms', url:'https://www.acefitness.org/resources/everyone/tools-calculators/percent-body-fat-calculator/' },
+    income:  { label:'Investopedia · income & financial stability', url:'https://www.investopedia.com/ask/answers/022916/what-502030-budget-rule.asp' },
+    resilience:{ label:'Investopedia · emergency funds', url:'https://www.investopedia.com/terms/e/emergency_fund.asp' },
+    cls:     { label:'Pew Research Center · income tiers method', url:'https://www.pewresearch.org/short-reads/2018/09/06/are-you-in-the-american-middle-class/' }
+  };
+  // Approximate annual NET income class bands per currency (income-only, country-dependent).
+  var CLASS_BANDS = {
+    DKK:[120000,210000,375000,670000], EUR:[16000,28000,50000,90000], USD:[22000,38000,67000,120000],
+    GBP:[16000,28000,52000,95000], SEK:[180000,320000,560000,1000000], NOK:[185000,330000,580000,1050000]
+  };
+  var CLASS_NAMES = ['Lower class','Working class','Middle class','Upper-middle class','Upper class'];
+  function classifyIncome(){
+    var cur=(STATE.prefs&&STATE.prefs.currency)||'DKK';
+    var bands=CLASS_BANDS[cur]||CLASS_BANDS.EUR;
+    var avg=(MODEL.income&&MODEL.income.avg)||0, annual=avg*12, idx=0;
+    for(var i=0;i<bands.length;i++){ if(annual>=bands[i]) idx=i+1; }
+    var next = idx<bands.length ? { name:CLASS_NAMES[idx+1], annual:bands[idx], gapMonthly:Math.max(0,Math.ceil((bands[idx]-annual)/12)) } : null;
+    return { ok:avg>0, cls:CLASS_NAMES[idx], idx:idx, annual:annual, monthly:avg, next:next };
+  }
+  function renderStats(){
+    var host=document.getElementById('statsBody'); if(!host) return;
+    var M=computeMissions(), B=M.body||{ok:false}, fin=M.score, useBody=B.ok&&bodyIncluded();
+    var overall=useBody?Math.round(fin*0.55+B.score*0.45):fin, oT=tierOf(overall), oc=tierRGB(oT);
+    var sb=document.getElementById('statsOverall'); if(sb){ sb.textContent=(M.dataComplete?oT:'—')+' · '+overall+'/100'; sb.style.background='rgba('+oc+',.15)'; sb.style.color='rgb('+oc+')'; sb.style.border='1px solid rgb('+oc+')'; }
+    function row(label,letter,rgb,value,why,srcKey){
+      var s=GRADE_SOURCES[srcKey];
+      return '<div style="border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b style="font-size:14px">'+esc(label)+'</b>'+
+        (letter?('<span style="font-family:Orbitron;font-weight:800;color:rgb('+rgb+');font-size:19px;flex:none">'+esc(letter)+'</span>'):'')+'</div>'+
+        '<div style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--cyan);margin-top:3px">'+esc(value)+'</div>'+
+        '<div style="font-size:13px;color:var(--txt);margin-top:6px;line-height:1.5">'+esc(why)+'</div>'+
+        (s?('<a href="'+s.url+'" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--cyan);display:inline-block;margin-top:8px;word-break:break-word">↗ Source: '+esc(s.label)+'</a>'):'')+'</div>';
+    }
+    var html='<div class="note" style="border-left-color:rgb('+oc+');font-style:normal"><b>Overall '+(M.dataComplete?oT+'-tier':'—')+' · '+overall+'/100.</b> Blends your Finance grade'+(useBody?' (55%) and Body grade (45%)':'')+'. '+(M.dataComplete?'Lift any low grade below and your overall climbs.':'Add your income and costs to complete it.')+'</div>';
+
+    var cl=classifyIncome();
+    if(cl.ok){
+      html+='<h2 style="font-size:15px;margin-top:20px">🏛️ Income class</h2>';
+      html+=row('Social class (by income)','', '0,229,255', cl.cls+' · ~'+fmt(cl.annual)+'/yr take-home',
+        'Worked out from your typical take-home of '+fmt(cl.monthly)+'/mo ('+fmt(cl.annual)+'/yr). '+(cl.next?('To reach '+cl.next.name+' you\'d want about '+fmt(cl.next.annual)+'/yr — roughly +'+fmt(cl.next.gapMonthly)+'/mo more.'):'You\'re in the top band — well done.')+' Real class is more than income and the brackets differ by country, so treat this as a rough, income-only guide.',
+        'cls');
+    }
+    html+='<h2 style="font-size:15px;margin-top:20px">💰 Finance — '+M.tier+' ('+fin+'/100)</h2>';
+    M.factors.forEach(function(fc){ var pct=fc.max>0?fc.earned/fc.max:0, lt=tierOf(Math.round(pct*100)); html+=row(fc.label, lt, tierRGB(lt), fc.value+'  ·  '+fc.earned+'/'+fc.max+' pts', fc.why, fc.source); });
+
+    html+='<h2 style="font-size:15px;margin-top:20px">💪 Body'+(B.ok?(' — '+B.tier+' ('+B.score+'/100)'):'')+(B.ok&&!bodyIncluded()?' · turned off, not counted':'')+'</h2>';
+    if(!B.ok){ html+='<div class="note">Add height, weight, age &amp; sex in the Gym tab to grade your body.</div>'; }
+    else {
+      var bmiLt=(B.bmi>=18.5&&B.bmi<25)?'S':((B.bmi>=25&&B.bmi<27)||(B.bmi>=17.5&&B.bmi<18.5))?'B':(B.bmi<30&&B.bmi>=17)?'C':(B.bmi<35)?'D':'E';
+      html+=row('BMI', bmiLt, tierRGB(bmiLt), B.bmi.toFixed(1)+' — '+B.bmiCat, 'A healthy BMI is 18.5–24.9; yours is '+B.bmi.toFixed(1)+'. BMI is a quick screen and can read high for very muscular people, so pair it with body-fat %.', 'bmi');
+      if(B.fat!=null){ var inB=B.fat>=B.fatT.lo&&B.fat<=B.fatT.hi, d=Math.abs(B.fat-B.fatT.ideal); var fLt=inB?'S':d<5?'A':d<9?'C':d<14?'D':'E';
+        html+=row('Body fat %', fLt, tierRGB(fLt), B.fat+'% (target '+B.fatT.lo+'–'+B.fatT.hi+'%)', 'For your age and sex the healthy-to-athletic band is about '+B.fatT.lo+'–'+B.fatT.hi+'%. Yours is '+B.fat+'%, so you\'re '+(inB?'right in range':(B.fat>B.fatT.hi?'above it — a gentle cut helps':'below it'))+'.', 'bodyfat'); }
+      if(B.musc!=null){ var mLt=tierOf(Math.max(0,Math.min(100,Math.round((B.musc-(B.sex==='female'?28:34))/22*100))));
+        html+=row('Muscle mass', mLt, tierRGB(mLt), B.musc+'%'+(B.ratio!=null?('  ·  muscle:fat '+B.ratio.toFixed(1)+'×'):''), 'More lean muscle raises your metabolism, strength and long-term health; a higher muscle-to-fat ratio is the goal. Build it with resistance training and enough protein.', 'bodyfat'); }
+      html+=row('Ideal weight for your height','', '0,229,255', B.idealLo+'–'+B.idealHi+' kg', 'A healthy BMI (20–25) at '+B.h+' cm. Drag the weight simulator in the Gym tab to see your shape change across this range.', 'bmi');
+    }
+    host.innerHTML=html;
   }
 
   /* ---------- CHECKLIST TOGGLE ---------- */
@@ -2424,6 +2514,8 @@
     if(sl) sl.addEventListener('input', function(){ sl.dataset.touched='1'; calSim(); });
     var bsim=document.getElementById('bodySim');
     if(bsim) bsim.addEventListener('input', function(){ bsim.dataset.touched='1'; updateBodySim(); });
+    var bon=document.getElementById('bodyOn');
+    if(bon){ bon.checked = STATE.bodyOn!==false; bon.addEventListener('change', function(){ STATE.bodyOn=bon.checked; autosave(); if(typeof renderMissions==='function') renderMissions(); }); }
     // optional body measurements → refine the figure
     STATE.body.measure = STATE.body.measure || {};
     [['mWingspan','wingspan'],['mShoulder','shoulder'],['mChest','chest'],['mWaist','waist'],['mHip','hip'],['mNeck','neck'],['mThigh','thigh'],['mCalf','calf'],['mShoe','shoe']].forEach(function(p){
