@@ -3277,6 +3277,8 @@
     if(pre) pre.addEventListener('change', function(){ if(!this.value) return; var p=this.value.split('|'); document.getElementById('mintDur').value=p[0]; document.getElementById('mintUnit').value=p[1]; });
     // random, human-readable file ID (no look-alike chars)
     function newFid(){ var a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s=''; for(var i=0;i<6;i++) s+=a[Math.floor(Math.random()*a.length)]; return 'F-'+s; }
+    // hosted app URL — the link you give iPhone (and everyone). The File ID rides in the #hash.
+    var HOST_BASE = 'https://sagemrln.github.io/my-first-repo/';
     var go=document.getElementById('mintGo');
     if(go) go.addEventListener('click', function(){
       var name=(document.getElementById('mintName').value||'').trim();
@@ -3291,8 +3293,14 @@
       if(!res){ alert('Minting unavailable.'); return; }
       if(isNew){ try{ exportBlank(fid); }catch(e){ alert('Could not build the file: '+e.message); return; } }   // download the new blank carrying this fid
       document.getElementById('mintKey').textContent=res.key;
+      var link = HOST_BASE + '#' + fid;
       var fo=document.getElementById('mintFidOut');
-      if(fo) fo.textContent = (isNew?'📄 New file: finance-hud-'+fid+'.html  ·  ':'🔄 Renewing  ') + 'File ID '+fid;
+      if(fo){
+        fo.innerHTML = '<div style="color:var(--txt-dim);font-size:11px;margin-bottom:3px">🔗 LINK — send this (works on iPhone too), then the key below:</div>'
+          + '<div id="mintLink" style="color:#7CFFB2;word-break:break-all;cursor:pointer;user-select:text">'+esc(link)+'</div>'
+          + '<div style="color:var(--txt-dim);font-size:11px;margin-top:6px">File ID '+fid+(isNew?' · offline file also downloaded: finance-hud-'+fid+'.html':' · renewal (no new file)')+'</div>';
+        var lk=document.getElementById('mintLink'); if(lk) lk.addEventListener('click', function(){ try{ var r=document.createRange(); r.selectNodeContents(lk); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }catch(_){} });
+      }
       var when; try{ when=new Date(res.exp*1000).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(_){ when=''; }
       document.getElementById('mintMeta').textContent='For '+name+' · '+dur+' '+unit+' · bound to '+fid+' · expires '+when;
       document.getElementById('mintOut').style.display='block';
