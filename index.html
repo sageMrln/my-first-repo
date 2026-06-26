@@ -2306,34 +2306,60 @@
   }
   function drawBody(simWeight){
     var svg=document.getElementById('bodySvg'); if(!svg) return;
-    var D=bodyDims(simWeight), cx=D.cx;
+    var D=bodyDims(simWeight), cx=D.cx, m=D.m, f=D.f;
+    // ---- outline with real anatomical bulges ----
     var torso=limbPath([
-      {x:cx,y:72,w:D.neckHalf*1.25},
-      {x:cx,y:84,w:D.shoulderHalf},
-      {x:cx,y:118,w:D.chestHalf},
-      {x:cx,y:150,w:D.chestHalf*0.84},
-      {x:cx,y:190,w:D.waistHalf},
-      {x:cx,y:222,w:D.hipHalf},
+      {x:cx,y:70,w:D.neckHalf*1.38},                 // trapezius
+      {x:cx,y:84,w:D.shoulderHalf},                  // deltoids
+      {x:cx,y:110,w:D.chestHalf*1.03},               // chest / pecs
+      {x:cx,y:140,w:D.chestHalf*0.9},                // lower pec
+      {x:cx,y:170,w:D.waistHalf*1.1},                // lats / obliques
+      {x:cx,y:192,w:D.waistHalf},                    // waist (narrowest)
+      {x:cx,y:218,w:D.hipHalf},                      // iliac crest / hips
       {x:cx,y:244,w:D.hipHalf*0.9}
     ]);
-    function arm(side){
-      var th=0.30, sx=cx+side*(D.shoulderHalf*0.82), sy=90, dx=Math.sin(th)*side, dy=Math.cos(th), L=D.armLen;
-      function st(t,w){ return {x:sx+dx*L*t, y:sy+dy*L*t, w:w}; }
-      return limbPath([ st(0.0,D.upperArmHalf*1.06), st(0.28,D.upperArmHalf), st(0.5,D.forearmHalf*1.05), st(0.72,D.forearmHalf), st(0.9,D.wristHalf), st(1.0,D.handHalf), st(1.09,D.handHalf*0.5) ]);
+    function armPts(side){ var th=0.30, sx=cx+side*(D.shoulderHalf*0.80), sy=88, dx=Math.sin(th)*side, dy=Math.cos(th), L=D.armLen;
+      return function(t){ return {x:sx+dx*L*t, y:sy+dy*L*t}; }; }
+    function arm(side){ var P=armPts(side), ua=D.upperArmHalf, fa=D.forearmHalf;
+      function n(t,w){ var q=P(t); return {x:q.x,y:q.y,w:w}; }
+      return limbPath([ n(0.0,ua*1.30), n(0.18,ua*1.05), n(0.34,ua*(1.04+m*0.32)), n(0.5,fa*0.95),
+        n(0.6,fa*1.2), n(0.78,fa*0.9), n(0.9,D.wristHalf), n(1.0,D.handHalf), n(1.08,D.handHalf*0.5) ]); }
+    function leg(side){ var lx=cx+side*(D.hipHalf*0.5), kx=cx+side*(D.hipHalf*0.42);
+      return limbPath([ {x:lx,y:240,w:D.thighHalf*1.07}, {x:lx-side*2,y:272,w:D.thighHalf*0.95},
+        {x:kx,y:304,w:D.kneeHalf*1.12}, {x:kx,y:322,w:D.kneeHalf}, {x:kx,y:346,w:D.calfHalf*1.16},
+        {x:kx,y:374,w:D.calfHalf*0.72}, {x:kx,y:394,w:D.ankleHalf} ]); }
+    function foot(side){ var fx=cx+side*(D.hipHalf*0.42); return '<ellipse cx="'+_r1(fx-side*D.footLen*0.16)+'" cy="398" rx="'+_r1(D.ankleHalf+D.footLen*0.5)+'" ry="'+_r1(D.ankleHalf*1.15)+'"/>'; }
+    // ---- interior muscle definition (shows when lean+muscular, fades under fat) ----
+    var defA=Math.max(0,Math.min(0.82, m*1.18 - f*0.72)), def='';
+    if(defA>0.03){
+      var ch=D.chestHalf, wa=D.waistHalf, sH=D.shoulderHalf;
+      function ln(d){ return '<path d="'+d+'" fill="none" stroke="rgba(190,248,255,'+_r1(defA)+')" stroke-width="1.1" stroke-linecap="round"/>'; }
+      def+=ln('M '+cx+' 112 L '+cx+' 185');                                   // linea alba
+      [150,162,174].forEach(function(y){ def+=ln('M '+_r1(cx-wa*0.4)+' '+y+' L '+_r1(cx+wa*0.4)+' '+y); }); // ab rows
+      def+=ln('M '+_r1(cx-wa*0.42)+' 145 L '+_r1(cx-wa*0.42)+' 183');         // ab borders
+      def+=ln('M '+_r1(cx+wa*0.42)+' 145 L '+_r1(cx+wa*0.42)+' 183');
+      def+=ln('M '+cx+' 110 Q '+_r1(cx-ch*0.62)+' 114 '+_r1(cx-ch*0.6)+' 134'); // pecs
+      def+=ln('M '+cx+' 110 Q '+_r1(cx+ch*0.62)+' 114 '+_r1(cx+ch*0.6)+' 134');
+      [-1,1].forEach(function(s){
+        def+=ln('M '+_r1(cx+s*sH*0.5)+' 90 Q '+_r1(cx+s*sH*0.98)+' 96 '+_r1(cx+s*sH*0.86)+' 116'); // delt cap
+        var P=armPts(s), a=P(0.22), bb=P(0.46);
+        def+=ln('M '+_r1(a.x+s*2)+' '+_r1(a.y)+' Q '+_r1((a.x+bb.x)/2+s*3)+' '+_r1((a.y+bb.y)/2)+' '+_r1(bb.x)+' '+_r1(bb.y)); // bicep
+        var c=P(0.58), d2=P(0.82); def+=ln('M '+_r1(c.x)+' '+_r1(c.y)+' L '+_r1(d2.x)+' '+_r1(d2.y));   // forearm
+        var lx=cx+s*(D.hipHalf*0.5), kx=cx+s*(D.hipHalf*0.42);
+        def+=ln('M '+_r1(lx)+' 248 Q '+_r1(lx-s*D.thighHalf*0.32)+' 280 '+_r1(kx)+' 308');             // rectus femoris
+        def+=ln('M '+_r1(lx+s*D.thighHalf*0.5)+' 250 Q '+_r1(lx+s*D.thighHalf*0.42)+' 286 '+_r1(kx+s*D.kneeHalf*0.4)+' 306'); // vastus sweep
+        def+=ln('M '+_r1(kx)+' 330 Q '+_r1(kx-s*D.calfHalf*0.55)+' 348 '+_r1(kx)+' 372');               // gastrocnemius
+      });
     }
-    function leg(side){
-      var lx=cx+side*(D.hipHalf*0.46), kx=cx+side*(D.hipHalf*0.40);
-      return limbPath([ {x:lx,y:240,w:D.thighHalf}, {x:lx,y:284,w:D.thighHalf*0.82}, {x:kx,y:318,w:D.kneeHalf}, {x:kx,y:352,w:D.calfHalf}, {x:kx,y:392,w:D.ankleHalf} ]);
-    }
-    function foot(side){ var fx=cx+side*(D.hipHalf*0.40); return '<ellipse cx="'+_r1(fx-side*D.footLen*0.18)+'" cy="396" rx="'+_r1(D.ankleHalf+D.footLen*0.5)+'" ry="'+_r1(D.ankleHalf*1.2)+'"/>'; }
     svg.innerHTML='<defs><linearGradient id="bGrad" x1="0" x2="1" y1="0" y2="0">'+
-      '<stop offset="0" stop-color="#063040"/><stop offset="0.28" stop-color="#1b7d97"/><stop offset="0.5" stop-color="#37c0da"/><stop offset="0.72" stop-color="#1b7d97"/><stop offset="1" stop-color="#052028"/></linearGradient></defs>'+
-      '<g fill="url(#bGrad)" stroke="rgba(0,229,255,.6)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">'+
+      '<stop offset="0" stop-color="#063040"/><stop offset="0.26" stop-color="#1b7d97"/><stop offset="0.5" stop-color="#3ccbe6"/><stop offset="0.74" stop-color="#1b7d97"/><stop offset="1" stop-color="#04222c"/></linearGradient></defs>'+
+      '<g fill="url(#bGrad)" stroke="rgba(0,229,255,.62)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">'+
       '<path d="'+leg(-1)+'"/><path d="'+leg(1)+'"/>'+foot(-1)+foot(1)+
       '<path d="'+arm(-1)+'"/><path d="'+arm(1)+'"/>'+
       '<rect x="'+_r1(cx-D.neckHalf)+'" y="64" width="'+_r1(D.neckHalf*2)+'" height="18" rx="5"/>'+
       '<path d="'+torso+'"/>'+
-      '<ellipse cx="'+cx+'" cy="46" rx="'+_r1(D.headR)+'" ry="'+_r1(D.headR*1.18)+'"/></g>';
+      '<ellipse cx="'+cx+'" cy="46" rx="'+_r1(D.headR)+'" ry="'+_r1(D.headR*1.18)+'"/></g>'+
+      '<g>'+def+'</g>';
   }
   function bodyMuscleFactor(B){
     var musc=(B&&B.musc!=null)?B.musc:(((STATE.body||{}).muscle!==''&&(STATE.body||{}).muscle!=null)?Number((STATE.body||{}).muscle):null);
