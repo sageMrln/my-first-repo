@@ -259,6 +259,9 @@
   .savebar .badge{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;max-width:260px;text-align:right}
   .bakechk{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;cursor:pointer;user-select:none}
   .bakechk input{accent-color:var(--cyan);cursor:pointer;margin:0}
+  /* mobile: collapse the save bar into one round button so it stops eating the screen */
+  .savefab{display:none;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:1px solid var(--cyan);background:var(--panel2);color:var(--cyan);font-size:24px;line-height:1;cursor:pointer;box-shadow:var(--glow);align-self:flex-end;transition:all .15s}
+  .savefab:hover{filter:brightness(1.1)}
   .chattoggle{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--cyan-dim);background:var(--panel2);color:var(--cyan);padding:10px 16px;border-radius:12px;cursor:pointer;transition:all .15s}
   .chattoggle:hover{border-color:var(--cyan);box-shadow:var(--glow);color:#eaffff}
   .chatwidget{width:340px;max-width:calc(100vw - 36px);max-height:72vh;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 14px 44px rgba(0,0,0,.55);text-align:left}
@@ -352,10 +355,14 @@
     .cal-cell .cal-dot{position:static;top:auto;right:auto;margin-top:4px}
     .cal-dow{font-size:9px;padding:3px 0}
 
-    /* floating controls span the width cleanly instead of cramming a corner */
-    .savebar{right:11px;left:11px;bottom:11px;align-items:stretch}
-    .savebar .badge{max-width:none;text-align:center}
-    .savebar .savebtn,.chattoggle{width:100%;text-align:center}
+    /* floating controls collapse into ONE round button; tap it to reveal the rest */
+    .savefab{display:flex}
+    .savebar{right:11px;left:auto;bottom:11px;align-items:flex-end}
+    .savebar > :not(.savefab){display:none}
+    .savebar.open{left:11px;align-items:stretch}
+    .savebar.open > :not(.savefab){display:flex}
+    .savebar.open .badge{max-width:none;text-align:center}
+    .savebar.open .savebtn,.savebar.open .chattoggle,.savebar.open .bakechk{width:100%;text-align:center;justify-content:center}
     .chatwidget{width:100%;max-width:none;max-height:64vh}
 
     .subtotal{grid-template-columns:1fr}
@@ -1129,6 +1136,7 @@
   <button class="chattoggle" id="shareBlankBtn" title="Download an empty copy (no data, no key) — safe to give to a new person" data-i18n="📤 Blank copy to share">📤 Blank copy to share</button>
   <button class="chattoggle" id="mintBtn" title="Owner only — mint an access key for a member" style="display:none;border-color:var(--lime);color:var(--lime)">🔑 Mint key</button>
   <button class="savebtn" id="saveBtn" data-i18n="💾 Save / Export">💾 Save / Export</button>
+  <button class="savefab" id="saveFab" title="Save & tools" aria-label="Save and tools">💾</button>
 </div>
 
 <!-- Persisted user state (read on load, rewritten on export). Do not edit by hand. -->
@@ -2531,6 +2539,14 @@
   (function initSave(){
     var btn = document.getElementById('saveBtn'); if(btn) btn.addEventListener('click', exportHTML);
     var sbb = document.getElementById('shareBlankBtn'); if(sbb) sbb.addEventListener('click', exportBlank);
+    // mobile: the round 💾 button opens/closes the stack; tapping any action closes it again
+    var bar = document.querySelector('.savebar'), fab = document.getElementById('saveFab');
+    if(fab && bar){
+      fab.addEventListener('click', function(){ bar.classList.toggle('open'); fab.textContent = bar.classList.contains('open') ? '✕' : '💾'; });
+      bar.querySelectorAll('.savebtn, .chattoggle').forEach(function(el){
+        el.addEventListener('click', function(){ bar.classList.remove('open'); fab.textContent = '💾'; });
+      });
+    }
     var bk = document.getElementById('bakeKey');
     if(bk){
       bk.checked = (STATE.bakeKey !== false);   // default ON
