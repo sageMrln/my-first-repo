@@ -858,17 +858,15 @@
   <!-- 08 CHECKLIST -->
   <section class="panel" id="checklist">
     <div class="card">
-      <h2>Action Checklist</h2>
-      <div class="desc">Tap a box to mark it done. The most important one is first.</div>
-      <ul class="check" id="checklist-list">
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Add all your real monthly costs in the <b>Expenses</b> tab so your numbers are accurate.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Set up an <b>automatic</b> monthly transfer to savings — pay yourself first.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Build a cushion of at least <b>3 months</b> of expenses for emergencies.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Review every subscription — cancel anything you don't truly use.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Keep borrowed money (loans/Klarna) mentally separate from spending money.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Re-check your plan after a few months of real income data.</span></li>
-        <li><span class="box" tabindex="0" role="checkbox" aria-checked="false"></span><span>Press <b>💾 Save / Export</b> to keep a backup of your file.</span></li>
-      </ul>
+      <h2>Your Life Tier <span class="tag now" id="tierBadge" style="font-size:11px">—</span></h2>
+      <div class="desc">An honest, realistic read on your money life — built <b>only from your own numbers</b>. The goal: a true S-tier life. Work the plan below to climb.</div>
+      <div class="meter" style="height:16px"><span id="tierBar" style="width:0%;display:block;height:100%"></span></div>
+      <div class="note" id="tierMsg" style="border-left-color:var(--cyan)">Add your income and costs to unlock your tier.</div>
+    </div>
+    <div class="card">
+      <h2>Your Personalized Plan</h2>
+      <div class="desc">Ranked for <b>your</b> situation — the top one matters most. Tap a box when it's done; the plan updates itself as your numbers change.</div>
+      <ul class="check" id="checklist-list"></ul>
     </div>
   </section>
 
@@ -1788,6 +1786,90 @@
     if(typeof updateCF==='function') updateCF();
     if(typeof drawChart==='function') drawChart();
     if(typeof klRefresh==='function') klRefresh();
+    if(typeof renderMissions==='function') renderMissions();   // personalized plan follows the data
+  }
+
+  /* ============================================================
+     PERSONALIZED "S-TIER LIFE" ENGINE — 100% from the user's own data.
+     Scores their money life, assigns a tier, and builds a ranked,
+     realistic action plan that updates whenever the numbers change.
+     ============================================================ */
+  function computeMissions(){
+    var inc = MODEL.income||{low:0,avg:0,high:0};
+    var avg=inc.avg||0, low=inc.low||avg, high=inc.high||avg;
+    var costs = GRAND||0;
+    var loan = (typeof loanAmt==='function') ? loanAmt() : (MODEL.loanPayment||0);
+    var save = MODEL.savingsMatch||0;
+    var leftAvg = (typeof leftOver==='function') ? leftOver(avg) : (avg-costs-loan);
+    var leftLow = (typeof leftOver==='function') ? leftOver(low) : (low-costs-loan);
+    var comfortAvg = (typeof comfort==='function') ? comfort(avg) : (leftAvg-save);
+    var prof = MODEL.profile||{};
+    var age = parseInt(prof.age,10)||0;
+    var hasJob = !!(prof.employer && String(prof.employer).trim());
+    var saveRate = avg>0 ? save/avg : 0;
+    var costRate = avg>0 ? costs/avg : 1;
+    var subs=0, subName='', subMax=0;
+    (MODEL.groups||[]).forEach(function(g){ if(/subscription/i.test(g.name)){ (g.items||[]).forEach(function(it){ if(it.varies) return; var mc=itemMonthly(it); subs+=mc; if(mc>subMax){ subMax=mc; subName=it.name; } }); } });
+    var bigCat='', bigVal=0; (MODEL.groups||[]).forEach(function(g){ var t=groupTotal(g); if(t>bigVal){ bigVal=t; bigCat=g.name; } });
+    var dataComplete = avg>0 && costs>0;
+
+    var score=0;
+    if(leftLow>=0) score+=22; else if(leftAvg>=0) score+=10;
+    score += Math.min(28, Math.round(saveRate/0.20*28));
+    if(costRate<=0.55) score+=22; else if(costRate<=0.70) score+=14; else if(costRate<=0.85) score+=7;
+    if(comfortAvg>0) score+=16; else if(leftAvg>0) score+=8;
+    if(hasJob) score+=12;
+    score=Math.max(0,Math.min(100,Math.round(score)));
+    if(!dataComplete) score=Math.min(score,25);
+    var tier = score>=85?'S':score>=70?'A':score>=55?'B':score>=40?'C':'D';
+
+    var F=function(n){ return fmt(Math.round(n)); }, sym=curInfo().sym, items=[];
+    function add(key,w,title,detail){ items.push({ key:key, w:w, title:title, detail:detail }); }
+
+    if(avg<=0) add('income',100,'Add your income','Put your typical monthly take-home into the Income tab — the whole plan is built on it.');
+    if(costs<=0) add('costs',98,'Add your real monthly costs','List your actual bills in Expenses so these numbers are real, not guesses.');
+    if(dataComplete && leftLow<0) add('deficit',95,'Close your slow-month gap','On a low month you run about '+F(-leftLow)+' short. Trim your biggest area ('+esc(bigCat)+', '+F(bigVal)+'/mo)'+(hasJob?(' or pick up a few extra hours at '+esc(prof.employer)):' or add some income')+'.');
+    if(dataComplete && saveRate<0.20){ var target=Math.round(avg*0.20); add('savings', leftLow<0?70:90, 'Pay yourself first', 'You\'re saving about '+Math.round(saveRate*100)+'% of income. Aim for 20% ('+F(target)+'/mo) — make it an automatic transfer the day you\'re paid.'); }
+    if(!hasJob) add('income-src',80,'Lock in a steady income','Add a reliable income source — even part-time. A stable inflow is the floor everything else stands on.');
+    else if(dataComplete && leftAvg<avg*0.10) add('more-hours',62,'Nudge your income up','Even ~4 extra hours/week at '+esc(prof.employer)+' could add a few hundred '+sym+'/mo and loosen things up fast.');
+    if(dataComplete && subs>avg*0.10) add('subs',58,'Trim your subscriptions','Subscriptions cost about '+F(subs)+'/mo'+(subName?(' — your biggest is '+esc(subName)):'')+'. Cancel anything you don\'t truly use; it\'s the fastest free raise there is.');
+    if(dataComplete) add('buffer', comfortAvg>0?52:40, 'Build a 3-month cushion', 'Aim for '+F(costs*3)+' set aside for emergencies. Automating '+F(Math.max(save,avg*0.10))+'/mo gets you there steadily.');
+    if(loan>0) add('loan',50,'Kill the loan faster','Your loan takes '+F(loan)+'/mo. In good months (~'+F(high)+') throw extra at it — paying down debt is a guaranteed return.');
+    if(dataComplete && comfortAvg>0) add('invest',45,'Put your surplus to work','You\'ve got about '+F(comfortAvg)+'/mo genuinely free. Automate it into savings or investing'+(age&&age<35?(' — at '+age+', compounding does the heavy lifting for you'):'')+'.');
+    var klShown=(function(){ var t=document.querySelector('#tabs .tab[data-p="klarna"]'); return t && getComputedStyle(t).display!=='none'; })();
+    if(klShown && dataComplete && comfortAvg>0 && leftLow>=0) add('klarna',38,'Use a free interest-free bridge','When you need cash without raiding savings, an interest-free pay-in-2 (see the Klarna Float tab) pulls a buffer forward at zero cost. Bridge with it — never treat it as spending money.');
+    add('backup',20,'Back up your data','Hit 💾 Save / Export (or ⇄ Backup) so your plan is safe and travels with you.');
+
+    items.sort(function(a,b){ return b.w-a.w; });
+    return { tier:tier, score:score, dataComplete:dataComplete, items:items };
+  }
+  function renderMissions(){
+    var ul=document.getElementById('checklist-list'); if(!ul) return;
+    var M=computeMissions();
+    STATE.missionsDone = STATE.missionsDone || {};
+    var colors={S:'124,255,178',A:'0,229,255',B:'255,181,71',C:'255,140,90',D:'255,92,124'}, c=colors[M.tier]||'0,229,255';
+    var badge=document.getElementById('tierBadge'); if(badge){ badge.textContent=M.tier+'-TIER · '+M.score+'/100'; badge.style.background='rgba('+c+',.15)'; badge.style.color='rgb('+c+')'; badge.style.border='1px solid rgb('+c+')'; }
+    var bar=document.getElementById('tierBar'); if(bar){ bar.style.width=M.score+'%'; bar.style.background='rgb('+c+')'; }
+    var msg=document.getElementById('tierMsg');
+    if(msg){ msg.style.borderLeftColor='rgb('+c+')';
+      var line = !M.dataComplete ? 'Add your income and costs to unlock your real tier and a plan made just for you.'
+        : M.tier==='S' ? 'Elite. You\'re resilient, saving hard and living below your means. Keep automating — you\'ve basically won the game.'
+        : M.tier==='A' ? 'Strong. You\'re in control. Tighten one or two things below and S-tier is genuinely in reach.'
+        : M.tier==='B' ? 'Solid base. The plan below is the short list of moves that lifts you to A.'
+        : M.tier==='C' ? 'On your way. Focus on the very top item — it\'s the one holding you back most right now.'
+        : 'Early days — and that\'s fine. Start at the top: get the basics in and stop the leaks. Small wins stack fast.';
+      msg.innerHTML='<b>'+esc(M.tier)+'-tier · '+M.score+'/100.</b> '+line;
+    }
+    ul.innerHTML = M.items.map(function(it){
+      var done=!!STATE.missionsDone[it.key];
+      return '<li class="'+(done?'done':'')+'"><span class="box'+(done?' done':'')+'" data-mkey="'+esc(it.key)+'" tabindex="0" role="checkbox" aria-checked="'+(done?'true':'false')+'"></span>'+
+        '<span><b>'+esc(it.title)+'</b><br><small style="color:var(--txt-dim)">'+esc(it.detail)+'</small></span></li>';
+    }).join('');
+    ul.querySelectorAll('.box').forEach(function(b){
+      function toggle(){ var k=b.getAttribute('data-mkey'); STATE.missionsDone[k]=!STATE.missionsDone[k]; if(typeof autosave==='function') autosave(); renderMissions(); }
+      b.addEventListener('click', toggle);
+      b.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(); } });
+    });
   }
 
   /* ---------- CHECKLIST TOGGLE ---------- */
@@ -2574,7 +2656,7 @@
       if(oks) oks.textContent = '';
       // 1) blank every data-bearing thing and re-render so NO personal text remains
       MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = [];
-      STATE.reminders = []; STATE.usage = { totalSec:0, streak:0, lastDay:'' }; delete STATE.bdayYear;
+      STATE.reminders = []; STATE.usage = { totalSec:0, streak:0, lastDay:'' }; delete STATE.bdayYear; STATE.missionsDone = {};
       renderAll();
       // 2) mark it a FRESH template (ignores any device's stored data on open),
       //    keep only the language/currency preference, and lock it (no baked key)
@@ -3062,7 +3144,7 @@
 
   /* ---------- BACKUP / IMPORT DATA (private, device-to-device, no upload) ---------- */
   function exportDataCode(){
-    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear };
+    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
     return 'MRLNDATA-' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));   // UTF-8 safe (emoji/names)
   }
   function importDataCode(code){
@@ -3078,6 +3160,7 @@
     // carry the LIFETIME total across to this device — never lose progress (take the higher)
     if(d.usage){ STATE.usage=STATE.usage||{totalSec:0,streak:0,lastDay:''}; STATE.usage.totalSec=Math.max(STATE.usage.totalSec||0, d.usage.totalSec||0); STATE.usage.streak=Math.max(STATE.usage.streak||0, d.usage.streak||0); }
     if(d.bdayYear!=null) STATE.bdayYear=d.bdayYear;
+    if(d.missionsDone) STATE.missionsDone=d.missionsDone;
     if(d.prefs) STATE.prefs=Object.assign({}, STATE.prefs, d.prefs);
     STATE.fresh=false; STATE.demo=false;
     if(typeof applyCleanModeClass==='function') applyCleanModeClass();
