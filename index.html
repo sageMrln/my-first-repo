@@ -194,6 +194,8 @@
   .scen-btn{font-family:'Rajdhani';font-weight:700;font-size:13px;letter-spacing:.04em;border:1px solid var(--line);background:var(--panel);color:var(--txt-dim);padding:8px 14px;border-radius:10px;cursor:pointer;transition:all .18s ease;text-transform:uppercase}
   .scen-btn:hover{color:var(--txt);border-color:var(--cyan-dim)}
   .scen-btn.active{color:#04121a;background:linear-gradient(180deg,var(--cyan),#23a7c4);border-color:var(--cyan);box-shadow:var(--glow)}
+  .loantoggle{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--txt);background:rgba(0,229,255,.05);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer}
+  .loantoggle input{width:18px;height:18px;accent-color:var(--cyan);cursor:pointer;flex:none}
 
   footer{text-align:center;color:var(--txt-dim);font-family:'Share Tech Mono';font-size:11px;letter-spacing:.14em;margin-top:30px}
 
@@ -641,14 +643,16 @@
     <button class="tab active" data-p="overview"><span class="ix">01</span>Overview</button>
     <button class="tab" data-p="income"><span class="ix">02</span>Income</button>
     <button class="tab" data-p="expenses"><span class="ix">03</span>Expenses</button>
-    <button class="tab" data-p="flow"><span class="ix">04</span>Cash Flow</button>
-    <button class="tab" data-p="rule"><span class="ix">05</span>Savings Rule</button>
-    <button class="tab" data-p="goals"><span class="ix">06</span>Goals</button>
-    <button class="tab" data-p="checklist"><span class="ix">07</span>Checklist</button>
-    <button class="tab" data-p="subs"><span class="ix">08</span>Subscriptions</button>
-    <button class="tab" data-p="gym"><span class="ix">09</span>Gym Plan</button>
-    <button class="tab" data-p="calendar"><span class="ix">10</span>Calendar</button>
-    <button class="tab" data-p="log"><span class="ix">11</span>Change Log</button>
+    <button class="tab" data-p="loan"><span class="ix">04</span>Loan</button>
+    <button class="tab" data-p="flow"><span class="ix">05</span>Cash Flow</button>
+    <button class="tab" data-p="rule"><span class="ix">06</span>Savings Rule</button>
+    <button class="tab" data-p="goals"><span class="ix">07</span>Goals</button>
+    <button class="tab" data-p="checklist"><span class="ix">08</span>Checklist</button>
+    <button class="tab" data-p="subs"><span class="ix">09</span>Subscriptions</button>
+    <button class="tab" data-p="klarna"><span class="ix">10</span>Klarna Float</button>
+    <button class="tab" data-p="gym"><span class="ix">11</span>Gym Plan</button>
+    <button class="tab" data-p="calendar"><span class="ix">12</span>Calendar</button>
+    <button class="tab" data-p="log"><span class="ix">13</span>Change Log</button>
   </nav>
 
   <!-- 01 OVERVIEW -->
@@ -704,7 +708,32 @@
     </div>
   </section>
 
-  <!-- 04 CASH FLOW -->
+  <!-- 04 LOAN -->
+  <section class="panel" id="loan">
+    <div class="card">
+      <h2>Loan &amp; Debt</h2>
+      <div class="desc">Your loan or debt repayment. The toggle controls whether it's counted in your cash-flow math — turn it off if you don't currently have a loan, so your "left over" stays correct.</div>
+      <label class="loantoggle" id="loanToggleWrap"><input type="checkbox" id="loanOn" checked> <b>Include loan / debt payment in my cash-flow math</b></label>
+      <div class="form-row" style="margin-top:14px">
+        <div class="field"><label>Monthly loan / debt payment</label><input id="loanPay" type="number" min="0" step="1" placeholder="0"></div>
+        <div class="field"><label>Monthly savings target</label><input id="loanSave" type="number" min="0" step="1" placeholder="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Loan amount <span style="color:var(--txt-dim)">(optional)</span></label><input id="loanAmount" type="number" min="0" placeholder="e.g. 75000"></div>
+        <div class="field"><label>Interest rate % <span style="color:var(--txt-dim)">(optional)</span></label><input id="loanRate" type="number" min="0" step="0.01" placeholder="e.g. 7.70"></div>
+      </div>
+      <div class="field"><label>Notes <span style="color:var(--txt-dim)">(terms, lender, payoff plan — anything)</span></label><textarea id="loanNote" placeholder="e.g. Nordea Forbrugslån+ · ÅOP 9.23% · 6 yr · first payment 31 Jul"></textarea></div>
+      <button class="btn" id="loanSaveBtn">Save loan details</button>
+      <div class="status" style="margin-top:16px">
+        <div class="stat low"><div class="lbl">Monthly payment</div><div class="val" id="loanOutPay" style="font-size:18px">—</div></div>
+        <div class="stat avg"><div class="lbl">Savings target</div><div class="val" id="loanOutSave" style="font-size:18px">—</div></div>
+        <div class="stat high"><div class="lbl">In cash-flow math?</div><div class="val" id="loanOutOn" style="font-size:18px">—</div></div>
+      </div>
+      <div class="note" id="loanNoteOut" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- 05 CASH FLOW -->
   <section class="panel" id="flow">
     <div class="card">
       <h2>Cash-Flow Simulator</h2>
@@ -752,7 +781,7 @@
     </div>
   </section>
 
-  <!-- 05 SAVINGS RULE -->
+  <!-- 06 SAVINGS RULE -->
   <section class="panel" id="rule">
     <div class="card">
       <h2>The Savings Rule</h2>
@@ -775,7 +804,7 @@
     </div>
   </section>
 
-  <!-- 06 GOALS -->
+  <!-- 07 GOALS -->
   <section class="panel" id="goals">
     <div class="card" id="goalsGeneric">
       <h2>Your Goals</h2>
@@ -789,7 +818,7 @@
     </div>
   </section>
 
-  <!-- 07 CHECKLIST -->
+  <!-- 08 CHECKLIST -->
   <section class="panel" id="checklist">
     <div class="card">
       <h2>Action Checklist</h2>
@@ -806,7 +835,7 @@
     </div>
   </section>
 
-  <!-- 08 SUBSCRIPTIONS -->
+  <!-- 09 SUBSCRIPTIONS -->
   <section class="panel" id="subs">
     <div class="card" data-collapse data-collapsed>
       <h2>Add a Subscription / Recurring Cost</h2>
@@ -834,9 +863,112 @@
       </div>
       <button class="btn ghost" id="addCatBtn">+ Add category</button>
     </div>
+
+    <div class="card">
+      <h2>Subscription Ledger</h2>
+      <div class="desc">Every recurring cost you have, with what it is and why you keep it. Pulled live from your items — edit any of them in <b>Manage Items</b> above.</div>
+      <div class="subtotal">
+        <div class="stat avg"><div class="lbl">Total / month</div><div class="val" id="ledMonth">—<small> </small></div></div>
+        <div class="stat high"><div class="lbl">Total / year</div><div class="val" id="ledYear">—<small> </small></div></div>
+      </div>
+      <div class="sub-grid" id="subLedger"></div>
+    </div>
   </section>
 
-  <!-- 09 GYM / BODY -->
+  <!-- 10 KLARNA FLOAT -->
+  <section class="panel" id="klarna">
+    <div class="card">
+      <h2>Klarna Float System</h2>
+      <div class="desc">A free, zero-interest cash tool — explained simply. With pay-in-2, Klarna sends the <b>full amount</b> to your bank now, and you pay it back over the next 2 months in two equal, interest-free instalments. Because there's no interest, you return <b>exactly</b> what you borrowed — it's really just bringing your own future salary forward to today, for free.</div>
+
+      <div style="background:rgba(255,181,71,.08);border:1px solid var(--amber);border-radius:10px;padding:14px 16px;margin-bottom:16px">
+        <div style="font-family:'Share Tech Mono';font-size:11px;letter-spacing:.14em;color:var(--amber);margin-bottom:8px">⚠ THE ONE RULE TO NEVER FORGET</div>
+        <div style="font-size:14px;color:var(--txt)">The money is <b>NOT yours to keep</b> — it's your own future salary pulled forward, and you return every bit over the next 2 months. Think "borrowing from myself, interest-free," never "free money." Treat it as keep-money and it will hurt you; treat it as a short bridge and it's a powerful free tool.</div>
+      </div>
+
+      <h2 style="font-size:15px;margin-top:18px">How one cycle works (10k example)</h2>
+      <table>
+        <tr><th>Step</th><th style="text-align:right">Cash effect</th></tr>
+        <tr><td>Klarna sends the full 10k to your bank</td><td class="num">+10,000</td></tr>
+        <tr><td><b>In your hand right now (borrowed in full)</b></td><td class="num" style="color:var(--lime)">10,000</td></tr>
+        <tr><td>Month 1: repay 1st half (from salary)</td><td class="num">−5,000</td></tr>
+        <tr><td>Month 2: repay 2nd half (from salary)</td><td class="num">−5,000</td></tr>
+        <tr class="total"><td>End — exactly what you borrowed, returned</td><td class="num">0</td></tr>
+      </table>
+      <div class="note">You get the whole 10k on day one and repay it interest-free over the next two months — 5,000 each — from salary that was arriving anyway. Total interest: zero; total repaid: exactly 10,000. The only thing that matters is that each instalment fits inside your monthly surplus (see Safe-Size below).</div>
+    </div>
+
+    <div class="card">
+      <h2>"A Loan But Better" — The Buffer Build</h2>
+      <div class="desc">How to turn the short bridge into something permanent you actually own — costing nothing. Using an 8k example (comfortably inside a healthy surplus):</div>
+      <ul class="clean">
+        <li><b>Step 1 —</b> Borrow 8k from Klarna. You have the full 8k in your bank today.</li>
+        <li><b>Step 2 —</b> DON'T spend it. Let it sit as a buffer.</li>
+        <li><b>Step 3 —</b> Repay the two 4k instalments from your salary surplus over the next 2 months — <i>not</i> from the 8k you're holding.</li>
+        <li><b>Result —</b> After 2 months Klarna is fully repaid and you still hold the original 8k, free and clear. You've simply pulled 2 months of saving forward into instant, interest-free liquidity — a buffer you got to use from day one at zero cost.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Safe-Size Rule</h2>
+      <div class="desc">The bridge only works if you can cover each instalment from your salary surplus — and since repayment is split over 2 months, each instalment is <b>half the amount borrowed</b>. Your surplus on a typical month — income minus all recurring costs and any loan payment — is <b id="klSurplus">—</b>.</div>
+      <table>
+        <tr><th>Amount borrowed</th><th>Instalment (×2 months)</th><th style="text-align:right">Safe for you?</th></tr>
+        <tbody id="klSafe"></tbody>
+      </table>
+      <div class="note">Your comfortable ceiling is roughly the size where the half-instalment still fits inside your typical surplus. Treat anything that forces you to dip into savings to make an instalment as too big — it defeats the purpose.</div>
+    </div>
+
+    <div class="card">
+      <h2>Klarna Cash-Flow Simulator</h2>
+      <div class="desc">Pick the kind of month, then slide the amount you'd borrow. It shows the two repayments, whether they fit your cash after every expense and any loan payment, and a clear good→bad signal. Your surplus changes a lot with income, so the month matters.</div>
+
+      <div style="margin-bottom:14px">
+        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">WHICH KIND OF MONTH?</small>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="klScenBtns">
+          <button class="scen-btn" onclick="klSetScen('low')" id="klBtnLow">Low</button>
+          <button class="scen-btn active" onclick="klSetScen('avg')" id="klBtnAvg">Typical</button>
+          <button class="scen-btn" onclick="klSetScen('high')" id="klBtnHigh">Good</button>
+        </div>
+      </div>
+
+      <div class="slider-wrap">
+        <input type="range" id="klAmt" min="1000" max="15000" step="500" value="10000">
+        <div class="calc-row"><span>Amount you borrow (received now, in full)</span><b id="klRecv">10,000 kr</b></div>
+        <div class="calc-row"><span>Repayment — month 1</span><b id="klM1">− 5,000 kr</b></div>
+        <div class="calc-row"><span>Repayment — month 2</span><b id="klM2">− 5,000 kr</b></div>
+        <div class="calc-row"><span>Total repaid (= exactly what you borrowed)</span><b id="klTot">10,000 kr</b></div>
+        <div class="calc-row"><span>Your surplus this month (after all costs + loan)</span><b id="klSurp">—</b></div>
+        <div class="calc-row"><span>Left each month after the instalment</span><b id="klAfter">—</b></div>
+      </div>
+
+      <div id="klVerdict" style="margin-top:16px;border-radius:12px;padding:16px 18px;border:1px solid var(--amber);background:rgba(255,181,71,.08)">
+        <div style="font-family:'Orbitron';font-weight:700;font-size:22px;color:var(--amber)" id="klVtag">⚠ TIGHT</div>
+        <div style="font-size:14px;color:var(--txt);margin-top:6px" id="klVmsg">Right at your limit.</div>
+      </div>
+
+      <h2 style="font-size:15px;margin-top:22px">Examples at this income level</h2>
+      <table>
+        <tr><th>Borrow</th><th>Instalment ×2</th><th>Left after instalment</th><th style="text-align:right">Verdict</th></tr>
+        <tbody id="klExamples"></tbody>
+      </table>
+      <div class="note">"Left after instalment" is what remains of your monthly surplus after one repayment, <i>before</i> setting aside your savings target. Negative means a single instalment already eats your whole surplus — you'd be paying Klarna out of savings. GOOD = fits in free money · OK = fits if you skip the savings transfer that month · TIGHT = dips into savings · BAD = exceeds your surplus.</div>
+    </div>
+
+    <div class="card">
+      <h2>Honest Verdict</h2>
+      <div class="desc">Where this tool fits next to a real loan.</div>
+      <ul class="clean">
+        <li><b>What it really is:</b> interest-free borrowing from your own future salary — you receive the full amount now and return exactly that over 2 months. No more, no less.</li>
+        <li><b>What it's great for:</b> free short-term breathing room — bridging a gap before payday, or pulling a buffer forward without touching savings.</li>
+        <li><b>What it can't do:</b> replace a proper loan. It tops out at a small amount and must be cleared within 2 months. It resets to zero each cycle — it never builds a growing pile by itself.</li>
+        <li><b>The risk:</b> Klarna has to approve you each time, and every bit must come back within 2 months. Never let it become something you <i>need</i> to survive the month.</li>
+        <li><b>Best use:</b> a free bonus tool on top of your real plan — not the foundation of it.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 11 GYM / BODY -->
   <section class="panel" id="gym">
     <div class="card">
       <h2>Body Stats</h2>
@@ -922,7 +1054,7 @@
     </div>
   </section>
 
-  <!-- 10 CALENDAR -->
+  <!-- 12 CALENDAR -->
   <section class="panel" id="calendar">
     <div class="card">
       <h2>Calendar</h2>
@@ -954,7 +1086,7 @@
     </div>
   </section>
 
-  <!-- 11 CHANGE LOG -->
+  <!-- 13 CHANGE LOG -->
   <section class="panel" id="log">
     <div class="card">
       <h2>Change Log <span class="tag now" id="logCount">0</span></h2>
@@ -1215,7 +1347,9 @@
   var GRAND = 0;
   function recomputeGrand(){ GRAND = __sys.token() * MODEL.groups.reduce(function(s,g){ return s + groupTotal(g); }, 0); return GRAND; }
   recomputeGrand();
-  function leftOver(income){ return __sys.token() * income - GRAND - MODEL.loanPayment; }
+  function loanIncluded(){ return STATE.loanOn !== false; }   // toggle: include loan payment in the math (default on)
+  function loanAmt(){ return loanIncluded() ? (MODEL.loanPayment||0) : 0; }
+  function leftOver(income){ return __sys.token() * income - GRAND - loanAmt(); }
   function comfort(income){ return leftOver(income) - MODEL.savingsMatch * __sys.token(); }
 
   /* ---------- TAB SWITCHING (only nav.tabs buttons) ---------- */
@@ -1281,14 +1415,15 @@
   document.getElementById('cfOut2').textContent = '− ' + fmt(GRAND);
   function updateCF(){
     var inc = parseInt(slider.value,10) || 0;
-    var left = inc - GRAND - MODEL.loanPayment;
+    var la = loanAmt();
+    var left = inc - GRAND - la;
     var free = left - MODEL.savingsMatch;
     document.getElementById('cfInc').textContent = fmt(inc);
     var cfO2 = document.getElementById('cfOut2'); if(cfO2) cfO2.textContent = '− ' + fmt(GRAND);
-    var cfL = document.getElementById('cfLoan'); if(cfL) cfL.textContent = '− ' + fmt(MODEL.loanPayment||0);
+    var cfL = document.getElementById('cfLoan'); if(cfL) cfL.textContent = '− ' + fmt(la);
     var cfM = document.getElementById('cfMatch'); if(cfM) cfM.textContent = '− ' + fmt(MODEL.savingsMatch||0);
-    // hide the debt / savings rows entirely when they're zero (keeps it uncluttered)
-    var lr=document.getElementById('cfLoanRow'); if(lr) lr.style.display = (MODEL.loanPayment>0)?'':'none';
+    // hide the debt / savings rows entirely when they're zero/off (keeps it uncluttered)
+    var lr=document.getElementById('cfLoanRow'); if(lr) lr.style.display = (la>0)?'':'none';
     var mr=document.getElementById('cfMatchRow'); if(mr) mr.style.display = (MODEL.savingsMatch>0)?'':'none';
     document.getElementById('cfOut').textContent  = left >= 0 ? fmt(left) : '− ' + fmt(-left);
     document.getElementById('cfFree').textContent = free >= 0 ? fmt(free) : '− ' + fmt(-free);
@@ -1326,6 +1461,8 @@
     setTxt('stLow', fmt(MODEL.income.low)); setTxt('stAvg', fmt(MODEL.income.avg)); setTxt('stHigh', fmt(MODEL.income.high));
     setTxt('incLow', fmt(MODEL.income.low)); setTxt('incAvg', fmt(MODEL.income.avg)); setTxt('incHigh', fmt(MODEL.income.high));
     setTxt('btnLow','Low ('+fmtN(MODEL.income.low)+')'); setTxt('btnAvg','Typical ('+fmtN(MODEL.income.avg)+')'); setTxt('btnHigh','Good ('+fmtN(MODEL.income.high)+')');
+    setTxt('klBtnLow','Low ('+fmtN(MODEL.income.low)+')'); setTxt('klBtnAvg','Typical ('+fmtN(MODEL.income.avg)+')'); setTxt('klBtnHigh','Good ('+fmtN(MODEL.income.high)+')');
+    if(typeof klRefresh==='function') klRefresh();
     // adapt the cash-flow slider range to the user's actual income
     var sl=document.getElementById('incSlider');
     if(sl){
@@ -1449,14 +1586,139 @@
   // Prime milestones/readout so they aren't dashes before first visit.
   setScen('avg');
 
+  /* ---------- KLARNA FLOAT SIMULATOR (data-driven, respects loan toggle) ---------- */
+  (function(){
+    var amt = document.getElementById('klAmt');
+    if(!amt) return;
+    var scen = 'avg';
+    var EX = [3000,5000,8000,10000,12000,15000];
+    function surplus(){ return leftOver(MODEL.income[scen]); }   // before the savings match (honours loan toggle)
+    function freeMoney(){ return comfort(MODEL.income[scen]); }  // after the savings match
+    function verdict(I){
+      var s = surplus(), c = freeMoney();
+      if(I <= c)      return {tag:'✅ GOOD',  rgb:'124,255,178', msg:t('Easily affordable — pay both instalments from spare cash and still set money aside.')};
+      if(I <= s)      return {tag:'☑ OK',     rgb:'0,229,255',   msg:t('Affordable if you pause this month’s savings transfer. Essentials and any loan stay untouched.')};
+      if(I <= s*1.15) return {tag:'⚠ TIGHT',  rgb:'255,181,71',  msg:t('Right at your limit — you’d dip slightly into savings to cover it. Only in a typical-or-better month.')};
+      return                 {tag:'⛔ BAD',    rgb:'255,92,124',  msg:t('Too big — the instalments exceed your surplus, so you’d have to raid savings. Don’t.')};
+    }
+    function signed(n){ return n >= 0 ? fmtN(n) : '−' + fmtN(-n); }
+    function setTxt(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; }
+    function render(){
+      if(!document.getElementById('klAmt')) return;
+      var s = surplus();
+      // Safe-Size ceiling table — sized to this user's surplus
+      var sizes=[6000,8000,9000,10000,12000];
+      var safeHost=document.getElementById('klSafe');
+      if(safeHost) safeHost.innerHTML = sizes.map(function(b){
+        var i=b/2, ok = i<=freeMoney(), edge = !ok && i<=s;
+        var col = ok?'var(--lime)':edge?'var(--amber)':'var(--red)';
+        var lab = ok?'✅ Yes':edge?'⚠ Edge — needs a good month':'✗ Too big';
+        return '<tr><td>'+fmtN(b)+' '+curInfo().sym+'</td><td>'+fmtN(i)+'</td><td class="num" style="color:'+col+'">'+lab+'</td></tr>';
+      }).join('');
+      var sEl=document.getElementById('klSurplus'); if(sEl) sEl.textContent = fmt(s);
+      var borrow = parseInt(amt.value,10);
+      var I = borrow/2;
+      var after = s - I;
+      setTxt('klRecv', fmt(borrow));
+      setTxt('klM1', '− ' + fmt(I));
+      setTxt('klM2', '− ' + fmt(I));
+      setTxt('klTot', fmt(borrow));
+      setTxt('klSurp', fmt(s));
+      var afterEl = document.getElementById('klAfter');
+      if(afterEl){ afterEl.textContent = after >= 0 ? fmt(after) : '− ' + fmt(-after); afterEl.style.color = after < 0 ? '#ff5c7c' : ''; }
+      var v = verdict(I);
+      var box = document.getElementById('klVerdict');
+      if(box){ box.style.borderColor = 'rgb('+v.rgb+')'; box.style.background = 'rgba('+v.rgb+',0.08)'; }
+      var tagEl = document.getElementById('klVtag');
+      if(tagEl){ tagEl.textContent = v.tag; tagEl.style.color = 'rgb('+v.rgb+')'; }
+      setTxt('klVmsg', v.msg);
+      var exHost=document.getElementById('klExamples');
+      if(exHost) exHost.innerHTML = EX.map(function(b){
+        var i = b/2, a = s - i, vv = verdict(i);
+        return '<tr><td>' + fmtN(b) + ' '+curInfo().sym+'</td>' +
+          '<td class="num">' + fmtN(i) + '</td>' +
+          '<td class="num" style="color:' + (a<0 ? '#ff5c7c' : 'var(--cyan)') + '">' + signed(a) + '</td>' +
+          '<td class="num" style="color:rgb(' + vv.rgb + ')">' + vv.tag + '</td></tr>';
+      }).join('');
+    }
+    window.klSetScen = function(s){
+      scen = s;
+      [['low','klBtnLow'],['avg','klBtnAvg'],['high','klBtnHigh']].forEach(function(p){
+        var el = document.getElementById(p[1]); if(el) el.classList.toggle('active', p[0]===s);
+      });
+      render();
+    };
+    amt.addEventListener('input', render);
+    window.klRefresh = render;
+    render();
+  })();
+
   /* ---------- CENTRAL FINANCE REFRESH (after any cost change) ---------- */
+  // Data-driven Subscription Ledger: lists every recurring cost with its note.
+  function renderLedger(){
+    var host=document.getElementById('subLedger'); if(!host) return;
+    var sym=curInfo().sym;
+    var lm=document.getElementById('ledMonth'), ly=document.getElementById('ledYear');
+    if(lm) lm.innerHTML='~'+fmtN(GRAND)+'<small> '+sym+'</small>';
+    if(ly) ly.innerHTML='~'+fmtN(GRAND*12)+'<small> '+sym+'</small>';
+    var items=[];
+    MODEL.groups.forEach(function(g){ (g.items||[]).forEach(function(it){ if(!it.varies) items.push({g:g,it:it}); }); });
+    host.innerHTML = items.length ? items.map(function(x){
+      var it=x.it, g=x.g;
+      var freqL = it.freq==='yearly'?'Yearly':it.freq==='quarterly'?'Quarterly':'Monthly';
+      var raw = it.cost!=null ? Number(it.cost) : (Number(it.amt)||0);
+      var per = (it.cost!=null && it.freq && it.freq!=='monthly') ? (it.freq==='yearly'?'/yr':'/q') : '/mo';
+      return '<div class="sub-item"><div class="top"><div><div class="name">'+esc(it.name)+
+        (it.custom?' <span class="tag now" style="font-size:8px;padding:1px 5px">ADDED</span>':'')+'</div>'+
+        '<div class="freq">'+esc(g.icon+' '+g.name)+' · '+freqL+'</div></div>'+
+        '<div class="cost">'+fmt(raw)+per+'</div></div>'+
+        (it.detail ? '<div class="what">'+esc(it.detail)+'</div>' : '')+'</div>';
+    }).join('') : '<div class="empty">No recurring costs yet — add some in Manage Items above.</div>';
+  }
+  /* ---------- LOAN / DEBT TAB ---------- */
+  function renderLoan(){
+    if(!document.getElementById('loan')) return;
+    MODEL.loan = MODEL.loan || {};
+    var on = loanIncluded();
+    var cb = document.getElementById('loanOn'); if(cb) cb.checked = on;
+    var setVal = function(id,v){ var el=document.getElementById(id); if(el && document.activeElement!==el) el.value = (v!=null && v!=='') ? v : ''; };
+    setVal('loanPay', MODEL.loanPayment||'');
+    setVal('loanSave', MODEL.savingsMatch||'');
+    setVal('loanAmount', MODEL.loan.amount||'');
+    setVal('loanRate', MODEL.loan.rate||'');
+    setVal('loanNote', MODEL.loan.note||'');
+    var op=document.getElementById('loanOutPay'); if(op) op.textContent = fmt(MODEL.loanPayment||0);
+    var os=document.getElementById('loanOutSave'); if(os) os.textContent = fmt(MODEL.savingsMatch||0);
+    var oo=document.getElementById('loanOutOn'); if(oo){ oo.textContent = on?'Yes — counted':'No — ignored'; oo.style.color = on?'var(--lime)':'var(--txt-dim)'; }
+    var no=document.getElementById('loanNoteOut');
+    if(no){ if(MODEL.loan.note){ no.style.display=''; no.textContent=MODEL.loan.note; } else no.style.display='none'; }
+  }
+  (function(){
+    var cb=document.getElementById('loanOn');
+    if(cb) cb.addEventListener('change', function(){ STATE.loanOn = cb.checked; autosave(); refreshFinance(); renderLoan(); if(typeof klRefresh==='function') klRefresh(); });
+    var btn=document.getElementById('loanSaveBtn');
+    if(btn) btn.addEventListener('click', function(){
+      MODEL.loan = MODEL.loan || {};
+      MODEL.loanPayment = Number(document.getElementById('loanPay').value)||0;
+      MODEL.savingsMatch = Number(document.getElementById('loanSave').value)||0;
+      MODEL.loan.amount = Number(document.getElementById('loanAmount').value)||0;
+      MODEL.loan.rate = Number(document.getElementById('loanRate').value)||0;
+      MODEL.loan.note = document.getElementById('loanNote').value||'';
+      autosave(); refreshFinance(); renderLoan(); if(typeof klRefresh==='function') klRefresh();
+      var b=document.getElementById('loanSaveBtn'); if(b){ var o=b.textContent; b.textContent='✓ Saved'; setTimeout(function(){ b.textContent=o; },1400); }
+    });
+  })();
+
   function refreshFinance(){
     recomputeGrand();
     renderExpenses();
     renderDerived();
+    if(typeof renderLedger==='function') renderLedger();
+    if(typeof renderLoan==='function') renderLoan();
     var c2 = document.getElementById('cfOut2'); if(c2) c2.textContent = '− ' + fmt(GRAND);
     if(typeof updateCF==='function') updateCF();
     if(typeof drawChart==='function') drawChart();
+    if(typeof klRefresh==='function') klRefresh();
   }
 
   /* ---------- CHECKLIST TOGGLE ---------- */
@@ -2438,7 +2700,7 @@
   var I18N = {
     es:{
       "Overview":"Resumen","Income":"Ingresos","Expenses":"Gastos","Cash Flow":"Flujo de caja",
-      "Savings Rule":"Regla de ahorro","Goals":"Metas","Checklist":"Lista","Subscriptions":"Suscripciones",
+      "Savings Rule":"Regla de ahorro","Goals":"Metas","Checklist":"Lista","Subscriptions":"Suscripciones","Loan":"Préstamo","Klarna Float":"Klarna Float",
       "Gym Plan":"Plan de gimnasio","Calendar":"Calendario","Change Log":"Registro de cambios",
       "Mission Briefing":"Informe de misión",
       "Expense Breakdown":"Desglose de gastos","Cash-Flow Simulator":"Simulador de flujo de caja",
@@ -2454,7 +2716,7 @@
     },
     da:{
       "Overview":"Oversigt","Income":"Indkomst","Expenses":"Udgifter","Cash Flow":"Pengestrøm",
-      "Savings Rule":"Opsparingsregel","Goals":"Mål","Checklist":"Tjekliste","Subscriptions":"Abonnementer",
+      "Savings Rule":"Opsparingsregel","Goals":"Mål","Checklist":"Tjekliste","Subscriptions":"Abonnementer","Loan":"Lån","Klarna Float":"Klarna Float",
       "Gym Plan":"Træningsplan","Calendar":"Kalender","Change Log":"Ændringslog",
       "Mission Briefing":"Missionsbriefing",
       "Expense Breakdown":"Udgiftsoversigt","Cash-Flow Simulator":"Pengestrøm-simulator",
@@ -2470,7 +2732,7 @@
     },
     de:{
       "Overview":"Übersicht","Income":"Einkommen","Expenses":"Ausgaben","Cash Flow":"Cashflow",
-      "Savings Rule":"Sparregel","Goals":"Ziele","Checklist":"Checkliste","Subscriptions":"Abos",
+      "Savings Rule":"Sparregel","Goals":"Ziele","Checklist":"Checkliste","Subscriptions":"Abos","Loan":"Kredit","Klarna Float":"Klarna Float",
       "Gym Plan":"Trainingsplan","Calendar":"Kalender","Change Log":"Änderungsprotokoll",
       "Mission Briefing":"Missionsbriefing",
       "Expense Breakdown":"Ausgabenübersicht","Cash-Flow Simulator":"Cashflow-Simulator",
@@ -2486,7 +2748,7 @@
     },
     sv:{
       "Overview":"Översikt","Income":"Inkomst","Expenses":"Utgifter","Cash Flow":"Kassaflöde",
-      "Savings Rule":"Sparregel","Goals":"Mål","Checklist":"Checklista","Subscriptions":"Prenumerationer",
+      "Savings Rule":"Sparregel","Goals":"Mål","Checklist":"Checklista","Subscriptions":"Prenumerationer","Loan":"Lån","Klarna Float":"Klarna Float",
       "Gym Plan":"Träningsplan","Calendar":"Kalender","Change Log":"Ändringslogg",
       "Mission Briefing":"Uppdragsbriefing",
       "Expense Breakdown":"Utgiftsfördelning","Cash-Flow Simulator":"Kassaflödessimulator",
@@ -2502,7 +2764,7 @@
     },
     nb:{
       "Overview":"Oversikt","Income":"Inntekt","Expenses":"Utgifter","Cash Flow":"Kontantstrøm",
-      "Savings Rule":"Spareregel","Goals":"Mål","Checklist":"Sjekkliste","Subscriptions":"Abonnementer",
+      "Savings Rule":"Spareregel","Goals":"Mål","Checklist":"Sjekkliste","Subscriptions":"Abonnementer","Loan":"Lån","Klarna Float":"Klarna Float",
       "Gym Plan":"Treningsplan","Calendar":"Kalender","Change Log":"Endringslogg",
       "Mission Briefing":"Oppdragsbriefing",
       "Expense Breakdown":"Utgiftsfordeling","Cash-Flow Simulator":"Kontantstrøm-simulator",
@@ -2580,7 +2842,7 @@
   // auto-translated for the active language, or returned unchanged (English
   // fallback). One dictionary, one mechanism — used by both static markup and
   // runtime strings, so adding a translation is a single dictionary line.
-  function t(s){ var d=I18N[(STATE.prefs&&STATE.prefs.lang)||'en']; return (d && d[s]!=null) ? d[s] : s; }
+  function t(s){ if(typeof I18N==='undefined'||!I18N) return s; var d=I18N[(STATE.prefs&&STATE.prefs.lang)||'en']; return (d && d[s]!=null) ? d[s] : s; }
   var _i18nNodes = null;
   function applyLang(lang){
     var dict = I18N[lang] || {};
