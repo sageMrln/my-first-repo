@@ -2475,7 +2475,7 @@
     // ship the snapshot in the LOCKED visual state so a new device starts at the key screen
     var lockEl = document.getElementById('lockScreen');
     var wasUnlocked = lockEl && lockEl.classList.contains('unlocked');
-    if(lockEl) lockEl.classList.remove('unlocked');
+    if(lockEl){ lockEl.classList.remove('unlocked'); if(!lockEl.className) lockEl.removeAttribute('class'); }   // ship clean, locked
     var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
     if(lockEl && wasUnlocked) lockEl.classList.add('unlocked');
     var blob = new Blob([html], { type:'text/html' });
