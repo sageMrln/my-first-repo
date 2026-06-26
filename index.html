@@ -1046,13 +1046,36 @@
         <div class="stat high"><div class="lbl">Muscle : fat</div><div class="val" id="tRatio" style="font-size:15px">—</div></div>
       </div>
       <div style="margin-top:18px;display:flex;flex-direction:column;align-items:center">
-        <svg id="bodySvg" viewBox="0 0 200 384" style="width:150px;max-width:55%;height:auto" aria-label="body shape"></svg>
+        <svg id="bodySvg" viewBox="0 0 200 414" style="width:170px;max-width:62%;height:auto" aria-label="body shape"></svg>
         <div class="slider-wrap" style="margin-top:10px;width:100%">
           <input type="range" id="bodySim" min="40" max="160" step="0.5" value="75">
           <div class="calc-row"><span>Simulated weight</span><b id="bodySimW">—</b></div>
           <div class="calc-row"><span>vs your healthy range</span><b id="bodySimVerdict">—</b></div>
         </div>
       </div>
+    </div>
+
+    <div class="card" data-collapse data-collapsed>
+      <h2>Body Measurements <span style="font-size:11px;color:var(--txt-dim)">— optional, for accuracy</span></h2>
+      <div class="desc">Feed the model your real measurements and the figure above gets <b>truly you</b>. All in cm (shoe = EU size). Leave any blank to use a smart estimate.</div>
+      <div class="form-row">
+        <div class="field"><label>Wingspan / arm span</label><input id="mWingspan" type="number" min="80" max="250" step="0.5" placeholder="cm"></div>
+        <div class="field"><label>Shoulder width</label><input id="mShoulder" type="number" min="25" max="70" step="0.5" placeholder="cm"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Chest (around)</label><input id="mChest" type="number" min="60" max="160" step="0.5" placeholder="cm"></div>
+        <div class="field"><label>Waist (around)</label><input id="mWaist" type="number" min="50" max="160" step="0.5" placeholder="cm"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Hips (around)</label><input id="mHip" type="number" min="60" max="170" step="0.5" placeholder="cm"></div>
+        <div class="field"><label>Neck (around)</label><input id="mNeck" type="number" min="25" max="55" step="0.5" placeholder="cm"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Thigh (around)</label><input id="mThigh" type="number" min="35" max="100" step="0.5" placeholder="cm"></div>
+        <div class="field"><label>Calf (around)</label><input id="mCalf" type="number" min="25" max="60" step="0.5" placeholder="cm"></div>
+      </div>
+      <div class="field"><label>Shoe size (EU)</label><input id="mShoe" type="number" min="30" max="52" step="0.5" placeholder="e.g. 43"></div>
+      <div class="note">The more you give, the closer the figure matches your real proportions — wingspan sets your reach, the "around" numbers set each limb's thickness.</div>
     </div>
 
     <div class="card">
@@ -2222,34 +2245,95 @@
       vEl.textContent=t(v.t); vEl.style.color=v.c;
     }
   }
-  /* ---------- morphing body silhouette (SVG, drag the weight) ---------- */
-  function drawBody(f, m){
+  /* ---------- anatomical body, driven by real measurements ---------- */
+  // Turn the user's stats + optional measurements into pixel half-widths.
+  // Circumference (cm) → frontal half-width (px), scaled to the figure by height.
+  function bodyDims(simWeight){
+    var bd=STATE.body||{}, meas=bd.measure||{};
+    var hCm=Number(bd.height)||175, sex=(bd.sex==='female')?'female':'male';
+    var wt=(simWeight!=null)?simWeight:(Number(bd.weight)||70);
+    var bmi=wt/Math.pow(hCm/100,2);
+    var f=Math.max(0,Math.min(1,(bmi-16)/(36-16)));
+    var B=(typeof computeBodyGrade==='function')?computeBodyGrade():{ok:false};
+    var m=bodyMuscleFactor(B&&B.ok?B:null);
+    var H=360, s=H/hCm;                       // px per cm (figure is ~360px tall)
+    var num=function(v){ return (v!==''&&v!=null&&!isNaN(Number(v)))?Number(v):null; };
+    var ch=function(c){ return c/Math.PI*s/2; };   // circumference cm → half-width px
+    var def={                                  // sensible defaults from sex/weight/muscle
+      neck:   sex==='female'?(31+f*5):(37+m*4+f*6),
+      chest:  sex==='female'?(85+m*7+f*22):(96+m*15+f*26),
+      waist:  sex==='female'?(70+f*42):(80+f*48-m*4),
+      hip:    sex==='female'?(96+f*30):(93+f*26+m*3),
+      thigh:  sex==='female'?(54+f*16+m*4):(54+f*16+m*7),
+      calf:   sex==='female'?(34+f*8+m*2):(37+f*9+m*3),
+      shoulder: sex==='female'?(39+m*5+f*3):(45+m*10+f*3),   // a WIDTH in cm
+      wingspan: hCm,
+      shoe:   sex==='female'?39:43
+    };
+    var P=function(k){ return num(meas[k])!=null?num(meas[k]):def[k]; };
+    var shoulderHalf=P('shoulder')*s/2;
+    var wing=P('wingspan'), armLen=Math.max(70,(wing-P('shoulder'))/2*s*1.18);
+    var footLen=Math.max(14,(P('shoe')-2)/1.5*s);
+    return {
+      cx:100, s:s, f:f, m:m,
+      headR: ch(sex==='female'?54:57)*1.0,
+      neckHalf: ch(P('neck')),
+      shoulderHalf: shoulderHalf,
+      chestHalf: ch(P('chest'))*0.84,
+      waistHalf: ch(P('waist'))*0.88,
+      hipHalf: ch(P('hip'))*0.86,
+      thighHalf: ch(P('thigh'))*0.92,
+      kneeHalf: ch(P('thigh'))*0.62,
+      calfHalf: ch(P('calf'))*0.92,
+      ankleHalf: ch(P('calf'))*0.42,
+      upperArmHalf: ch(sex==='female'?(26+m*5+f*5):(31+m*9+f*6))*0.95,
+      forearmHalf: ch(sex==='female'?(22+m*3+f*3):(26+m*6+f*3))*0.9,
+      wristHalf: ch(sex==='female'?15:17)*0.92,
+      handHalf: ch(sex==='female'?18:20)*0.95,
+      armLen: armLen, footLen: footLen
+    };
+  }
+  function _r1(n){ return Math.round(n*10)/10; }
+  // smooth, closed tapered limb from centerline nodes [{x,y,w}]
+  function limbPath(nodes){
+    var R=[],L=[],i;
+    for(i=0;i<nodes.length;i++){ R.push([nodes[i].x+nodes[i].w,nodes[i].y]); L.push([nodes[i].x-nodes[i].w,nodes[i].y]); }
+    var pts=R.concat(L.reverse()), d='M '+_r1(pts[0][0])+' '+_r1(pts[0][1]);
+    for(i=1;i<pts.length;i++){ var pr=pts[i-1],cu=pts[i]; d+=' Q '+_r1(pr[0])+' '+_r1(pr[1])+' '+_r1((pr[0]+cu[0])/2)+' '+_r1((pr[1]+cu[1])/2); }
+    var last=pts[pts.length-1],first=pts[0];
+    d+=' Q '+_r1(last[0])+' '+_r1(last[1])+' '+_r1(first[0])+' '+_r1(first[1])+' Z';
+    return d;
+  }
+  function drawBody(simWeight){
     var svg=document.getElementById('bodySvg'); if(!svg) return;
-    f=Math.max(0,Math.min(1,f)); m=Math.max(0,Math.min(1,m));
-    var cx=100, gap=5;
-    var sh=34+m*16+f*5, ch=30+m*12+f*12, wa=20+f*42-m*4, hp=30+f*24+m*2, th=16+f*15+m*5, an=7+f*4, aw=8+m*5+f*7, nw=7+m, hr=19+m;
-    var yNeck=54, yShoulder=72, yChest=120, yWaist=190, yHip=228, yKnee=300, yAnkle=374, yHead=32;
-    function P(x,y){ return (Math.round(x*10)/10)+' '+(Math.round(y*10)/10); }
-    var torso='M '+P(cx-sh,yShoulder)
-      +' C '+P(cx-ch,yChest)+', '+P(cx-wa,yWaist-26)+', '+P(cx-wa,yWaist)
-      +' C '+P(cx-wa,yWaist+22)+', '+P(cx-hp,yHip-16)+', '+P(cx-hp,yHip)
-      +' L '+P(cx+hp,yHip)
-      +' C '+P(cx+hp,yHip-16)+', '+P(cx+wa,yWaist+22)+', '+P(cx+wa,yWaist)
-      +' C '+P(cx+wa,yWaist-26)+', '+P(cx+ch,yChest)+', '+P(cx+sh,yShoulder)
-      +' C '+P(cx+nw,yNeck+4)+', '+P(cx-nw,yNeck+4)+', '+P(cx-sh,yShoulder)+' Z';
-    function leg(s){ var oTop=cx+s*hp, iTop=cx+s*gap, oBot=cx+s*(gap+2*an);
-      return 'M '+P(oTop,yHip)+' L '+P(iTop,yHip)+' L '+P(iTop,yAnkle)+' L '+P(oBot,yAnkle)+' Q '+P(cx+s*(th+gap),yKnee)+' '+P(oTop,yHip)+' Z'; }
-    function arm(s){ var w=aw*0.82, topX=cx+s*(sh-4), midX=cx+s*(ch+w*0.5), botX=cx+s*(wa+w*0.7);
-      return 'M '+P(topX,yShoulder+5)+' Q '+P(midX,yChest+6)+' '+P(botX,yWaist+10)
-        +' L '+P(botX-s*w,yWaist+8)+' Q '+P(midX-s*w,yChest+10)+' '+P(topX-s*(w*0.55),yShoulder+9)+' Z'; }
+    var D=bodyDims(simWeight), cx=D.cx;
+    var torso=limbPath([
+      {x:cx,y:72,w:D.neckHalf*1.25},
+      {x:cx,y:84,w:D.shoulderHalf},
+      {x:cx,y:118,w:D.chestHalf},
+      {x:cx,y:150,w:D.chestHalf*0.84},
+      {x:cx,y:190,w:D.waistHalf},
+      {x:cx,y:222,w:D.hipHalf},
+      {x:cx,y:244,w:D.hipHalf*0.9}
+    ]);
+    function arm(side){
+      var th=0.30, sx=cx+side*(D.shoulderHalf*0.82), sy=90, dx=Math.sin(th)*side, dy=Math.cos(th), L=D.armLen;
+      function st(t,w){ return {x:sx+dx*L*t, y:sy+dy*L*t, w:w}; }
+      return limbPath([ st(0.0,D.upperArmHalf*1.06), st(0.28,D.upperArmHalf), st(0.5,D.forearmHalf*1.05), st(0.72,D.forearmHalf), st(0.9,D.wristHalf), st(1.0,D.handHalf), st(1.09,D.handHalf*0.5) ]);
+    }
+    function leg(side){
+      var lx=cx+side*(D.hipHalf*0.46), kx=cx+side*(D.hipHalf*0.40);
+      return limbPath([ {x:lx,y:240,w:D.thighHalf}, {x:lx,y:284,w:D.thighHalf*0.82}, {x:kx,y:318,w:D.kneeHalf}, {x:kx,y:352,w:D.calfHalf}, {x:kx,y:392,w:D.ankleHalf} ]);
+    }
+    function foot(side){ var fx=cx+side*(D.hipHalf*0.40); return '<ellipse cx="'+_r1(fx-side*D.footLen*0.18)+'" cy="396" rx="'+_r1(D.ankleHalf+D.footLen*0.5)+'" ry="'+_r1(D.ankleHalf*1.2)+'"/>'; }
     svg.innerHTML='<defs><linearGradient id="bGrad" x1="0" x2="1" y1="0" y2="0">'+
-      '<stop offset="0" stop-color="#073142"/><stop offset="0.46" stop-color="#1f86a1"/><stop offset="1" stop-color="#05202b"/></linearGradient></defs>'+
-      '<g fill="url(#bGrad)" stroke="rgba(0,229,255,.55)" stroke-width="1.6" stroke-linejoin="round">'+
+      '<stop offset="0" stop-color="#063040"/><stop offset="0.28" stop-color="#1b7d97"/><stop offset="0.5" stop-color="#37c0da"/><stop offset="0.72" stop-color="#1b7d97"/><stop offset="1" stop-color="#052028"/></linearGradient></defs>'+
+      '<g fill="url(#bGrad)" stroke="rgba(0,229,255,.6)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">'+
+      '<path d="'+leg(-1)+'"/><path d="'+leg(1)+'"/>'+foot(-1)+foot(1)+
       '<path d="'+arm(-1)+'"/><path d="'+arm(1)+'"/>'+
-      '<path d="'+leg(-1)+'"/><path d="'+leg(1)+'"/>'+
-      '<rect x="'+(cx-nw)+'" y="'+(yNeck-8)+'" width="'+(2*nw)+'" height="16" rx="4"/>'+
+      '<rect x="'+_r1(cx-D.neckHalf)+'" y="64" width="'+_r1(D.neckHalf*2)+'" height="18" rx="5"/>'+
       '<path d="'+torso+'"/>'+
-      '<ellipse cx="'+cx+'" cy="'+yHead+'" rx="'+hr+'" ry="'+(hr+3)+'"/></g>';
+      '<ellipse cx="'+cx+'" cy="46" rx="'+_r1(D.headR)+'" ry="'+_r1(D.headR*1.18)+'"/></g>';
   }
   function bodyMuscleFactor(B){
     var musc=(B&&B.musc!=null)?B.musc:(((STATE.body||{}).muscle!==''&&(STATE.body||{}).muscle!=null)?Number((STATE.body||{}).muscle):null);
@@ -2261,7 +2345,7 @@
   function updateBodySim(){
     var sim=document.getElementById('bodySim'); if(!sim) return;
     var wt=parseFloat(sim.value)||0, B=computeBodyGrade();
-    drawBody(fatnessFromWeight(wt), bodyMuscleFactor(B.ok?B:null));
+    drawBody(wt);
     var set=function(id,v,col){ var e=document.getElementById(id); if(e){ e.textContent=v; if(col!=null) e.style.color=col; } };
     set('bodySimW', wt.toFixed(1)+' kg');
     if(B.ok){ var v,col;
@@ -2314,6 +2398,13 @@
     if(sl) sl.addEventListener('input', function(){ sl.dataset.touched='1'; calSim(); });
     var bsim=document.getElementById('bodySim');
     if(bsim) bsim.addEventListener('input', function(){ bsim.dataset.touched='1'; updateBodySim(); });
+    // optional body measurements → refine the figure
+    STATE.body.measure = STATE.body.measure || {};
+    [['mWingspan','wingspan'],['mShoulder','shoulder'],['mChest','chest'],['mWaist','waist'],['mHip','hip'],['mNeck','neck'],['mThigh','thigh'],['mCalf','calf'],['mShoe','shoe']].forEach(function(p){
+      var el=document.getElementById(p[0]); if(!el) return;
+      if(STATE.body.measure[p[1]]!=null && STATE.body.measure[p[1]]!=='') el.value=STATE.body.measure[p[1]];
+      el.addEventListener('input', function(){ STATE.body.measure[p[1]]=el.value; autosave(); if(typeof updateBodySim==='function'){ var s=document.getElementById('bodySim'); updateBodySim(); } });
+    });
     document.querySelectorAll('#goalBtns .scen-btn').forEach(function(b){
       b.addEventListener('click', function(){
         var g=b.getAttribute('data-goal'); STATE.body.goal=g; setGoalBtns(g); autosave();
