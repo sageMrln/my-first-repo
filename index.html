@@ -686,7 +686,7 @@
     <button class="tab" data-p="goals"><span class="ix">07</span>Goals</button>
     <button class="tab" data-p="checklist"><span class="ix">08</span>Checklist</button>
     <button class="tab" data-p="subs"><span class="ix">09</span>Subscriptions</button>
-    <button class="tab" data-p="klarna"><span class="ix">10</span>Klarna Float</button>
+    <button class="tab" data-p="klarna" style="display:none"><span class="ix">10</span>Klarna Float</button>
     <button class="tab" data-p="gym"><span class="ix">11</span>Gym Plan</button>
     <button class="tab" data-p="calendar"><span class="ix">12</span>Calendar</button>
     <button class="tab" data-p="log"><span class="ix">13</span>Change Log</button>
@@ -3392,6 +3392,7 @@
   (function initMint(){
     if(!MINT.available()) return;                    // not the owner's file → no minting UI
     var btn=document.getElementById('mintBtn'); if(btn) btn.style.display='';
+    var klt=document.querySelector('#tabs .tab[data-p="klarna"]'); if(klt) klt.style.display='';   // Klarna is a master-only tab
     var back=document.getElementById('mintBack');
     function open(){ if(back) back.classList.add('show'); }
     function close(){ if(back) back.classList.remove('show'); }
