@@ -518,8 +518,8 @@
 <!-- OWNER KEY MAKER (only usable when this file holds the private key) -->
 <div class="modal-back" id="mintBack">
   <div class="modal" role="dialog" aria-modal="true" style="max-width:460px">
-    <h3>🔑 Mint an access key</h3>
-    <div class="mwarn" style="font-size:12.5px">Owner only. The key works in any MRLN file. <b>This file holds your master key — never share it; only ever hand out Blank copies.</b></div>
+    <h3>📤 New customer file + key</h3>
+    <div class="mwarn" style="font-size:12.5px">Owner only. This makes a <b>fresh file</b> and the <b>one key that unlocks it</b> — the key works on that file and nothing else. <b>Never share THIS file (your master); only hand out the file + key it creates.</b></div>
     <div class="field" style="margin-top:14px"><label>Member name / handle</label><input id="mintName" placeholder="e.g. sam#1234" autocomplete="off"></div>
     <div style="display:flex;gap:10px;align-items:flex-end">
       <div class="field" style="flex:1;margin:0"><label>Valid for</label><input id="mintDur" type="number" min="1" value="30"></div>
@@ -531,11 +531,12 @@
       <option value="3|hours">3-hour trial</option>
       <option value="30|days">1 month</option>
       <option value="365|days">1 year</option>
-      <option value="3650|days">Owner / 10 years</option>
     </select></div>
-    <button class="btn" id="mintGo" style="margin-top:14px;width:100%">Generate key</button>
+    <div class="field" style="margin-top:8px"><label>Renew an existing file? <span style="color:var(--txt-dim)">(paste its File ID — leave blank to make a brand-new file)</span></label><input id="mintFid" placeholder="blank = new file · or e.g. F-7K2P9X" autocomplete="off"></div>
+    <button class="btn" id="mintGo" style="margin-top:14px;width:100%">Create file + key</button>
     <div id="mintOut" style="display:none;margin-top:14px">
-      <label style="font-size:12px;color:var(--txt-dim)">Copy &amp; send in Discord</label>
+      <div id="mintFidOut" style="font-family:'Share Tech Mono';font-size:12px;color:var(--cyan);margin-bottom:8px"></div>
+      <label style="font-size:12px;color:var(--txt-dim)">The key for this file — copy &amp; send it with the file</label>
       <div id="mintKey" style="background:#06101c;border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:12px;padding:11px;word-break:break-all;line-height:1.5;margin-top:4px"></div>
       <div id="mintMeta" style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin-top:6px"></div>
       <button class="btn ghost" id="mintCopy" style="margin-top:8px">Copy key</button>
@@ -1133,8 +1134,8 @@
   <button class="chattoggle" id="chatToggle" data-i18n="💬 Quick Update">💬 Quick Update</button>
   <label class="bakechk" id="bakeKeyWrap" title="Saves your key inside the file so it opens without re-typing. Turn off if you'll share the file."><input type="checkbox" id="bakeKey" checked> <span data-i18n="keep me signed in">keep me signed in</span></label>
   <div class="badge" id="saveBadge">loaded</div>
-  <button class="chattoggle" id="shareBlankBtn" title="Download an empty copy (no data, no key) — safe to give to a new person" data-i18n="📤 Blank copy to share">📤 Blank copy to share</button>
-  <button class="chattoggle" id="mintBtn" title="Owner only — mint an access key for a member" style="display:none;border-color:var(--lime);color:var(--lime)">🔑 Mint key</button>
+  <button class="chattoggle" id="shareBlankBtn" title="Owner only — make a fresh file and the one key that unlocks it" data-i18n="📤 New file + key" style="display:none">📤 New file + key</button>
+  <button class="chattoggle" id="mintBtn" title="Owner only — make a file + its key, or renew an existing file's key" style="display:none;border-color:var(--lime);color:var(--lime)">🔑 New / renew key</button>
   <button class="savebtn" id="saveBtn" data-i18n="💾 Save / Export">💾 Save / Export</button>
   <button class="savefab" id="saveFab" title="Save & tools" aria-label="Save and tools">💾</button>
 </div>
@@ -1224,7 +1225,7 @@
       // pick up the owner's data, and can't clobber it). Start completely blank.
       TEMPLATE_MODE = true;
       var pr = e.prefs || {};
-      return Object.assign({}, DEFAULTS, { prefs:{ lang:pr.lang||'en', currency:pr.currency||'DKK', country:'' } });
+      return Object.assign({}, DEFAULTS, { prefs:{ lang:pr.lang||'en', currency:pr.currency||'DKK', country:'' }, fid: e.fid||'' });
     }
     var l=readLocal(), pick=null;
     if(e && l) pick = ((l.savedAt||'') >= (e.savedAt||'')) ? l : e;   // newest wins
@@ -2501,7 +2502,7 @@
     if(window.rebuildScenarios) window.rebuildScenarios();
     if(typeof refreshFinance==='function') refreshFinance();
   }
-  function exportBlank(){
+  function exportBlank(fid){
     var hs = document.getElementById('hud-state');
     var oks = document.getElementById('__ownerKeySrc');
     var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapOK = oks?oks.textContent:'';
@@ -2514,7 +2515,7 @@
       renderAll();
       // 2) mark it a FRESH template (ignores any device's stored data on open),
       //    keep only the language/currency preference, and lock it (no baked key)
-      hs.textContent = JSON.stringify({ __fresh:true, prefs:{ lang:STATE.prefs.lang, currency:STATE.prefs.currency } });
+      hs.textContent = JSON.stringify({ __fresh:true, fid:(fid||''), prefs:{ lang:STATE.prefs.lang, currency:STATE.prefs.currency } });
       var lockEl = document.getElementById('lockScreen'); var wasU = lockEl && lockEl.classList.contains('unlocked');
       if(lockEl) lockEl.classList.remove('unlocked');
       // 3) the blank shouldn't carry the owner-only tools (Blank copy + Mint key buttons)
@@ -2528,10 +2529,10 @@
       if(lockEl && wasU) lockEl.classList.add('unlocked');
       var blob = new Blob([html], { type:'text/html' });
       var url = URL.createObjectURL(blob);
-      var a = document.createElement('a'); a.href = url; a.download = 'finance-hud-START.html';
+      var a = document.createElement('a'); a.href = url; a.download = 'finance-hud-' + (fid || 'START') + '.html';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-      var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ blank copy downloaded — safe to share'; b.style.color = 'var(--cyan)'; }
+      var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ customer file downloaded' + (fid?(' · '+fid):''); b.style.color = 'var(--cyan)'; }
     } finally {
       // 3) restore YOUR data + private key exactly as they were
       if(oks) oks.textContent = snapOK;
@@ -2541,7 +2542,7 @@
   }
   (function initSave(){
     var btn = document.getElementById('saveBtn'); if(btn) btn.addEventListener('click', exportHTML);
-    var sbb = document.getElementById('shareBlankBtn'); if(sbb) sbb.addEventListener('click', exportBlank);
+    // NOTE: #shareBlankBtn now opens the combo dialog (file + its bound key), wired in initMint.
     // mobile: the round 💾 button opens/closes the stack; tapping any action closes it again
     var bar = document.querySelector('.savebar'), fab = document.getElementById('saveFab');
     if(fab && bar){
@@ -2644,6 +2645,9 @@
           var payload; try{ payload=JSON.parse(new TextDecoder().decode(payloadBytes)); }catch(_){ resolve({ok:false,reason:'corrupt'}); return; }
           var now=Math.floor(Date.now()/1000);
           if(payload.exp && now>payload.exp){ resolve({ok:false,reason:'expired',payload:payload}); return; }
+          // FILE BINDING: a key carrying a file ID (f) only unlocks THIS file if the
+          // IDs match. Keys with no f are universal (owner master + backups).
+          if(payload.f){ var myFid=(typeof STATE==='object'&&STATE&&STATE.fid)||''; if(payload.f!==myFid){ resolve({ok:false,reason:'wrongfile',payload:payload}); return; } }
           resolve({ok:true,payload:payload});
         }catch(e){ resolve({ok:false,reason:'error'}); }
       });
@@ -2665,6 +2669,8 @@
           setTimeout(function(){ unlock(); if(window.__afterUnlock) window.__afterUnlock(); }, 350);
         } else if(r.reason==='expired'){
           setStatus('✗ This key expired'+(r.payload&&r.payload.exp?(' on '+fmtDate(r.payload.exp)):'')+'. Get a new one in Discord.','var(--red)');
+        } else if(r.reason==='wrongfile'){
+          setStatus('✗ This key belongs to a different file. Use the key that came with THIS file.','var(--red)');
         } else {
           setStatus('✗ Invalid key. Make sure you copied the whole thing.','var(--red)');
         }
@@ -3234,10 +3240,13 @@
     function exD(p8){for(var i=0;i+37<=p8.length;i++){if(p8[i]===2&&p8[i+1]===1&&p8[i+2]===1&&p8[i+3]===4&&p8[i+4]===0x20)return bg(p8.subarray(i+5,i+37));}throw new Error('key parse failed');}
     var _D=null,_src=null;
     function getD(){ var pv=priv(); if(!pv) return null; if(_src!==pv){ _src=pv; _D=exD(b64ToBytes(pv)); } return _D; }
-    function mintKey(name, seconds){
+    function mintKey(name, seconds, fid){
       var d=getD(); if(d==null) return null;
       var exp=Math.floor(Date.now()/1000)+Math.round(seconds);
-      var payload=JSON.stringify({u:name, exp:exp});
+      // f = file ID this key is bound to. A bound key only unlocks the file
+      // carrying that exact ID. Omitted => legacy universal key (owner/backups).
+      var obj = fid ? {u:name, exp:exp, f:fid} : {u:name, exp:exp};
+      var payload=JSON.stringify(obj);
       var h=sha(new TextEncoder().encode(payload)), e=bg(h);
       while(true){ var k=rfc(d,h), R=ml(k,[GX,GY,1n]), r=md(ax(R),N); if(r===0n) continue;
         var s=md(iv(k,N)*(e+r*d),N); if(s===0n) continue; if(s>N/2n) s=N-s;
@@ -3252,10 +3261,14 @@
     function open(){ if(back) back.classList.add('show'); }
     function close(){ if(back) back.classList.remove('show'); }
     if(btn) btn.addEventListener('click', open);
+    // the 📤 button is owner-only too, and opens the SAME combo dialog (file + its key are made together)
+    var sbb=document.getElementById('shareBlankBtn'); if(sbb){ sbb.style.display=''; sbb.addEventListener('click', open); }
     var c=document.getElementById('mintClose'); if(c) c.addEventListener('click', close);
     if(back) back.addEventListener('click', function(e){ if(e.target===back) close(); });
     var pre=document.getElementById('mintPreset');
     if(pre) pre.addEventListener('change', function(){ if(!this.value) return; var p=this.value.split('|'); document.getElementById('mintDur').value=p[0]; document.getElementById('mintUnit').value=p[1]; });
+    // random, human-readable file ID (no look-alike chars)
+    function newFid(){ var a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s=''; for(var i=0;i<6;i++) s+=a[Math.floor(Math.random()*a.length)]; return 'F-'+s; }
     var go=document.getElementById('mintGo');
     if(go) go.addEventListener('click', function(){
       var name=(document.getElementById('mintName').value||'').trim();
@@ -3263,13 +3276,19 @@
       if(!name){ alert('Enter a member name.'); return; }
       if(!dur||dur<=0){ alert('Enter a valid duration.'); return; }
       var mult=unit==='minutes'?60:unit==='hours'?3600:86400;
-      var res=MINT.mintKey(name, dur*mult);
+      var fidIn=(document.getElementById('mintFid').value||'').trim().toUpperCase();
+      var isNew=!fidIn;                       // blank field => brand-new file
+      var fid=isNew ? newFid() : fidIn;
+      var res=MINT.mintKey(name, dur*mult, fid);   // ALWAYS file-bound
       if(!res){ alert('Minting unavailable.'); return; }
+      if(isNew){ try{ exportBlank(fid); }catch(e){ alert('Could not build the file: '+e.message); return; } }   // download the new blank carrying this fid
       document.getElementById('mintKey').textContent=res.key;
+      var fo=document.getElementById('mintFidOut');
+      if(fo) fo.textContent = (isNew?'📄 New file: finance-hud-'+fid+'.html  ·  ':'🔄 Renewing  ') + 'File ID '+fid;
       var when; try{ when=new Date(res.exp*1000).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(_){ when=''; }
-      document.getElementById('mintMeta').textContent='For '+name+' · '+dur+' '+unit+' · expires '+when;
+      document.getElementById('mintMeta').textContent='For '+name+' · '+dur+' '+unit+' · bound to '+fid+' · expires '+when;
       document.getElementById('mintOut').style.display='block';
-      logChange('mint-key', name+' ('+dur+' '+unit+')');
+      logChange(isNew?'new-file+key':'renew-key', name+' · '+fid+' ('+dur+' '+unit+')');
     });
     // robust copy that ALSO works on phones opening a local file (where
     // navigator.clipboard is blocked as an "insecure context"): try the modern
