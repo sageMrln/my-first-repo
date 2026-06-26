@@ -1140,7 +1140,7 @@
       <h2>Time on the HUD ⏱</h2>
       <div class="desc">How long you've actively spent in here — it only counts while the tab is open and unlocked.</div>
       <div class="status">
-        <div class="stat avg"><div class="lbl">Total time</div><div class="val" id="usageTotal" style="font-size:20px">—</div></div>
+        <div class="stat avg"><div class="lbl">Lifetime</div><div class="val" id="usageTotal" style="font-size:20px">—</div></div>
         <div class="stat low"><div class="lbl">This session</div><div class="val" id="usageSession" style="font-size:20px">—</div></div>
         <div class="stat high"><div class="lbl">Day streak</div><div class="val" id="usageStreak" style="font-size:20px">—</div></div>
       </div>
@@ -3061,7 +3061,7 @@
 
   /* ---------- BACKUP / IMPORT DATA (private, device-to-device, no upload) ---------- */
   function exportDataCode(){
-    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[] };
+    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear };
     return 'MRLNDATA-' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));   // UTF-8 safe (emoji/names)
   }
   function importDataCode(code){
@@ -3074,6 +3074,9 @@
     MODEL = d.cfg; ensureIds(MODEL); STATE.cfg = MODEL;
     STATE.workouts=d.workouts||[]; STATE.calendar=d.calendar||{}; STATE.log=d.log||[]; STATE.body=d.body||{}; STATE.prs=d.prs||[];
     if(d.reminders) STATE.reminders=d.reminders;
+    // carry the LIFETIME total across to this device — never lose progress (take the higher)
+    if(d.usage){ STATE.usage=STATE.usage||{totalSec:0,streak:0,lastDay:''}; STATE.usage.totalSec=Math.max(STATE.usage.totalSec||0, d.usage.totalSec||0); STATE.usage.streak=Math.max(STATE.usage.streak||0, d.usage.streak||0); }
+    if(d.bdayYear!=null) STATE.bdayYear=d.bdayYear;
     if(d.prefs) STATE.prefs=Object.assign({}, STATE.prefs, d.prefs);
     STATE.fresh=false; STATE.demo=false;
     if(typeof applyCleanModeClass==='function') applyCleanModeClass();
