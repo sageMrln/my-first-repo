@@ -1140,6 +1140,7 @@
   <button class="chattoggle" id="shareBlankBtn" title="Owner only — make a fresh file and the one key that unlocks it" data-i18n="📤 New file + key" style="display:none">📤 New file + key</button>
   <button class="chattoggle" id="mintBtn" title="Owner only — make a file + its key, or renew an existing file's key" style="display:none;border-color:var(--lime);color:var(--lime)">🔑 New / renew key</button>
   <button class="savebtn" id="saveBtn" data-i18n="💾 Save / Export">💾 Save / Export</button>
+  <button class="chattoggle" id="lockBtn" title="Lock the dashboard — you'll need your key to get back in" data-i18n="🔒 Lock / Log out">🔒 Lock / Log out</button>
   <button class="savefab" id="saveFab" title="Save & tools" aria-label="Save and tools">💾</button>
 </div>
 
@@ -2553,6 +2554,12 @@
   }
   (function initSave(){
     var btn = document.getElementById('saveBtn'); if(btn) btn.addEventListener('click', exportHTML);
+    var lkb = document.getElementById('lockBtn');
+    if(lkb) lkb.addEventListener('click', function(){
+      uiConfirm({ title:'🔒 Lock the dashboard?', message:'You’ll need your access key to get back in.', confirmText:'Lock', danger:false }, function(){
+        try{ LOCK.logout(); }catch(_){ }
+      });
+    });
     // NOTE: #shareBlankBtn now opens the combo dialog (file + its bound key), wired in initMint.
     // mobile: the round 💾 button opens/closes the stack; tapping any action closes it again
     var bar = document.querySelector('.savebar'), fab = document.getElementById('saveFab');
@@ -2725,7 +2732,16 @@
         else { lock(); if(inp) inp.value=''; if(r.reason==='expired') setStatus('Your access expired. Enter this month’s key.','var(--amber)'); }
       }); }
     }
-    return { boot:boot, verify:verify, lock:lock, unlock:unlock, STORE:STORE,
+    function logout(){
+      try{ localStorage.removeItem(STORE); }catch(_){ }                   // forget this browser's key
+      curExp=null; if(expTimer){ clearTimeout(expTimer); expTimer=null; }
+      if(__sys && __sys.disarm) try{ __sys.disarm(); }catch(_){ }
+      if(typeof refreshFinance==='function') try{ refreshFinance(); }catch(_){ }
+      var inp=document.getElementById('lkInput'); if(inp) inp.value='';
+      setStatus('Locked. Enter your key to unlock.','var(--txt-dim)');
+      lock();
+    }
+    return { boot:boot, verify:verify, lock:lock, unlock:unlock, logout:logout, STORE:STORE,
              pubChk:function(){ return __sys.fnv(PUB_B64); } };
   })();
   LOCK.boot();
