@@ -1440,6 +1440,15 @@
      ============================================================ */
   var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  // localized date helpers — calendar follows the chosen language
+  function langLocale(){ return ({en:'en-GB',es:'es-ES',da:'da-DK',de:'de-DE',sv:'sv-SE',nb:'nb-NO'})[(STATE.prefs&&STATE.prefs.lang)||'en'] || 'en-GB'; }
+  function locMonthYear(y,m){ try{ return new Date(y,m,1).toLocaleDateString(langLocale(),{month:'long',year:'numeric'}); }catch(_){ return MONTHS[m]+' '+y; } }
+  function renderDow(){
+    var dow=document.getElementById('calDow'); if(!dow) return;
+    var loc=langLocale(), names=[];
+    for(var i=0;i<7;i++){ try{ names.push(new Date(2024,0,1+i).toLocaleDateString(loc,{weekday:'short'})); }catch(_){ names.push(DOW[i]); } }  // 2024-01-01 is a Monday
+    dow.innerHTML = names.map(function(d){ return '<div class="cal-dow">'+d+'</div>'; }).join('');
+  }
 
   /* ---------- ADD / EDIT / DELETE ITEMS & CATEGORIES ---------- */
   var editId = null;
@@ -1777,7 +1786,7 @@
   function todayKey(){ return dateKey(today.getFullYear(), today.getMonth(), today.getDate()); }
   (function initCalendar(){
     var dow = document.getElementById('calDow');
-    if(dow) dow.innerHTML = DOW.map(function(d){ return '<div class="cal-dow">'+d+'</div>'; }).join('');
+    renderDow();
     function go(dy,dm){ calView.m += dm; calView.y += dy;
       while(calView.m>11){ calView.m-=12; calView.y++; } while(calView.m<0){ calView.m+=12; calView.y--; }
       renderCalendar(); }
@@ -1848,7 +1857,7 @@
   function repBadge(rep){ return (rep&&rep!=='none') ? ' <span class="tag now" style="font-size:8px;padding:1px 5px">🔁 '+rep+'</span>' : ''; }
   function renderCalendar(){
     var grid = document.getElementById('calGrid'); if(!grid) return;
-    document.getElementById('calLabel').textContent = MONTHS[calView.m] + ' ' + calView.y;
+    document.getElementById('calLabel').textContent = locMonthYear(calView.y, calView.m);
     var first = new Date(calView.y, calView.m, 1);
     var lead = (first.getDay() + 6) % 7;                 // Monday-first offset
     var days = new Date(calView.y, calView.m+1, 0).getDate();
@@ -1884,7 +1893,8 @@
   }
   function prettyDate(key){
     var p = key.split('-'); var dt = new Date(+p[0], +p[1]-1, +p[2]);
-    return DOW[(dt.getDay()+6)%7] + ', ' + (+p[2]) + ' ' + MONTHS[+p[1]-1] + ' ' + p[0];
+    try{ return dt.toLocaleDateString(langLocale(), {weekday:'long', day:'numeric', month:'long', year:'numeric'}); }
+    catch(_){ return DOW[(dt.getDay()+6)%7] + ', ' + (+p[2]) + ' ' + MONTHS[+p[1]-1] + ' ' + p[0]; }
   }
   function renderDay(){
     var title = document.getElementById('dayTitle'), hint = document.getElementById('dayHint'), notes = document.getElementById('dayNotes');
@@ -2398,6 +2408,7 @@
       "Subscription Ledger":"Libro de suscripciones","Klarna Float System":"Sistema Klarna Float","Safe-Size Rule":"Regla de tamaño seguro",
       "Klarna Cash-Flow Simulator":"Simulador de flujo Klarna","Examples at this income level":"Ejemplos a este nivel de ingresos",
       "Honest Verdict":"Veredicto honesto","Gym & Workout Plan":"Plan de gimnasio y entrenamiento","Your Workouts":"Tus entrenamientos",
+      "Body Stats":"Datos corporales","Calorie Simulator":"Simulador de calorías","Personal Records (PRs)":"Récords personales (PR)","Workouts / Training Split":"Entrenamientos / Plan","Your Income":"Tus ingresos","Your Goals":"Tus metas","Why Automating It Works":"Por qué automatizar funciona",
       "All Planned Items":"Todos los elementos planificados","// Personal Finance Command Center":"// Centro de mando de finanzas personales",
       "Access key":"Clave de acceso","Unlock":"Desbloquear","// SECURE ACCESS · MONTHLY KEY":"// ACCESO SEGURO · CLAVE MENSUAL",
       "Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.":"Tu clave desbloquea el panel durante el mes. Renueva en Discord para obtener la clave del próximo mes. Tus datos financieros nunca salen de este dispositivo.",
@@ -2416,6 +2427,7 @@
       "Subscription Ledger":"Abonnementsoversigt","Klarna Float System":"Klarna Float-system","Safe-Size Rule":"Sikker-størrelse-regel",
       "Klarna Cash-Flow Simulator":"Klarna pengestrøm-simulator","Examples at this income level":"Eksempler ved dette indkomstniveau",
       "Honest Verdict":"Ærlig dom","Gym & Workout Plan":"Trænings- og fitnessplan","Your Workouts":"Dine træninger",
+      "Body Stats":"Kropsdata","Calorie Simulator":"Kalorie-simulator","Personal Records (PRs)":"Personlige rekorder (PR)","Workouts / Training Split":"Træning / Split","Your Income":"Din indkomst","Your Goals":"Dine mål","Why Automating It Works":"Derfor virker automatisering",
       "All Planned Items":"Alle planlagte poster","// Personal Finance Command Center":"// Personlig økonomi-kommandocentral",
       "Access key":"Adgangsnøgle","Unlock":"Lås op","// SECURE ACCESS · MONTHLY KEY":"// SIKKER ADGANG · MÅNEDSNØGLE",
       "Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.":"Din nøgle låser dashboardet op for måneden. Forny i Discord for at få næste måneds nøgle. Dine finansielle data forlader aldrig denne enhed.",
@@ -2434,6 +2446,7 @@
       "Subscription Ledger":"Abo-Übersicht","Klarna Float System":"Klarna-Float-System","Safe-Size Rule":"Sichere-Größe-Regel",
       "Klarna Cash-Flow Simulator":"Klarna Cashflow-Simulator","Examples at this income level":"Beispiele auf dieser Einkommensstufe",
       "Honest Verdict":"Ehrliches Urteil","Gym & Workout Plan":"Fitness- & Trainingsplan","Your Workouts":"Deine Workouts",
+      "Body Stats":"Körperdaten","Calorie Simulator":"Kalorien-Simulator","Personal Records (PRs)":"Persönliche Rekorde (PR)","Workouts / Training Split":"Workouts / Trainingsplan","Your Income":"Dein Einkommen","Your Goals":"Deine Ziele","Why Automating It Works":"Warum Automatisieren funktioniert",
       "All Planned Items":"Alle geplanten Einträge","// Personal Finance Command Center":"// Persönliche Finanz-Kommandozentrale",
       "Access key":"Zugangsschlüssel","Unlock":"Entsperren","// SECURE ACCESS · MONTHLY KEY":"// SICHERER ZUGANG · MONATSSCHLÜSSEL",
       "Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.":"Dein Schlüssel schaltet das Dashboard für den Monat frei. Erneuere in Discord, um den Schlüssel für nächsten Monat zu erhalten. Deine Finanzdaten verlassen dieses Gerät nie.",
@@ -2452,6 +2465,7 @@
       "Subscription Ledger":"Prenumerationsregister","Klarna Float System":"Klarna Float-system","Safe-Size Rule":"Säker-storlek-regel",
       "Klarna Cash-Flow Simulator":"Klarna kassaflödessimulator","Examples at this income level":"Exempel på denna inkomstnivå",
       "Honest Verdict":"Ärligt utlåtande","Gym & Workout Plan":"Gym- och träningsplan","Your Workouts":"Dina träningspass",
+      "Body Stats":"Kroppsdata","Calorie Simulator":"Kalorisimulator","Personal Records (PRs)":"Personliga rekord (PR)","Workouts / Training Split":"Träning / Split","Your Income":"Din inkomst","Your Goals":"Dina mål","Why Automating It Works":"Varför automatisering fungerar",
       "All Planned Items":"Alla planerade poster","// Personal Finance Command Center":"// Personligt ekonomi-kommandocentrum",
       "Access key":"Åtkomstnyckel","Unlock":"Lås upp","// SECURE ACCESS · MONTHLY KEY":"// SÄKER ÅTKOMST · MÅNADSNYCKEL",
       "Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.":"Din nyckel låser upp panelen för månaden. Förnya i Discord för att få nästa månads nyckel. Dina ekonomiska data lämnar aldrig den här enheten.",
@@ -2470,6 +2484,7 @@
       "Subscription Ledger":"Abonnementsoversikt","Klarna Float System":"Klarna Float-system","Safe-Size Rule":"Trygg-størrelse-regel",
       "Klarna Cash-Flow Simulator":"Klarna kontantstrøm-simulator","Examples at this income level":"Eksempler på dette inntektsnivået",
       "Honest Verdict":"Ærlig vurdering","Gym & Workout Plan":"Gym- og treningsplan","Your Workouts":"Dine treningsøkter",
+      "Body Stats":"Kroppsdata","Calorie Simulator":"Kalori-simulator","Personal Records (PRs)":"Personlige rekorder (PR)","Workouts / Training Split":"Treninger / Split","Your Income":"Din inntekt","Your Goals":"Dine mål","Why Automating It Works":"Hvorfor automatisering fungerer",
       "All Planned Items":"Alle planlagte poster","// Personal Finance Command Center":"// Personlig økonomi-kommandosentral",
       "Access key":"Tilgangsnøkkel","Unlock":"Lås opp","// SECURE ACCESS · MONTHLY KEY":"// SIKKER TILGANG · MÅNEDSNØKKEL",
       "Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.":"Nøkkelen din låser opp dashbordet for måneden. Forny i Discord for å få neste måneds nøkkel. Finansdataene dine forlater aldri denne enheten.",
@@ -2498,7 +2513,10 @@
     if(ls) ls.value=p.lang; if(lk) lk.value=p.lang; if(cs) cs.value=p.currency; if(ci) ci.value=p.country||'';
     applyLang(p.lang);
     function refreshMoney(){ if(typeof refreshFinance==='function') refreshFinance(); if(typeof renderManage==='function') renderManage(); if(window.rebuildScenarios) window.rebuildScenarios(); }
-    function setLang(v){ p.lang=v; if(ls)ls.value=v; if(lk)lk.value=v; applyLang(v); autosave(); }
+    function setLang(v){ p.lang=v; if(ls)ls.value=v; if(lk)lk.value=v; applyLang(v); autosave();
+      if(typeof renderDow==='function') renderDow();
+      if(typeof renderCalendar==='function'){ renderCalendar(); renderDay(); renderEvents(); }
+    }
     if(ls) ls.addEventListener('change', function(){ setLang(this.value); logChange('set-language', this.value); });
     if(lk) lk.addEventListener('change', function(){ setLang(this.value); });
     if(cs) cs.addEventListener('change', function(){ p.currency=this.value; refreshMoney(); autosave(); logChange('set-currency', this.value); });
