@@ -2667,6 +2667,25 @@
     function lock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.remove('unlocked'); document.documentElement.classList.add('lk-noscroll'); }
     function fmtDate(sec){ try{ return new Date(sec*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(_){ return ''; } }
     function setStatus(msg,color){ var s=document.getElementById('lkStatus'); if(s){ s.textContent=msg||''; s.style.color=color||'var(--txt-dim)'; } }
+    // LIVE EXPIRY: lock the user out the moment their key expires, mid-session.
+    var curExp=null, expTimer=null;
+    function armExpiry(exp){
+      curExp = exp || null;
+      if(expTimer){ clearTimeout(expTimer); expTimer=null; }
+      if(!curExp) return;
+      var ms = (curExp*1000) - Date.now();
+      if(ms>0 && ms<2147483000) expTimer=setTimeout(expireNow, ms+250);   // fire right at expiry
+    }
+    function expireNow(){
+      if(!curExp || Date.now() < curExp*1000) return;                     // ms-precise guard against early/clock fires
+      curExp=null;
+      try{ localStorage.removeItem(STORE); }catch(_){ }                   // so a reload also stays locked
+      if(__sys && __sys.disarm) try{ __sys.disarm(); }catch(_){ }
+      if(typeof refreshFinance==='function') try{ refreshFinance(); }catch(_){ }
+      lock();
+      var inp=document.getElementById('lkInput'); if(inp) inp.value='';
+      setStatus('Your access just expired. Enter a new key.','var(--amber)');
+    }
     function submit(){
       var inp=document.getElementById('lkInput'); if(!inp) return;
       var val=inp.value;
@@ -2675,6 +2694,7 @@
         if(r.ok){
           try{ localStorage.setItem(STORE, String(val).trim()); }catch(_){ }
           __sys.arm();                                              // arm the integrity core
+          armExpiry(r.payload.exp);                                 // start the live expiry countdown
           if(typeof refreshFinance==='function') refreshFinance();  // recompute now-valid numbers
           setStatus('✓ Unlocked'+(r.payload.exp?(' · valid until '+fmtDate(r.payload.exp)):''),'var(--lime)');
           setTimeout(function(){ unlock(); if(window.__afterUnlock) window.__afterUnlock(); }, 350);
@@ -2691,6 +2711,7 @@
       document.documentElement.classList.add('lk-noscroll');   // page loads locked; unlock() lifts this
       var btn=document.getElementById('lkBtn'); if(btn) btn.addEventListener('click', submit);
       var inp=document.getElementById('lkInput'); if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
+      setInterval(function(){ if(curExp && Date.now() >= curExp*1000) expireNow(); }, 2000);  // backup poll (sleep/clock jumps)
       var saved=null;
       // a fresh share template never auto-unlocks — it must ask for the recipient's key
       if(!TEMPLATE_MODE){
@@ -2700,7 +2721,7 @@
         if(!saved && typeof STATE==='object' && STATE && STATE.k) saved = STATE.k;
       }
       if(saved){ verify(saved).then(function(r){
-        if(r.ok){ try{ localStorage.setItem(STORE, saved); }catch(_){ } __sys.arm(); if(typeof refreshFinance==='function') refreshFinance(); unlock(); if(window.__afterUnlock) setTimeout(window.__afterUnlock, 300); }
+        if(r.ok){ try{ localStorage.setItem(STORE, saved); }catch(_){ } __sys.arm(); armExpiry(r.payload.exp); if(typeof refreshFinance==='function') refreshFinance(); unlock(); if(window.__afterUnlock) setTimeout(window.__afterUnlock, 300); }
         else { lock(); if(inp) inp.value=''; if(r.reason==='expired') setStatus('Your access expired. Enter this month’s key.','var(--amber)'); }
       }); }
     }
