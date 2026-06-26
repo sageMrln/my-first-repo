@@ -953,8 +953,17 @@
   function readLocal(){
     try{ var l=localStorage.getItem(STORE_KEY); if(l) return JSON.parse(l); }catch(_){ } return null;
   }
+  var TEMPLATE_MODE = false;   // a blank "share" copy: ignore this device's memory, start fresh
   function loadState(){
-    var e=readEmbedded(), l=readLocal(), pick=null;
+    var e=readEmbedded();
+    if(e && e.__fresh){
+      // a fresh template: do NOT read or write this device's storage (so it can't
+      // pick up the owner's data, and can't clobber it). Start completely blank.
+      TEMPLATE_MODE = true;
+      var pr = e.prefs || {};
+      return Object.assign({}, DEFAULTS, { prefs:{ lang:pr.lang||'en', currency:pr.currency||'DKK', country:'' } });
+    }
+    var l=readLocal(), pick=null;
     if(e && l) pick = ((l.savedAt||'') >= (e.savedAt||'')) ? l : e;   // newest wins
     else pick = e || l;
     return Object.assign({}, DEFAULTS, pick||{}, {
@@ -969,6 +978,11 @@
   if(STATE.prefs.country==null) STATE.prefs.country='';
   function autosave(){
     STATE.savedAt = nowISO();
+    if(TEMPLATE_MODE){   // fresh share copy: never touch this device's storage
+      var bt=document.getElementById('saveBadge');
+      if(bt){ bt.textContent='● try mode — press Save to keep your file'; bt.style.color='var(--amber)'; }
+      return;
+    }
     try{ localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); }catch(_){ }
     var b=document.getElementById('saveBadge');
     if(b){ b.textContent='● unsaved — auto-saved locally'; b.style.color='var(--amber)'; }
@@ -999,6 +1013,7 @@
         { id:'g'+uid(), icon:'🍽️', name:'Food',          items:[] },
         { id:'g'+uid(), icon:'🚗', name:'Transport',      items:[] },
         { id:'g'+uid(), icon:'📱', name:'Subscriptions',  items:[] },
+        { id:'g'+uid(), icon:'💰', name:'Savings',        items:[] },
         { id:'g'+uid(), icon:'✦',  name:'Other',          items:[] }
       ]
     };
@@ -1890,11 +1905,16 @@
       // 1) blank every data-bearing thing and re-render so NO personal text remains
       MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = [];
       renderAll();
-      // 2) empty embedded state (fresh user on open) + locked, no baked key
-      hs.textContent = '';
+      // 2) mark it a FRESH template (ignores any device's stored data on open),
+      //    keep only the language/currency preference, and lock it (no baked key)
+      hs.textContent = JSON.stringify({ __fresh:true, prefs:{ lang:STATE.prefs.lang, currency:STATE.prefs.currency } });
       var lockEl = document.getElementById('lockScreen'); var wasU = lockEl && lockEl.classList.contains('unlocked');
       if(lockEl) lockEl.classList.remove('unlocked');
+      // 3) the blank shouldn't carry the "Blank copy" button (owner-only tool)
+      var sbb = document.getElementById('shareBlankBtn'); var sbbParent=null, sbbNext=null;
+      if(sbb){ sbbParent=sbb.parentNode; sbbNext=sbb.nextSibling; sbb.parentNode.removeChild(sbb); }
       var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      if(sbb && sbbParent){ sbbParent.insertBefore(sbb, sbbNext); }   // put it back in the live app
       if(lockEl && wasU) lockEl.classList.add('unlocked');
       var blob = new Blob([html], { type:'text/html' });
       var url = URL.createObjectURL(blob);
@@ -2034,10 +2054,14 @@
     function boot(){
       var btn=document.getElementById('lkBtn'); if(btn) btn.addEventListener('click', submit);
       var inp=document.getElementById('lkInput'); if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
-      var saved=null; try{ saved=localStorage.getItem(STORE); }catch(_){ }
-      // fall back to a key baked into the file (so phones that wipe storage on
-      // every open — content:// in Chrome/Android — still auto-unlock)
-      if(!saved && typeof STATE==='object' && STATE && STATE.k) saved = STATE.k;
+      var saved=null;
+      // a fresh share template never auto-unlocks — it must ask for the recipient's key
+      if(!TEMPLATE_MODE){
+        try{ saved=localStorage.getItem(STORE); }catch(_){ }
+        // fall back to a key baked into the file (so phones that wipe storage on
+        // every open — content:// in Chrome/Android — still auto-unlock)
+        if(!saved && typeof STATE==='object' && STATE && STATE.k) saved = STATE.k;
+      }
       if(saved){ verify(saved).then(function(r){
         if(r.ok){ try{ localStorage.setItem(STORE, saved); }catch(_){ } __sys.arm(); if(typeof refreshFinance==='function') refreshFinance(); unlock(); if(window.__afterUnlock) setTimeout(window.__afterUnlock, 300); }
         else { lock(); if(inp) inp.value=''; if(r.reason==='expired') setStatus('Your access expired. Enter this month’s key.','var(--amber)'); }
@@ -2284,7 +2308,8 @@
       };
     }
     var CHIPS=[ ['Rent','Housing'],['Groceries','Food'],['Phone','Subscriptions'],['Transport','Transport'],
-                ['Electricity','Housing'],['Internet','Housing'],['Streaming','Subscriptions'],['Insurance','Other'],['Gym','Other'] ];
+                ['Electricity','Housing'],['Internet','Housing'],['Streaming','Subscriptions'],['Insurance','Other'],
+                ['Gym','Other'],['Monthly savings','Savings'] ];
     function render(){
       var s=STEPS[i];
       el.stepLbl.textContent='Step '+(i+1)+' of '+STEPS.length;
