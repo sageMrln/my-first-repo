@@ -505,6 +505,27 @@
   </div>
 </div>
 
+<!-- DAY POPUP (everything planned on a day; add repeating events) -->
+<div class="modal-back" id="dayBack">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:460px">
+    <h3 id="dayMTitle">📅 Day</h3>
+    <div id="dayMList" style="max-height:46vh;overflow-y:auto;margin-bottom:4px"></div>
+    <div class="field" style="margin-top:12px"><label>Add to this day</label>
+      <input id="dayMInput" placeholder="e.g. Mum's birthday 🎂 / Rent due / Dentist 14:00"></div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-top:8px">
+      <div class="field" style="flex:1;margin:0"><label>Repeat</label>
+        <select id="dayMRepeat">
+          <option value="none">One-off</option>
+          <option value="weekly">Every week</option>
+          <option value="monthly">Every month</option>
+          <option value="yearly">Every year 🎂</option>
+        </select></div>
+      <button class="btn" id="dayMAdd" style="flex:0 0 auto">+ Add</button>
+    </div>
+    <div class="modal-actions"><button class="mcancel" id="dayMClose">Close</button></div>
+  </div>
+</div>
+
 <!-- GUIDED TOUR -->
 <div id="tourRing"></div>
 <div id="tourTip">
@@ -786,21 +807,89 @@
     </div>
   </section>
 
-  <!-- 09 GYM PLAN -->
+  <!-- 09 GYM / BODY -->
   <section class="panel" id="gym">
     <div class="card">
-      <h2>Gym &amp; Workout Plan</h2>
-      <div class="desc">A place to map out your training. Add workout days now or build it out later — everything you enter is saved and travels with your file. (We'll deepen this section — progressions, targets, history — when you're ready.)</div>
+      <h2>Body Stats</h2>
+      <div class="desc">Your numbers power the calorie simulator below. All optional — fill in what you know. Everything saves with your file.</div>
+      <div class="form-row">
+        <div class="field"><label>Sex (for calorie formula)</label><select id="bSex"><option value="male">Male</option><option value="female">Female</option></select></div>
+        <div class="field"><label>Age</label><input id="bAge" type="number" min="10" max="100" placeholder="years"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Height (cm)</label><input id="bHeight" type="number" min="100" max="230" placeholder="cm"></div>
+        <div class="field"><label>Weight (kg)</label><input id="bWeight" type="number" min="30" max="300" step="0.1" placeholder="kg"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Body fat % <span style="color:var(--txt-dim)">(optional)</span></label><input id="bFat" type="number" min="3" max="60" step="0.1" placeholder="%"></div>
+        <div class="field"><label>Muscle % <span style="color:var(--txt-dim)">(optional)</span></label><input id="bMuscle" type="number" min="10" max="60" step="0.1" placeholder="%"></div>
+      </div>
+      <div class="field"><label>Activity level</label><select id="bAct">
+        <option value="1.2">Sedentary — little exercise</option>
+        <option value="1.375">Light — 1–3 days/week</option>
+        <option value="1.55" selected>Moderate — 3–5 days/week</option>
+        <option value="1.725">Active — 6–7 days/week</option>
+        <option value="1.9">Very active — physical job / 2× a day</option>
+      </select></div>
+      <div class="status" style="margin-top:16px">
+        <div class="stat avg"><div class="lbl">BMI</div><div class="val" id="oBMI" style="font-size:20px">—</div></div>
+        <div class="stat avg"><div class="lbl">BMR · at rest</div><div class="val" id="oBMR" style="font-size:20px">—</div></div>
+        <div class="stat high"><div class="lbl">Maintenance · TDEE</div><div class="val" id="oTDEE" style="font-size:20px">—</div></div>
+      </div>
+      <div class="note" id="bodyNote">Enter height, weight, age and sex to see your numbers.</div>
+    </div>
+
+    <div class="card">
+      <h2>Calorie Simulator</h2>
+      <div class="desc">Drag to test any daily intake. It compares to your maintenance and shows what happens — steady fat loss, muscle gain, or a danger zone.</div>
+      <div style="margin-bottom:14px">
+        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">QUICK GOAL</small>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="goalBtns">
+          <button class="scen-btn" data-goal="cut">🔻 Cut (lose fat)</button>
+          <button class="scen-btn active" data-goal="maintain">⚖️ Maintain</button>
+          <button class="scen-btn" data-goal="bulk">🔺 Bulk (gain)</button>
+        </div>
+      </div>
+      <div class="slider-wrap">
+        <input type="range" id="calSlider" min="800" max="4500" step="50" value="2200">
+        <div class="calc-row"><span>Daily intake</span><b id="calIntake">—</b></div>
+        <div class="calc-row"><span>Your maintenance (TDEE)</span><b id="calTDEE">—</b></div>
+        <div style="margin-top:14px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">SURPLUS / DEFICIT</small><div class="calc-out" id="calDelta">—</div></div>
+        <div class="calc-row" style="margin-top:14px"><span>Projected weight change</span><b id="calWeek">—</b></div>
+      </div>
+      <div class="note" id="calVerdict">Set your body stats above, then drag the slider.</div>
+      <div class="subtotal" style="margin-top:14px">
+        <div class="stat avg"><div class="lbl">Protein target / day</div><div class="val" id="oProtein" style="font-size:18px">—</div></div>
+        <div class="stat avg"><div class="lbl">Lean body mass</div><div class="val" id="oLean" style="font-size:18px">—</div></div>
+      </div>
+    </div>
+
+    <div class="card" data-collapse data-collapsed>
+      <h2>Personal Records (PRs)</h2>
+      <div class="desc">Log your best lifts and watch them climb. We track your best per exercise and estimate your 1-rep max.</div>
+      <div class="form-row">
+        <div class="field"><label>Exercise</label><input id="prEx" placeholder="e.g. Bench press"></div>
+        <div class="field"><label>Weight</label><input id="prWt" type="number" min="0" step="0.5" placeholder="kg"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Reps</label><input id="prReps" type="number" min="1" max="100" placeholder="reps"></div>
+        <div class="field"><label>Date</label><input id="prDate" type="date"></div>
+      </div>
+      <button class="btn" id="prAdd">+ Log PR</button>
+      <div id="prMsg" class="note" style="display:none"></div>
+      <div id="prList" style="margin-top:14px"></div>
+    </div>
+
+    <div class="card" data-collapse data-collapsed>
+      <h2>Workouts / Training Split</h2>
+      <div class="desc">Map out your training days and exercises. Everything saves with your file.</div>
       <div class="form-row">
         <div class="field"><label>Day / focus</label><input id="wkDay" placeholder="e.g. Monday — Push"></div>
         <div class="field"><label>Title</label><input id="wkTitle" placeholder="e.g. Chest &amp; Triceps"></div>
       </div>
       <div class="field"><label>Exercises / notes</label><textarea id="wkBody" placeholder="Bench 4x8, Incline DB 3x10, Cable fly 3x12 ..."></textarea></div>
       <button class="btn" id="wkAdd">+ Add workout</button>
-    </div>
-    <div class="card">
-      <h2>Your Workouts</h2>
-      <div id="wkList"><div class="empty">No workouts yet — add your first above.</div></div>
+      <div id="wkList" style="margin-top:14px"><div class="empty">No workouts yet — add your first above.</div></div>
     </div>
   </section>
 
@@ -946,7 +1035,7 @@
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -968,7 +1057,8 @@
     else pick = e || l;
     return Object.assign({}, DEFAULTS, pick||{}, {
       customItems:(pick&&pick.customItems)||[], workouts:(pick&&pick.workouts)||[],
-      calendar:(pick&&pick.calendar)||{}, log:(pick&&pick.log)||[]
+      calendar:(pick&&pick.calendar)||{}, log:(pick&&pick.log)||[],
+      body:(pick&&pick.body)||{}, prs:(pick&&pick.prs)||[]
     });
   }
   var STATE = loadState();
@@ -1541,6 +1631,144 @@
     }).join('');
   }
 
+  /* ---------- BODY / HEALTH DATA CENTER ---------- */
+  if(!STATE.body || typeof STATE.body!=='object') STATE.body={};
+  if(!Array.isArray(STATE.prs)) STATE.prs=[];
+  var GOAL_OFFSET = { cut:-500, maintain:0, bulk:300 };
+  function bodyNum(id){ var v=parseFloat((document.getElementById(id)||{}).value); return isFinite(v)?v:null; }
+  function computeBody(){
+    var bd=STATE.body, w=Number(bd.weight)||0, h=Number(bd.height)||0, a=Number(bd.age)||0, act=Number(bd.act)||1.55;
+    var bmi = (w>0&&h>0) ? w/Math.pow(h/100,2) : null;
+    var bmr = (w>0&&h>0&&a>0) ? (10*w + 6.25*h - 5*a + (bd.sex==='female'?-161:5)) : null;
+    var tdee = bmr!=null ? bmr*act : null;
+    var lean = (w>0 && bd.fat!=null && bd.fat!=='') ? w*(1-Number(bd.fat)/100) : null;
+    return { w:w,h:h,a:a,act:act, bmi:bmi, bmr:bmr, tdee:tdee, lean:lean };
+  }
+  function bmiCat(bmi){
+    if(bmi==null) return '';
+    if(bmi<18.5) return 'underweight';
+    if(bmi<25) return 'healthy';
+    if(bmi<30) return 'overweight';
+    return 'obese';
+  }
+  function kcal(n){ return Math.round(n).toLocaleString('en-GB') + ' kcal'; }
+  function renderBody(){
+    var c=computeBody();
+    var set=function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+    set('oBMI', c.bmi!=null ? c.bmi.toFixed(1) : '—');
+    set('oBMR', c.bmr!=null ? kcal(c.bmr) : '—');
+    set('oTDEE', c.tdee!=null ? kcal(c.tdee) : '—');
+    set('oProtein', c.w>0 ? Math.round(c.w*2) + ' g' : '—');
+    set('oLean', c.lean!=null ? c.lean.toFixed(1)+' kg' : '—');
+    var bn=document.getElementById('bodyNote');
+    if(bn){
+      if(c.bmi!=null){ var cat=bmiCat(c.bmi);
+        bn.innerHTML='BMI <b>'+c.bmi.toFixed(1)+'</b> — '+cat+'. '+(c.tdee!=null?('You burn about <b>'+kcal(c.tdee)+'</b>/day at this activity level.'):'Add your age to get calorie burn.');
+      } else bn.textContent='Enter height, weight, age and sex to see your numbers.';
+    }
+    // adapt slider range to TDEE
+    var sl=document.getElementById('calSlider');
+    if(sl && c.tdee!=null){
+      var mn=Math.max(800, Math.floor(c.bmr*0.5/50)*50), mx=Math.ceil(c.tdee*1.8/50)*50;
+      sl.min=mn; sl.max=mx;
+      if(!sl.dataset.touched){ sl.value=Math.round((c.tdee + (GOAL_OFFSET[STATE.body.goal||'maintain']||0))/50)*50; }
+    }
+    calSim();
+  }
+  function calSim(){
+    var c=computeBody(); var sl=document.getElementById('calSlider');
+    var set=function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+    var intake=sl?parseInt(sl.value,10):0;
+    set('calIntake', kcal(intake));
+    set('calTDEE', c.tdee!=null ? kcal(c.tdee) : '— (add body stats)');
+    var deltaEl=document.getElementById('calDelta'), weekEl=document.getElementById('calWeek'), vEl=document.getElementById('calVerdict');
+    if(c.tdee==null){ if(deltaEl) deltaEl.textContent='—'; if(weekEl) weekEl.textContent='—'; return; }
+    var delta=intake-c.tdee;
+    if(deltaEl){ deltaEl.textContent=(delta>=0?'+':'−')+kcal(Math.abs(delta)); deltaEl.style.color = delta<0?'#ffb547':delta>0?'#7CFFB2':'#00e5ff'; }
+    var perWeekKg=delta*7/7700;
+    if(weekEl){ weekEl.textContent=(perWeekKg>=0?'+':'−')+Math.abs(perWeekKg).toFixed(2)+' kg/week'; weekEl.style.color = Math.abs(perWeekKg)>1 ? '#ffb547' : ''; }
+    if(vEl){
+      var v;
+      if(intake < c.bmr*0.85 || intake < 1300){ v={t:'⛔ Dangerously low — below what your body needs even at rest. Not safe to sustain; you risk muscle loss, fatigue and worse.', c:'#ff5c7c'}; }
+      else if(delta <= -750){ v={t:'⚠ Aggressive deficit — fast fat loss but hard to keep up and you may lose muscle. Eat more protein and consider easing off.', c:'#ffb547'}; }
+      else if(delta < -150){ v={t:'✅ Deficit — steady, healthy fat loss. Great for cutting.', c:'#7CFFB2'}; }
+      else if(delta <= 150){ v={t:'⚖️ Maintenance — your weight stays stable here.', c:'#00e5ff'}; }
+      else if(delta <= 500){ v={t:'✅ Lean surplus — supports muscle gain with minimal fat. Ideal for bulking.', c:'#7CFFB2'}; }
+      else { v={t:'⚠ Large surplus — you\'ll gain fast, but most of it will be fat. Dial it back for a cleaner bulk.', c:'#ffb547'}; }
+      vEl.textContent=v.t; vEl.style.color=v.c;
+    }
+  }
+  function setGoalBtns(g){
+    document.querySelectorAll('#goalBtns .scen-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-goal')===g); });
+  }
+  (function initHealth(){
+    var ids=[['bSex','sex'],['bAge','age'],['bHeight','height'],['bWeight','weight'],['bFat','fat'],['bMuscle','muscle'],['bAct','act']];
+    ids.forEach(function(pair){
+      var el=document.getElementById(pair[0]); if(!el) return;
+      // seed from saved
+      if(STATE.body[pair[1]]!=null && STATE.body[pair[1]]!=='') el.value=STATE.body[pair[1]];
+      var evt = (el.tagName==='SELECT') ? 'change' : 'input';
+      el.addEventListener(evt, function(){ STATE.body[pair[1]] = el.value; autosave(); renderBody(); });
+    });
+    var sl=document.getElementById('calSlider');
+    if(sl) sl.addEventListener('input', function(){ sl.dataset.touched='1'; calSim(); });
+    document.querySelectorAll('#goalBtns .scen-btn').forEach(function(b){
+      b.addEventListener('click', function(){
+        var g=b.getAttribute('data-goal'); STATE.body.goal=g; setGoalBtns(g); autosave();
+        var c=computeBody(); if(c.tdee!=null && sl){ sl.value=Math.round((c.tdee+(GOAL_OFFSET[g]||0))/50)*50; sl.dataset.touched='1'; }
+        calSim();
+      });
+    });
+    if(STATE.body.goal) setGoalBtns(STATE.body.goal);
+    // PR form
+    var prAdd=document.getElementById('prAdd');
+    if(prAdd) prAdd.addEventListener('click', function(){
+      var ex=(document.getElementById('prEx').value||'').trim();
+      var wt=parseFloat(document.getElementById('prWt').value);
+      var reps=parseInt(document.getElementById('prReps').value,10);
+      var date=document.getElementById('prDate').value || nowISO().slice(0,10);
+      var msg=document.getElementById('prMsg');
+      if(!ex || !(wt>0) || !(reps>0)){ msg.style.display='block'; msg.style.color='var(--red)'; msg.textContent='Enter an exercise, weight and reps.'; return; }
+      STATE.prs.push({ id:uid(), ex:ex, wt:wt, reps:reps, date:date });
+      logChange('add-pr', ex+' '+wt+'kg × '+reps);
+      autosave(); renderPRs();
+      document.getElementById('prEx').value=''; document.getElementById('prWt').value=''; document.getElementById('prReps').value='';
+      msg.style.display='block'; msg.style.color='var(--lime)'; msg.textContent='Logged '+ex+' '+wt+'kg × '+reps+'.';
+    });
+    var prList=document.getElementById('prList');
+    if(prList) prList.addEventListener('click', function(e){
+      var d=e.target.closest('[data-del]'); if(d){ var id=d.getAttribute('data-del'); uiConfirm({title:'🗑️ Delete PR?', message:'Delete this personal record? This can’t be undone.'}, function(){ removePR(id); }); }
+    });
+  })();
+  function removePR(id){
+    var p=STATE.prs.filter(function(x){ return x.id===id; })[0];
+    STATE.prs=STATE.prs.filter(function(x){ return x.id!==id; });
+    if(p) logChange('remove-pr', p.ex+' '+p.wt+'kg');
+    autosave(); renderPRs();
+  }
+  function epley1rm(w,r){ return w*(1+r/30); }
+  function renderPRs(){
+    var host=document.getElementById('prList'); if(!host) return;
+    if(!STATE.prs.length){ host.innerHTML='<div class="empty">No PRs logged yet — add your first lift above.</div>'; return; }
+    // group by exercise, best estimated 1RM first
+    var groups={};
+    STATE.prs.forEach(function(p){ var k=p.ex.toLowerCase(); (groups[k]=groups[k]||[]).push(p); });
+    var html='';
+    Object.keys(groups).forEach(function(k){
+      var arr=groups[k].slice().sort(function(a,b){ return epley1rm(b.wt,b.reps)-epley1rm(a.wt,a.reps); });
+      var best=arr[0];
+      html += '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline">'+
+        '<b style="font-family:\'Orbitron\';font-size:14px;color:#eaffff">'+esc(best.ex)+'</b>'+
+        '<span style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--lime)">best '+best.wt+'kg×'+best.reps+' · ~'+Math.round(epley1rm(best.wt,best.reps))+'kg 1RM</span></div>';
+      html += arr.map(function(p){
+        return '<div class="item-row"><div class="meta">'+p.wt+' kg × '+p.reps+(p.id===best.id?' <span class="tag now" style="font-size:8px;padding:1px 5px">PR</span>':'')+
+          '<small>'+esc(p.date)+' · est 1RM '+Math.round(epley1rm(p.wt,p.reps))+' kg</small></div>'+
+          '<button class="btn danger" data-del="'+p.id+'">Delete</button></div>';
+      }).join('');
+    });
+    host.innerHTML=html;
+  }
+
   /* ---------- CALENDAR ---------- */
   var today = new Date();
   var calView = { y: today.getFullYear(), m: today.getMonth() };
@@ -1562,12 +1790,32 @@
     if(tB) tB.addEventListener('click', function(){ calView={y:today.getFullYear(),m:today.getMonth()}; selDate=todayKey(); renderCalendar(); renderDay(); });
     var grid = document.getElementById('calGrid');
     if(grid) grid.addEventListener('click', function(e){
-      var c = e.target.closest('[data-date]'); if(c){ selDate = c.getAttribute('data-date'); renderCalendar(); renderDay(); }
+      var c = e.target.closest('[data-date]'); if(c){ openDayModal(c.getAttribute('data-date')); }
     });
     var dn = document.getElementById('dayNotes');
     if(dn) dn.addEventListener('click', function(e){
-      var d = e.target.closest('[data-del]'); if(d){ var nid=d.getAttribute('data-del'); uiConfirm({title:'🗑️ Delete note?', message:'Delete this calendar note? This can’t be undone.'}, function(){ removeEvent(selDate, nid); }); }
+      var d = e.target.closest('[data-del]'); if(d){ var nid=d.getAttribute('data-del'), dd=d.getAttribute('data-date')||selDate; uiConfirm({title:'🗑️ Delete entry?', message:'Delete this entry? If it repeats, the whole series is removed.'}, function(){ removeEvent(dd, nid); }); }
     });
+    // ---- day popup modal ----
+    var dayBack=document.getElementById('dayBack');
+    var dmClose=document.getElementById('dayMClose'); if(dmClose) dmClose.addEventListener('click', function(){ dayBack.classList.remove('show'); });
+    if(dayBack) dayBack.addEventListener('click', function(e){ if(e.target===dayBack) dayBack.classList.remove('show'); });
+    var dmList=document.getElementById('dayMList');
+    if(dmList) dmList.addEventListener('click', function(e){
+      var d=e.target.closest('[data-del]'); if(d){ var dd=d.getAttribute('data-date'), nid=d.getAttribute('data-del'); uiConfirm({title:'🗑️ Delete entry?', message:'Delete this entry? If it repeats, the whole series is removed.'}, function(){ removeEvent(dd, nid); renderDayModal(); }); }
+    });
+    function addFromModal(){
+      var inp=document.getElementById('dayMInput'); var text=(inp.value||'').trim(); if(!text||!selDate) return;
+      var rep=document.getElementById('dayMRepeat').value;
+      STATE.calendar[selDate]=STATE.calendar[selDate]||[];
+      STATE.calendar[selDate].push({ id:uid(), text:text, repeat:rep });
+      logChange('add-note', prettyDate(selDate)+': '+text+(rep&&rep!=='none'?' ('+rep+')':''));
+      inp.value=''; document.getElementById('dayMRepeat').value='none';
+      renderCalendar(); renderDay(); renderEvents(); renderDayModal();
+    }
+    var dmAdd=document.getElementById('dayMAdd'); if(dmAdd) dmAdd.addEventListener('click', addFromModal);
+    var dmInput=document.getElementById('dayMInput'); if(dmInput) dmInput.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addFromModal(); } });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape' && dayBack && dayBack.classList.contains('show')) dayBack.classList.remove('show'); });
     var dadd = document.getElementById('dayAdd');
     if(dadd) dadd.addEventListener('click', addDayNote);
     var dinput = document.getElementById('dayInput');
@@ -1577,6 +1825,27 @@
       var d = e.target.closest('[data-del]'); if(d){ var dd=d.getAttribute('data-date'), nid=d.getAttribute('data-del'); uiConfirm({title:'🗑️ Delete note?', message:'Delete this calendar note? This can’t be undone.'}, function(){ removeEvent(dd, nid); }); }
     });
   })();
+  function parseKey(k){ var p=String(k).split('-'); return { y:+p[0], m:+p[1]-1, d:+p[2] }; }
+  // All events that land on a given day — direct ones plus recurring ones
+  // (weekly / monthly / yearly) from any earlier start date.
+  function eventsOn(y,m,d){
+    var out=[], cur=new Date(y,m,d), dow=cur.getDay();
+    Object.keys(STATE.calendar).forEach(function(k){
+      var s=parseKey(k), start=new Date(s.y,s.m,s.d);
+      (STATE.calendar[k]||[]).forEach(function(e){
+        var rep=e.repeat||'none', isStart=(s.y===y&&s.m===m&&s.d===d), show=false, recurring=false;
+        if(isStart){ show=true; }
+        else if(cur>start){
+          if(rep==='yearly' && s.m===m && s.d===d){ show=true; recurring=true; }
+          else if(rep==='monthly' && s.d===d){ show=true; recurring=true; }
+          else if(rep==='weekly' && start.getDay()===dow){ show=true; recurring=true; }
+        }
+        if(show) out.push({ id:e.id, text:e.text, repeat:rep, srcKey:k, recurring:recurring });
+      });
+    });
+    return out;
+  }
+  function repBadge(rep){ return (rep&&rep!=='none') ? ' <span class="tag now" style="font-size:8px;padding:1px 5px">🔁 '+rep+'</span>' : ''; }
   function renderCalendar(){
     var grid = document.getElementById('calGrid'); if(!grid) return;
     document.getElementById('calLabel').textContent = MONTHS[calView.m] + ' ' + calView.y;
@@ -1587,15 +1856,31 @@
     for(var i=0;i<lead;i++) cells += '<div class="cal-cell empty-cell"></div>';
     for(var d=1; d<=days; d++){
       var key = dateKey(calView.y, calView.m, d);
-      var evs = STATE.calendar[key] || [];
+      var evs = eventsOn(calView.y, calView.m, d);
       var cls = 'cal-cell' + (key===todayKey()?' today':'') + (key===selDate?' sel':'');
-      var preview = evs.slice(0,2).map(function(e){ return '<div class="ev">• ' + esc(e.text) + '</div>'; }).join('');
+      var preview = evs.slice(0,2).map(function(e){ return '<div class="ev">' + (e.recurring?'🔁 ':'• ') + esc(e.text) + '</div>'; }).join('');
       var more = evs.length>2 ? '<div class="more">+' + (evs.length-2) + ' more</div>' : '';
       var dot = evs.length ? '<span class="cal-dot"></span>' : '';
       cells += '<div class="' + cls + '" data-date="' + key + '">' + dot +
         '<div class="dnum">' + d + '</div>' + preview + more + '</div>';
     }
     grid.innerHTML = cells;
+  }
+  function openDayModal(key){
+    selDate=key; renderCalendar(); renderDay(); renderDayModal();
+    var el=document.getElementById('dayBack'); if(el) el.classList.add('show');
+    setTimeout(function(){ var i=document.getElementById('dayMInput'); if(i) i.focus(); }, 60);
+  }
+  function renderDayModal(){
+    if(!selDate) return;
+    var t=document.getElementById('dayMTitle'); if(t) t.textContent='📅 '+prettyDate(selDate);
+    var host=document.getElementById('dayMList'); if(!host) return;
+    var p=parseKey(selDate), evs=eventsOn(p.y,p.m,p.d);
+    host.innerHTML = evs.length ? evs.map(function(e){
+      return '<div class="item-row"><div class="meta">' + esc(e.text) + repBadge(e.repeat) +
+        (e.recurring?'<small>repeats from '+prettyDate(e.srcKey)+'</small>':'') + '</div>' +
+        '<button class="btn danger" data-del="' + e.id + '" data-date="' + e.srcKey + '">Delete</button></div>';
+    }).join('') : '<div class="empty">Nothing on this day yet — add something below.</div>';
   }
   function prettyDate(key){
     var p = key.split('-'); var dt = new Date(+p[0], +p[1]-1, +p[2]);
@@ -1607,10 +1892,10 @@
     if(!selDate){ title.textContent='Select a day'; hint.style.display='block'; notes.innerHTML=''; return; }
     hint.style.display='none';
     title.textContent = prettyDate(selDate);
-    var evs = STATE.calendar[selDate] || [];
+    var p = parseKey(selDate), evs = eventsOn(p.y,p.m,p.d);
     notes.innerHTML = evs.length ? evs.map(function(e){
-      return '<div class="item-row"><div class="meta">' + esc(e.text) + '</div>' +
-        '<button class="btn danger" data-del="' + e.id + '">Delete</button></div>';
+      return '<div class="item-row"><div class="meta">' + esc(e.text) + repBadge(e.repeat) + '</div>' +
+        '<button class="btn danger" data-del="' + e.id + '" data-date="' + e.srcKey + '">Delete</button></div>';
     }).join('') : '<div class="empty">No notes for this day yet.</div>';
   }
   function addDayNote(){
@@ -1618,7 +1903,7 @@
     var input = document.getElementById('dayInput');
     var text = (input.value||'').trim(); if(!text) return;
     STATE.calendar[selDate] = STATE.calendar[selDate] || [];
-    STATE.calendar[selDate].push({ id:uid(), text:text });
+    STATE.calendar[selDate].push({ id:uid(), text:text, repeat:'none' });
     logChange('add-note', prettyDate(selDate) + ': ' + text);
     input.value='';
     renderCalendar(); renderDay(); renderEvents();
@@ -1635,12 +1920,12 @@
     var host = document.getElementById('evList'); if(!host) return;
     var all = [];
     Object.keys(STATE.calendar).forEach(function(k){
-      (STATE.calendar[k]||[]).forEach(function(e){ all.push({ key:k, id:e.id, text:e.text }); });
+      (STATE.calendar[k]||[]).forEach(function(e){ all.push({ key:k, id:e.id, text:e.text, repeat:e.repeat||'none' }); });
     });
     all.sort(function(a,b){ return a.key < b.key ? -1 : a.key > b.key ? 1 : 0; });
     host.innerHTML = all.length ? all.map(function(e){
-      return '<div class="item-row"><div class="meta">' + esc(e.text) +
-        '<small>' + prettyDate(e.key) + '</small></div>' +
+      return '<div class="item-row"><div class="meta">' + esc(e.text) + repBadge(e.repeat) +
+        '<small>' + prettyDate(e.key) + (e.repeat&&e.repeat!=='none'?' · repeats '+e.repeat:'') + '</small></div>' +
         '<button class="btn danger" data-del="' + e.id + '" data-date="' + e.key + '">Delete</button></div>';
     }).join('') : '<div class="empty">Nothing planned yet.</div>';
   }
@@ -1891,6 +2176,8 @@
     if(typeof renderProfile==='function') renderProfile();
     if(typeof renderManage==='function') renderManage();
     if(typeof renderWorkouts==='function') renderWorkouts();
+    if(typeof renderBody==='function') renderBody();
+    if(typeof renderPRs==='function') renderPRs();
     if(typeof renderCalendar==='function') renderCalendar();
     if(typeof renderDay==='function') renderDay();
     if(typeof renderEvents==='function') renderEvents();
@@ -1900,10 +2187,10 @@
   }
   function exportBlank(){
     var hs = document.getElementById('hud-state');
-    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log;
+    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs;
     try{
       // 1) blank every data-bearing thing and re-render so NO personal text remains
-      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = [];
+      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = [];
       renderAll();
       // 2) mark it a FRESH template (ignores any device's stored data on open),
       //    keep only the language/currency preference, and lock it (no baked key)
@@ -1924,7 +2211,7 @@
       var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ blank copy downloaded — safe to share'; b.style.color = 'var(--cyan)'; }
     } finally {
       // 3) restore YOUR data exactly as it was
-      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL;
+      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP;
       renderAll();
     }
   }
@@ -2510,6 +2797,8 @@
   renderProfile();
   renderManage();
   renderWorkouts();
+  renderBody();
+  renderPRs();
   renderCalendar();
   renderDay();
   renderEvents();
