@@ -2633,8 +2633,8 @@
     function verify(keyStr){
       return new Promise(function(resolve){
         try{
-          var s=String(keyStr||'').trim();
-          if(s.indexOf(PREFIX)===0) s=s.slice(PREFIX.length);
+          var s=String(keyStr||'').replace(/\s+/g,'');     // strip any spaces/newlines a phone keyboard slipped in
+          if(/^MRLN-/i.test(s)) s=s.slice(PREFIX.length);  // tolerate mrln- / MRLN- casing
           var parts=s.split('.');
           if(parts.length!==2){ resolve({ok:false,reason:'format'}); return; }
           var payloadBytes=b64urlToBytes(parts[0]);
@@ -3271,8 +3271,43 @@
       document.getElementById('mintOut').style.display='block';
       logChange('mint-key', name+' ('+dur+' '+unit+')');
     });
+    // robust copy that ALSO works on phones opening a local file (where
+    // navigator.clipboard is blocked as an "insecure context"): try the modern
+    // API, fall back to execCommand, and as a last resort select the text so the
+    // user can long-press → Copy. Tapping the key box itself also selects it.
+    function selectKeyText(){
+      var el=document.getElementById('mintKey');
+      try{ var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }catch(_){}
+    }
+    function copyKey(cp){
+      var t=document.getElementById('mintKey').textContent||'';
+      var done=function(){ cp.textContent='Copied ✓'; setTimeout(function(){ cp.textContent='Copy key'; },1600); };
+      // 1) modern async clipboard (secure contexts / desktop)
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(t).then(done).catch(function(){ fallback(); });
+        return;
+      }
+      fallback();
+      function fallback(){
+        // 2) hidden textarea + execCommand (works in many insecure contexts)
+        var ok=false;
+        try{
+          var ta=document.createElement('textarea');
+          ta.value=t; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.top='-1000px';
+          document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0,t.length);
+          ok=document.execCommand('copy'); document.body.removeChild(ta);
+        }catch(_){ ok=false; }
+        if(ok){ done(); return; }
+        // 3) can't copy programmatically — select the on-screen key so they can long-press → Copy
+        selectKeyText();
+        cp.textContent='Long-press the key → Copy';
+        setTimeout(function(){ cp.textContent='Copy key'; },2600);
+      }
+    }
     var cp=document.getElementById('mintCopy');
-    if(cp) cp.addEventListener('click', function(){ var t=document.getElementById('mintKey').textContent; if(navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ cp.textContent='Copied ✓'; setTimeout(function(){ cp.textContent='Copy key'; },1400); }); });
+    if(cp) cp.addEventListener('click', function(){ copyKey(cp); });
+    var kb=document.getElementById('mintKey');
+    if(kb){ kb.style.cursor='pointer'; kb.style.userSelect='text'; kb.style.webkitUserSelect='text'; kb.addEventListener('click', selectKeyText); }
   })();
 
   /* ---------- INITIAL RENDER of all self-service sections ---------- */
