@@ -1036,6 +1036,26 @@
     </div>
 
     <div class="card">
+      <h2>Body Grade &amp; Shape <span class="tag now" id="bodyTierBadge" style="font-size:11px">—</span></h2>
+      <div class="desc">Your stats vs the <b>optimal for your age, height &amp; sex</b>, and your muscle-to-fat balance. Drag the weight simulator to watch your shape change.</div>
+      <div class="meter" style="height:16px"><span id="bodyBar" style="width:0%;display:block;height:100%"></span></div>
+      <div class="note" id="bodyGradeMsg">Add height, weight, age &amp; sex above to see your grade.</div>
+      <div class="status" style="margin-top:14px">
+        <div class="stat avg"><div class="lbl">Healthy weight</div><div class="val" id="tWeight" style="font-size:15px">—</div></div>
+        <div class="stat avg"><div class="lbl">Target body fat</div><div class="val" id="tFat" style="font-size:15px">—</div></div>
+        <div class="stat high"><div class="lbl">Muscle : fat</div><div class="val" id="tRatio" style="font-size:15px">—</div></div>
+      </div>
+      <div style="margin-top:18px;display:flex;flex-direction:column;align-items:center">
+        <svg id="bodySvg" viewBox="0 0 200 384" style="width:150px;max-width:55%;height:auto" aria-label="body shape"></svg>
+        <div class="slider-wrap" style="margin-top:10px;width:100%">
+          <input type="range" id="bodySim" min="40" max="160" step="0.5" value="75">
+          <div class="calc-row"><span>Simulated weight</span><b id="bodySimW">—</b></div>
+          <div class="calc-row"><span>vs your healthy range</span><b id="bodySimVerdict">—</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>Calorie Simulator</h2>
       <div class="desc">Drag to test any daily intake. It compares to your maintenance and shows what happens — steady fat loss, muscle gain, or a danger zone.</div>
       <div style="margin-bottom:14px">
@@ -1821,7 +1841,7 @@
     if(hasJob) score+=12;
     score=Math.max(0,Math.min(100,Math.round(score)));
     if(!dataComplete) score=Math.min(score,25);
-    var tier = score>=85?'S':score>=70?'A':score>=55?'B':score>=40?'C':'D';
+    var tier = tierOf(score);
 
     var F=function(n){ return fmt(Math.round(n)); }, sym=curInfo().sym, items=[];
     function add(key,w,title,detail){ items.push({ key:key, w:w, title:title, detail:detail }); }
@@ -1838,27 +1858,40 @@
     if(dataComplete && comfortAvg>0) add('invest',45,'Put your surplus to work','You\'ve got about '+F(comfortAvg)+'/mo genuinely free. Automate it into savings or investing'+(age&&age<35?(' — at '+age+', compounding does the heavy lifting for you'):'')+'.');
     var klShown=(function(){ var t=document.querySelector('#tabs .tab[data-p="klarna"]'); return t && getComputedStyle(t).display!=='none'; })();
     if(klShown && dataComplete && comfortAvg>0 && leftLow>=0) add('klarna',38,'Use a free interest-free bridge','When you need cash without raiding savings, an interest-free pay-in-2 (see the Klarna Float tab) pulls a buffer forward at zero cost. Bridge with it — never treat it as spending money.');
+    // ---- body: fold the gym goal into the life plan ----
+    var B=(typeof computeBodyGrade==='function')?computeBodyGrade():{ok:false};
+    if(!B.ok){ add('bodystats',30,'Add your body stats','Pop your height, weight and (if you know them) body-fat % and muscle % into the Gym tab — an S-tier life is health too, not just money.'); }
+    else if(B.tier==='C'||B.tier==='D'||B.tier==='E'){
+      var aim = B.fat!=null ? ('aim for ~'+B.fatT.ideal+'% body fat') : ('aim for the '+F(B.idealLo).replace(curInfo().sym,'').trim()+'–'+B.idealHi+' kg healthy range');
+      add('body', B.tier==='E'?72:48, 'Level up your body', 'Your body is '+B.tier+'-tier. Use the Gym tab — '+aim+(B.ratio!=null?(', and push your muscle-to-fat ratio up from '+B.ratio.toFixed(1)+'×'):'')+'. Small, steady changes compound just like money.');
+    }
+
     add('backup',20,'Back up your data','Hit 💾 Save / Export (or ⇄ Backup) so your plan is safe and travels with you.');
 
     items.sort(function(a,b){ return b.w-a.w; });
-    return { tier:tier, score:score, dataComplete:dataComplete, items:items };
+    return { tier:tier, score:score, dataComplete:dataComplete, body:B, items:items };
   }
   function renderMissions(){
     var ul=document.getElementById('checklist-list'); if(!ul) return;
     var M=computeMissions();
     STATE.missionsDone = STATE.missionsDone || {};
-    var colors={S:'124,255,178',A:'0,229,255',B:'255,181,71',C:'255,140,90',D:'255,92,124'}, c=colors[M.tier]||'0,229,255';
-    var badge=document.getElementById('tierBadge'); if(badge){ badge.textContent=M.tier+'-TIER · '+M.score+'/100'; badge.style.background='rgba('+c+',.15)'; badge.style.color='rgb('+c+')'; badge.style.border='1px solid rgb('+c+')'; }
-    var bar=document.getElementById('tierBar'); if(bar){ bar.style.width=M.score+'%'; bar.style.background='rgb('+c+')'; }
+    // OVERALL = finance blended with body (when body stats exist)
+    var fin=M.score, B=M.body||{ok:false};
+    var overall = B.ok ? Math.round(fin*0.55 + B.score*0.45) : fin;
+    var oTier = tierOf(overall), c=tierRGB(oTier);
+    var badge=document.getElementById('tierBadge'); if(badge){ badge.textContent=oTier+'-TIER · '+overall+'/100'; badge.style.background='rgba('+c+',.15)'; badge.style.color='rgb('+c+')'; badge.style.border='1px solid rgb('+c+')'; }
+    var bar=document.getElementById('tierBar'); if(bar){ bar.style.width=overall+'%'; bar.style.background='rgb('+c+')'; }
     var msg=document.getElementById('tierMsg');
     if(msg){ msg.style.borderLeftColor='rgb('+c+')';
       var line = !M.dataComplete ? 'Add your income and costs to unlock your real tier and a plan made just for you.'
-        : M.tier==='S' ? 'Elite. You\'re resilient, saving hard and living below your means. Keep automating — you\'ve basically won the game.'
-        : M.tier==='A' ? 'Strong. You\'re in control. Tighten one or two things below and S-tier is genuinely in reach.'
-        : M.tier==='B' ? 'Solid base. The plan below is the short list of moves that lifts you to A.'
-        : M.tier==='C' ? 'On your way. Focus on the very top item — it\'s the one holding you back most right now.'
-        : 'Early days — and that\'s fine. Start at the top: get the basics in and stop the leaks. Small wins stack fast.';
-      msg.innerHTML='<b>'+esc(M.tier)+'-tier · '+M.score+'/100.</b> '+line;
+        : oTier==='S' ? 'Elite — money <i>and</i> body. You\'re resilient, saving hard, living below your means and in great shape. Keep compounding.'
+        : oTier==='A' ? 'Strong across the board. Tighten one or two things below and S-tier is genuinely in reach.'
+        : oTier==='B' ? 'Solid base. The plan below is the short list of moves that lifts you to A.'
+        : oTier==='C' ? 'On your way. Focus on the very top item — it\'s the one holding you back most right now.'
+        : oTier==='D' ? 'Early days — and that\'s fine. Start at the top: get the basics in and stop the leaks.'
+        : 'Rock bottom is just the start of the climb. Do the top item this week — small wins stack fast.';
+      var sub = '<div style="margin-top:8px;font-style:normal;font-family:\'Share Tech Mono\';font-size:11px">💰 Finance <b style="color:rgb('+tierRGB(M.tier)+')">'+M.tier+' · '+fin+'</b>'+(B.ok?('   ·   💪 Body <b style="color:rgb('+tierRGB(B.tier)+')">'+B.tier+' · '+B.score+'</b>'):'   ·   💪 Body <span style="color:var(--txt-dim)">add stats in Gym</span>')+'</div>';
+      msg.innerHTML='<b>'+esc(oTier)+'-tier · '+overall+'/100 overall.</b> '+line+sub;
     }
     ul.innerHTML = M.items.map(function(it){
       var done=!!STATE.missionsDone[it.key];
@@ -2110,6 +2143,36 @@
     if(bmi<30) return 'overweight';
     return 'obese';
   }
+  // shared S→E tiering
+  function tierOf(score){ return score>=88?'S':score>=74?'A':score>=60?'B':score>=46?'C':score>=32?'D':'E'; }
+  function tierRGB(t){ return ({S:'124,255,178',A:'0,229,255',B:'120,220,140',C:'255,181,71',D:'255,140,90',E:'255,92,124'})[t]||'0,229,255'; }
+  // grade the body against optimal stats for this person's age / height / sex + muscle-to-fat
+  function computeBodyGrade(){
+    var bd=STATE.body||{};
+    var h=Number(bd.height)||0, w=Number(bd.weight)||0, a=Number(bd.age)||0, sex=(bd.sex==='female')?'female':'male';
+    var fat=(bd.fat!==''&&bd.fat!=null)?Number(bd.fat):null;
+    var musc=(bd.muscle!==''&&bd.muscle!=null)?Number(bd.muscle):null;
+    if(!h || !w) return { ok:false };
+    var bmi = w/Math.pow(h/100,2);
+    var idealLo = Math.round(20*Math.pow(h/100,2)), idealHi = Math.round(25*Math.pow(h/100,2));
+    var fatT = sex==='female' ? {lo:18,hi:25,ideal:22} : {lo:10,hi:18,ideal:14};
+    if(a>=40){ fatT.lo+=2; fatT.hi+=3; fatT.ideal+=2; }
+    if(a>=55){ fatT.lo+=2; fatT.hi+=2; fatT.ideal+=2; }
+    var score=0;
+    // primary signal: body-fat band if known, else BMI proximity to 22
+    if(fat!=null){ var off = fat<fatT.lo ? (fatT.lo-fat) : fat>fatT.hi ? (fat-fatT.hi) : 0; score += Math.max(0, 62 - off*4.5); }
+    else { score += Math.max(0, 62 - Math.abs(bmi-22)*5.5); }
+    // muscle: more lean mass is better, to a point
+    if(musc!=null){ var base = sex==='female'?30:36; score += Math.max(0, Math.min(23, (musc-base)*3.2)); }
+    else score += 11;   // neutral when unknown
+    // BMI sanity guard (penalise extremes even if other inputs look ok)
+    if(bmi>=18.5 && bmi<28) score += 15; else if(bmi>=17 && bmi<32) score += 7;
+    score = Math.max(0, Math.min(100, Math.round(score)));
+    var tier = tierOf(score);
+    // muscle-to-fat ratio (when both known)
+    var ratio = (fat!=null && musc!=null && fat>0) ? (musc/fat) : null;
+    return { ok:true, score:score, tier:tier, bmi:bmi, bmiCat:bmiCat(bmi), idealLo:idealLo, idealHi:idealHi, fatT:fatT, fat:fat, musc:musc, ratio:ratio, sex:sex, w:w, h:h, a:a };
+  }
   function kcal(n){ return Math.round(n).toLocaleString('en-GB') + ' kcal'; }
   function renderBody(){
     var c=computeBody();
@@ -2133,6 +2196,8 @@
       if(!sl.dataset.touched){ sl.value=Math.round((c.tdee + (GOAL_OFFSET[STATE.body.goal||'maintain']||0))/50)*50; }
     }
     calSim();
+    if(typeof renderBodyGrade==='function') renderBodyGrade();
+    if(typeof renderMissions==='function') renderMissions();   // body feeds the overall life tier
   }
   function calSim(){
     var c=computeBody(); var sl=document.getElementById('calSlider');
@@ -2157,6 +2222,82 @@
       vEl.textContent=t(v.t); vEl.style.color=v.c;
     }
   }
+  /* ---------- morphing body silhouette (SVG, drag the weight) ---------- */
+  function drawBody(f, m){
+    var svg=document.getElementById('bodySvg'); if(!svg) return;
+    f=Math.max(0,Math.min(1,f)); m=Math.max(0,Math.min(1,m));
+    var cx=100, gap=5;
+    var sh=34+m*16+f*5, ch=30+m*12+f*12, wa=20+f*42-m*4, hp=30+f*24+m*2, th=16+f*15+m*5, an=7+f*4, aw=8+m*5+f*7, nw=7+m, hr=19+m;
+    var yNeck=54, yShoulder=72, yChest=120, yWaist=190, yHip=228, yKnee=300, yAnkle=374, yHead=32;
+    function P(x,y){ return (Math.round(x*10)/10)+' '+(Math.round(y*10)/10); }
+    var torso='M '+P(cx-sh,yShoulder)
+      +' C '+P(cx-ch,yChest)+', '+P(cx-wa,yWaist-26)+', '+P(cx-wa,yWaist)
+      +' C '+P(cx-wa,yWaist+22)+', '+P(cx-hp,yHip-16)+', '+P(cx-hp,yHip)
+      +' L '+P(cx+hp,yHip)
+      +' C '+P(cx+hp,yHip-16)+', '+P(cx+wa,yWaist+22)+', '+P(cx+wa,yWaist)
+      +' C '+P(cx+wa,yWaist-26)+', '+P(cx+ch,yChest)+', '+P(cx+sh,yShoulder)
+      +' C '+P(cx+nw,yNeck+4)+', '+P(cx-nw,yNeck+4)+', '+P(cx-sh,yShoulder)+' Z';
+    function leg(s){ var oTop=cx+s*hp, iTop=cx+s*gap, oBot=cx+s*(gap+2*an);
+      return 'M '+P(oTop,yHip)+' L '+P(iTop,yHip)+' L '+P(iTop,yAnkle)+' L '+P(oBot,yAnkle)+' Q '+P(cx+s*(th+gap),yKnee)+' '+P(oTop,yHip)+' Z'; }
+    function arm(s){ var w=aw*0.82, topX=cx+s*(sh-4), midX=cx+s*(ch+w*0.5), botX=cx+s*(wa+w*0.7);
+      return 'M '+P(topX,yShoulder+5)+' Q '+P(midX,yChest+6)+' '+P(botX,yWaist+10)
+        +' L '+P(botX-s*w,yWaist+8)+' Q '+P(midX-s*w,yChest+10)+' '+P(topX-s*(w*0.55),yShoulder+9)+' Z'; }
+    svg.innerHTML='<defs><linearGradient id="bGrad" x1="0" x2="1" y1="0" y2="0">'+
+      '<stop offset="0" stop-color="#073142"/><stop offset="0.46" stop-color="#1f86a1"/><stop offset="1" stop-color="#05202b"/></linearGradient></defs>'+
+      '<g fill="url(#bGrad)" stroke="rgba(0,229,255,.55)" stroke-width="1.6" stroke-linejoin="round">'+
+      '<path d="'+arm(-1)+'"/><path d="'+arm(1)+'"/>'+
+      '<path d="'+leg(-1)+'"/><path d="'+leg(1)+'"/>'+
+      '<rect x="'+(cx-nw)+'" y="'+(yNeck-8)+'" width="'+(2*nw)+'" height="16" rx="4"/>'+
+      '<path d="'+torso+'"/>'+
+      '<ellipse cx="'+cx+'" cy="'+yHead+'" rx="'+hr+'" ry="'+(hr+3)+'"/></g>';
+  }
+  function bodyMuscleFactor(B){
+    var musc=(B&&B.musc!=null)?B.musc:(((STATE.body||{}).muscle!==''&&(STATE.body||{}).muscle!=null)?Number((STATE.body||{}).muscle):null);
+    if(musc==null) return 0.4;
+    var female=(B&&B.sex==='female')||((STATE.body||{}).sex==='female');
+    return Math.max(0,Math.min(1,(musc-(female?28:34))/22));
+  }
+  function fatnessFromWeight(wt){ var h=Number((STATE.body||{}).height)||175; var bmi=wt/Math.pow(h/100,2); return Math.max(0,Math.min(1,(bmi-16)/(36-16))); }
+  function updateBodySim(){
+    var sim=document.getElementById('bodySim'); if(!sim) return;
+    var wt=parseFloat(sim.value)||0, B=computeBodyGrade();
+    drawBody(fatnessFromWeight(wt), bodyMuscleFactor(B.ok?B:null));
+    var set=function(id,v,col){ var e=document.getElementById(id); if(e){ e.textContent=v; if(col!=null) e.style.color=col; } };
+    set('bodySimW', wt.toFixed(1)+' kg');
+    if(B.ok){ var v,col;
+      if(wt<B.idealLo){ v='under your healthy range'; col='#ffb547'; }
+      else if(wt<=B.idealHi){ v='✅ in your healthy range'; col='#7CFFB2'; }
+      else if(wt<=B.idealHi*1.1){ v='just over — a small cut helps'; col='#ffb547'; }
+      else { v='over your healthy range'; col='#ff5c7c'; }
+      set('bodySimVerdict', v, col);
+    } else set('bodySimVerdict','add height + weight above','');
+  }
+  function renderBodyGrade(){
+    var B=computeBodyGrade();
+    var badge=document.getElementById('bodyTierBadge'), bar=document.getElementById('bodyBar'), msg=document.getElementById('bodyGradeMsg');
+    var setText=function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+    if(!B.ok){
+      if(badge){ badge.textContent='—'; badge.style.background=''; badge.style.color=''; badge.style.border=''; }
+      if(bar) bar.style.width='0%';
+      if(msg){ msg.style.borderLeftColor='var(--cyan)'; msg.textContent='Add height, weight, age & sex above to see your grade.'; }
+      setText('tWeight','—'); setText('tFat','—'); setText('tRatio','—');
+      updateBodySim(); return;
+    }
+    var c=tierRGB(B.tier);
+    if(badge){ badge.textContent=B.tier+' · '+B.score+'/100'; badge.style.background='rgba('+c+',.15)'; badge.style.color='rgb('+c+')'; badge.style.border='1px solid rgb('+c+')'; }
+    if(bar){ bar.style.width=B.score+'%'; bar.style.background='rgb('+c+')'; }
+    if(msg){ msg.style.borderLeftColor='rgb('+c+')';
+      var fatLine=B.fat!=null?('Body fat <b>'+B.fat+'%</b> (target '+B.fatT.lo+'–'+B.fatT.hi+'%). '):('BMI <b>'+B.bmi.toFixed(1)+'</b> — '+B.bmiCat+'. ');
+      var verdict=B.tier==='S'?'Optimal for your frame — maintain & refine.':B.tier==='A'?'Great shape — a small push dials it in.':B.tier==='B'?'Good base — steady recomposition gets you to A.':B.tier==='C'?'Room to improve — the calorie simulator below is your tool.':B.tier==='D'?'Worth a focused plan — small steady changes add up fast.':'Big upside — start with a gentle, sustainable deficit or build.';
+      msg.innerHTML='<b>'+B.tier+'-tier body · '+B.score+'/100.</b> '+fatLine+verdict;
+    }
+    setText('tWeight', B.idealLo+'–'+B.idealHi+' kg');
+    setText('tFat', B.fat!=null?(B.fat+'% → '+B.fatT.ideal+'%'):('~'+B.fatT.ideal+'%'));
+    setText('tRatio', B.ratio!=null?B.ratio.toFixed(1)+'×':'—');
+    var sim=document.getElementById('bodySim');
+    if(sim){ sim.min=Math.max(35,Math.round(B.idealLo*0.65)); sim.max=Math.round(B.idealHi*1.85); if(!sim.dataset.touched) sim.value=B.w; }
+    updateBodySim();
+  }
   function setGoalBtns(g){
     document.querySelectorAll('#goalBtns .scen-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-goal')===g); });
   }
@@ -2171,6 +2312,8 @@
     });
     var sl=document.getElementById('calSlider');
     if(sl) sl.addEventListener('input', function(){ sl.dataset.touched='1'; calSim(); });
+    var bsim=document.getElementById('bodySim');
+    if(bsim) bsim.addEventListener('input', function(){ bsim.dataset.touched='1'; updateBodySim(); });
     document.querySelectorAll('#goalBtns .scen-btn').forEach(function(b){
       b.addEventListener('click', function(){
         var g=b.getAttribute('data-goal'); STATE.body.goal=g; setGoalBtns(g); autosave();
