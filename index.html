@@ -3155,25 +3155,28 @@
       {sel:'#tourBtn', text:'<b>All done! 🎉</b> Tap here any time to replay this tour.'}
     ];
     var i=0, active=false, ring=document.getElementById('tourRing'), tip=document.getElementById('tourTip');
+    // reposition ONLY — moves the ring/tip to follow the element. Never scrolls,
+    // so it can't feed back into the scroll handler (that was the shake).
+    function reposition(){
+      var s=STEPS[i], el=s && document.querySelector(s.sel); if(!el) return;
+      var r=el.getBoundingClientRect(), pad=8;
+      ring.style.left=(r.left-pad)+'px'; ring.style.top=(r.top-pad)+'px';
+      ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
+      var tr=tip.getBoundingClientRect();
+      var top=r.bottom+12; if(top+tr.height > window.innerHeight-10) top=Math.max(10, r.top-tr.height-12);
+      var left=Math.min(Math.max(10, r.left), Math.max(10, window.innerWidth-tr.width-10));
+      tip.style.top=top+'px'; tip.style.left=left+'px';
+    }
     function place(){
       var s=STEPS[i], el=document.querySelector(s.sel);
       if(!el){ if(i<STEPS.length-1){ i++; place(); return; } end(); return; }
-      try{ el.scrollIntoView({block:'center', inline:'center'}); }catch(_){ }
-      setTimeout(function(){
-        var r=el.getBoundingClientRect(), pad=8;
-        ring.style.display='block';
-        ring.style.left=(r.left-pad)+'px'; ring.style.top=(r.top-pad)+'px';
-        ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
-        tip.style.display='block';
-        document.getElementById('ttTxt').innerHTML=s.text;
-        document.getElementById('ttStep').textContent='Step '+(i+1)+' of '+STEPS.length;
-        document.getElementById('ttBack').style.visibility = i===0?'hidden':'visible';
-        document.getElementById('ttNext').textContent = i===STEPS.length-1?'Done':'Next';
-        var tr=tip.getBoundingClientRect();
-        var top=r.bottom+12; if(top+tr.height > window.innerHeight-10) top=Math.max(10, r.top-tr.height-12);
-        var left=Math.min(Math.max(10, r.left), Math.max(10, window.innerWidth-tr.width-10));
-        tip.style.top=top+'px'; tip.style.left=left+'px';
-      }, 240);
+      try{ el.scrollIntoView({block:'center', inline:'nearest'}); }catch(_){ }   // vertical only — no left/right slide
+      ring.style.display='block'; tip.style.display='block';
+      document.getElementById('ttTxt').innerHTML=s.text;
+      document.getElementById('ttStep').textContent='Step '+(i+1)+' of '+STEPS.length;
+      document.getElementById('ttBack').style.visibility = i===0?'hidden':'visible';
+      document.getElementById('ttNext').textContent = i===STEPS.length-1?'Done':'Next';
+      setTimeout(reposition, 260);   // let the single scroll settle, then place the ring/tip once
     }
     function start(){ if(active) return; active=true; i=0; place(); }
     function end(){ active=false; ring.style.display='none'; tip.style.display='none'; if(!STATE.tourDone){ STATE.tourDone=true; autosave(); } }
@@ -3183,8 +3186,11 @@
     if(n) n.addEventListener('click', nextStep);
     if(b) b.addEventListener('click', prevStep);
     if(sk) sk.addEventListener('click', end);
-    window.addEventListener('resize', function(){ if(active) place(); });
-    window.addEventListener('scroll', function(){ if(active) place(); }, true);
+    // follow the element on scroll/resize WITHOUT re-scrolling — rAF-throttled, reposition only
+    var rafPending=false;
+    function follow(){ if(!active || rafPending) return; rafPending=true; requestAnimationFrame(function(){ rafPending=false; reposition(); }); }
+    window.addEventListener('resize', follow);
+    window.addEventListener('scroll', follow, true);
     return { start:start, end:end };
   })();
   window.TOURSTART = TOUR.start;
