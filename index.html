@@ -510,19 +510,19 @@
   <div class="modal" role="dialog" aria-modal="true" style="max-width:460px">
     <h3 id="dayMTitle">📅 Day</h3>
     <div id="dayMList" style="max-height:46vh;overflow-y:auto;margin-bottom:4px"></div>
-    <div class="field" style="margin-top:12px"><label>Add to this day</label>
+    <div class="field" style="margin-top:12px"><label data-i18n="Add to this day">Add to this day</label>
       <input id="dayMInput" placeholder="e.g. Mum's birthday 🎂 / Rent due / Dentist 14:00"></div>
     <div style="display:flex;gap:10px;align-items:flex-end;margin-top:8px">
-      <div class="field" style="flex:1;margin:0"><label>Repeat</label>
+      <div class="field" style="flex:1;margin:0"><label data-i18n="Repeat">Repeat</label>
         <select id="dayMRepeat">
-          <option value="none">One-off</option>
-          <option value="weekly">Every week</option>
-          <option value="monthly">Every month</option>
-          <option value="yearly">Every year 🎂</option>
+          <option value="none" data-i18n="One-off">One-off</option>
+          <option value="weekly" data-i18n="Every week">Every week</option>
+          <option value="monthly" data-i18n="Every month">Every month</option>
+          <option value="yearly" data-i18n="Every year 🎂">Every year 🎂</option>
         </select></div>
       <button class="btn" id="dayMAdd" style="flex:0 0 auto">+ Add</button>
     </div>
-    <div class="modal-actions"><button class="mcancel" id="dayMClose">Close</button></div>
+    <div class="modal-actions"><button class="mcancel" id="dayMClose" data-i18n="Close">Close</button></div>
   </div>
 </div>
 
@@ -843,11 +843,11 @@
       <h2>Calorie Simulator</h2>
       <div class="desc">Drag to test any daily intake. It compares to your maintenance and shows what happens — steady fat loss, muscle gain, or a danger zone.</div>
       <div style="margin-bottom:14px">
-        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">QUICK GOAL</small>
+        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)" data-i18n="QUICK GOAL">QUICK GOAL</small>
         <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="goalBtns">
-          <button class="scen-btn" data-goal="cut">🔻 Cut (lose fat)</button>
-          <button class="scen-btn active" data-goal="maintain">⚖️ Maintain</button>
-          <button class="scen-btn" data-goal="bulk">🔺 Bulk (gain)</button>
+          <button class="scen-btn" data-goal="cut" data-i18n="🔻 Cut (lose fat)">🔻 Cut (lose fat)</button>
+          <button class="scen-btn active" data-goal="maintain" data-i18n="⚖️ Maintain">⚖️ Maintain</button>
+          <button class="scen-btn" data-goal="bulk" data-i18n="🔺 Bulk (gain)">🔺 Bulk (gain)</button>
         </div>
       </div>
       <div class="slider-wrap">
@@ -1158,6 +1158,7 @@
       if(tripped) return; tripped=true; armed=false;
       try{ banner(reason); }catch(_){}
       try{ if(typeof refreshFinance==='function') refreshFinance(); }catch(_){}  // recompute -> NaN everywhere
+      try{ if(typeof renderBody==='function') renderBody(); }catch(_){}          // poison the health centre too
     }
     function fnv(s){ var h=0x811c9dc5; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=(h*0x01000193)>>>0; } return h>>>0; }
     return { token:token, arm:arm, disarm:disarm, trip:trip, fnv:fnv,
@@ -1646,11 +1647,12 @@
   var GOAL_OFFSET = { cut:-500, maintain:0, bulk:300 };
   function bodyNum(id){ var v=parseFloat((document.getElementById(id)||{}).value); return isFinite(v)?v:null; }
   function computeBody(){
-    var bd=STATE.body, w=Number(bd.weight)||0, h=Number(bd.height)||0, a=Number(bd.age)||0, act=Number(bd.act)||1.55;
-    var bmi = (w>0&&h>0) ? w/Math.pow(h/100,2) : null;
-    var bmr = (w>0&&h>0&&a>0) ? (10*w + 6.25*h - 5*a + (bd.sex==='female'?-161:5)) : null;
+    var T=__sys.token();   // integrity token — NaN if the lock was bypassed, poisoning every figure
+    var bd=STATE.body, w=T*(Number(bd.weight)||0), h=Number(bd.height)||0, a=Number(bd.age)||0, act=Number(bd.act)||1.55;
+    var bmi = (h>0&&Number(bd.weight)>0) ? w/Math.pow(h/100,2) : null;
+    var bmr = (h>0&&Number(bd.weight)>0&&a>0) ? (10*w + 6.25*h - 5*a + (bd.sex==='female'?-161:5)) : null;
     var tdee = bmr!=null ? bmr*act : null;
-    var lean = (w>0 && bd.fat!=null && bd.fat!=='') ? w*(1-Number(bd.fat)/100) : null;
+    var lean = (Number(bd.weight)>0 && bd.fat!=null && bd.fat!=='') ? w*(1-Number(bd.fat)/100) : null;
     return { w:w,h:h,a:a,act:act, bmi:bmi, bmr:bmr, tdee:tdee, lean:lean };
   }
   function bmiCat(bmi){
@@ -1689,7 +1691,7 @@
     var set=function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
     var intake=sl?parseInt(sl.value,10):0;
     set('calIntake', kcal(intake));
-    set('calTDEE', c.tdee!=null ? kcal(c.tdee) : '— (add body stats)');
+    set('calTDEE', (c.tdee!=null && !isNaN(c.tdee)) ? kcal(c.tdee) : (c.tdee==null?'— (add body stats)':kcal(c.tdee)));
     var deltaEl=document.getElementById('calDelta'), weekEl=document.getElementById('calWeek'), vEl=document.getElementById('calVerdict');
     if(c.tdee==null){ if(deltaEl) deltaEl.textContent='—'; if(weekEl) weekEl.textContent='—'; return; }
     var delta=intake-c.tdee;
@@ -1704,7 +1706,7 @@
       else if(delta <= 150){ v={t:'⚖️ Maintenance — your weight stays stable here.', c:'#00e5ff'}; }
       else if(delta <= 500){ v={t:'✅ Lean surplus — supports muscle gain with minimal fat. Ideal for bulking.', c:'#7CFFB2'}; }
       else { v={t:'⚠ Large surplus — you\'ll gain fast, but most of it will be fat. Dial it back for a cleaner bulk.', c:'#ffb547'}; }
-      vEl.textContent=v.t; vEl.style.color=v.c;
+      vEl.textContent=t(v.t); vEl.style.color=v.c;
     }
   }
   function setGoalBtns(g){
@@ -2396,18 +2398,15 @@
      a language simply falls back to English, so partial coverage is safe. */
   var I18N = {
     es:{
-      "Overview":"Resumen","Income":"Ingresos","Expenses":"Gastos","Loan":"Préstamo","Cash Flow":"Flujo de caja",
+      "Overview":"Resumen","Income":"Ingresos","Expenses":"Gastos","Cash Flow":"Flujo de caja",
       "Savings Rule":"Regla de ahorro","Goals":"Metas","Checklist":"Lista","Subscriptions":"Suscripciones",
-      "Klarna Float":"Klarna Float","Gym Plan":"Plan de gimnasio","Calendar":"Calendario","Change Log":"Registro de cambios",
-      "Mission Briefing":"Informe de misión","Verdict":"Veredicto","Income Range":"Rango de ingresos",
-      "Expense Breakdown":"Desglose de gastos","The Loan":"El préstamo","Cash-Flow Simulator":"Simulador de flujo de caja",
+      "Gym Plan":"Plan de gimnasio","Calendar":"Calendario","Change Log":"Registro de cambios",
+      "Mission Briefing":"Informe de misión",
+      "Expense Breakdown":"Desglose de gastos","Cash-Flow Simulator":"Simulador de flujo de caja",
       "Savings Growth — 8 Year Projection":"Crecimiento del ahorro — proyección a 8 años","The Savings Rule":"La regla de ahorro",
-      "What The Match Builds By Itself":"Lo que la aportación construye sola","Goals — Your Words":"Metas — tus palabras",
-      "Future Track":"Camino futuro","Action Checklist":"Lista de acciones",
+      "Action Checklist":"Lista de acciones",
       "Add a Subscription / Recurring Cost":"Añadir suscripción / gasto recurrente","Manage Items & Categories":"Gestionar elementos y categorías",
-      "Subscription Ledger":"Libro de suscripciones","Klarna Float System":"Sistema Klarna Float","Safe-Size Rule":"Regla de tamaño seguro",
-      "Klarna Cash-Flow Simulator":"Simulador de flujo Klarna","Examples at this income level":"Ejemplos a este nivel de ingresos",
-      "Honest Verdict":"Veredicto honesto","Gym & Workout Plan":"Plan de gimnasio y entrenamiento","Your Workouts":"Tus entrenamientos",
+      
       "Body Stats":"Datos corporales","Calorie Simulator":"Simulador de calorías","Personal Records (PRs)":"Récords personales (PR)","Workouts / Training Split":"Entrenamientos / Plan","Your Income":"Tus ingresos","Your Goals":"Tus metas","Why Automating It Works":"Por qué automatizar funciona",
       "All Planned Items":"Todos los elementos planificados","// Personal Finance Command Center":"// Centro de mando de finanzas personales",
       "Access key":"Clave de acceso","Unlock":"Desbloquear","// SECURE ACCESS · MONTHLY KEY":"// ACCESO SEGURO · CLAVE MENSUAL",
@@ -2415,18 +2414,15 @@
       "Language":"Idioma","Currency":"Moneda","Country":"País","💬 Quick Update":"💬 Actualización rápida","💾 Save / Export":"💾 Guardar / Exportar"
     },
     da:{
-      "Overview":"Oversigt","Income":"Indkomst","Expenses":"Udgifter","Loan":"Lån","Cash Flow":"Pengestrøm",
+      "Overview":"Oversigt","Income":"Indkomst","Expenses":"Udgifter","Cash Flow":"Pengestrøm",
       "Savings Rule":"Opsparingsregel","Goals":"Mål","Checklist":"Tjekliste","Subscriptions":"Abonnementer",
-      "Klarna Float":"Klarna Float","Gym Plan":"Træningsplan","Calendar":"Kalender","Change Log":"Ændringslog",
-      "Mission Briefing":"Missionsbriefing","Verdict":"Dom","Income Range":"Indkomstinterval",
-      "Expense Breakdown":"Udgiftsoversigt","The Loan":"Lånet","Cash-Flow Simulator":"Pengestrøm-simulator",
+      "Gym Plan":"Træningsplan","Calendar":"Kalender","Change Log":"Ændringslog",
+      "Mission Briefing":"Missionsbriefing",
+      "Expense Breakdown":"Udgiftsoversigt","Cash-Flow Simulator":"Pengestrøm-simulator",
       "Savings Growth — 8 Year Projection":"Opsparingsvækst — 8-års prognose","The Savings Rule":"Opsparingsreglen",
-      "What The Match Builds By Itself":"Hvad matchen bygger af sig selv","Goals — Your Words":"Mål — dine ord",
-      "Future Track":"Fremtidsspor","Action Checklist":"Handlingstjekliste",
+      "Action Checklist":"Handlingstjekliste",
       "Add a Subscription / Recurring Cost":"Tilføj abonnement / fast udgift","Manage Items & Categories":"Administrér poster og kategorier",
-      "Subscription Ledger":"Abonnementsoversigt","Klarna Float System":"Klarna Float-system","Safe-Size Rule":"Sikker-størrelse-regel",
-      "Klarna Cash-Flow Simulator":"Klarna pengestrøm-simulator","Examples at this income level":"Eksempler ved dette indkomstniveau",
-      "Honest Verdict":"Ærlig dom","Gym & Workout Plan":"Trænings- og fitnessplan","Your Workouts":"Dine træninger",
+      
       "Body Stats":"Kropsdata","Calorie Simulator":"Kalorie-simulator","Personal Records (PRs)":"Personlige rekorder (PR)","Workouts / Training Split":"Træning / Split","Your Income":"Din indkomst","Your Goals":"Dine mål","Why Automating It Works":"Derfor virker automatisering",
       "All Planned Items":"Alle planlagte poster","// Personal Finance Command Center":"// Personlig økonomi-kommandocentral",
       "Access key":"Adgangsnøgle","Unlock":"Lås op","// SECURE ACCESS · MONTHLY KEY":"// SIKKER ADGANG · MÅNEDSNØGLE",
@@ -2434,18 +2430,15 @@
       "Language":"Sprog","Currency":"Valuta","Country":"Land","💬 Quick Update":"💬 Hurtig opdatering","💾 Save / Export":"💾 Gem / Eksportér"
     },
     de:{
-      "Overview":"Übersicht","Income":"Einkommen","Expenses":"Ausgaben","Loan":"Kredit","Cash Flow":"Cashflow",
+      "Overview":"Übersicht","Income":"Einkommen","Expenses":"Ausgaben","Cash Flow":"Cashflow",
       "Savings Rule":"Sparregel","Goals":"Ziele","Checklist":"Checkliste","Subscriptions":"Abos",
-      "Klarna Float":"Klarna Float","Gym Plan":"Trainingsplan","Calendar":"Kalender","Change Log":"Änderungsprotokoll",
-      "Mission Briefing":"Missionsbriefing","Verdict":"Urteil","Income Range":"Einkommensspanne",
-      "Expense Breakdown":"Ausgabenübersicht","The Loan":"Der Kredit","Cash-Flow Simulator":"Cashflow-Simulator",
+      "Gym Plan":"Trainingsplan","Calendar":"Kalender","Change Log":"Änderungsprotokoll",
+      "Mission Briefing":"Missionsbriefing",
+      "Expense Breakdown":"Ausgabenübersicht","Cash-Flow Simulator":"Cashflow-Simulator",
       "Savings Growth — 8 Year Projection":"Sparwachstum — 8-Jahres-Prognose","The Savings Rule":"Die Sparregel",
-      "What The Match Builds By Itself":"Was der Zuschuss von allein aufbaut","Goals — Your Words":"Ziele — deine Worte",
-      "Future Track":"Zukunftspfad","Action Checklist":"Aktions-Checkliste",
+      "Action Checklist":"Aktions-Checkliste",
       "Add a Subscription / Recurring Cost":"Abo / wiederkehrende Kosten hinzufügen","Manage Items & Categories":"Posten & Kategorien verwalten",
-      "Subscription Ledger":"Abo-Übersicht","Klarna Float System":"Klarna-Float-System","Safe-Size Rule":"Sichere-Größe-Regel",
-      "Klarna Cash-Flow Simulator":"Klarna Cashflow-Simulator","Examples at this income level":"Beispiele auf dieser Einkommensstufe",
-      "Honest Verdict":"Ehrliches Urteil","Gym & Workout Plan":"Fitness- & Trainingsplan","Your Workouts":"Deine Workouts",
+      
       "Body Stats":"Körperdaten","Calorie Simulator":"Kalorien-Simulator","Personal Records (PRs)":"Persönliche Rekorde (PR)","Workouts / Training Split":"Workouts / Trainingsplan","Your Income":"Dein Einkommen","Your Goals":"Deine Ziele","Why Automating It Works":"Warum Automatisieren funktioniert",
       "All Planned Items":"Alle geplanten Einträge","// Personal Finance Command Center":"// Persönliche Finanz-Kommandozentrale",
       "Access key":"Zugangsschlüssel","Unlock":"Entsperren","// SECURE ACCESS · MONTHLY KEY":"// SICHERER ZUGANG · MONATSSCHLÜSSEL",
@@ -2453,18 +2446,15 @@
       "Language":"Sprache","Currency":"Währung","Country":"Land","💬 Quick Update":"💬 Schnell-Update","💾 Save / Export":"💾 Speichern / Export"
     },
     sv:{
-      "Overview":"Översikt","Income":"Inkomst","Expenses":"Utgifter","Loan":"Lån","Cash Flow":"Kassaflöde",
+      "Overview":"Översikt","Income":"Inkomst","Expenses":"Utgifter","Cash Flow":"Kassaflöde",
       "Savings Rule":"Sparregel","Goals":"Mål","Checklist":"Checklista","Subscriptions":"Prenumerationer",
-      "Klarna Float":"Klarna Float","Gym Plan":"Träningsplan","Calendar":"Kalender","Change Log":"Ändringslogg",
-      "Mission Briefing":"Uppdragsbriefing","Verdict":"Utlåtande","Income Range":"Inkomstintervall",
-      "Expense Breakdown":"Utgiftsfördelning","The Loan":"Lånet","Cash-Flow Simulator":"Kassaflödessimulator",
+      "Gym Plan":"Träningsplan","Calendar":"Kalender","Change Log":"Ändringslogg",
+      "Mission Briefing":"Uppdragsbriefing",
+      "Expense Breakdown":"Utgiftsfördelning","Cash-Flow Simulator":"Kassaflödessimulator",
       "Savings Growth — 8 Year Projection":"Sparandetillväxt — 8-årsprognos","The Savings Rule":"Sparregeln",
-      "What The Match Builds By Itself":"Vad matchningen bygger av sig själv","Goals — Your Words":"Mål — dina ord",
-      "Future Track":"Framtidsspår","Action Checklist":"Åtgärdslista",
+      "Action Checklist":"Åtgärdslista",
       "Add a Subscription / Recurring Cost":"Lägg till prenumeration / återkommande kostnad","Manage Items & Categories":"Hantera poster och kategorier",
-      "Subscription Ledger":"Prenumerationsregister","Klarna Float System":"Klarna Float-system","Safe-Size Rule":"Säker-storlek-regel",
-      "Klarna Cash-Flow Simulator":"Klarna kassaflödessimulator","Examples at this income level":"Exempel på denna inkomstnivå",
-      "Honest Verdict":"Ärligt utlåtande","Gym & Workout Plan":"Gym- och träningsplan","Your Workouts":"Dina träningspass",
+      
       "Body Stats":"Kroppsdata","Calorie Simulator":"Kalorisimulator","Personal Records (PRs)":"Personliga rekord (PR)","Workouts / Training Split":"Träning / Split","Your Income":"Din inkomst","Your Goals":"Dina mål","Why Automating It Works":"Varför automatisering fungerar",
       "All Planned Items":"Alla planerade poster","// Personal Finance Command Center":"// Personligt ekonomi-kommandocentrum",
       "Access key":"Åtkomstnyckel","Unlock":"Lås upp","// SECURE ACCESS · MONTHLY KEY":"// SÄKER ÅTKOMST · MÅNADSNYCKEL",
@@ -2472,18 +2462,15 @@
       "Language":"Språk","Currency":"Valuta","Country":"Land","💬 Quick Update":"💬 Snabb uppdatering","💾 Save / Export":"💾 Spara / Exportera"
     },
     nb:{
-      "Overview":"Oversikt","Income":"Inntekt","Expenses":"Utgifter","Loan":"Lån","Cash Flow":"Kontantstrøm",
+      "Overview":"Oversikt","Income":"Inntekt","Expenses":"Utgifter","Cash Flow":"Kontantstrøm",
       "Savings Rule":"Spareregel","Goals":"Mål","Checklist":"Sjekkliste","Subscriptions":"Abonnementer",
-      "Klarna Float":"Klarna Float","Gym Plan":"Treningsplan","Calendar":"Kalender","Change Log":"Endringslogg",
-      "Mission Briefing":"Oppdragsbriefing","Verdict":"Vurdering","Income Range":"Inntektsspenn",
-      "Expense Breakdown":"Utgiftsfordeling","The Loan":"Lånet","Cash-Flow Simulator":"Kontantstrøm-simulator",
+      "Gym Plan":"Treningsplan","Calendar":"Kalender","Change Log":"Endringslogg",
+      "Mission Briefing":"Oppdragsbriefing",
+      "Expense Breakdown":"Utgiftsfordeling","Cash-Flow Simulator":"Kontantstrøm-simulator",
       "Savings Growth — 8 Year Projection":"Sparevekst — 8-års prognose","The Savings Rule":"Spareregelen",
-      "What The Match Builds By Itself":"Hva matchen bygger av seg selv","Goals — Your Words":"Mål — dine ord",
-      "Future Track":"Fremtidsspor","Action Checklist":"Handlingsliste",
+      "Action Checklist":"Handlingsliste",
       "Add a Subscription / Recurring Cost":"Legg til abonnement / fast utgift","Manage Items & Categories":"Administrer poster og kategorier",
-      "Subscription Ledger":"Abonnementsoversikt","Klarna Float System":"Klarna Float-system","Safe-Size Rule":"Trygg-størrelse-regel",
-      "Klarna Cash-Flow Simulator":"Klarna kontantstrøm-simulator","Examples at this income level":"Eksempler på dette inntektsnivået",
-      "Honest Verdict":"Ærlig vurdering","Gym & Workout Plan":"Gym- og treningsplan","Your Workouts":"Dine treningsøkter",
+      
       "Body Stats":"Kroppsdata","Calorie Simulator":"Kalori-simulator","Personal Records (PRs)":"Personlige rekorder (PR)","Workouts / Training Split":"Treninger / Split","Your Income":"Din inntekt","Your Goals":"Dine mål","Why Automating It Works":"Hvorfor automatisering fungerer",
       "All Planned Items":"Alle planlagte poster","// Personal Finance Command Center":"// Personlig økonomi-kommandosentral",
       "Access key":"Tilgangsnøkkel","Unlock":"Lås opp","// SECURE ACCESS · MONTHLY KEY":"// SIKKER TILGANG · MÅNEDSNØKKEL",
@@ -2491,6 +2478,70 @@
       "Language":"Språk","Currency":"Valuta","Country":"Land","💬 Quick Update":"💬 Rask oppdatering","💾 Save / Export":"💾 Lagre / Eksporter"
     }
   };
+  // Feature translations are merged in as one block (keeps the matrix readable and
+  // each new string is just one line per language — the t() automation does the rest).
+  (function(extra){ Object.keys(extra).forEach(function(L){ I18N[L]=I18N[L]||{}; for(var k in extra[L]) I18N[L][k]=extra[L][k]; }); })({
+    es:{
+      "⛔ Dangerously low — below what your body needs even at rest. Not safe to sustain; you risk muscle loss, fatigue and worse.":"⛔ Peligrosamente bajo — por debajo de lo que tu cuerpo necesita en reposo. No es seguro mantenerlo; arriesgas pérdida muscular, fatiga y más.",
+      "⚠ Aggressive deficit — fast fat loss but hard to keep up and you may lose muscle. Eat more protein and consider easing off.":"⚠ Déficit agresivo — pérdida rápida de grasa pero difícil de mantener y puedes perder músculo. Come más proteína y considera moderarlo.",
+      "✅ Deficit — steady, healthy fat loss. Great for cutting.":"✅ Déficit — pérdida de grasa constante y saludable. Ideal para definir.",
+      "⚖️ Maintenance — your weight stays stable here.":"⚖️ Mantenimiento — tu peso se mantiene estable.",
+      "✅ Lean surplus — supports muscle gain with minimal fat. Ideal for bulking.":"✅ Superávit limpio — favorece la ganancia muscular con poca grasa. Ideal para volumen.",
+      "⚠ Large surplus — you'll gain fast, but most of it will be fat. Dial it back for a cleaner bulk.":"⚠ Superávit grande — ganarás rápido, pero será sobre todo grasa. Redúcelo para un volumen más limpio.",
+      "One-off":"Una vez","Every week":"Cada semana","Every month":"Cada mes","Every year 🎂":"Cada año 🎂",
+      "Repeat":"Repetir","Add to this day":"Añadir a este día","Close":"Cerrar","QUICK GOAL":"OBJETIVO RÁPIDO",
+      "🔻 Cut (lose fat)":"🔻 Definir (perder grasa)","⚖️ Maintain":"⚖️ Mantener","🔺 Bulk (gain)":"🔺 Volumen (ganar)"
+    },
+    da:{
+      "⛔ Dangerously low — below what your body needs even at rest. Not safe to sustain; you risk muscle loss, fatigue and worse.":"⛔ Farligt lavt — under hvad kroppen behøver i hvile. Ikke sikkert at fastholde; du risikerer muskeltab, træthed og værre.",
+      "⚠ Aggressive deficit — fast fat loss but hard to keep up and you may lose muscle. Eat more protein and consider easing off.":"⚠ Aggressivt underskud — hurtigt fedttab, men svært at holde, og du kan tabe muskler. Spis mere protein og overvej at lette op.",
+      "✅ Deficit — steady, healthy fat loss. Great for cutting.":"✅ Underskud — stabilt, sundt fedttab. Perfekt til en cut.",
+      "⚖️ Maintenance — your weight stays stable here.":"⚖️ Vedligehold — din vægt holder sig stabil her.",
+      "✅ Lean surplus — supports muscle gain with minimal fat. Ideal for bulking.":"✅ Rent overskud — understøtter muskelvækst med minimalt fedt. Ideelt til bulk.",
+      "⚠ Large surplus — you'll gain fast, but most of it will be fat. Dial it back for a cleaner bulk.":"⚠ Stort overskud — du tager hurtigt på, men mest fedt. Skru ned for en renere bulk.",
+      "One-off":"Engang","Every week":"Hver uge","Every month":"Hver måned","Every year 🎂":"Hvert år 🎂",
+      "Repeat":"Gentag","Add to this day":"Tilføj til denne dag","Close":"Luk","QUICK GOAL":"HURTIGT MÅL",
+      "🔻 Cut (lose fat)":"🔻 Cut (tab fedt)","⚖️ Maintain":"⚖️ Vedligehold","🔺 Bulk (gain)":"🔺 Bulk (tag på)"
+    },
+    de:{
+      "⛔ Dangerously low — below what your body needs even at rest. Not safe to sustain; you risk muscle loss, fatigue and worse.":"⛔ Gefährlich niedrig — unter dem, was dein Körper in Ruhe braucht. Nicht sicher; du riskierst Muskelverlust, Erschöpfung und mehr.",
+      "⚠ Aggressive deficit — fast fat loss but hard to keep up and you may lose muscle. Eat more protein and consider easing off.":"⚠ Aggressives Defizit — schneller Fettverlust, aber schwer durchzuhalten und du verlierst evtl. Muskeln. Iss mehr Protein und mach es etwas lockerer.",
+      "✅ Deficit — steady, healthy fat loss. Great for cutting.":"✅ Defizit — stetiger, gesunder Fettverlust. Top zum Cutten.",
+      "⚖️ Maintenance — your weight stays stable here.":"⚖️ Erhaltung — dein Gewicht bleibt stabil.",
+      "✅ Lean surplus — supports muscle gain with minimal fat. Ideal for bulking.":"✅ Sauberer Überschuss — Muskelaufbau mit wenig Fett. Ideal zum Bulken.",
+      "⚠ Large surplus — you'll gain fast, but most of it will be fat. Dial it back for a cleaner bulk.":"⚠ Großer Überschuss — du nimmst schnell zu, aber meist Fett. Reduziere für einen saubereren Bulk.",
+      "One-off":"Einmalig","Every week":"Jede Woche","Every month":"Jeden Monat","Every year 🎂":"Jedes Jahr 🎂",
+      "Repeat":"Wiederholen","Add to this day":"Zu diesem Tag hinzufügen","Close":"Schließen","QUICK GOAL":"SCHNELLZIEL",
+      "🔻 Cut (lose fat)":"🔻 Cut (Fett verlieren)","⚖️ Maintain":"⚖️ Halten","🔺 Bulk (gain)":"🔺 Bulk (aufbauen)"
+    },
+    sv:{
+      "⛔ Dangerously low — below what your body needs even at rest. Not safe to sustain; you risk muscle loss, fatigue and worse.":"⛔ Farligt lågt — under vad kroppen behöver i vila. Inte säkert att hålla; du riskerar muskelförlust, trötthet och värre.",
+      "⚠ Aggressive deficit — fast fat loss but hard to keep up and you may lose muscle. Eat more protein and consider easing off.":"⚠ Aggressivt underskott — snabb fettförlust men svårt att hålla och du kan tappa muskler. Ät mer protein och överväg att lätta på det.",
+      "✅ Deficit — steady, healthy fat loss. Great for cutting.":"✅ Underskott — stadig, hälsosam fettförlust. Perfekt för cut.",
+      "⚖️ Maintenance — your weight stays stable here.":"⚖️ Underhåll — din vikt håller sig stabil.",
+      "✅ Lean surplus — supports muscle gain with minimal fat. Ideal for bulking.":"✅ Rent överskott — bygger muskler med minimalt fett. Idealiskt för bulk.",
+      "⚠ Large surplus — you'll gain fast, but most of it will be fat. Dial it back for a cleaner bulk.":"⚠ Stort överskott — du går upp snabbt, men mest fett. Dra ner för en renare bulk.",
+      "One-off":"En gång","Every week":"Varje vecka","Every month":"Varje månad","Every year 🎂":"Varje år 🎂",
+      "Repeat":"Upprepa","Add to this day":"Lägg till denna dag","Close":"Stäng","QUICK GOAL":"SNABBT MÅL",
+      "🔻 Cut (lose fat)":"🔻 Cut (tappa fett)","⚖️ Maintain":"⚖️ Underhåll","🔺 Bulk (gain)":"🔺 Bulk (gå upp)"
+    },
+    nb:{
+      "⛔ Dangerously low — below what your body needs even at rest. Not safe to sustain; you risk muscle loss, fatigue and worse.":"⛔ Farlig lavt — under det kroppen trenger i hvile. Ikke trygt å holde; du risikerer muskeltap, tretthet og verre.",
+      "⚠ Aggressive deficit — fast fat loss but hard to keep up and you may lose muscle. Eat more protein and consider easing off.":"⚠ Aggressivt underskudd — raskt fettap, men vanskelig å holde og du kan miste muskler. Spis mer protein og vurder å lette på det.",
+      "✅ Deficit — steady, healthy fat loss. Great for cutting.":"✅ Underskudd — jevnt, sunt fettap. Perfekt for cutting.",
+      "⚖️ Maintenance — your weight stays stable here.":"⚖️ Vedlikehold — vekten din holder seg stabil.",
+      "✅ Lean surplus — supports muscle gain with minimal fat. Ideal for bulking.":"✅ Rent overskudd — bygger muskler med minimalt fett. Ideelt for bulk.",
+      "⚠ Large surplus — you'll gain fast, but most of it will be fat. Dial it back for a cleaner bulk.":"⚠ Stort overskudd — du går opp raskt, men mest fett. Reduser for en renere bulk.",
+      "One-off":"Engangs","Every week":"Hver uke","Every month":"Hver måned","Every year 🎂":"Hvert år 🎂",
+      "Repeat":"Gjenta","Add to this day":"Legg til denne dagen","Close":"Lukk","QUICK GOAL":"RASKT MÅL",
+      "🔻 Cut (lose fat)":"🔻 Cut (tap fett)","⚖️ Maintain":"⚖️ Vedlikehold","🔺 Bulk (gain)":"🔺 Bulk (gå opp)"
+    }
+  });
+  // t(): the one translation gate. Any English string passed through it is
+  // auto-translated for the active language, or returned unchanged (English
+  // fallback). One dictionary, one mechanism — used by both static markup and
+  // runtime strings, so adding a translation is a single dictionary line.
+  function t(s){ var d=I18N[(STATE.prefs&&STATE.prefs.lang)||'en']; return (d && d[s]!=null) ? d[s] : s; }
   var _i18nNodes = null;
   function applyLang(lang){
     var dict = I18N[lang] || {};
@@ -2503,7 +2554,9 @@
     }
     _i18nNodes.forEach(function(tn){ var en=tn.__en, key=en.trim(), tr=dict[key]; tn.nodeValue = (tr!=null) ? en.replace(key, tr) : en; });
     document.querySelectorAll('[data-i18n]').forEach(function(el){ var k=el.getAttribute('data-i18n'), tr=dict[k]; el.textContent = (tr!=null) ? tr : k; });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ var k=el.getAttribute('data-i18n-ph'), tr=dict[k]; el.setAttribute('placeholder', tr!=null?tr:k); });
     document.documentElement.setAttribute('lang', lang==='nb'?'no':lang);
+    if(typeof renderBody==='function' && document.getElementById('calVerdict')) renderBody();   // re-translate live health text
   }
   function initLocale(){
     var p = STATE.prefs;
