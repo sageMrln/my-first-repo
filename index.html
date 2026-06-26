@@ -506,6 +506,35 @@
 </div>
 
 <!-- DAY POPUP (everything planned on a day; add repeating events) -->
+<!-- OWNER KEY MAKER (only usable when this file holds the private key) -->
+<div class="modal-back" id="mintBack">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:460px">
+    <h3>🔑 Mint an access key</h3>
+    <div class="mwarn" style="font-size:12.5px">Owner only. The key works in any MRLN file. <b>This file holds your master key — never share it; only ever hand out Blank copies.</b></div>
+    <div class="field" style="margin-top:14px"><label>Member name / handle</label><input id="mintName" placeholder="e.g. sam#1234" autocomplete="off"></div>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div class="field" style="flex:1;margin:0"><label>Valid for</label><input id="mintDur" type="number" min="1" value="30"></div>
+      <div class="field" style="flex:1;margin:0"><label>Unit</label><select id="mintUnit"><option value="minutes">minutes</option><option value="hours">hours</option><option value="days" selected>days</option></select></div>
+    </div>
+    <div class="field" style="margin-top:8px"><label>Quick preset</label><select id="mintPreset">
+      <option value="">— pick one —</option>
+      <option value="5|minutes">5-minute trial</option>
+      <option value="3|hours">3-hour trial</option>
+      <option value="30|days">1 month</option>
+      <option value="365|days">1 year</option>
+      <option value="3650|days">Owner / 10 years</option>
+    </select></div>
+    <button class="btn" id="mintGo" style="margin-top:14px;width:100%">Generate key</button>
+    <div id="mintOut" style="display:none;margin-top:14px">
+      <label style="font-size:12px;color:var(--txt-dim)">Copy &amp; send in Discord</label>
+      <div id="mintKey" style="background:#06101c;border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:12px;padding:11px;word-break:break-all;line-height:1.5;margin-top:4px"></div>
+      <div id="mintMeta" style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin-top:6px"></div>
+      <button class="btn ghost" id="mintCopy" style="margin-top:8px">Copy key</button>
+    </div>
+    <div class="modal-actions"><button class="mcancel" id="mintClose">Close</button></div>
+  </div>
+</div>
+
 <div class="modal-back" id="dayBack">
   <div class="modal" role="dialog" aria-modal="true" style="max-width:460px">
     <h3 id="dayMTitle">📅 Day</h3>
@@ -966,11 +995,16 @@
   <label class="bakechk" id="bakeKeyWrap" title="Saves your key inside the file so it opens without re-typing. Turn off if you'll share the file."><input type="checkbox" id="bakeKey" checked> <span data-i18n="keep me signed in">keep me signed in</span></label>
   <div class="badge" id="saveBadge">loaded</div>
   <button class="chattoggle" id="shareBlankBtn" title="Download an empty copy (no data, no key) — safe to give to a new person" data-i18n="📤 Blank copy to share">📤 Blank copy to share</button>
+  <button class="chattoggle" id="mintBtn" title="Owner only — mint an access key for a member" style="display:none;border-color:var(--lime);color:var(--lime)">🔑 Mint key</button>
   <button class="savebtn" id="saveBtn" data-i18n="💾 Save / Export">💾 Save / Export</button>
 </div>
 
 <!-- Persisted user state (read on load, rewritten on export). Do not edit by hand. -->
 <script id="hud-state" type="application/json"></script>
+<!-- OWNER-ONLY private signing key. Empty in the product. Filled only in the
+     owner's personal HUD so it can mint keys. HARD-STRIPPED from every Blank
+     copy and customer file, so it never leaves the owner's own file. -->
+<script id="__ownerKeySrc" type="text/plain"></script>
 
 <script>
   /* =========================================================================
@@ -2199,8 +2233,12 @@
   }
   function exportBlank(){
     var hs = document.getElementById('hud-state');
-    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs;
+    var oks = document.getElementById('__ownerKeySrc');
+    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapOK = oks?oks.textContent:'';
     try{
+      // 0) CRITICAL: strip the owner's private signing key — a Blank copy / customer
+      //    file must NEVER contain it, or anyone could mint keys.
+      if(oks) oks.textContent = '';
       // 1) blank every data-bearing thing and re-render so NO personal text remains
       MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = [];
       renderAll();
@@ -2222,7 +2260,8 @@
       setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
       var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ blank copy downloaded — safe to share'; b.style.color = 'var(--cyan)'; }
     } finally {
-      // 3) restore YOUR data exactly as it was
+      // 3) restore YOUR data + private key exactly as they were
+      if(oks) oks.textContent = snapOK;
       hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP;
       renderAll();
     }
@@ -2863,6 +2902,97 @@
     if(STATE.fresh && !STATE.demo){ WIZ.open(false); return; }
     if(!STATE.tourDone){ setTimeout(function(){ TOUR.start(); }, 500); }
   };
+
+  /* ===================== OWNER KEY MAKER =====================
+     Mints access keys, but ONLY when this file holds the private key in
+     #__ownerKeySrc. That slot is empty in the product and is hard-stripped
+     from every Blank copy / customer file (see exportBlank), so the master
+     key lives only in the owner's own file. Pure-JS signing (RFC6979) so it
+     works on a phone too. */
+  var MINT = (function(){
+    function priv(){ var e=document.getElementById('__ownerKeySrc'); var v=e?(e.textContent||'').trim():''; return v||null; }
+    function available(){ return !!priv(); }
+    function b64ToBytes(s){ var bin=atob(s), b=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i); return b; }
+    function bytesToB64url(buf){ var b=new Uint8Array(buf), s=''; for(var i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+    function strToB64url(str){ return bytesToB64url(new TextEncoder().encode(str)); }
+    function sha(bytes){
+      function r(n,x){return (x>>>n)|(x<<(32-n));}
+      var K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+      var H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+      var l=bytes.length,bl=l*8,wo=l+1,k=(56-wo%64+64)%64,tt=wo+k+8,m=new Uint8Array(tt);
+      m.set(bytes); m[l]=0x80; m[tt-4]=(bl>>>24)&255; m[tt-3]=(bl>>>16)&255; m[tt-2]=(bl>>>8)&255; m[tt-1]=bl&255;
+      var w=new Array(64);
+      for(var i=0;i<tt;i+=64){
+        for(var t=0;t<16;t++) w[t]=(m[i+t*4]<<24)|(m[i+t*4+1]<<16)|(m[i+t*4+2]<<8)|(m[i+t*4+3]);
+        for(t=16;t<64;t++){var s0=r(7,w[t-15])^r(18,w[t-15])^(w[t-15]>>>3),s1=r(17,w[t-2])^r(19,w[t-2])^(w[t-2]>>>10); w[t]=(w[t-16]+s0+w[t-7]+s1)|0;}
+        var a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+        for(t=0;t<64;t++){var S1=r(6,e)^r(11,e)^r(25,e),ch=(e&f)^((~e)&g),t1=(h+S1+ch+K[t]+w[t])|0,S0=r(2,a)^r(13,a)^r(22,a),mj=(a&b)^(a&c)^(b&c),t2=(S0+mj)|0; h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;}
+        H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+      }
+      var o=new Uint8Array(32); for(i=0;i<8;i++){o[i*4]=(H[i]>>>24)&255;o[i*4+1]=(H[i]>>>16)&255;o[i*4+2]=(H[i]>>>8)&255;o[i*4+3]=H[i]&255;} return o;
+    }
+    function cc(a,b){var o=new Uint8Array(a.length+b.length);o.set(a);o.set(b,a.length);return o;}
+    function hmac(key,msg){var B=64,k=key; if(k.length>B)k=sha(k); var ip=new Uint8Array(B),op=new Uint8Array(B); for(var i=0;i<B;i++){var x=i<k.length?k[i]:0;ip[i]=x^0x36;op[i]=x^0x5c;} return sha(cc(op,sha(cc(ip,msg))));}
+    var P=0xffffffff00000001000000000000000000000000ffffffffffffffffffffffffn,A=P-3n,
+        N=0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n,
+        GX=0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296n,
+        GY=0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5n;
+    function md(a,m){a%=m;return a<0n?a+m:a;}
+    function eg(a,b){if(a===0n)return[b,0n,1n];var x=eg(md(b,a),a);return[x[0],x[2]-(b/a)*x[1],x[1]];}
+    function iv(a,m){var x=eg(md(a,m),m);return md(x[1],m);}
+    function dl(p){var X=p[0],Y=p[1],Z=p[2];if(Y===0n)return[0n,1n,0n];var Ys=md(Y*Y,P),S=md(4n*X*Ys,P),Zs=md(Z*Z,P),Zq=md(Zs*Zs,P),M=md(3n*md(X*X,P)+md(A*Zq,P),P);return[md(M*M-2n*S,P),md(M*(S-md(M*M-2n*S,P))-8n*md(Ys*Ys,P),P),md(2n*Y*Z,P)];}
+    function ad(p1,p2){var X1=p1[0],Y1=p1[1],Z1=p1[2],X2=p2[0],Y2=p2[1],Z2=p2[2];if(Z1===0n)return p2;if(Z2===0n)return p1;var Z1s=md(Z1*Z1,P),Z2s=md(Z2*Z2,P),U1=md(X1*Z2s,P),U2=md(X2*Z1s,P),S1=md(md(Y1*Z2s,P)*Z2,P),S2=md(md(Y2*Z1s,P)*Z1,P);if(U1===U2){if(S1!==S2)return[0n,1n,0n];return dl(p1);}var H=md(U2-U1,P),R=md(S2-S1,P),H2=md(H*H,P),H3=md(H2*H,P),X3=md(R*R-H3-2n*U1*H2,P);return[X3,md(R*(U1*H2-X3)-S1*H3,P),md(md(H*Z1,P)*Z2,P)];}
+    function ml(k,p){var rr=[0n,1n,0n],a=p;while(k>0n){if(k&1n)rr=ad(rr,a);a=dl(a);k>>=1n;}return rr;}
+    function ax(p){if(p[2]===0n)return null;var zi=iv(p[2],P);return md(p[0]*md(zi*zi,P),P);}
+    function bg(b){var x=0n;for(var i=0;i<b.length;i++)x=(x<<8n)|BigInt(b[i]);return x;}
+    function b2(x,len){var o=new Uint8Array(len);for(var i=len-1;i>=0;i--){o[i]=Number(x&255n);x>>=8n;}return o;}
+    function rfc(d,h1){var x=b2(d,32),V=new Uint8Array(32).fill(1),K=new Uint8Array(32).fill(0);
+      K=hmac(K,cc(cc(cc(V,Uint8Array.of(0)),x),h1));V=hmac(K,V);
+      K=hmac(K,cc(cc(cc(V,Uint8Array.of(1)),x),h1));V=hmac(K,V);
+      while(true){V=hmac(K,V);var k=bg(V);if(k>=1n&&k<N)return k;K=hmac(K,cc(V,Uint8Array.of(0)));V=hmac(K,V);}}
+    function exD(p8){for(var i=0;i+37<=p8.length;i++){if(p8[i]===2&&p8[i+1]===1&&p8[i+2]===1&&p8[i+3]===4&&p8[i+4]===0x20)return bg(p8.subarray(i+5,i+37));}throw new Error('key parse failed');}
+    var _D=null,_src=null;
+    function getD(){ var pv=priv(); if(!pv) return null; if(_src!==pv){ _src=pv; _D=exD(b64ToBytes(pv)); } return _D; }
+    function mintKey(name, seconds){
+      var d=getD(); if(d==null) return null;
+      var exp=Math.floor(Date.now()/1000)+Math.round(seconds);
+      var payload=JSON.stringify({u:name, exp:exp});
+      var h=sha(new TextEncoder().encode(payload)), e=bg(h);
+      while(true){ var k=rfc(d,h), R=ml(k,[GX,GY,1n]), r=md(ax(R),N); if(r===0n) continue;
+        var s=md(iv(k,N)*(e+r*d),N); if(s===0n) continue; if(s>N/2n) s=N-s;
+        return { key:'MRLN-'+strToB64url(payload)+'.'+bytesToB64url(cc(b2(r,32),b2(s,32))), exp:exp }; }
+    }
+    return { available:available, mintKey:mintKey };
+  })();
+  (function initMint(){
+    if(!MINT.available()) return;                    // not the owner's file → no minting UI
+    var btn=document.getElementById('mintBtn'); if(btn) btn.style.display='';
+    var back=document.getElementById('mintBack');
+    function open(){ if(back) back.classList.add('show'); }
+    function close(){ if(back) back.classList.remove('show'); }
+    if(btn) btn.addEventListener('click', open);
+    var c=document.getElementById('mintClose'); if(c) c.addEventListener('click', close);
+    if(back) back.addEventListener('click', function(e){ if(e.target===back) close(); });
+    var pre=document.getElementById('mintPreset');
+    if(pre) pre.addEventListener('change', function(){ if(!this.value) return; var p=this.value.split('|'); document.getElementById('mintDur').value=p[0]; document.getElementById('mintUnit').value=p[1]; });
+    var go=document.getElementById('mintGo');
+    if(go) go.addEventListener('click', function(){
+      var name=(document.getElementById('mintName').value||'').trim();
+      var dur=parseFloat(document.getElementById('mintDur').value), unit=document.getElementById('mintUnit').value;
+      if(!name){ alert('Enter a member name.'); return; }
+      if(!dur||dur<=0){ alert('Enter a valid duration.'); return; }
+      var mult=unit==='minutes'?60:unit==='hours'?3600:86400;
+      var res=MINT.mintKey(name, dur*mult);
+      if(!res){ alert('Minting unavailable.'); return; }
+      document.getElementById('mintKey').textContent=res.key;
+      var when; try{ when=new Date(res.exp*1000).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(_){ when=''; }
+      document.getElementById('mintMeta').textContent='For '+name+' · '+dur+' '+unit+' · expires '+when;
+      document.getElementById('mintOut').style.display='block';
+      logChange('mint-key', name+' ('+dur+' '+unit+')');
+    });
+    var cp=document.getElementById('mintCopy');
+    if(cp) cp.addEventListener('click', function(){ var t=document.getElementById('mintKey').textContent; if(navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ cp.textContent='Copied ✓'; setTimeout(function(){ cp.textContent='Copy key'; },1400); }); });
+  })();
 
   /* ---------- INITIAL RENDER of all self-service sections ---------- */
   renderProfile();
