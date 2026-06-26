@@ -1121,10 +1121,30 @@
       <div class="desc">Everything you've noted, soonest first.</div>
       <div id="evList"><div class="empty">Nothing planned yet.</div></div>
     </div>
+
+    <div class="card">
+      <h2>Reminders 🔔</h2>
+      <div class="desc">Pick a time and we'll play a sound to remind you — daily, while the HUD is open. <span id="remNote" style="color:var(--amber)"></span></div>
+      <div class="form-row" style="margin-top:6px">
+        <div class="field"><label>Time</label><input id="remTime" type="time"></div>
+        <div class="field"><label>Label</label><input id="remLabel" placeholder="e.g. Log today's spending"></div>
+      </div>
+      <div style="display:flex;gap:8px"><button class="btn" id="remAdd" style="flex:1">+ Add reminder</button><button class="btn ghost" id="remTest">🔊 Test sound</button></div>
+      <div id="remList" style="margin-top:12px"></div>
+    </div>
   </section>
 
   <!-- 13 CHANGE LOG -->
   <section class="panel" id="log">
+    <div class="card">
+      <h2>Time on the HUD ⏱</h2>
+      <div class="desc">How long you've actively spent in here — it only counts while the tab is open and unlocked.</div>
+      <div class="status">
+        <div class="stat avg"><div class="lbl">Total time</div><div class="val" id="usageTotal" style="font-size:20px">—</div></div>
+        <div class="stat low"><div class="lbl">This session</div><div class="val" id="usageSession" style="font-size:20px">—</div></div>
+        <div class="stat high"><div class="lbl">Day streak</div><div class="val" id="usageStreak" style="font-size:20px">—</div></div>
+      </div>
+    </div>
     <div class="card">
       <h2>Change Log <span class="tag now" id="logCount">0</span></h2>
       <div class="desc">An audit trail of every change ever made — add, edit, delete, export. Stored inside this file and carried into every export, so the full history travels with you. (When this becomes the hosted product, the same log lives on a real server.)</div>
@@ -1311,7 +1331,7 @@
   function blankModel(){
     return {
       income:{ low:0, avg:0, high:0 }, loanPayment:0, savingsMatch:0, extraSaveRate:0.30,
-      profile:{ age:'', employer:'', name:'', location:'' },
+      profile:{ age:'', employer:'', name:'', location:'', birthday:'' },
       groups:[
         { id:'g'+uid(), icon:'🏠', name:'Housing',       items:[] },
         { id:'g'+uid(), icon:'🍽️', name:'Food',          items:[] },
@@ -1337,7 +1357,7 @@
       STATE.cfg = MODEL;
     }
     delete STATE.customItems;
-    if(!MODEL.profile) MODEL.profile = { age:'', employer:'', name:'', location:'' };
+    if(!MODEL.profile) MODEL.profile = { age:'', employer:'', name:'', location:'', birthday:'' };
     ensureIds(MODEL);
   })();
 
@@ -1940,6 +1960,7 @@
     MODEL.profile[field] = value;
     logChange('set-profile', field + ' → ' + value);
     renderProfile();
+    if(field==='birthday'){ if(typeof syncBirthday==='function') syncBirthday(); if(typeof checkBirthday==='function') checkBirthday(); }
   }
   function setIncome(key, value){
     if(['low','avg','high'].indexOf(key) < 0) return;
@@ -2404,6 +2425,7 @@
       if(an && /\bage\b|\byears?\b|\bi(?:'m| am)\b/.test(low)) return { op:'setProfile', field:'age', value:an, description:'Set age → '+an };
     }
     if((m = c.match(/^(?:my\s+)?name\s+is\s+(.+)$/i))){ var nn=m[1].trim(); return { op:'setProfile', field:'name', value:nn, description:'Set name → '+nn }; }
+    if(/\bbirth\s?day\b|\bbday\b|\bborn\b/.test(low)){ var dm=c.match(/(\d{4}-\d{2}-\d{2})/); if(dm) return { op:'setProfile', field:'birthday', value:dm[1], description:'Set birthday → '+dm[1] }; }
     if((m = c.match(/\b(?:i\s+(?:live|moved)\s+(?:in|to)|location\s+is|moved\s+to)\s+(.+)$/i))){ var loc=m[1].trim().replace(/[.\s]+$/,''); return { op:'setProfile', field:'location', value:loc, description:'Set location → '+loc }; }
     if(/\bloan\b/.test(low) && /\b(?:payment|repayment|instal)/.test(low)){ var lv=_num(c); if(lv!=null) return { op:'setLoanPayment', value:lv, description:'Set loan payment → '+fmtN(lv)+' kr/mo' }; }
     if(/\bsavings?\s+(?:match|transfer)\b|\bforced\s+(?:savings?|match)\b/.test(low) || /\bsave\b.*\bper\s+month\b/.test(low)){ var sv=_num(c); if(sv!=null) return { op:'setSavingsMatch', value:sv, description:'Set savings match → '+fmtN(sv)+' kr/mo' }; }
@@ -2551,6 +2573,7 @@
       if(oks) oks.textContent = '';
       // 1) blank every data-bearing thing and re-render so NO personal text remains
       MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = [];
+      STATE.reminders = []; STATE.usage = { totalSec:0, streak:0, lastDay:'' }; delete STATE.bdayYear;
       renderAll();
       // 2) mark it a FRESH template (ignores any device's stored data on open),
       //    keep only the language/currency preference, and lock it (no baked key)
@@ -3038,7 +3061,7 @@
 
   /* ---------- BACKUP / IMPORT DATA (private, device-to-device, no upload) ---------- */
   function exportDataCode(){
-    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], prefs:STATE.prefs||{} };
+    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[] };
     return 'MRLNDATA-' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));   // UTF-8 safe (emoji/names)
   }
   function importDataCode(code){
@@ -3050,10 +3073,14 @@
     if(!d || !d.cfg || !d.cfg.groups) throw new Error('Not a valid MRLN data code');
     MODEL = d.cfg; ensureIds(MODEL); STATE.cfg = MODEL;
     STATE.workouts=d.workouts||[]; STATE.calendar=d.calendar||{}; STATE.log=d.log||[]; STATE.body=d.body||{}; STATE.prs=d.prs||[];
+    if(d.reminders) STATE.reminders=d.reminders;
     if(d.prefs) STATE.prefs=Object.assign({}, STATE.prefs, d.prefs);
     STATE.fresh=false; STATE.demo=false;
     if(typeof applyCleanModeClass==='function') applyCleanModeClass();
     if(typeof refreshEverything==='function') refreshEverything(); else { renderAll(); if(typeof refreshFinance==='function') refreshFinance(); }
+    if(typeof syncBirthday==='function') syncBirthday();
+    if(typeof renderReminders==='function') renderReminders();
+    if(typeof renderUsage==='function') renderUsage();
     autosave();
   }
   (function initDataIO(){
@@ -3114,7 +3141,7 @@
       var p=STATE.prefs||{}, m=prefill?MODEL:null;
       return {
         lang:p.lang||'en', currency:p.currency||'DKK', country:p.country||'',
-        name:m?(m.profile.name||''):'', age:m?(m.profile.age||''):'', employer:m?(m.profile.employer||''):'',
+        name:m?(m.profile.name||''):'', age:m?(m.profile.age||''):'', employer:m?(m.profile.employer||''):'', birthday:m?(m.profile.birthday||''):'',
         incomeAvg:m&&m.income.avg?m.income.avg:'', incomeLow:m&&m.income.low?m.income.low:'', incomeHigh:m&&m.income.high?m.income.high:'',
         loan:m&&m.loanPayment?m.loanPayment:'', save:m&&m.savingsMatch?m.savingsMatch:'',
         expenses:m?collectExpenses(m):[]
@@ -3141,7 +3168,8 @@
         h='<h2>About you</h2><p class="wsub">Just a name is enough — the rest is optional.</p>'+
           '<label>Your name</label><input id="wName" value="'+esc(data.name)+'" placeholder="e.g. Alex">'+
           '<div class="wrow"><div><label>Age (optional)</label><input id="wAge" type="number" min="0" max="120" value="'+esc(data.age)+'" placeholder="—"></div>'+
-          '<div><label>Work (optional)</label><input id="wEmp" value="'+esc(data.employer)+'" placeholder="Employer / self"></div></div>';
+          '<div><label>Work (optional)</label><input id="wEmp" value="'+esc(data.employer)+'" placeholder="Employer / self"></div></div>'+
+          '<label>Birthday 🎂 (optional)</label><input id="wBday" type="date" value="'+esc(data.birthday)+'"><div class="wsub" style="margin-top:4px">We\'ll mark it on your calendar and celebrate it with you.</div>';
       } else if(s==='income'){
         h='<h2>Your income</h2><p class="wsub">Your typical <b>monthly take-home</b> (after tax). You can change it anytime.</p>'+
           '<label>Typical monthly income</label><input id="wInc" type="number" min="0" step="1" value="'+esc(data.incomeAvg)+'" placeholder="e.g. 2500">'+
@@ -3211,7 +3239,7 @@
     }
     function collect(s){
       if(s==='welcome'){ data.lang=val('wLang',data.lang); data.currency=val('wCur',data.currency); data.country=val('wCountry',data.country); }
-      else if(s==='profile'){ data.name=val('wName',data.name); data.age=val('wAge',data.age); data.employer=val('wEmp',data.employer); }
+      else if(s==='profile'){ data.name=val('wName',data.name); data.age=val('wAge',data.age); data.employer=val('wEmp',data.employer); data.birthday=val('wBday',data.birthday); }
       else if(s==='income'){ data.incomeAvg=val('wInc',data.incomeAvg); data.incomeLow=val('wIncLow',data.incomeLow); data.incomeHigh=val('wIncHigh',data.incomeHigh); data.loan=val('wLoan',data.loan); data.save=val('wSave',data.save); }
     }
     function val(id,dflt){ var e=document.getElementById(id); return e?e.value:dflt; }
@@ -3223,7 +3251,8 @@
       // language / currency / country
       STATE.prefs.lang=data.lang; STATE.prefs.currency=data.currency; STATE.prefs.country=(data.country||'').trim();
       // profile
-      MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim() };
+      MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim(), birthday:(data.birthday||'').trim() };
+      if(typeof syncBirthday==='function') syncBirthday();   // put 🎂 on the calendar
       // income
       var avg=Number(data.incomeAvg)||0, low=Number(data.incomeLow)||avg, high=Number(data.incomeHigh)||avg;
       MODEL.income={ low:low, avg:avg, high:high };
@@ -3321,6 +3350,7 @@
   })();
   window.__afterUnlock = function(){
     applyCleanModeClass();
+    if(typeof checkBirthday==='function') setTimeout(checkBirthday, 600);   // 🎂 if it's the day
     if(STATE.fresh && !STATE.demo){ WIZ.open(false); return; }
     if(!STATE.tourDone){ setTimeout(function(){ TOUR.start(); }, 500); }
   };
@@ -3474,6 +3504,130 @@
   })();
 
   /* ---------- INITIAL RENDER of all self-service sections ---------- */
+  /* ===================== TIME-ON-SITE · BIRTHDAY · REMINDERS (sound) ===================== */
+  function fmtDur(sec){ sec=Math.max(0,Math.round(sec)); var h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60); if(h>0) return h+'h '+m+'m'; if(m>0) return m+'m'; return sec+'s'; }
+  function dayStr(d){ d=d||new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+  var __sessionSec=0, __usageTick=Date.now();
+  function renderUsage(){
+    STATE.usage = STATE.usage || { totalSec:0, streak:0, lastDay:'' };
+    var t=document.getElementById('usageTotal'); if(t) t.textContent=fmtDur(STATE.usage.totalSec||0);
+    var s=document.getElementById('usageSession'); if(s) s.textContent=fmtDur(__sessionSec);
+    var st=document.getElementById('usageStreak'); if(st){ var n=STATE.usage.streak||0; st.textContent=n+(n===1?' day':' days'); }
+  }
+  function startUsageMonitor(){
+    STATE.usage = STATE.usage || { totalSec:0, streak:0, lastDay:'' };
+    var today=dayStr();
+    if(STATE.usage.lastDay!==today){
+      var y=new Date(); y.setDate(y.getDate()-1);
+      STATE.usage.streak = (STATE.usage.lastDay===dayStr(y)) ? (STATE.usage.streak||0)+1 : 1;
+      STATE.usage.lastDay=today;
+    }
+    __usageTick=Date.now();
+    function tick(){
+      var unlocked=document.getElementById('lockScreen') && document.getElementById('lockScreen').classList.contains('unlocked');
+      var now=Date.now();
+      if(document.visibilityState==='visible' && unlocked){ var dt=(now-__usageTick)/1000; if(dt>0 && dt<120){ __sessionSec+=dt; STATE.usage.totalSec=(STATE.usage.totalSec||0)+dt; } }
+      __usageTick=now; renderUsage();
+    }
+    setInterval(tick, 5000);
+    setInterval(function(){ if(typeof autosave==='function') autosave(); }, 60000);
+    document.addEventListener('visibilitychange', function(){ __usageTick=Date.now(); if(document.visibilityState==='hidden' && typeof autosave==='function') autosave(); });
+    window.addEventListener('beforeunload', function(){ try{ tick(); autosave(); }catch(_){ } });
+    renderUsage();
+  }
+
+  // ---- birthday: mark on calendar + celebrate on the day ----
+  function syncBirthday(){
+    if(!STATE.calendar) STATE.calendar={};
+    Object.keys(STATE.calendar).forEach(function(k){ STATE.calendar[k]=(STATE.calendar[k]||[]).filter(function(e){ return !e.bday; }); if(!STATE.calendar[k].length) delete STATE.calendar[k]; });
+    var bd = MODEL.profile && MODEL.profile.birthday;
+    if(bd && /^\d{4}-\d{2}-\d{2}$/.test(bd)){ STATE.calendar[bd]=STATE.calendar[bd]||[]; STATE.calendar[bd].push({ id:uid(), text:'🎂 Birthday', repeat:'yearly', bday:true }); }
+    if(typeof renderCalendar==='function') renderCalendar();
+    if(typeof renderEvents==='function') renderEvents();
+  }
+  function checkBirthday(){
+    var bd = MODEL.profile && MODEL.profile.birthday; if(!bd || !/^\d{4}-\d{2}-\d{2}$/.test(bd)) return;
+    var p=bd.split('-'), bm=+p[1], bdd=+p[2], by=+p[0], now=new Date();
+    if((now.getMonth()+1)===bm && now.getDate()===bdd){
+      var yr=now.getFullYear(); if(STATE.bdayYear===yr) return;
+      STATE.bdayYear=yr; if(typeof autosave==='function') autosave();
+      showBirthday(by?(yr-by):null);
+    }
+  }
+  function showBirthday(age){
+    if(document.getElementById('bdayPop')) return;
+    var name=(MODEL.profile&&MODEL.profile.name)||'';
+    var d=document.createElement('div'); d.id='bdayPop';
+    d.style.cssText='position:fixed;inset:0;z-index:97000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(3,7,14,.86)';
+    d.innerHTML='<div style="max-width:380px;text-align:center;border:1px solid var(--cyan);border-radius:18px;padding:30px 24px;background:linear-gradient(180deg,rgba(0,229,255,.12),var(--panel2));box-shadow:var(--glow)">'+
+      '<div style="font-size:52px;line-height:1">🎂🎉</div>'+
+      '<div style="font-family:\'Orbitron\';font-weight:800;font-size:23px;color:#eaffff;margin-top:10px">Happy Birthday'+(name?(', '+esc(name)):'')+'!</div>'+
+      (age!=null?'<div style="font-family:\'Orbitron\';font-weight:700;font-size:16px;color:var(--lime);margin-top:10px">⬆ LEVEL UP — you\'re now '+age+'</div>':'<div style="font-size:15px;color:var(--lime);margin-top:10px;font-weight:700">⬆ LEVEL UP!</div>')+
+      '<div style="font-size:14px;color:var(--txt);margin-top:12px">Another year stronger. Here\'s to smart money and big gains this year. 💪</div>'+
+      '<button class="btn" id="bdayClose" style="margin-top:18px;width:100%">🎉 Thanks!</button></div>';
+    document.body.appendChild(d);
+    function close(){ var x=document.getElementById('bdayPop'); if(x) x.remove(); }
+    d.addEventListener('click',function(e){ if(e.target===d) close(); });
+    var c=document.getElementById('bdayClose'); if(c) c.addEventListener('click', close);
+    try{ playChime('birthday'); }catch(_){ }
+  }
+
+  // ---- sound (Web Audio, no file) ----
+  var __ac=null;
+  function audioReady(){ try{ if(!__ac){ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; __ac=new AC(); } if(__ac.state==='suspended') __ac.resume(); return __ac; }catch(_){ return null; } }
+  function playChime(kind){
+    var ac=audioReady(); if(!ac) return;
+    var now=ac.currentTime, notes = kind==='birthday' ? [523.25,659.25,783.99,1046.5] : [880,1174.66,880];
+    notes.forEach(function(f,idx){ var o=ac.createOscillator(), g=ac.createGain(); o.type='sine'; o.frequency.value=f; var t0=now+idx*0.16;
+      g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.22,t0+0.03); g.gain.exponentialRampToValueAtTime(0.0001,t0+0.45);
+      o.connect(g); g.connect(ac.destination); o.start(t0); o.stop(t0+0.5); });
+  }
+
+  // ---- reminders ----
+  function toast(msg){
+    var d=document.createElement('div'); d.style.cssText='position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:98000;max-width:90vw;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--cyan);border-radius:12px;padding:12px 16px;color:#eaffff;font-weight:700;box-shadow:var(--glow);font-size:14px';
+    d.textContent=msg; document.body.appendChild(d); setTimeout(function(){ d.style.transition='opacity .5s'; d.style.opacity='0'; setTimeout(function(){ d.remove(); }, 600); }, 5000);
+  }
+  function renderReminders(){
+    var host=document.getElementById('remList'); if(!host) return;
+    var R=STATE.reminders||[];
+    host.innerHTML = R.length ? R.slice().sort(function(a,b){ return a.time<b.time?-1:1; }).map(function(r){
+      return '<div class="sub-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b style="font-family:\'Share Tech Mono\'">'+esc(r.time)+'</b> · '+esc(r.label||'Reminder')+'</div>'+
+        '<button class="btn ghost" data-delrem="'+r.id+'" style="padding:4px 10px">✕</button></div>';
+    }).join('') : '<div class="empty">No reminders yet.</div>';
+    host.querySelectorAll('[data-delrem]').forEach(function(b){ b.addEventListener('click', function(){ var id=b.getAttribute('data-delrem'); STATE.reminders=(STATE.reminders||[]).filter(function(x){ return x.id!==id; }); autosave(); renderReminders(); }); });
+  }
+  function fireReminder(r){
+    playChime('reminder');
+    toast('🔔 '+(r.label||'Reminder')+'  ·  '+r.time);
+    try{ if(window.Notification && Notification.permission==='granted') new Notification('🔔 '+(r.label||'Reminder'), { body:'It\'s '+r.time }); }catch(_){ }
+    r.lastFired=dayStr(); autosave();
+  }
+  function startReminders(){
+    function check(){
+      var now=new Date(), nm=now.getHours()*60+now.getMinutes(), today=dayStr();
+      (STATE.reminders||[]).forEach(function(r){
+        var p=(r.time||'').split(':'); if(p.length!==2) return; var rm=(+p[0])*60+(+p[1]);
+        if(nm>=rm && nm<rm+2 && r.lastFired!==today) fireReminder(r);
+      });
+    }
+    setInterval(check, 15000); check();
+    var add=document.getElementById('remAdd');
+    if(add) add.addEventListener('click', function(){
+      var t=document.getElementById('remTime').value, lab=(document.getElementById('remLabel').value||'').trim();
+      if(!t){ var n=document.getElementById('remNote'); if(n) n.textContent='Pick a time first.'; return; }
+      audioReady();   // unlock audio on this user gesture
+      try{ if(window.Notification && Notification.permission==='default') Notification.requestPermission(); }catch(_){ }
+      STATE.reminders=STATE.reminders||[]; STATE.reminders.push({ id:uid(), time:t, label:lab, lastFired:'' });
+      document.getElementById('remTime').value=''; document.getElementById('remLabel').value='';
+      var n=document.getElementById('remNote'); if(n) n.textContent='';
+      autosave(); renderReminders();
+    });
+    var test=document.getElementById('remTest');
+    if(test) test.addEventListener('click', function(){ audioReady(); playChime('reminder'); });
+    renderReminders();
+  }
+
   renderProfile();
   renderManage();
   renderWorkouts();
@@ -3487,6 +3641,11 @@
   applyCleanModeClass();   // hide example-only narrative for clean/new users
   if(window.rebuildScenarios) window.rebuildScenarios();
   refreshFinance();   // ensure totals/simulators reflect any loaded user items
+  startUsageMonitor();          // time-on-site counter
+  startReminders();             // sound reminders
+  renderUsage();
+  // celebrate the birthday once it's the day (also re-checked just after unlock)
+  setTimeout(checkBirthday, 800);
 </script>
 </body>
 </html>
