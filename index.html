@@ -4163,7 +4163,8 @@
     document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ var k=el.getAttribute('data-i18n-ph'), tr=dict[k]; el.setAttribute('placeholder', tr!=null?tr:k); });
     document.querySelectorAll('[placeholder]').forEach(function(el){ if(el.hasAttribute('data-i18n-ph')) return; if(el.__ph==null) el.__ph=el.getAttribute('placeholder'); var tr=dict[(el.__ph||'').trim()]; if(tr!=null) el.setAttribute('placeholder',tr); else el.setAttribute('placeholder',el.__ph); });
     document.querySelectorAll('[title]').forEach(function(el){ if(el.__title==null) el.__title=el.getAttribute('title'); var tr=dict[(el.__title||'').trim()]; if(tr!=null) el.setAttribute('title',tr); else el.setAttribute('title',el.__title); });
-    sweepRemnants(lang);   // catch any node still showing a PREVIOUS language and move it to the target
+    sweepRemnants(lang);              // move any PREVIOUS-language text to the target
+    translateForwardAll(lang);        // translate dynamic English the render code produced
     document.documentElement.setAttribute('lang', lang==='nb'?'no':lang);
     if(typeof renderBody==='function' && document.getElementById('calVerdict')) renderBody();   // re-translate live health text
   }
@@ -4202,9 +4203,57 @@
   // Danish note must stay her Danish note.
   (function markUserContent(){
     ['noteList','remList','foodHistory','loanNoteOut','expGroups','customList','subLedger',
-     'logBody','evList','dayNotes','dayMList','hdrSub','foodTodayNote','impPreview','aiSummary']
+     'logBody','evList','dayNotes','dayMList','hdrSub']
      .forEach(function(id){ var el=document.getElementById(id); if(el && el.setAttribute) el.setAttribute('data-i18n-skip',''); });
   })();
+  // ===== FORWARD AUTO-TRANSLATOR =====
+  // Translate dynamic English the render code produces, into the active language —
+  // automatically, without wrapping every literal in t(). Handles number-bearing
+  // lines via templates: "8% of income · 12/28 pts" matches the dictionary key
+  // "#% of income · #/# pts" and the original numbers are re-inserted. Skips
+  // [data-i18n-skip] user content and form fields, so user data is never touched.
+  function _normNum(s){ return s.replace(/\d[\d.,:]*/g, '#'); }
+  function _fwdNode(tn, dict){
+    var cur=tn.nodeValue, key=cur.trim(); if(!key) return;
+    if(dict[key]!=null){ if(dict[key]!==key) tn.nodeValue=cur.replace(key, dict[key]); return; }
+    var nkey=_normNum(key);
+    if(nkey!==key && dict[nkey]!=null){
+      var nums=key.match(/\d[\d.,:]*/g)||[], parts=String(dict[nkey]).split('#');
+      var out=parts[0]; for(var i=1;i<parts.length;i++){ out+=(nums[i-1]!=null?nums[i-1]:'')+parts[i]; }
+      if(out!==key) tn.nodeValue=cur.replace(key, out);
+    }
+  }
+  function translateForwardAll(lang){
+    var dict=I18N[lang]; if(!dict) return;   // base English: nothing to translate forward
+    var w=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode:function(n){
+      var v=n.nodeValue; if(!v||!v.trim()||!/[A-Za-zÀ-ÿ]/.test(v)) return NodeFilter.FILTER_REJECT;
+      var p=n.parentNode; while(p && p.nodeType===1){ var nm=p.nodeName;
+        if(nm==='SCRIPT'||nm==='STYLE'||nm==='TEXTAREA'||nm==='CANVAS'||nm==='INPUT') return NodeFilter.FILTER_REJECT;
+        if(p.getAttribute && p.getAttribute('data-i18n-skip')!=null) return NodeFilter.FILTER_REJECT;
+        p=p.parentNode; }
+      return NodeFilter.FILTER_ACCEPT;
+    }});
+    var arr=[],tn; while((tn=w.nextNode())) arr.push(tn);
+    arr.forEach(function(t){ _fwdNode(t, dict); });
+  }
+  // A MutationObserver re-translates any freshly-rendered dynamic content the moment
+  // it appears, so nothing the render code outputs can stay in English (or a previous
+  // language). It pauses itself while translating to avoid feedback loops.
+  var _i18nObs=null, _i18nObsQueued=false;
+  function _i18nObsRoot(){ return document.getElementById('app') || document.body; }
+  function pauseI18nObs(fn){ if(_i18nObs) _i18nObs.disconnect(); try{ fn(); } finally { if(_i18nObs) _i18nObs.observe(_i18nObsRoot(), {childList:true,subtree:true,characterData:true}); } }
+  function startI18nObserver(){
+    if(_i18nObs || typeof MutationObserver==='undefined') return;
+    _i18nObs=new MutationObserver(function(){
+      if(_i18nObsQueued) return; _i18nObsQueued=true;
+      requestAnimationFrame(function(){
+        _i18nObsQueued=false;
+        var lang=(STATE.prefs&&STATE.prefs.lang)||'en'; if(lang==='en') return;
+        pauseI18nObs(function(){ translateForwardAll(lang); sweepRemnants(lang); });
+      });
+    });
+    _i18nObs.observe(_i18nObsRoot(), {childList:true,subtree:true,characterData:true});
+  }
   // Translate a freshly-rendered subtree (e.g. the setup wizard, which builds its
   // markup on demand AFTER applyLang's one-time capture). Same dictionary, scoped to
   // a root — clean text nodes plus inline-tag prose, no pristine guard needed because
@@ -6027,6 +6076,7 @@
   renderFoodLog();
   renderTaxHelper();
   initLocale();       // language / currency / country — apply saved prefs + wire pickers
+  startI18nObserver();   // auto-translate any dynamic content rendered from here on
   applyCleanModeClass();   // hide example-only narrative for clean/new users
   if(window.rebuildScenarios) window.rebuildScenarios();
   refreshFinance();   // ensure totals/simulators reflect any loaded user items
