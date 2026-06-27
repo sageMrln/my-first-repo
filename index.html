@@ -107,6 +107,11 @@
   .tab.active{color:#04121a;background:linear-gradient(180deg,var(--cyan),#23a7c4);border-color:var(--cyan);box-shadow:var(--glow)}
   .tab.active .ix{color:#04121a}
   .tab:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+  /* ---- drag-to-reorder tabs (mouse + touch via pointer events) ---- */
+  .tab{touch-action:none;cursor:grab}
+  .tab:active{cursor:grabbing}
+  .tab.tab-dragging{opacity:.55;cursor:grabbing;transform:scale(1.05);box-shadow:0 8px 24px rgba(0,229,255,.45);z-index:5}
+  .tabs.tabs-reordering .tab:not(.tab-dragging){transition:transform .14s ease}
 
   /* PANELS */
   .panel{display:none;animation:fade .35s ease}
@@ -1724,6 +1729,95 @@
       window.scrollTo({top:0,behavior:'smooth'});
     });
   });
+
+  /* ---------- DRAG-TO-REORDER TABS (mouse + touch, pointer events) ----------
+     Click-hold-drag a tab to move it. Order persists in STATE and travels with
+     your file. A plain tap still switches tabs (drag only starts past a small
+     threshold), so nothing about normal navigation changes. */
+  (function tabReorder(){
+    var tabsEl = document.getElementById('tabs');
+    if(!tabsEl) return;
+    // renumber the little 01/02… index to match the visible order
+    function renumber(){
+      var n=0;
+      tabsEl.querySelectorAll('.tab').forEach(function(t){
+        if(t.style.display==='none') return;
+        n++; var ix=t.querySelector('.ix'); if(ix) ix.textContent=(n<10?'0':'')+n;
+      });
+    }
+    // apply a saved order (data-p list); unknown/new tabs keep their relative spot
+    function applyOrder(){
+      var ord = STATE && Array.isArray(STATE.tabOrder) ? STATE.tabOrder : null;
+      if(ord && ord.length){
+        ord.forEach(function(p){
+          var el = tabsEl.querySelector('.tab[data-p="'+p+'"]');
+          if(el) tabsEl.appendChild(el);                 // append in saved order
+        });
+        // any tab not listed (new build) is already after, in source order
+      }
+      renumber();
+    }
+    function persist(){
+      if(!STATE) return;
+      STATE.tabOrder = [].slice.call(tabsEl.querySelectorAll('.tab')).map(function(t){ return t.getAttribute('data-p'); });
+      if(typeof autosave==='function') autosave();
+      if(typeof logChange==='function') logChange('reorder-tabs','Reordered the tab menu');
+    }
+
+    var THRESH=7;                 // px before a press becomes a drag (so taps still click)
+    var dragging=null, startX=0, startY=0, pid=null, moved=false, justDragged=false;
+
+    function onDown(e){
+      if(e.button!=null && e.button!==0) return;          // left mouse / touch only
+      var tab = e.target.closest && e.target.closest('.tab');
+      if(!tab || tab.parentNode!==tabsEl) return;
+      dragging=tab; startX=e.clientX; startY=e.clientY; pid=e.pointerId; moved=false;
+      document.addEventListener('pointermove', onMove, true);
+      document.addEventListener('pointerup', onUp, true);
+      document.addEventListener('pointercancel', onUp, true);
+    }
+    function beginDrag(){
+      moved=true;
+      tabsEl.classList.add('tabs-reordering');
+      dragging.classList.add('tab-dragging');
+      dragging.style.pointerEvents='none';               // so elementFromPoint sees the tab beneath
+      try{ dragging.setPointerCapture(pid); }catch(_){}
+    }
+    function onMove(e){
+      if(!dragging) return;
+      if(!moved){
+        if(Math.abs(e.clientX-startX) < THRESH && Math.abs(e.clientY-startY) < THRESH) return;
+        beginDrag();
+      }
+      e.preventDefault();
+      var el = document.elementFromPoint(e.clientX, e.clientY);
+      var over = el && el.closest ? el.closest('.tab') : null;
+      if(!over || over===dragging || over.parentNode!==tabsEl || over.style.display==='none') return;
+      var box = over.getBoundingClientRect();
+      var before = e.clientX < (box.left + box.width/2);
+      if(before){ if(over.previousSibling!==dragging) tabsEl.insertBefore(dragging, over); }
+      else { if(over.nextSibling!==dragging) tabsEl.insertBefore(dragging, over.nextSibling); }
+    }
+    function onUp(e){
+      document.removeEventListener('pointermove', onMove, true);
+      document.removeEventListener('pointerup', onUp, true);
+      document.removeEventListener('pointercancel', onUp, true);
+      if(!dragging) return;
+      var wasDrag = moved;
+      try{ dragging.releasePointerCapture(pid); }catch(_){}
+      dragging.classList.remove('tab-dragging');
+      dragging.style.pointerEvents='';
+      tabsEl.classList.remove('tabs-reordering');
+      dragging=null; pid=null;
+      if(wasDrag){ justDragged=true; renumber(); persist(); setTimeout(function(){ justDragged=false; }, 0); }
+    }
+    // a real drag must NOT also fire the tab's click (which would switch panels)
+    tabsEl.addEventListener('click', function(e){ if(justDragged){ e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+
+    tabsEl.addEventListener('pointerdown', onDown, true);
+    window.__applyTabOrder = applyOrder;                  // re-applied after owner tabs (Klarna) reveal
+    applyOrder();
+  })();
 
   /* ---------- RENDER EXPENSES FROM MODEL (+ user items) ---------- */
   function renderExpenses(){
@@ -4222,7 +4316,7 @@
     raw.showKlarna = true;          // bring the Klarna Float tab across too
     applyImportedData(raw);
   }
-  function revealKlarnaIfEnabled(){ if(STATE && STATE.showKlarna){ var klt=document.querySelector('#tabs .tab[data-p="klarna"]'); if(klt) klt.style.display=''; } }
+  function revealKlarnaIfEnabled(){ if(STATE && STATE.showKlarna){ var klt=document.querySelector('#tabs .tab[data-p="klarna"]'); if(klt) klt.style.display=''; if(window.__applyTabOrder) window.__applyTabOrder(); } }
   (function initDataIO(){
     var open=document.getElementById('dataBtn');   // savebar "Backup / Import" → Connect tab
     function gotoConnect(){ if(typeof renderDeviceTip==='function') renderDeviceTip(); var t=document.querySelector('#tabs .tab[data-p="connect"]'); if(t) t.click(); }
@@ -5560,6 +5654,7 @@
     if(!MINT.available()) return;                    // not the owner's file → no minting UI
     var btn=document.getElementById('mintBtn'); if(btn) btn.style.display='';
     var klt=document.querySelector('#tabs .tab[data-p="klarna"]'); if(klt) klt.style.display='';   // Klarna is a master-only tab
+    if(window.__applyTabOrder) window.__applyTabOrder();
     var back=document.getElementById('mintBack');
     function open(){ if(back) back.classList.add('show'); }
     function close(){ if(back) back.classList.remove('show'); }
