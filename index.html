@@ -2680,7 +2680,14 @@
     {n:'Black bean & rice burrito bowl',goals:['maintain','bulk'],kcal:580,p:24,c:84,f:16,tags:['beans','rice','mexican','vegan','vegetarian'],ing:['150g black beans','150g rice','corn, peppers','salsa, guacamole','lime']},
     {n:'Mackerel on rye with cottage cheese',goals:['cut','maintain'],kcal:430,p:34,c:28,f:22,tags:['mackerel','fish','omega 3','rye','breakfast'],ing:['1 mackerel fillet','2 slices rye bread','100g cottage cheese','cucumber, dill']},
     {n:'Pork tenderloin, potatoes & green beans',goals:['maintain','bulk'],kcal:600,p:46,c:48,f:22,tags:['pork','potato','high protein'],ing:['180g pork tenderloin','250g potatoes','green beans','1 tbsp olive oil','rosemary']},
-    {n:'Vegetable & paneer curry',goals:['maintain','bulk'],kcal:560,p:28,c:44,f:30,tags:['paneer','vegetarian','indian','curry','vegetables'],ing:['150g paneer','mixed veg','tomato-onion masala','100g rice','spices']}
+    {n:'Vegetable & paneer curry',goals:['maintain','bulk'],kcal:560,p:28,c:44,f:30,tags:['paneer','vegetarian','indian','curry','vegetables'],ing:['150g paneer','mixed veg','tomato-onion masala','100g rice','spices']},
+    {n:'Chicken pesto pasta',goals:['maintain','bulk'],kcal:620,p:45,c:65,f:18,tags:['chicken','pasta','pesto','italian'],ing:['160g chicken breast','120g pasta (dry)','2 tbsp pesto','cherry tomatoes','parmesan']},
+    {n:'Spaghetti bolognese (lean beef)',goals:['maintain','bulk'],kcal:650,p:42,c:72,f:20,tags:['beef','pasta','spaghetti','italian','tomato','mince'],ing:['170g lean beef mince','120g spaghetti (dry)','chopped tomatoes','onion, garlic, herbs','parmesan']},
+    {n:'High-protein mac & cheese',goals:['bulk','maintain'],kcal:680,p:46,c:66,f:24,tags:['pasta','cheese','macaroni','vegetarian','italian'],ing:['120g macaroni (dry)','60g reduced-fat cheddar','100g low-fat Greek yogurt','1 scoop unflavoured whey','mustard, pepper']},
+    {n:'Prawn & tomato linguine',goals:['cut','maintain'],kcal:520,p:38,c:62,f:12,tags:['prawn','shrimp','pasta','linguine','seafood','italian','tomato'],ing:['180g prawns','100g linguine (dry)','tomato passata','garlic, chilli, basil','1 tsp olive oil']},
+    {n:'Chicken Alfredo pasta',goals:['bulk'],kcal:780,p:48,c:70,f:32,tags:['chicken','pasta','alfredo','creamy','italian'],ing:['180g chicken breast','120g fettuccine (dry)','light cream / milk','garlic, parmesan','black pepper']},
+    {n:'Cottage cheese protein pasta bake',goals:['cut','maintain'],kcal:480,p:44,c:52,f:10,tags:['pasta','cottage cheese','high protein','vegetarian','italian','tomato'],ing:['100g pasta (dry)','250g low-fat cottage cheese','tomato sauce','spinach','30g mozzarella']},
+    {n:'Turkey meatball marinara with penne',goals:['maintain','bulk'],kcal:600,p:46,c:64,f:16,tags:['turkey','pasta','penne','meatballs','italian','tomato'],ing:['180g turkey mince (meatballs)','110g penne (dry)','marinara sauce','garlic, herbs','parmesan']}
   ];
   function splitTerms(s){ return (s||'').toLowerCase().split(/[,\n;]+/).map(function(x){ return x.trim(); }).filter(Boolean); }
   function mealMatchesText(m,term){ if(m.n.toLowerCase().indexOf(term)>=0) return true; return m.tags.some(function(t){ return t.indexOf(term)>=0 || term.indexOf(t)>=0; }); }
@@ -2773,11 +2780,25 @@
     // primary: what you like · secondary: what best fits your body
     pool.sort(function(a,b){ return (b._score-a._score) || (b._fit-a._fit); });
     if(!pool.length){ host.innerHTML='<div class="empty">No meals fit those filters — try removing a dislike, then Suggest again.</div>'; if(hint) hint.style.display='none'; return; }
-    var PAGE=5, pages=Math.ceil(pool.length/PAGE), canRotate=pages>1;
-    if(!canRotate) mealOffset=0;
-    var page=((mealOffset%pages)+pages)%pages, start=page*PAGE, end=Math.min(start+PAGE,pool.length);
-    var picks=pool.slice(start,end);
-    if(advance && canRotate) mealOffset++;
+    var PAGE=5;
+    // meals that match your likes are PINNED on top of every page so they never rotate away;
+    // only the remaining "filler" slots cycle when you press Suggest again.
+    var liked=pool.filter(function(m){ return m._score>0; });
+    var rest =pool.filter(function(m){ return m._score===0; });
+    var pinned=liked.slice(0,PAGE), fillSlots=Math.max(0,PAGE-pinned.length), picks, canRotate=false;
+    if(fillSlots>0 && rest.length>0){
+      var rpages=Math.ceil(rest.length/fillSlots); canRotate=rpages>1;
+      if(!canRotate) mealOffset=0;
+      var rp=((mealOffset%rpages)+rpages)%rpages;
+      picks=pinned.concat(rest.slice(rp*fillSlots, rp*fillSlots+fillSlots));
+      if(advance && canRotate) mealOffset++;
+    } else {
+      var base=pinned.length?liked:rest, bpages=Math.max(1,Math.ceil(base.length/PAGE)); canRotate=bpages>1;
+      if(!canRotate) mealOffset=0;
+      var bp=((mealOffset%bpages)+bpages)%bpages;
+      picks=base.slice(bp*PAGE, bp*PAGE+PAGE);
+      if(advance && canRotate) mealOffset++;
+    }
     _mealView=picks;
     var goalNote = goal==='cut'?'higher-protein, lower-calorie picks to lose fat':goal==='bulk'?'calorie- and carb-dense picks to gain':'balanced picks to hold steady';
     var head = T ? ('Ranked for <b>'+physLabel(T.phys)+'</b> — '+goalNote+(likes.length?', weighted to what you like':'')+'. Portions scaled to you; tap a meal for full nutrition.')
@@ -2793,7 +2814,7 @@
           '<span class="btn ghost" style="padding:5px 10px;font-size:12px;white-space:nowrap;pointer-events:none">Details ›</span></div>';
       }).join('');
     if(hint) hint.style.display = canRotate ? 'block' : 'none';
-    if(hint && canRotate) hint.innerHTML='Showing '+(start+1)+'–'+end+' of '+pool.length+' matches — press <b>Suggest</b> again for more, or <b>Clear</b> to start over.';
+    if(hint && canRotate) hint.innerHTML=(liked.length?'Your <b>'+liked.length+' match'+(liked.length>1?'es stay':' stays')+' pinned</b> on top — ':'')+'press <b>Suggest</b> again for more ideas, or <b>Clear</b> to start over.';
   }
   // ---- the per-meal nutrition window ----
   function whyThisFits(m,T){
