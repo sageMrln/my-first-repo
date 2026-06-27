@@ -571,6 +571,42 @@
       <label class="btn ghost" style="flex:1;text-align:center;cursor:pointer;margin:0">Pick a file<input type="file" id="dataImportFile" accept=".txt,.json" style="display:none"></label>
     </div>
     <div id="dataMsg" class="note" style="display:none;margin-top:10px"></div>
+
+    <details style="margin-top:18px"><summary style="cursor:pointer;font-size:14px;font-family:Orbitron;color:#eaffff">3 · Import from another app 📥</summary>
+      <div class="desc" style="font-size:12.5px;margin-top:8px">Pick a file your other apps export. We read it <b>on your device</b> — nothing is uploaded.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">🏦 Bank / card statement (CSV) → income &amp; expenses<input type="file" id="impBank" accept=".csv,.txt" style="display:none"></label>
+        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">📅 Calendar (.ics) → your calendar<input type="file" id="impIcs" accept=".ics,.txt" style="display:none"></label>
+        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">⚖️ Weight (Apple Health / CSV) → body stats<input type="file" id="impWeight" accept=".csv,.txt" style="display:none"></label>
+        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">🍽️ Food (MyFitnessPal CSV) → food log<input type="file" id="impFood" accept=".csv,.txt" style="display:none"></label>
+      </div>
+      <div id="impMsg" class="note" style="display:none;margin-top:10px"></div>
+      <div id="impPreview" style="margin-top:10px"></div>
+    </details>
+
+    <details style="margin-top:14px"><summary style="cursor:pointer;font-size:14px;font-family:Orbitron;color:#eaffff">4 · Export to other apps 📤</summary>
+      <div class="desc" style="font-size:12.5px;margin-top:8px">Send your data out as standard files other apps can open.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+        <button class="btn ghost" id="expIcs" style="flex:1;min-width:140px">📅 Calendar .ics</button>
+        <button class="btn ghost" id="expExpenses" style="flex:1;min-width:140px">💸 Expenses CSV</button>
+        <button class="btn ghost" id="expFood" style="flex:1;min-width:140px">🍽️ Food log CSV</button>
+        <button class="btn ghost" id="expShare" style="flex:1;min-width:140px">🔗 Share…</button>
+      </div>
+    </details>
+
+    <details style="margin-top:14px"><summary style="cursor:pointer;font-size:14px;font-family:Orbitron;color:#eaffff">5 · QR transfer 📱</summary>
+      <div class="desc" style="font-size:12.5px;margin-top:8px">Show a QR and scan it with another phone's <b>camera</b> — no typing. Best for short things (your access key, File ID, a link).</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+        <button class="btn ghost" id="qrKey" style="flex:1;min-width:120px">🔑 My access key</button>
+        <button class="btn ghost" id="qrLink" style="flex:1;min-width:120px">🌐 My link</button>
+        <button class="btn ghost" id="qrData" style="flex:1;min-width:120px">🗂️ My data</button>
+      </div>
+      <div id="qrWrap" style="display:none;flex-direction:column;align-items:center;margin-top:12px">
+        <canvas id="qrCanvas" style="background:#fff;border-radius:10px;max-width:100%"></canvas>
+        <div id="qrCaption" class="note" style="margin-top:8px;text-align:center"></div>
+      </div>
+    </details>
+
     <div class="modal-actions"><button class="mcancel" id="dataClose">Close</button></div>
   </div>
 </div>
@@ -1046,6 +1082,8 @@
         <div class="field"><label>Height (cm)</label><input id="bHeight" type="number" min="100" max="230" placeholder="cm"></div>
         <div class="field"><label>Weight (kg)</label><input id="bWeight" type="number" min="30" max="300" step="0.1" placeholder="kg"></div>
       </div>
+      <button class="btn ghost" id="bScale" style="font-size:12px;padding:7px 12px">📶 Connect a Bluetooth scale</button>
+      <div id="bScaleMsg" class="note" style="display:none;margin-top:6px"></div>
       <div class="form-row">
         <div class="field"><label>Body fat % <span style="color:var(--txt-dim)">(optional)</span></label><input id="bFat" type="number" min="3" max="60" step="0.1" placeholder="%"></div>
         <div class="field"><label>Muscle % <span style="color:var(--txt-dim)">(optional)</span></label><input id="bMuscle" type="number" min="10" max="60" step="0.1" placeholder="%"></div>
@@ -2648,6 +2686,19 @@
         var mo=document.getElementById('mealOut'); if(mo && mo.innerHTML.trim() && typeof renderMeals==='function') renderMeals(false);
       });
     });
+    var bScale=document.getElementById('bScale');
+    if(bScale) bScale.addEventListener('click', function(){
+      var msg=document.getElementById('bScaleMsg'); function say(t,ok){ if(msg){ msg.style.display='block'; msg.style.color=ok?'var(--lime)':'var(--amber)'; msg.innerHTML=t; } }
+      if(!navigator.bluetooth){ say('Bluetooth isn\'t available here. It needs Chrome/Edge on Android or desktop, on the <b>hosted</b> site (not a downloaded file).',false); return; }
+      say('Opening Bluetooth… pick your scale.',true);
+      navigator.bluetooth.requestDevice({ filters:[{services:['weight_scale']}], optionalServices:['weight_scale'] })
+        .then(function(dev){ return dev.gatt.connect(); })
+        .then(function(server){ return server.getPrimaryService('weight_scale'); })
+        .then(function(svc){ return svc.getCharacteristic('weight_measurement'); })
+        .then(function(ch){ return ch.startNotifications(); })
+        .then(function(ch){ say('Connected — step on the scale…',true); ch.addEventListener('characteristicvaluechanged', function(ev){ var w=parseBLEWeight(ev.target.value); if(w&&w>0){ STATE.body=STATE.body||{}; STATE.body.weight=w; var be=document.getElementById('bWeight'); if(be) be.value=w; logChange('scale',w+' kg'); autosave(); if(typeof renderBody==='function') renderBody(); say('✓ Read <b>'+w+' kg</b> from your scale.',true); } }); })
+        .catch(function(e){ say('Couldn\'t connect: '+esc(e.message||'cancelled')+'. Some scales use a vendor app instead of the standard Bluetooth profile.',false); });
+    });
     var sl=document.getElementById('calSlider');
     if(sl) sl.addEventListener('input', function(){ sl.dataset.touched='1'; calSim(); });
     var bsim=document.getElementById('bodySim');
@@ -3995,6 +4046,48 @@
     if(imp) imp.addEventListener('click', function(){ var t=document.getElementById('dataImportText').value; if(!t.trim()){ msg('Paste a code first (or pick a file).',false); return; } doImport(t); });
     var f=document.getElementById('dataImportFile');
     if(f) f.addEventListener('change', function(){ var file=f.files&&f.files[0]; if(!file) return; var rd=new FileReader(); rd.onload=function(){ doImport(String(rd.result||'')); }; rd.readAsText(file); });
+
+    /* ---- Connect: import from other apps ---- */
+    function readFile(input, cb){ var file=input.files&&input.files[0]; if(!file) return; var rd=new FileReader(); rd.onload=function(){ cb(String(rd.result||'')); input.value=''; }; rd.onerror=function(){ impMsg('Could not read that file.',false); }; rd.readAsText(file); }
+    function impMsg(t,ok){ var m=document.getElementById('impMsg'); if(m){ m.style.display='block'; m.style.color=ok?'var(--lime)':'var(--amber)'; m.innerHTML=t; } }
+    var ib=document.getElementById('impBank');
+    if(ib) ib.addEventListener('change', function(){ readFile(ib, function(txt){
+      var res=importBankCSV(txt); var prev=document.getElementById('impPreview');
+      if(!res.ok){ impMsg('✗ '+esc(res.err),false); if(prev) prev.innerHTML=''; return; }
+      impMsg('Read <b>'+res.count+'</b> transactions over <b>'+res.months+'</b> month(s).',true);
+      if(prev){ prev.innerHTML='<div class="note" style="font-size:12.5px">Avg income ≈ <b>'+fmtN(res.incomeMonthly)+'</b>/mo · avg expenses ≈ <b>'+fmtN(res.expenseMonthly)+'</b>/mo'+
+        '<div style="margin-top:6px">'+res.cats.slice(0,6).map(function(c){ return esc(c.cat)+': '+fmtN(c.monthly)+'/mo'; }).join(' · ')+'</div></div>'+
+        '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="impBankApplyAll" style="flex:1">Set income + add expenses</button><button class="btn ghost" id="impBankApplyExp" style="flex:1">Add expenses only</button></div>';
+        document.getElementById('impBankApplyAll').addEventListener('click', function(){ uiConfirm({title:'Apply bank import?',message:'This sets your monthly income and adds the imported expense categories (replacing the current expense list).',confirmText:'Apply',danger:false},function(){ applyBankImport(res,{income:true,expenses:true}); impMsg('✓ Applied to your income &amp; expenses.',true); prev.innerHTML=''; }); });
+        document.getElementById('impBankApplyExp').addEventListener('click', function(){ uiConfirm({title:'Add expenses?',message:'Adds the imported expense categories (replacing the current expense list). Income is left unchanged.',confirmText:'Add',danger:false},function(){ applyBankImport(res,{income:false,expenses:true}); impMsg('✓ Expenses added.',true); prev.innerHTML=''; }); });
+      }
+    }); });
+    var ii=document.getElementById('impIcs');
+    if(ii) ii.addEventListener('change', function(){ readFile(ii, function(txt){ var ev=importICS(txt); if(!ev.length){ impMsg('No calendar events found in that file.',false); return; } uiConfirm({title:'Import '+ev.length+' event(s)?',message:'Adds these calendar events to your existing calendar.',confirmText:'Import',danger:false},function(){ var n=applyICS(ev); impMsg('✓ Added <b>'+n+'</b> event(s) to your calendar.',true); }); }); });
+    var iw=document.getElementById('impWeight');
+    if(iw) iw.addEventListener('change', function(){ readFile(iw, function(txt){ var w=importWeightCSV(txt); if(!w){ impMsg('Couldn\'t find a weight column in that file.',false); return; } STATE.body=STATE.body||{}; STATE.body.weight=w.weight; logChange('import-weight',w.weight+' kg'); autosave(); if(typeof renderBody==='function') renderBody(); var be=document.getElementById('bWeight'); if(be) be.value=w.weight; impMsg('✓ Set your weight to <b>'+w.weight+' kg</b>'+(w.date?(' (from '+esc(w.date)+')'):'')+'.',true); }); });
+    var ifd=document.getElementById('impFood');
+    if(ifd) ifd.addEventListener('change', function(){ readFile(ifd, function(txt){ var meals=importMFPFood(txt); if(!meals.length){ impMsg('No food rows with calories found in that file.',false); return; } uiConfirm({title:'Import '+meals.length+' meal(s)?',message:'Adds these to your Food Log.',confirmText:'Import',danger:false},function(){ STATE.foodLog=STATE.foodLog||[]; meals.forEach(function(m){ STATE.foodLog.unshift(m); }); logChange('import-food',meals.length+' meal(s)'); autosave(); if(typeof renderFoodLog==='function') renderFoodLog(); impMsg('✓ Added <b>'+meals.length+'</b> meal(s) to your Food Log.',true); }); }); });
+
+    /* ---- Connect: export ---- */
+    var ei=document.getElementById('expIcs'); if(ei) ei.addEventListener('click', function(){ dl('mrln-calendar.ics', exportICS(), 'text/calendar'); });
+    var ee=document.getElementById('expExpenses'); if(ee) ee.addEventListener('click', function(){ dl('mrln-expenses.csv', exportExpensesCSV(), 'text/csv'); });
+    var ef=document.getElementById('expFood'); if(ef) ef.addEventListener('click', function(){ dl('mrln-food.csv', exportFoodCSV(), 'text/csv'); });
+    var es=document.getElementById('expShare'); if(es) es.addEventListener('click', function(){
+      var payload='My MRLN finance dashboard'; var url=(location.origin+location.pathname);
+      if(navigator.share){ navigator.share({ title:'MRLN', text:payload, url:url }).catch(function(){}); }
+      else { var t=url; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){ es.textContent='Link copied ✓'; setTimeout(function(){ es.textContent='🔗 Share…'; },1500); }).catch(function(){}); } else { dl('mrln-link.txt', t, 'text/plain'); } }
+    });
+
+    /* ---- Connect: QR ---- */
+    function showQR(text, caption){
+      var wrap=document.getElementById('qrWrap'), cv=document.getElementById('qrCanvas'), cap=document.getElementById('qrCaption');
+      if(!qrToCanvas(text, cv, 5)){ if(cap) cap.innerHTML='⚠️ Too much data for a single QR — use the data code or file instead.'; wrap.style.display='flex'; cv.width=0; return; }
+      wrap.style.display='flex'; if(cap) cap.innerHTML=caption||'Scan with another phone\'s camera.';
+    }
+    var qk=document.getElementById('qrKey'); if(qk) qk.addEventListener('click', function(){ var k=null; try{ k=localStorage.getItem('mrln_access_key'); }catch(_){ } if(!k){ document.getElementById('qrWrap').style.display='flex'; document.getElementById('qrCaption').innerHTML='No access key stored on this device.'; document.getElementById('qrCanvas').width=0; return; } showQR(k,'Scan to copy your <b>access key</b> to another phone, then paste it on the unlock screen.'); });
+    var ql=document.getElementById('qrLink'); if(ql) ql.addEventListener('click', function(){ var u=location.origin+location.pathname+(STATE.fid?('#'+STATE.fid):''); showQR(u,'Scan to open your dashboard link'+(STATE.fid?' (File ID '+esc(STATE.fid)+')':'')+'.'); });
+    var qd=document.getElementById('qrData'); if(qd) qd.addEventListener('click', function(){ var code=exportDataCode(); showQR(code, 'Scan to copy your <b>full data</b> to another device, then paste into Import. (Only works if it fits — large data with photos may not.)'); });
   })();
   function resetAll(){
     uiConfirm({ title:'⚠️ Start completely fresh?',
@@ -4261,6 +4354,187 @@
     return { render:function(){ renderForm(); recompute(); } };
   })();
   function renderTaxHelper(){ if(TAXUI) TAXUI.render(); }
+
+  /* ===================== QR ENCODER (offline, byte-mode, verified vs jsQR) ===================== */
+  var qrMatrix=(function(){
+    var EXP=new Array(512), LOG=new Array(256);
+    (function(){ var x=1; for(var i=0;i<255;i++){ EXP[i]=x; LOG[x]=i; x<<=1; if(x&0x100) x^=0x11d; } for(var j=255;j<512;j++) EXP[j]=EXP[j-255]; })();
+    function gmul(a,b){ if(a===0||b===0) return 0; return EXP[LOG[a]+LOG[b]]; }
+    function rsGen(n){ var g=[1]; for(var i=0;i<n;i++){ var ng=new Array(g.length+1); for(var j=0;j<ng.length;j++) ng[j]=0; for(var j=0;j<g.length;j++){ ng[j]^=g[j]; ng[j+1]^=gmul(g[j],EXP[i]); } g=ng; } return g; }
+    function rsEnc(data,n){ var g=rsGen(n), res=data.slice().concat(new Array(n).fill(0)); for(var i=0;i<data.length;i++){ var c=res[i]; if(c!==0){ for(var j=0;j<g.length;j++) res[i+j]^=gmul(g[j],c); } } return res.slice(data.length); }
+    var ECL=[null,[7,[[1,19]]],[10,[[1,34]]],[15,[[1,55]]],[20,[[1,80]]],[26,[[1,108]]],[18,[[2,68]]],[20,[[2,78]]],[24,[[2,97]]],[30,[[2,116]]],[18,[[2,68],[2,69]]]];
+    var ALIGN=[null,[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50]];
+    function capacity(v){ var e=ECL[v], d=0; e[1].forEach(function(b){ d+=b[0]*b[1]; }); return d; }
+    function bytesOf(str){ var out=[],i,c; for(i=0;i<str.length;i++){ c=str.charCodeAt(i); if(c<128) out.push(c); else if(c<2048){ out.push(192|(c>>6)); out.push(128|(c&63)); } else { out.push(224|(c>>12)); out.push(128|((c>>6)&63)); out.push(128|(c&63)); } } return out; }
+    function chooseVersion(nb){ for(var v=1;v<=10;v++){ var cc=(v<10)?8:16, need=Math.ceil((4+cc+nb*8)/8); if(need<=capacity(v)) return v; } return -1; }
+    function encodeData(bytes,v){ var cap=capacity(v), cc=(v<10)?8:16, bits=[];
+      function push(val,len){ for(var i=len-1;i>=0;i--) bits.push((val>>i)&1); }
+      push(4,4); push(bytes.length,cc); for(var i=0;i<bytes.length;i++) push(bytes[i],8);
+      var rem=cap*8-bits.length; push(0,Math.min(4,Math.max(0,rem))); while(bits.length%8) bits.push(0);
+      var cw=[]; for(var i=0;i<bits.length;i+=8){ var b=0; for(var j=0;j<8;j++) b=(b<<1)|bits[i+j]; cw.push(b); }
+      var pad=[0xEC,0x11], p=0; while(cw.length<cap){ cw.push(pad[p%2]); p++; } return cw; }
+    function interleave(cw,v){ var ec=ECL[v], ecn=ec[0], blocks=[], idx=0;
+      ec[1].forEach(function(grp){ for(var b=0;b<grp[0];b++){ var data=cw.slice(idx,idx+grp[1]); idx+=grp[1]; blocks.push({data:data,ecc:rsEnc(data,ecn)}); } });
+      var maxD=0; blocks.forEach(function(b){ maxD=Math.max(maxD,b.data.length); }); var out=[];
+      for(var i=0;i<maxD;i++) blocks.forEach(function(b){ if(i<b.data.length) out.push(b.data[i]); });
+      for(var i=0;i<ecn;i++) blocks.forEach(function(b){ out.push(b.ecc[i]); }); return out; }
+    function makeMatrix(fc,v){ var size=17+v*4, m=[], used=[];
+      for(var r=0;r<size;r++){ m.push(new Array(size).fill(0)); used.push(new Array(size).fill(false)); }
+      function setF(r,c,val){ m[r][c]=val?1:0; used[r][c]=true; }
+      function finder(r,c){ for(var i=-1;i<=7;i++) for(var j=-1;j<=7;j++){ var rr=r+i,cc=c+j; if(rr<0||rr>=size||cc<0||cc>=size) continue; var on=(i>=0&&i<=6&&(j===0||j===6))||(j>=0&&j<=6&&(i===0||i===6))||(i>=2&&i<=4&&j>=2&&j<=4); setF(rr,cc,on?1:0); } }
+      finder(0,0); finder(0,size-7); finder(size-7,0);
+      for(var i=8;i<size-8;i++){ if(!used[6][i]) setF(6,i,(i%2===0)?1:0); if(!used[i][6]) setF(i,6,(i%2===0)?1:0); }
+      var ap=ALIGN[v], lastA=ap.length?ap[ap.length-1]:0;
+      for(var a=0;a<ap.length;a++) for(var b=0;b<ap.length;b++){ var r=ap[a],c=ap[b];
+        if((r===6&&c===6)||(r===6&&c===lastA)||(r===lastA&&c===6)) continue;
+        for(var i=-2;i<=2;i++) for(var j=-2;j<=2;j++){ var on=(Math.max(Math.abs(i),Math.abs(j))!==1); setF(r+i,c+j,on?1:0); } }
+      setF(size-8,8,1);
+      (function reserveFmt(){ for(var i=0;i<=8;i++){ if(!used[8][i]) used[8][i]=true; if(!used[i][8]) used[i][8]=true; } for(var i=0;i<8;i++){ if(!used[8][size-1-i]) used[8][size-1-i]=true; if(!used[size-1-i][8]) used[size-1-i][8]=true; } })();
+      if(v>=7){ var vi=(function(){ var d=v<<12,g=0x1F25,rem=d; for(var i=17;i>=12;i--){ if((rem>>i)&1) rem^=g<<(i-12); } return (v<<12)|(rem&0xFFF); })();
+        for(var mm=0;mm<18;mm++){ var bit=(vi>>mm)&1, rr=Math.floor(mm/3), cc=mm%3; setF(rr,size-11+cc,bit); setF(size-11+cc,rr,bit); } }
+      var bitIdx=0, dirUp=true;
+      for(var col=size-1; col>0; col-=2){ if(col===6) col--; for(var rowi=0; rowi<size; rowi++){ var row=dirUp?(size-1-rowi):rowi; for(var c2=0;c2<2;c2++){ var cc=col-c2; if(used[row][cc]) continue; var bit=0; if(bitIdx<fc.length*8){ var byteI=bitIdx>>3, bitI=7-(bitIdx&7); bit=(fc[byteI]>>bitI)&1; } m[row][cc]=bit; bitIdx++; } } dirUp=!dirUp; }
+      return {m:m,used:used,size:size}; }
+    function maskFn(k){ return [function(r,c){return (r+c)%2===0;},function(r,c){return r%2===0;},function(r,c){return c%3===0;},function(r,c){return (r+c)%3===0;},function(r,c){return (Math.floor(r/2)+Math.floor(c/3))%2===0;},function(r,c){return (r*c)%2+(r*c)%3===0;},function(r,c){return ((r*c)%2+(r*c)%3)%2===0;},function(r,c){return ((r+c)%2+(r*c)%3)%2===0;}][k]; }
+    function applyMask(mat,k){ var m=mat.m,used=mat.used,size=mat.size,f=maskFn(k),out=[]; for(var r=0;r<size;r++){ out.push(m[r].slice()); for(var c=0;c<size;c++){ if(!used[r][c]&&f(r,c)) out[r][c]^=1; } } return out; }
+    function fmtBits(ecb,mask){ var data=(ecb<<3)|mask, g=0x537, d=data<<10; for(var i=14;i>=10;i--){ if((d>>i)&1) d^=g<<(i-10); } return ((data<<10)|(d&0x3FF))^0x5412; }
+    function placeFormat(out,size,fmt){ var p1=[[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]]; var p2=[]; for(var i=0;i<7;i++) p2.push([size-1-i,8]); for(var i=0;i<8;i++) p2.push([8,size-8+i]); for(var i=0;i<15;i++){ var bit=(fmt>>(14-i))&1; out[p1[i][0]][p1[i][1]]=bit; out[p2[i][0]][p2[i][1]]=bit; } out[size-8][8]=1; }
+    function penalty(out,size){ var p=0,r,c; for(r=0;r<size;r++){ var run=1; for(c=1;c<size;c++){ if(out[r][c]===out[r][c-1]) run++; else { if(run>=5) p+=3+(run-5); run=1; } } if(run>=5) p+=3+(run-5); } for(c=0;c<size;c++){ var run=1; for(r=1;r<size;r++){ if(out[r][c]===out[r-1][c]) run++; else { if(run>=5) p+=3+(run-5); run=1; } } if(run>=5) p+=3+(run-5); } for(r=0;r<size-1;r++) for(c=0;c<size-1;c++){ if(out[r][c]===out[r][c+1]&&out[r][c]===out[r+1][c]&&out[r][c]===out[r+1][c+1]) p+=3; } var dark=0; for(r=0;r<size;r++) for(c=0;c<size;c++) dark+=out[r][c]; p+=Math.floor(Math.abs(dark*100/(size*size)-50)/5)*10; return p; }
+    return function(text){ var bytes=bytesOf(text), v=chooseVersion(bytes.length); if(v<0) return null; var cw=encodeData(bytes,v), fc=interleave(cw,v), mat=makeMatrix(fc,v), size=mat.size, best=null, bestP=Infinity; for(var k=0;k<8;k++){ var out=applyMask(mat,k); placeFormat(out,size,fmtBits(1,k)); var pen=penalty(out,size); if(pen<bestP){ bestP=pen; best=out; } } return best; };
+  })();
+  function qrToCanvas(text, canvas, scale){
+    var m=qrMatrix(text); if(!m){ return false; }
+    scale=scale||5; var q=4, n=m.length, S=(n+q*2)*scale;
+    canvas.width=S; canvas.height=S;
+    var ctx=canvas.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,S,S); ctx.fillStyle='#000';
+    for(var r=0;r<n;r++) for(var c=0;c<n;c++){ if(m[r][c]) ctx.fillRect((c+q)*scale,(r+q)*scale,scale,scale); }
+    return true;
+  }
+
+  /* ===================== CONNECT: import / export with other apps (offline) ===================== */
+  function parseCSV(text, delim){
+    text=String(text||'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+    if(!delim){ var fl=text.split('\n')[0]||''; var nc=(fl.split(',').length-1), ns=(fl.split(';').length-1), nt=(fl.split('\t').length-1); delim=(ns>nc&&ns>=nt)?';':(nt>nc&&nt>ns)?'\t':','; }
+    var rows=[],row=[],cur='',i=0,inQ=false,ch;
+    while(i<text.length){ ch=text[i];
+      if(inQ){ if(ch==='"'){ if(text[i+1]==='"'){ cur+='"'; i+=2; continue; } inQ=false; i++; continue; } cur+=ch; i++; continue; }
+      if(ch==='"'){ inQ=true; i++; continue; }
+      if(ch===delim){ row.push(cur); cur=''; i++; continue; }
+      if(ch==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; i++; continue; }
+      cur+=ch; i++;
+    }
+    if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+    return rows.filter(function(r){ return !(r.length===1 && String(r[0]).trim()===''); });
+  }
+  function parseNum(s){
+    if(s==null) return NaN; var raw=String(s).trim(); if(!raw) return NaN;
+    var neg = raw.indexOf('(')>=0 || /(^|[^0-9])-\s*[0-9]/.test(raw) || /\bDR\b/i.test(raw);
+    var cleaned=raw.replace(/[^0-9.,]/g,''); if(!cleaned) return NaN;
+    var lc=cleaned.lastIndexOf(','), ld=cleaned.lastIndexOf('.'), num;
+    if(lc>=0&&ld>=0){ if(lc>ld){ num=cleaned.replace(/\./g,'').replace(',','.'); } else { num=cleaned.replace(/,/g,''); } }
+    else if(lc>=0){ num = /,\d{1,2}$/.test(cleaned) ? cleaned.replace(',', '.') : cleaned.replace(/,/g,''); }
+    else { num = cleaned; }
+    var v=parseFloat(num); if(!isFinite(v)) return NaN; v=Math.abs(v); return neg?-v:v;
+  }
+  function parseDateLoose(s){
+    if(!s) return null; s=String(s).trim();
+    var m=s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/); if(m) return m[1]+'-'+pad2(+m[2])+'-'+pad2(+m[3]);
+    m=s.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/); if(m){ var d=+m[1], mo=+m[2]; if(d>12 && mo<=12){} else if(mo>12 && d<=12){ var t=d; d=mo; mo=t; } return m[3]+'-'+pad2(mo)+'-'+pad2(d); }
+    m=s.match(/(\d{4})(\d{2})(\d{2})/); if(m) return m[1]+'-'+m[2]+'-'+m[3];
+    return null;
+  }
+  var IMP_CAT=[
+    [/rent|husleje|miete|alquiler|\bhyra\b|leie/i,'Housing'],[/electric|\bel-|strøm|strom|energi|\bgas\b/i,'Housing'],[/internet|wifi|broadband|fiber|yousee|stofa/i,'Housing'],
+    [/netflix|spotify|hbo|disney|youtube|prime|icloud|subscription|abonnement|patreon/i,'Subscriptions'],[/phone|mobil|telia|telenor|vodafone|verizon|\batt\b|oister|cbb/i,'Subscriptions'],
+    [/grocer|supermarked|netto|\brema\b|lidl|aldi|fakta|bilka|føtex|foetex|coop|kvickly|tesco|walmart|mercadona|carrefour/i,'Food'],[/restaurant|cafe|mcdonald|burger|pizza|takeaway|wolt|just.?eat|uber.?eats|sushi|kebab/i,'Food'],
+    [/transport|\bdsb\b|metro|\bbus\b|train|rejsekort|\buber\b|taxi|fuel|petrol|benzin|shell|circle.?k|\bq8\b|ok benzin/i,'Transport'],
+    [/\bgym\b|fitness|\bsats\b|puregym|loops/i,'Other'],[/insurance|forsikring|versicherung|seguro|tryg|topdanmark|alka/i,'Other'],[/savings|opsparing|sparekonto|pension/i,'Savings']
+  ];
+  function catFor(desc){ for(var i=0;i<IMP_CAT.length;i++){ if(IMP_CAT[i][0].test(desc)) return IMP_CAT[i][1]; } return 'Other'; }
+  function importBankCSV(text){
+    var rows=parseCSV(text); if(rows.length<2) return {ok:false,err:'No rows found in the file.'};
+    var header=rows[0].map(function(h){ return String(h).toLowerCase().trim(); });
+    function findCol(keys){ for(var i=0;i<header.length;i++){ for(var k=0;k<keys.length;k++){ if(header[i].indexOf(keys[k])>=0) return i; } } return -1; }
+    var dateC=findCol(['date','dato','datum','fecha','data']), descC=findCol(['desc','text','tekst','beskrivelse','konzept','concepto','detail','narration','memo','payee','navn']),
+        amtC=findCol(['amount','beløb','belob','betrag','importe','\bsum','value','montant']),
+        debitC=findCol(['debit','udgift','soll','hævet','withdraw']), creditC=findCol(['credit','indtægt','haben','indsat','deposit']);
+    var data=rows.slice(1), tx=[], minD=null,maxD=null;
+    data.forEach(function(r){ if(!r.length) return; var amt;
+      if(amtC>=0){ amt=parseNum(r[amtC]); }
+      else if(debitC>=0||creditC>=0){ var dd=parseNum(r[debitC]), cc=parseNum(r[creditC]); amt=(isFinite(cc)?cc:0)-(isFinite(dd)?dd:0); }
+      else { for(var i=r.length-1;i>=0;i--){ var n=parseNum(r[i]); if(isFinite(n)){ amt=n; break; } } }
+      if(!isFinite(amt)) return;
+      var desc=descC>=0?String(r[descC]||''):'', dt=dateC>=0?parseDateLoose(r[dateC]):null;
+      tx.push({date:dt,desc:desc,amount:amt}); if(dt){ if(!minD||dt<minD)minD=dt; if(!maxD||dt>maxD)maxD=dt; }
+    });
+    if(!tx.length) return {ok:false,err:'Could not read any transactions — check the columns.'};
+    var income=0,expense=0,byCat={};
+    tx.forEach(function(t){ if(t.amount>=0) income+=t.amount; else { expense+=-t.amount; var c=catFor(t.desc); byCat[c]=(byCat[c]||0)+(-t.amount); } });
+    var months=1; if(minD&&maxD){ var a=new Date(minD), b=new Date(maxD); months=Math.max(1,(b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth())+1); }
+    var cats=Object.keys(byCat).map(function(k){ return {cat:k,monthly:Math.round(byCat[k]/months)}; }).sort(function(a,b){ return b.monthly-a.monthly; });
+    return { ok:true, count:tx.length, months:months, from:minD, to:maxD, incomeMonthly:Math.round(income/months), expenseMonthly:Math.round(expense/months), cats:cats };
+  }
+  function applyBankImport(res, opts){
+    opts=opts||{};
+    if(opts.income && res.incomeMonthly>0){ MODEL.income={ low:Math.round(res.incomeMonthly*0.9), avg:res.incomeMonthly, high:Math.round(res.incomeMonthly*1.1) }; }
+    if(opts.expenses){ var base=blankModel().groups, byName={}; base.forEach(function(g){ byName[g.name.toLowerCase()]=g; });
+      res.cats.forEach(function(c){ if(c.monthly<=0) return; var g=byName[c.cat.toLowerCase()]; if(!g){ g={id:'g'+uid(),icon:'✦',name:c.cat,items:[]}; base.push(g); byName[c.cat.toLowerCase()]=g; } g.items.push({ id:uid(), name:c.cat+' (bank import)', cost:c.monthly, freq:'monthly', detail:'Imported from bank CSV', custom:true }); });
+      MODEL.groups=base; ensureIds(MODEL); }
+    logChange('import-bank', res.count+' transactions over '+res.months+' month(s)'); refreshEverything(); autosave();
+  }
+  function unfoldICS(t){ return String(t||'').replace(/\r\n/g,'\n').replace(/\n[ \t]/g,''); }
+  function importICS(text){
+    var lines=unfoldICS(text).split('\n'), events=[], cur=null;
+    lines.forEach(function(ln){
+      if(/^BEGIN:VEVENT/i.test(ln)) cur={};
+      else if(/^END:VEVENT/i.test(ln)){ if(cur&&cur.start&&cur.summary) events.push(cur); cur=null; }
+      else if(cur){ var m=ln.match(/^(DTSTART|SUMMARY|RRULE)([^:]*):(.*)$/i);
+        if(m){ var key=m[1].toUpperCase(), val=m[3];
+          if(key==='DTSTART'){ var dm=val.match(/(\d{4})(\d{2})(\d{2})/); if(dm) cur.start=dm[1]+'-'+dm[2]+'-'+dm[3]; }
+          else if(key==='SUMMARY'){ cur.summary=val.replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\n/gi,' ').trim(); }
+          else if(key==='RRULE'){ var fm=val.match(/FREQ=(\w+)/i); if(fm){ var f=fm[1].toUpperCase(); cur.repeat=(f==='WEEKLY')?'weekly':(f==='MONTHLY')?'monthly':(f==='YEARLY')?'yearly':'none'; } } } }
+    });
+    return events;
+  }
+  function applyICS(events){ STATE.calendar=STATE.calendar||{}; var n=0;
+    events.forEach(function(e){ if(!/^\d{4}-\d{2}-\d{2}$/.test(e.start)) return; STATE.calendar[e.start]=STATE.calendar[e.start]||[]; STATE.calendar[e.start].push({ id:uid(), text:e.summary, repeat:e.repeat||'none' }); n++; });
+    if(n){ logChange('import-ics', n+' event(s)'); autosave(); if(typeof renderCalendar==='function'){ renderCalendar(); renderDay(); renderEvents(); } } return n;
+  }
+  function exportICS(){
+    var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//MRLN//HUD//EN','CALSCALE:GREGORIAN'];
+    Object.keys(STATE.calendar||{}).forEach(function(k){ if(!/^\d{4}-\d{2}-\d{2}$/.test(k)) return;
+      (STATE.calendar[k]||[]).forEach(function(e){ var dt=k.replace(/-/g,'');
+        L.push('BEGIN:VEVENT','UID:'+(e.id||uid())+'@mrln','DTSTART;VALUE=DATE:'+dt,'SUMMARY:'+String(e.text||'').replace(/([,;\\])/g,'\\$1'));
+        if(e.repeat&&e.repeat!=='none') L.push('RRULE:FREQ='+(e.repeat==='weekly'?'WEEKLY':e.repeat==='monthly'?'MONTHLY':'YEARLY'));
+        L.push('END:VEVENT'); }); });
+    L.push('END:VCALENDAR'); return L.join('\r\n');
+  }
+  function csvCell(v){ v=String(v==null?'':v); return /[",\n;]/.test(v)?('"'+v.replace(/"/g,'""')+'"'):v; }
+  function exportExpensesCSV(){ var rows=[['Category','Item','Monthly cost','Frequency']]; (MODEL.groups||[]).forEach(function(g){ (g.items||[]).forEach(function(it){ rows.push([g.name,it.name,Math.round(itemMonthly(it)),it.freq||'monthly']); }); }); return rows.map(function(r){ return r.map(csvCell).join(','); }).join('\r\n'); }
+  function exportFoodCSV(){ var rows=[['Date','Meal','Calories','Protein','Carbs','Fat']]; (STATE.foodLog||[]).forEach(function(e){ rows.push([e.date,e.text,e.total.kcal,e.total.p,e.total.c,e.total.f]); }); return rows.map(function(r){ return r.map(csvCell).join(','); }).join('\r\n'); }
+  function importWeightCSV(text){
+    var rows=parseCSV(text); if(rows.length<2) return null;
+    var header=rows[0].map(function(h){ return String(h).toLowerCase(); }), wcol=-1, unit='kg';
+    for(var i=0;i<header.length;i++){ if(/weight|vægt|vagt|gewicht|peso|\bkg\b|\blbs?\b|pound/.test(header[i])){ wcol=i; if(/lb|pound/.test(header[i])) unit='lb'; break; } }
+    if(wcol<0) return null;
+    var dcol=-1; for(var i=0;i<header.length;i++){ if(/date|dato|datum|time/.test(header[i])){ dcol=i; break; } }
+    var best=null,bestD='';
+    rows.slice(1).forEach(function(r){ var w=parseNum(r[wcol]); if(!isFinite(w)||w<=0) return; var d=dcol>=0?(parseDateLoose(r[dcol])||''):''; if(best===null||d>=bestD){ best=w; bestD=d; } });
+    if(best===null) return null; if(unit==='lb') best=best*0.453592; return { weight:Math.round(best*10)/10, date:bestD };
+  }
+  function importMFPFood(text){
+    var rows=parseCSV(text); if(rows.length<2) return [];
+    var h=rows[0].map(function(x){ return String(x).toLowerCase(); });
+    function col(keys){ for(var i=0;i<h.length;i++) for(var k=0;k<keys.length;k++) if(h[i].indexOf(keys[k])>=0) return i; return -1; }
+    var dC=col(['date','dato']), kC=col(['calorie','energy','kcal']), pC=col(['protein']), cC=col(['carb']), fC=col(['fat']), nC=col(['food','note','meal','name','item','description']);
+    if(kC<0) return [];
+    var out=[];
+    rows.slice(1).forEach(function(r){ var k=parseNum(r[kC]); if(!isFinite(k)) return;
+      out.push({ id:uid(), date:(dC>=0?parseDateLoose(r[dC]):null)||todayKey(), ts:nowISO(), text:(nC>=0?String(r[nC]||'').trim():'imported meal')||'imported meal', items:[], total:{kcal:Math.round(k),p:Math.round(parseNum(r[pC])||0),c:Math.round(parseNum(r[cC])||0),f:Math.round(parseNum(r[fC])||0)}, photo:'' }); });
+    return out;
+  }
+  function parseBLEWeight(dv){ try{ var flags=dv.getUint8(0), raw=dv.getUint16(1,true), imperial=(flags&1)===1; var w=imperial?(raw*0.01*0.453592):(raw*0.005); return Math.round(w*10)/10; }catch(_){ return null; } }
+  function dl(filename, text, mime){ var blob=new Blob([text],{type:mime||'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(url); },1500); }
 
   /* ===================== FOOD LOG (offline estimator + photo log) =====================
      No servers, no APIs: you type what you ate, we estimate macros from a built-in
