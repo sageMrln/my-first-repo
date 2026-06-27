@@ -5556,6 +5556,22 @@
     try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ if(!p) navigator.storage.persist().catch(function(){}); }).catch(function(){}); } }catch(_){}
     // 2) register the offline service worker — secure contexts only (https or localhost; file:// has no SW)
     try{ var sec=(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'); if('serviceWorker' in navigator && sec){ navigator.serviceWorker.register('sw.js').catch(function(){}); } }catch(_){}
+    // 2b) bake the current File ID (#F-XXXX) into the manifest start_url, so an INSTALLED app
+    //     re-launches with its File ID intact (otherwise the hash is dropped and file-bound keys fail).
+    try{
+      var _fid = (STATE&&STATE.fid)||'';
+      if(_fid && /^https?:$/.test(location.protocol)){
+        var _lnk=document.querySelector('link[rel="manifest"]');
+        if(_lnk){
+          var _dir=location.origin+location.pathname.replace(/[^\/]*$/,'');
+          var _mani={ name:'MRLN — Finance & Health HUD', short_name:'MRLN',
+            start_url:location.origin+location.pathname+'#'+_fid, scope:_dir, id:location.pathname+'#'+_fid,
+            display:'standalone', orientation:'portrait', background_color:'#03070e', theme_color:'#03070e',
+            icons:[{src:_dir+'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:_dir+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:_dir+'icon-maskable-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}] };
+          _lnk.href=URL.createObjectURL(new Blob([JSON.stringify(_mani)],{type:'application/manifest+json'}));
+        }
+      }
+    }catch(_){}
     // 3) install prompt
     var deferred=null;
     function installed(){ try{ return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true; }catch(_){ return false; } }
