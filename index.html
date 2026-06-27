@@ -4023,8 +4023,8 @@
   var US_STD={ single:15000, mfj:30000, hoh:22500 };
   function taxAdv(k,dflt){ var a=(STATE.tax&&STATE.tax.adv)||{}; return (a[k]!==undefined&&a[k]!==''&&a[k]!==null&&isFinite(+a[k]))?+a[k]:dflt; }
   function num(v){ var n=parseFloat(v); return isFinite(n)?n:0; }
-  function computeTax(){
-    var T=STATE.tax||{}; var c=T.country||'DK';
+  function computeTax(ov){
+    var T=ov?Object.assign({},STATE.tax||{},ov):(STATE.tax||{}); var c=T.country||'DK';
     var gross=num(T.gross), ded=T.ded||{}, withheld=num(T.withheld);
     var ccy=TAX_CCY[c]||(STATE.prefs&&STATE.prefs.currency)||'DKK';
     var R={ ok:gross>0, country:c, ccy:ccy, gross:gross, breakdown:[], incomeTax:0, social:0, notes:[], withheld:withheld };
@@ -4199,9 +4199,40 @@
         '<div class="calc-row"><span>Fradrag / 14 days</span><b>'+M(R.dk.fradrag14)+'</b></div>'+
         (R.dk.topHit?'<div class="note" style="margin-top:6px;color:var(--amber)">You\'re into <b>topskat</b> — an extra 15% on personal income above the threshold.</div>':'')+
         '<div class="note" style="margin-top:6px">Type these on <b>tastselv.skat.dk → Forskudsopgørelse</b> (field 201 is your yearly income). Estimate — compare with SKAT\'s own calculation.</div></div>'; }
+      // ---- over/under-estimate simulator (countries with a withholding-and-reconcile system) ----
+      if(R.country!=='XX' && R.gross>0){
+        var exp=R.gross, lo=Math.max(1000,Math.round(exp*0.3/1000)*1000), hi=Math.round(exp*2/1000)*1000;
+        var act=(STATE.tax.actual>=lo && STATE.tax.actual<=hi)?STATE.tax.actual:exp;
+        html+='<div style="margin-top:14px;background:#08131f;border:1px solid var(--line);border-radius:12px;padding:14px">'+
+          '<b style="font-family:Orbitron;font-size:13px;color:#eaffff">📊 Over / under-estimate simulator</b>'+
+          '<div class="note" style="margin:4px 0 10px">Your estimate is <b>'+M(exp)+'</b>. Drag the bar to your <b>actual</b> income to see the year-end refund or bill — and what to update your withholding to.</div>'+
+          '<input type="range" id="txSimSlider" min="'+lo+'" max="'+hi+'" step="1000" value="'+act+'" style="width:100%">'+
+          '<div id="txSimOut" style="margin-top:8px"></div></div>';
+      }
       if(R.notes.length) html+='<div class="note" style="margin-top:10px;color:var(--txt-dim)">'+R.notes.map(esc).join(' ')+'</div>';
       html+='<div class="note" style="margin-top:8px;font-size:11px;color:var(--txt-dim)">⚠️ Estimate from published ~2025 rates — not tax advice. Always verify with your tax authority before filing.</div>';
       host.innerHTML=html;
+      if(R.country!=='XX' && R.gross>0){ var sl=document.getElementById('txSimSlider'); renderSim(sl?+sl.value:R.gross); }
+    }
+    function taxSim(actual){
+      var base=computeTax(), exp=base.gross, effExp=exp>0?base.totalTax/exp:0;
+      var at=computeTax({gross:actual});
+      var withheld=effExp*actual, diff=withheld-at.totalTax;
+      return { actual:actual, withheld:withheld, actualTax:at.totalTax, diff:diff, ccy:base.ccy, dk:at.dk, eff:actual>0?Math.round(at.totalTax/actual*100):0 };
+    }
+    function renderSim(actual){
+      var out=document.getElementById('txSimOut'); if(!out) return;
+      var s=taxSim(actual), M=function(n){ return txMoney(n,s.ccy); }, d=s.diff;
+      var big = d>=0 ? '<div style="color:var(--lime);font-size:22px;font-family:Orbitron;margin-top:2px"><b>+'+M(d)+'</b></div>'
+                     : '<div style="color:var(--amber);font-size:22px;font-family:Orbitron;margin-top:2px"><b>'+M(-d)+'</b></div>';
+      out.innerHTML='<div class="calc-row"><span>Actual income this year</span><b>'+M(actual)+'</b></div>'+
+        '<div class="calc-row"><span>Tax withheld (at your estimate)</span><b>'+M(s.withheld)+'</b></div>'+
+        '<div class="calc-row"><span>Actual tax owed ('+s.eff+'%)</span><b>'+M(s.actualTax)+'</b></div>'+
+        '<div style="margin-top:8px;text-align:center;font-size:12px;color:var(--txt-dim)">'+(d>=0?'✅ You\'d get back':'⚠️ You\'d owe')+'</div>'+
+        '<div style="text-align:center">'+big+'</div>'+
+        (s.dk?('<div class="note" style="margin-top:8px">To stay accurate at this income, set your forskudsopgørelse to <b>trækprocent '+s.dk.traek+'%</b> · fradrag <b>'+M(s.dk.fradragMo)+'/mo</b>.</div>')
+             :('<div class="note" style="margin-top:8px">Earn more than your estimate → you under-withhold and owe; earn less → you over-withhold and get a refund. Update your withholding to match.</div>'))+
+        '<div class="note" style="margin-top:6px;font-size:11px;color:var(--txt-dim)">Estimate of pay-as-you-earn vs final tax — verify with your tax authority.</div>';
     }
     function wire(){
       var form=document.getElementById('taxForm'); if(!form) return;
@@ -4220,6 +4251,10 @@
         else if(el.hasAttribute&&el.hasAttribute('data-txadv')){ t.adv[el.getAttribute('data-txadv')]=el.value; }
         else return;
         clearTimeout(calcTimer); calcTimer=setTimeout(function(){ recompute(); autosave(); }, 180);
+      });
+      var out=document.getElementById('taxOut');
+      if(out) out.addEventListener('input', function(e){
+        if(e.target.id==='txSimSlider'){ var v=+e.target.value; STATE.tax=ts(); STATE.tax.actual=v; renderSim(v); clearTimeout(calcTimer); calcTimer=setTimeout(autosave,400); }
       });
     }
     wire();
