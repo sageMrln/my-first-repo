@@ -2763,7 +2763,7 @@
     var hint=document.getElementById('mealHint'); if(hint) hint.style.display='none';
     autosave();
   }
-  var _mealView=[];   // meals currently on screen, for the detail modal
+  var _mealView=[], _mealBest=null;   // meals currently on screen + the healthiest-for-goal top pick
   function renderMeals(advance){
     var host=document.getElementById('mealOut'); if(!host) return;
     updateMealBadge(); updateMealTargets();
@@ -2800,16 +2800,18 @@
       if(advance && canRotate) mealOffset++;
     }
     _mealView=picks;
+    var best = pool[0]; _mealBest = best;   // top-ranked = healthiest fit for this goal (within your likes, if any)
     var goalNote = goal==='cut'?'higher-protein, lower-calorie picks to lose fat':goal==='bulk'?'calorie- and carb-dense picks to gain':'balanced picks to hold steady';
-    var head = T ? ('Ranked for <b>'+physLabel(T.phys)+'</b> — '+goalNote+(likes.length?', weighted to what you like':'')+'. Portions scaled to you; tap a meal for full nutrition.')
+    var head = T ? ('Ranked <b>healthiest-for-your-goal first</b> for <b>'+physLabel(T.phys)+'</b> — '+goalNote+(likes.length?', weighted to what you like':'')+'. Portions scaled to you; tap a meal for full nutrition.')
                  : ('Showing <b>'+goalNote+'</b>'+(likes.length?', weighted to what you like':'')+(dislikes.length?', avoiding '+dislikes.length+' thing(s)':'')+'. Tap a meal for full nutrition.');
     host.innerHTML='<div class="note" style="margin:0 0 10px">'+head+'</div>'+
       picks.map(function(m,ix){
         var liked = m._score>0 ? ' <span class="tag now" style="font-size:8px">★ YOUR TASTE</span>' : '';
+        var top = (T && m===best) ? ' <span class="tag now" style="font-size:8px;background:var(--lime);color:#04220f">✅ HEALTHIEST FOR YOU</span>' : '';
         var sc=scaleMeal(m,T);
         var amount = T && sc.mult!==1 ? ('<b>'+sc.mult+'×</b> serving · ') : '';
         var macros = amount + sc.kcal+' kcal · P '+sc.p+'g · C '+sc.c+'g · F '+sc.f+'g';
-        return '<div class="item-row meal-row" data-meal="'+ix+'" style="align-items:flex-start;cursor:pointer"><div class="meta" style="flex:1">'+esc(m.n)+liked+
+        return '<div class="item-row meal-row" data-meal="'+ix+'" style="align-items:flex-start;cursor:pointer"><div class="meta" style="flex:1">'+esc(m.n)+liked+top+
           '<small>'+macros+'</small></div>'+
           '<span class="btn ghost" style="padding:5px 10px;font-size:12px;white-space:nowrap;pointer-events:none">Details ›</span></div>';
       }).join('');
@@ -2836,7 +2838,10 @@
     var yt='https://www.youtube.com/results?search_query='+encodeURIComponent(m.n+' recipe');
     var rows=function(label,std,you,unit){ return '<div class="calc-row"><span>'+label+'</span><b>'+std+unit+(T&&sc.mult!==1?(' · <span style="color:var(--cyan)">'+you+unit+' for you</span>'):'')+'</b></div>'; };
     var html='';
-    if(T){ html+='<div class="note" style="margin:0 0 10px">Your serving: <b>'+sc.mult+'×</b> the standard recipe → <b>'+sc.kcal+' kcal</b>, '+sc.p+'g protein, '+sc.c+'g carbs, '+sc.f+'g fat.</div>'; }
+    if(T){
+      if(_mealBest===m){ html+='<div class="note" style="margin:0 0 10px;background:rgba(124,255,178,.12);border:1px solid var(--lime);border-radius:8px;padding:8px 10px;color:#eaffff">✅ <b>Your healthiest pick</b> for this goal — best protein-to-calorie balance of your matching meals, and still genuinely tasty.</div>'; }
+      html+='<div class="note" style="margin:0 0 10px">Your serving: <b>'+sc.mult+'×</b> the standard recipe → <b>'+sc.kcal+' kcal</b>, '+sc.p+'g protein, '+sc.c+'g carbs, '+sc.f+'g fat.</div>';
+    }
     html+='<div class="subtotal" style="margin:0 0 12px"><div class="calc-row" style="font-weight:700;color:#eaffff"><span>Standard serving</span><span>'+(T?'Scaled for you':'')+'</span></div>'+
       rows('Calories', m.kcal, sc.kcal, ' kcal')+rows('Protein', m.p, sc.p, ' g')+rows('Carbs', m.c, sc.c, ' g')+rows('Fat', m.f, sc.f, ' g')+'</div>';
     html+='<h2 style="font-size:14px;margin:6px 0 6px">Ingredients</h2><ul style="margin:0 0 12px;padding-left:18px;line-height:1.7;color:var(--txt)">'+
