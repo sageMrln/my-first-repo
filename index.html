@@ -4293,6 +4293,97 @@
       var key=el.textContent.replace(/\s+/g,' ').trim(), tr=dict[key]; if(tr!=null) el.textContent=tr;
     });
   }
+  // ===================== LANGUAGE WATCHDOG =====================
+  // An always-on guard that keeps EVERY on-screen string in the chosen language —
+  // both baked-in UI and dynamically-rendered ("circumstantial") text.
+  //  • ENFORCE (self-heal): re-runs the forward translator + remnant sweep on a
+  //    heartbeat, and whenever the app regains focus/visibility, on top of the
+  //    MutationObserver's instant response. Anything the dictionary knows snaps to
+  //    the active language and stale previous-language text is swept forward.
+  //    Idempotent + cheap (text-node walk); skips user content, fields, lock screen.
+  //  • AUDIT (the checker): walks every visible text node and tests it against the
+  //    dictionary AND the target language's alphabet. Anything that looks like UI
+  //    English with no translation is recorded on window.__i18nAudit so gaps can't
+  //    hide in a branch that only renders sometimes. It NEVER alters the page. In
+  //    #i18n-audit mode (or MRLN_I18N.setAudit(true)) suspects are outlined in red
+  //    and logged. A runtime watchdog can only translate what the dictionary holds,
+  //    so the audit's job is to surface what's missing — not invent translations.
+  var I18N_WATCH = (function(){
+    var hb=null, started=false, lastAudit=0, auditMode=false;
+    try{ auditMode = /(?:^|[#&])i18n-audit/.test(location.hash) || localStorage.getItem('mrln_i18n_audit')==='1'; }catch(_){}
+    function lang(){ return (STATE.prefs&&STATE.prefs.lang)||'en'; }
+    function visible(){ try{ return document.visibilityState!=='hidden'; }catch(_){ return true; } }
+    function enforce(){
+      var L=lang(); if(L==='en'||!visible()) return;          // English is the source — nothing to enforce
+      if(typeof pauseI18nObs==='function') pauseI18nObs(function(){ try{ translateForwardAll(L); sweepRemnants(L); }catch(_){ } });
+      else { try{ translateForwardAll(L); sweepRemnants(L); }catch(_){ } }
+      if(auditMode) audit();
+    }
+    // diacritics each language actually uses — a quick "alphabet" signal
+    var DIAC={ es:'áéíóúñü¿¡', da:'æøå', de:'äöüß', sv:'åäö', nb:'æøå', hu:'áéíóöőúüű' };
+    // English-distinctive words (won't collide with es/da/de/sv/nb/hu) that flag UI prose
+    var ENG_STOP=/\b(the|your|you|you're|don't|doesn't|with|this|that|these|those|which|would|could|should|every|after|before|into|here's|what's|isn't|aren't|wealth|savings|income|target|protein|carbs|weight|height|monthly|spending|budget|truly|first|month)\b/i;
+    function knownText(s){
+      if(_i18nRev && _i18nRev[s]!==undefined) return true;             // a known translated value
+      for(var L in I18N){ if(I18N[L] && I18N[L][s]!=null) return true; } // a known English key
+      var n=(typeof _normNum==='function')?_normNum(s):s;
+      if(n!==s){ if(_i18nRev && _i18nRev[n]!==undefined) return true; for(var L2 in I18N){ if(I18N[L2] && I18N[L2][n]!=null) return true; } }
+      return false;
+    }
+    function looksTargetLang(s, L){
+      var d=DIAC[L]||'';
+      for(var i=0;i<d.length;i++){ if(s.indexOf(d[i])>=0) return true; } // uses the language's letters → fine
+      var words=(s.match(/[A-Za-zÀ-ÿ]{2,}/g)||[]).length;
+      if(words>=2 && ENG_STOP.test(s)) return false;                     // English function words → suspicious
+      return true;                                                       // single words / proper nouns / brands → benefit of the doubt
+    }
+    function suspects(){
+      var L=lang(), out=[];
+      if(!_i18nRev && typeof buildI18nReverse==='function'){ try{ buildI18nReverse(); }catch(_){ } }
+      if(L==='en') return out;
+      var w=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode:function(n){
+        var v=n.nodeValue; if(!v||!v.trim()||!/[A-Za-zÀ-ÿ]/.test(v)) return NodeFilter.FILTER_REJECT;
+        var p=n.parentNode; while(p&&p.nodeType===1){ var nm=p.nodeName;
+          if(/^(SCRIPT|STYLE|TEXTAREA|CANVAS|OPTION|INPUT|CODE)$/.test(nm)) return NodeFilter.FILTER_REJECT;
+          if(p.id==='lockScreen'||(p.getAttribute&&p.getAttribute('data-i18n-skip')!=null)) return NodeFilter.FILTER_REJECT;
+          p=p.parentNode; }
+        return NodeFilter.FILTER_ACCEPT;
+      }});
+      var seen={}, tn;
+      while((tn=w.nextNode())){
+        var s=tn.nodeValue.trim(); if(s.length<2||!/[A-Za-z]/.test(s)) continue;
+        if(knownText(s)||looksTargetLang(s,L)) continue;
+        if(seen[s]) continue; seen[s]=1;
+        out.push({ text:(s.length>140?s.slice(0,140)+'…':s), node:tn });
+      }
+      return out;
+    }
+    function clearMarks(){ try{ document.querySelectorAll('.i18n-leak').forEach(function(el){ el.classList.remove('i18n-leak'); el.style.outline=''; el.removeAttribute('title'); }); }catch(_){ } }
+    function audit(){
+      var list=suspects(), texts=[];
+      for(var i=0;i<list.length;i++) texts.push(list[i].text);
+      try{ window.__i18nAudit = { lang:lang(), when:(typeof Date!=='undefined'?Date.now():0), missing:texts }; }catch(_){ }
+      if(auditMode){
+        clearMarks();
+        list.forEach(function(o){ var el=o.node.parentNode; if(el&&el.nodeType===1){ el.classList.add('i18n-leak'); el.style.outline='2px dashed #ff5c7c'; el.setAttribute('title','i18n leak ('+lang()+'): '+o.text); } });
+        if(texts.length){ try{ console.warn('[i18n watchdog] '+texts.length+' string(s) not in "'+lang()+'":', texts); }catch(_){ } }
+      }
+      return texts;
+    }
+    function start(){
+      if(started) return; started=true;
+      hb=setInterval(function(){
+        enforce();
+        var now=(typeof Date!=='undefined')?Date.now():0;
+        if(now-lastAudit > (auditMode?4000:12000)){ lastAudit=now; audit(); }  // keep window.__i18nAudit fresh
+      }, 2500);
+      try{ document.addEventListener('visibilitychange', function(){ if(visible()) enforce(); }); }catch(_){ }
+      try{ window.addEventListener('focus', enforce); window.addEventListener('pageshow', enforce); }catch(_){ }
+    }
+    return { enforce:enforce, audit:audit, start:start,
+      setAudit:function(on){ auditMode=!!on; try{ localStorage.setItem('mrln_i18n_audit', on?'1':'0'); }catch(_){ } if(on) audit(); else clearMarks(); return auditMode; } };
+  })();
+  try{ window.MRLN_I18N = I18N_WATCH; }catch(_){ }   // owner/QA handle: MRLN_I18N.audit(), MRLN_I18N.setAudit(true)
   function initLocale(){
     var p = STATE.prefs;
     if(!p.country && MODEL.profile && MODEL.profile.location) p.country = MODEL.profile.location;  // seed from existing profile
@@ -6102,6 +6193,7 @@
   renderTaxHelper();
   initLocale();       // language / currency / country — apply saved prefs + wire pickers
   startI18nObserver();   // auto-translate any dynamic content rendered from here on
+  if(typeof I18N_WATCH!=='undefined' && I18N_WATCH.start) I18N_WATCH.start();   // language watchdog: heartbeat enforce + continuous audit
   applyCleanModeClass();   // hide example-only narrative for clean/new users
   if(window.rebuildScenarios) window.rebuildScenarios();
   refreshFinance();   // ensure totals/simulators reflect any loaded user items
