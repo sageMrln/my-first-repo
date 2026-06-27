@@ -1,6 +1,11 @@
-/* MRLN service worker — offline cache so the app launches without a network,
-   and (with install / persistent storage) survives browser storage eviction. */
-var CACHE = 'mrln-v1';
+/* MRLN service worker.
+   - Network-first for the app itself (index.html / navigations) so a new release
+     pushed to the host reaches users automatically the next time they're online.
+   - Cache-first for static assets (icons/manifest) that rarely change.
+   - Full offline fallback to the cached app when there's no network.
+   Bump VERSION only to force-flush old caches (e.g. when the asset list changes). */
+var VERSION = 'v2';
+var CACHE = 'mrln-' + VERSION;
 var CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', function(e){
@@ -12,13 +17,26 @@ self.addEventListener('activate', function(e){
   self.clients.claim();
 });
 self.addEventListener('fetch', function(e){
-  if(e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then(function(hit){
-      return hit || fetch(e.request).then(function(resp){
-        try{ var cp = resp.clone(); caches.open(CACHE).then(function(c){ c.put(e.request, cp); }); }catch(_){}
+  var req = e.request;
+  if(req.method !== 'GET') return;
+  var isDoc = req.mode === 'navigate' || req.destination === 'document';
+  if(isDoc){
+    // network-first: always try for the freshest app, fall back to cache offline
+    e.respondWith(
+      fetch(req).then(function(resp){
+        try{ var cp = resp.clone(); caches.open(CACHE).then(function(c){ c.put(req, cp); }); }catch(_){}
         return resp;
-      }).catch(function(){ return caches.match('./index.html'); });
-    })
-  );
+      }).catch(function(){ return caches.match(req).then(function(r){ return r || caches.match('./index.html'); }); })
+    );
+  } else {
+    // cache-first for assets
+    e.respondWith(
+      caches.match(req).then(function(hit){
+        return hit || fetch(req).then(function(resp){
+          try{ var cp = resp.clone(); caches.open(CACHE).then(function(c){ c.put(req, cp); }); }catch(_){}
+          return resp;
+        }).catch(function(){ return hit; });
+      })
+    );
+  }
 });
