@@ -1117,7 +1117,11 @@
       <div class="form-row">
         <div class="field"><label>Anything to avoid</label><input id="mealDislikes" placeholder="e.g. pork, mushrooms, very spicy"></div>
       </div>
-      <button class="btn" id="mealGo">🍽️ Suggest meals for my goal</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="mealGo" style="flex:1;min-width:180px">🍽️ Suggest meals for my goal</button>
+        <button class="btn ghost" id="mealClear" style="flex:0 0 auto">Clear</button>
+      </div>
+      <div class="note" id="mealHint" style="display:none;margin-top:8px">Press <b>Suggest</b> again for more ideas.</div>
       <div id="mealOut" style="margin-top:14px"></div>
     </div>
 
@@ -2579,17 +2583,21 @@
       b.addEventListener('click', function(){
         var g=b.getAttribute('data-goal'); STATE.body.goal=g; setGoalBtns(g); autosave();
         var c=computeBody(); if(c.tdee!=null && sl){ sl.value=Math.round((c.tdee+(GOAL_OFFSET[g]||0))/50)*50; sl.dataset.touched='1'; }
-        calSim(); if(typeof updateMealBadge==='function') updateMealBadge();
+        calSim(); mealOffset=0; if(typeof updateMealBadge==='function') updateMealBadge();
+        if(document.getElementById('mealOut') && document.getElementById('mealOut').innerHTML.trim()) renderMeals(false);
       });
     });
     if(STATE.body.goal) setGoalBtns(STATE.body.goal);
     // Meal ideas
     STATE.body.diet = STATE.body.diet || {likes:'',dislikes:''};
     var ml=document.getElementById('mealLikes'), md=document.getElementById('mealDislikes');
-    if(ml){ ml.value=STATE.body.diet.likes||''; ml.addEventListener('input', function(){ STATE.body.diet.likes=ml.value; autosave(); }); }
-    if(md){ md.value=STATE.body.diet.dislikes||''; md.addEventListener('input', function(){ STATE.body.diet.dislikes=md.value; autosave(); }); }
+    // editing the filters starts a fresh rotation from the best matches
+    if(ml){ ml.value=STATE.body.diet.likes||''; ml.addEventListener('input', function(){ STATE.body.diet.likes=ml.value; mealOffset=0; autosave(); }); }
+    if(md){ md.value=STATE.body.diet.dislikes||''; md.addEventListener('input', function(){ STATE.body.diet.dislikes=md.value; mealOffset=0; autosave(); }); }
     var mg=document.getElementById('mealGo');
-    if(mg) mg.addEventListener('click', function(){ if(ml)STATE.body.diet.likes=ml.value; if(md)STATE.body.diet.dislikes=md.value; autosave(); renderMeals(); });
+    if(mg) mg.addEventListener('click', function(){ if(ml)STATE.body.diet.likes=ml.value; if(md)STATE.body.diet.dislikes=md.value; autosave(); renderMeals(true); });
+    var mc=document.getElementById('mealClear');
+    if(mc) mc.addEventListener('click', function(){ clearMeals(); });
     if(typeof updateMealBadge==='function') updateMealBadge();
     // PR form
     var prAdd=document.getElementById('prAdd');
@@ -2649,21 +2657,35 @@
     var g=(STATE.body&&STATE.body.goal)||'maintain';
     b.textContent = g==='cut'?'🔻 Cut':g==='bulk'?'🔺 Bulk':'⚖️ Maintain';
   }
-  function renderMeals(){
+  var mealOffset=0;   // rotates the visible window so re-pressing Suggest shows fresh ideas
+  function clearMeals(){
+    mealOffset=0;
+    STATE.body.diet={likes:'',dislikes:''};
+    var ml=document.getElementById('mealLikes'), md=document.getElementById('mealDislikes');
+    if(ml) ml.value=''; if(md) md.value='';
+    var out=document.getElementById('mealOut'); if(out) out.innerHTML='';
+    var hint=document.getElementById('mealHint'); if(hint) hint.style.display='none';
+    autosave();
+  }
+  function renderMeals(advance){
     var host=document.getElementById('mealOut'); if(!host) return;
     updateMealBadge();
+    var hint=document.getElementById('mealHint');
     var goal=(STATE.body&&STATE.body.goal)||'maintain';
     var likes=splitTerms(STATE.body.diet&&STATE.body.diet.likes), dislikes=splitTerms(STATE.body.diet&&STATE.body.diet.dislikes);
     var pool=MEAL_DB.filter(function(m){ return m.goals.indexOf(goal)>=0; });
     // exclude any meal that matches a disliked term
     pool=pool.filter(function(m){ return !dislikes.some(function(d){ return mealMatchesText(m,d); }); });
-    // score by number of liked terms matched (weight toward likes)
+    // score by number of liked terms matched, then order liked-first (weight toward likes)
     pool.forEach(function(m){ m._score = likes.reduce(function(s,l){ return s + (mealMatchesText(m,l)?1:0); }, 0); });
     pool.sort(function(a,b){ return b._score - a._score; });
-    var picks = (likes.length ? pool.filter(function(m){ return m._score>0; }) : pool);
-    if(!picks.length) picks = pool;          // nothing matched a like → still show goal-fit meals
-    picks = picks.slice(0,6);
-    if(!picks.length){ host.innerHTML='<div class="empty">No meals fit those filters — try removing a dislike.</div>'; return; }
+    if(!pool.length){ host.innerHTML='<div class="empty">No meals fit those filters — try removing a dislike, then Suggest again.</div>'; if(hint) hint.style.display='none'; return; }
+    var PAGE=5, pages=Math.ceil(pool.length/PAGE), canRotate=pages>1;
+    if(!canRotate) mealOffset=0;
+    // clean, non-overlapping pages; first press shows the best matches (page 0)
+    var page=((mealOffset%pages)+pages)%pages, start=page*PAGE, end=Math.min(start+PAGE,pool.length);
+    var picks=pool.slice(start,end);
+    if(advance && canRotate) mealOffset++;   // queue the next batch for the next press
     var goalNote = goal==='cut'?'higher-protein, lower-calorie picks to lose fat':goal==='bulk'?'calorie- and carb-dense picks to gain':'balanced picks to hold steady';
     host.innerHTML='<div class="note" style="margin:0 0 10px">Showing <b>'+goalNote+'</b>'+(likes.length?', weighted to what you like':'')+(dislikes.length?', avoiding '+dislikes.length+' thing(s)':'')+'.</div>'+
       picks.map(function(m){
@@ -2673,6 +2695,8 @@
           '<small>'+m.kcal+' kcal · P '+m.p+'g · C '+m.c+'g · F '+m.f+'g</small></div>'+
           '<a class="btn ghost" href="'+yt+'" target="_blank" rel="noopener" style="padding:5px 10px;font-size:12px;text-decoration:none;white-space:nowrap">▶ Recipe</a></div>';
       }).join('');
+    if(hint) hint.style.display = canRotate ? 'block' : 'none';
+    if(hint && canRotate) hint.innerHTML='Showing '+(start+1)+'–'+end+' of '+pool.length+' matches — press <b>Suggest</b> again for more, or <b>Clear</b> to start over.';
   }
   function epley1rm(w,r){ return w*(1+r/30); }
   function renderPRs(){
