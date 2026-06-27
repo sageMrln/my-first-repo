@@ -4623,8 +4623,13 @@
   /* ===================== GUIDED TOUR (plays once; replayable) ===================== */
   var TOUR = (function(){
     var STEPS=[
-      {sel:'#tabs', text:'<b>Your sections.</b> Swipe or scroll these tabs to move around — income, expenses, simulators, calendar and more.'},
+      {sel:'#tabs', text:'<b>Your sections.</b> Scroll these tabs to move around — money, gym &amp; food, calendar, stats and notes. Here are the main ones:'},
       {sel:'#tabs .tab[data-p="expenses"]', text:'<b>Expenses</b> is your money map. Open it to add or edit any cost — every number updates instantly.'},
+      {sel:'#tabs .tab[data-p="gym"]', text:'<b>Gym Plan.</b> Body stats, calorie &amp; macro targets, a shape model — and <b>meal ideas matched to your goal &amp; physique</b>.'},
+      {sel:'#tabs .tab[data-p="food"]', text:'<b>Food Log.</b> Snap or type what you ate and get an instant calorie &amp; macro estimate against today’s target.'},
+      {sel:'#tabs .tab[data-p="stats"]', text:'<b>Stats &amp; Grades.</b> Your overall S–E grade explained — money, body and income class, with how to climb.'},
+      {sel:'#tabs .tab[data-p="notebook"]', text:'<b>Notebook.</b> A free-writing space like your phone’s Notes — anything you don’t want to lose.'},
+      {sel:'#tabs .tab[data-p="calendar"]', text:'<b>Calendar.</b> Birthdays, your weekly sports &amp; hobbies, and reminders — alarms included.'},
       {sel:'#chatToggle', text:'<b>Quick Update.</b> Type changes in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions”.'},
       {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'},
       {sel:'#langSel', text:'<b>Language & currency.</b> Switch these to whatever suits you. Your data always stays on your device.'},
