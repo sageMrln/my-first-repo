@@ -23,7 +23,7 @@ const src = fs.readFileSync(HTML, 'utf8');
 
 // 1) t('...') / t("...") literal keys
 const keys = new Set();
-const re = /\bt\(\s*('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")\s*[),]/g;
+const re = /\b(?:t|tf)\(\s*('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")\s*[),]/g;
 let m;
 while ((m = re.exec(src))) {
   const q = m[1][0];
