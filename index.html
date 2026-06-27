@@ -748,6 +748,13 @@
       </table>
       <div class="note">Your simulators and savings projection use the <b>typical</b> month as the baseline.</div>
     </div>
+
+    <div class="card" id="taxHelper">
+      <h2>🧾 Tax Helper <span class="tag now" id="taxCountryBadge" style="font-size:11px">—</span></h2>
+      <div class="desc">An offline <b>estimate</b> of your income tax — what you'll pay, what to expect back, and (Denmark) what to set on your <b>forskudsopgørelse</b>. Adapts to your country/region. Adjustable but unofficial — always verify with your tax authority. Your numbers stay on your device.</div>
+      <div id="taxForm"></div>
+      <div id="taxOut" style="margin-top:14px"></div>
+    </div>
   </section>
 
   <!-- 03 EXPENSES -->
@@ -1427,7 +1434,7 @@
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], tax:{}, prefs:{ lang:'en', currency:'DKK', country:'' } };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -1450,7 +1457,7 @@
     return Object.assign({}, DEFAULTS, pick||{}, {
       customItems:(pick&&pick.customItems)||[], workouts:(pick&&pick.workouts)||[],
       calendar:(pick&&pick.calendar)||{}, log:(pick&&pick.log)||[],
-      body:(pick&&pick.body)||{}, prs:(pick&&pick.prs)||[], notes:(pick&&pick.notes)||[], foodLog:(pick&&pick.foodLog)||[]
+      body:(pick&&pick.body)||{}, prs:(pick&&pick.prs)||[], notes:(pick&&pick.notes)||[], foodLog:(pick&&pick.foodLog)||[], tax:(pick&&pick.tax)||{}
     });
   }
   var STATE = loadState();
@@ -3407,19 +3414,20 @@
     if(typeof renderLog==='function') renderLog();
     if(typeof renderNotebook==='function') renderNotebook();
     if(typeof renderFoodLog==='function') renderFoodLog();
+    if(typeof renderTaxHelper==='function') renderTaxHelper();
     if(window.rebuildScenarios) window.rebuildScenarios();
     if(typeof refreshFinance==='function') refreshFinance();
   }
   function exportBlank(fid){
     var hs = document.getElementById('hud-state');
     var oks = document.getElementById('__ownerKeySrc');
-    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapN = STATE.notes, snapFL = STATE.foodLog, snapOK = oks?oks.textContent:'';
+    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapN = STATE.notes, snapFL = STATE.foodLog, snapTX = STATE.tax, snapOK = oks?oks.textContent:'';
     try{
       // 0) CRITICAL: strip the owner's private signing key — a Blank copy / customer
       //    file must NEVER contain it, or anyone could mint keys.
       if(oks) oks.textContent = '';
       // 1) blank every data-bearing thing and re-render so NO personal text remains
-      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = []; STATE.notes = []; STATE.foodLog = [];
+      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = []; STATE.notes = []; STATE.foodLog = []; STATE.tax = {};
       STATE.reminders = []; STATE.usage = { totalSec:0, streak:0, lastDay:'' }; delete STATE.bdayYear; STATE.missionsDone = {};
       renderAll();
       // 2) mark it a FRESH template (ignores any device's stored data on open),
@@ -3445,7 +3453,7 @@
     } finally {
       // 3) restore YOUR data + private key exactly as they were
       if(oks) oks.textContent = snapOK;
-      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP; STATE.notes = snapN; STATE.foodLog = snapFL;
+      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP; STATE.notes = snapN; STATE.foodLog = snapFL; STATE.tax = snapTX;
       renderAll();
     }
   }
@@ -3898,6 +3906,7 @@
     if(typeof renderProfile==='function') renderProfile();
     if(typeof renderNotebook==='function') renderNotebook();
     if(typeof renderFoodLog==='function') renderFoodLog();
+    if(typeof renderTaxHelper==='function') renderTaxHelper();
     if(typeof initLocale==='function'){ var ci=document.getElementById('countryInp'); if(ci) ci.value=STATE.prefs.country||''; }
   }
   function loadDemoData(){
@@ -3929,7 +3938,7 @@
 
   /* ---------- BACKUP / IMPORT DATA (private, device-to-device, no upload) ---------- */
   function exportDataCode(){
-    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], foodLog:STATE.foodLog||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
+    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], foodLog:STATE.foodLog||[], tax:STATE.tax||{}, prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
     return 'MRLNDATA-' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));   // UTF-8 safe (emoji/names)
   }
   function importDataCode(code){
@@ -3940,7 +3949,7 @@
     var d = JSON.parse(json);
     if(!d || !d.cfg || !d.cfg.groups) throw new Error('Not a valid MRLN data code');
     MODEL = d.cfg; ensureIds(MODEL); STATE.cfg = MODEL;
-    STATE.workouts=d.workouts||[]; STATE.calendar=d.calendar||{}; STATE.log=d.log||[]; STATE.body=d.body||{}; STATE.prs=d.prs||[]; STATE.notes=d.notes||[]; STATE.foodLog=d.foodLog||[];
+    STATE.workouts=d.workouts||[]; STATE.calendar=d.calendar||{}; STATE.log=d.log||[]; STATE.body=d.body||{}; STATE.prs=d.prs||[]; STATE.notes=d.notes||[]; STATE.foodLog=d.foodLog||[]; STATE.tax=d.tax||{};
     if(d.reminders) STATE.reminders=d.reminders;
     // carry the LIFETIME total across to this device — never lose progress (take the higher)
     if(d.usage){ STATE.usage=STATE.usage||{totalSec:0,streak:0,lastDay:''}; STATE.usage.totalSec=Math.max(STATE.usage.totalSec||0, d.usage.totalSec||0); STATE.usage.streak=Math.max(STATE.usage.streak||0, d.usage.streak||0); }
@@ -3996,6 +4005,227 @@
       location.reload();
     });
   }
+
+  /* ===================== TAX HELPER (offline, adaptive by country) =====================
+     Transparent ESTIMATOR using published ~2025 rates. Not official — every rate is
+     adjustable and the breakdown is shown. Your numbers stay private to your file. */
+  var TAX_CCY={ DK:'DKK', US:'USD', GB:'GBP', DE:'EUR', ES:'EUR', SE:'SEK', NO:'NOK' };
+  var TAX_COUNTRIES=[['DK','🇩🇰 Denmark'],['US','🇺🇸 United States'],['GB','🇬🇧 United Kingdom'],['DE','🇩🇪 Germany'],['ES','🇪🇸 Spain'],['SE','🇸🇪 Sweden'],['NO','🇳🇴 Norway'],['XX','🌍 Other / generic']];
+  var US_STATES=[['',0],['AL',4.0],['AK',0],['AZ',2.5],['AR',3.9],['CA',6.0],['CO',4.4],['CT',5.0],['DE',5.0],['FL',0],['GA',5.39],['HI',7.0],['ID',5.695],['IL',4.95],['IN',3.0],['IA',3.8],['KS',5.0],['KY',4.0],['LA',3.0],['ME',5.0],['MD',4.75],['MA',5.0],['MI',4.25],['MN',6.8],['MS',4.4],['MO',4.7],['MT',5.9],['NE',5.2],['NV',0],['NH',0],['NJ',5.5],['NM',4.9],['NY',6.0],['NC',4.5],['ND',2.0],['OH',3.5],['OK',4.75],['OR',8.75],['PA',3.07],['RI',4.75],['SC',6.2],['SD',0],['TN',0],['TX',0],['UT',4.55],['VT',6.6],['VA',5.0],['WA',0],['WV',5.1],['WI',5.3],['WY',0],['DC',8.5]];
+  // bracket tax: br = [[upTo, rate], ...] with last upTo = Infinity
+  function txBr(taxable, br){ var t=0, prev=0; for(var i=0;i<br.length;i++){ var cap=br[i][0], r=br[i][1]; var amt=Math.max(0, Math.min(taxable,cap)-prev); t+=amt*r; prev=cap; if(taxable<=cap) break; } return t; }
+  function txMarg(taxable, br){ for(var i=0;i<br.length;i++){ if(taxable<=br[i][0]) return br[i][1]; } return br[br.length-1][1]; }
+  var US_FED={ // 2025 federal brackets by filing status
+    single:[[11925,.10],[48475,.12],[103350,.22],[197300,.24],[250525,.32],[626350,.35],[Infinity,.37]],
+    mfj:[[23850,.10],[96950,.12],[206700,.22],[394600,.24],[501050,.32],[751600,.35],[Infinity,.37]],
+    hoh:[[17000,.10],[64850,.12],[103350,.22],[197300,.24],[250500,.32],[626350,.35],[Infinity,.37]]
+  };
+  var US_STD={ single:15000, mfj:30000, hoh:22500 };
+  function taxAdv(k,dflt){ var a=(STATE.tax&&STATE.tax.adv)||{}; return (a[k]!==undefined&&a[k]!==''&&a[k]!==null&&isFinite(+a[k]))?+a[k]:dflt; }
+  function num(v){ var n=parseFloat(v); return isFinite(n)?n:0; }
+  function computeTax(){
+    var T=STATE.tax||{}; var c=T.country||'DK';
+    var gross=num(T.gross), ded=T.ded||{}, withheld=num(T.withheld);
+    var ccy=TAX_CCY[c]||(STATE.prefs&&STATE.prefs.currency)||'DKK';
+    var R={ ok:gross>0, country:c, ccy:ccy, gross:gross, breakdown:[], incomeTax:0, social:0, notes:[], withheld:withheld };
+    if(!(gross>0)){ return R; }
+    if(c==='DK'){
+      var amR=taxAdv('dk_am',0.08), pf=taxAdv('dk_pf',51600), beskR=taxAdv('dk_besk',0.123), beskMax=taxAdv('dk_beskmax',55600),
+          bund=taxAdv('dk_bund',0.1201), komm=taxAdv('dk_komm',0.2506), kirke=(T.church?taxAdv('dk_kirke',0.0066):0),
+          topR=taxAdv('dk_top',0.15), topT=taxAdv('dk_topt',611800);
+      var am=gross*amR, persInc=gross-am;
+      var besk=Math.min(beskR*persInc, beskMax);
+      var akasse=num(ded.akasse), union=num(ded.union), commute=num(ded.commute), other=num(ded.other), pension=num(ded.pension), capNet=num(ded.capitalNet);
+      var ligned=besk+akasse+union+commute+other;
+      var taxable=persInc - pension + capNet - ligned;            // skattepligtig indkomst
+      var bundBase=persInc - pension + Math.max(0,capNet);
+      var bundTax=bund*Math.max(0,bundBase);
+      var topTax=topR*Math.max(0, bundBase - topT);
+      var kommTax=(komm+kirke)*Math.max(0,taxable);
+      var pfCredit=pf*(bund+komm+kirke);
+      var incomeTax=Math.max(0, bundTax+topTax+kommTax - pfCredit);
+      R.breakdown=[
+        {label:'AM-bidrag (8%)',amount:am},
+        {label:'Bundskat',amount:bundTax},
+        {label:'Kommune'+(kirke?'+kirkeskat':' tax'),amount:kommTax},
+        {label:'Topskat',amount:topTax},
+        {label:'− Personfradrag credit',amount:-pfCredit,neg:true}
+      ];
+      R.incomeTax=incomeTax; R.social=am; R.totalTax=am+incomeTax;
+      R.marg=Math.round((amR + bund + komm + kirke + (bundBase>topT?topR:0))*100);
+      // forskudsopgørelse suggestion
+      var traek=Math.round((bund+komm+kirke + (bundBase>topT?topR:0))*100);
+      var monthlyFradrag=Math.round((pf+ligned+pension)/12);
+      R.dk={ traek:traek, fradragMo:monthlyFradrag, fradrag14:Math.round((pf+ligned+pension)/26), topHit:bundBase>topT, am:am };
+      R.notes.push('Trækprocent ≈ bund+kommune'+(kirke?'+kirke':'')+(R.dk.topHit?'+top':'')+' on income after AM-bidrag.');
+    } else if(c==='US'){
+      var status=T.status||'single', std=US_STD[status]||15000, pretax=num(ded.pension);
+      var stateR=taxAdv('us_state', (function(){ for(var i=0;i<US_STATES.length;i++) if(US_STATES[i][0]===(T.region||'')) return US_STATES[i][1]; return 0; })())/100;
+      var fedTaxable=Math.max(0, gross - std - pretax);
+      var fed=txBr(fedTaxable, US_FED[status]||US_FED.single);
+      var ssBase=Math.min(gross, taxAdv('us_ssbase',176100)), ss=0.062*ssBase;
+      var medThresh=status==='mfj'?250000:200000, med=0.0145*gross + (gross>medThresh?0.009*(gross-medThresh):0);
+      var fica=ss+med, stateTax=stateR*fedTaxable;
+      R.breakdown=[{label:'Federal income tax',amount:fed},{label:'Social Security (6.2%)',amount:ss},{label:'Medicare (1.45%)',amount:med},{label:'State tax'+(T.region?(' ('+T.region+')'):''),amount:stateTax}];
+      R.incomeTax=fed+stateTax; R.social=fica; R.totalTax=fed+fica+stateTax;
+      R.marg=Math.round((txMarg(fedTaxable,US_FED[status]||US_FED.single)+stateR+0.0145+(gross<taxAdv('us_ssbase',176100)?0.062:0))*100);
+      R.notes.push('State tax is a flat-rate estimate; progressive states (CA, NY…) vary — adjust the rate in Advanced.');
+    } else if(c==='GB'){
+      var pa=12570; if(gross>100000) pa=Math.max(0,12570-(gross-100000)/2);
+      var pen=num(ded.pension), taxableG=Math.max(0, gross - pa - pen);
+      var itax=txBr(taxableG, [[37700,.20],[112570,.40],[Infinity,.45]]);   // bands above the personal allowance
+      var ni=0.08*Math.max(0, Math.min(gross,50270)-12570) + 0.02*Math.max(0, gross-50270);
+      R.breakdown=[{label:'Income tax',amount:itax},{label:'National Insurance',amount:ni}];
+      R.incomeTax=itax; R.social=ni; R.totalTax=itax+ni;
+      R.marg=Math.round((txMarg(taxableG,[[37700,.20],[112570,.40],[Infinity,.45]])+(gross>50270?0.02:0.08))*100);
+    } else if(c==='DE'){
+      var pen2=num(ded.pension), zvE=Math.max(0, gross - pen2);
+      var it=deIncomeTax(zvE);
+      var church=T.church?0.09*it:0;
+      var socCap1=taxAdv('de_capPK',96600), socCap2=taxAdv('de_capKV',66150);   // 2025 ceilings (approx)
+      var social=0.093*Math.min(gross,socCap1) + 0.013*Math.min(gross,socCap1) + (0.073+0.017)*Math.min(gross,socCap2) + 0.018*Math.min(gross,socCap2);
+      R.breakdown=[{label:'Einkommensteuer',amount:it},{label:'Church tax',amount:church},{label:'Social contributions (≈)',amount:social}];
+      R.incomeTax=it+church; R.social=social; R.totalTax=it+church+social;
+      R.marg=Math.round((deMarg(zvE)+0.2)*100);
+      R.notes.push('German income tax uses the official zone formula; social contributions are a capped approximation.');
+    } else if(c==='ES'){
+      var red=num(ded.pension), base=Math.max(0, gross - red);
+      var br=[[12450,.19],[20200,.24],[35200,.30],[60000,.37],[300000,.45],[Infinity,.47]];
+      var gross_it=txBr(base, br), minCredit=txBr(5550, br), it2=Math.max(0, gross_it-minCredit);
+      var ss=0.0635*Math.min(gross, taxAdv('es_sscap',58908));
+      R.breakdown=[{label:'IRPF income tax',amount:it2},{label:'Social security (6.35%)',amount:ss}];
+      R.incomeTax=it2; R.social=ss; R.totalTax=it2+ss;
+      R.marg=Math.round((txMarg(base,br)+0.0635)*100);
+      R.notes.push('IRPF is state+regional combined; your region may differ slightly.');
+    } else if(c==='SE'){
+      var muni=taxAdv('se_muni',0.3237), grund=taxAdv('se_grund',16200), stT=taxAdv('se_statet',625800);
+      var taxS=Math.max(0, gross-grund);
+      var muniTax=muni*taxS, stateTax2=0.20*Math.max(0, gross-stT);
+      R.breakdown=[{label:'Municipal tax ('+(muni*100).toFixed(1)+'%)',amount:muniTax},{label:'State tax (20% over '+Math.round(stT/1000)+'k)',amount:stateTax2}];
+      R.incomeTax=muniTax+stateTax2; R.social=0; R.totalTax=muniTax+stateTax2;
+      R.marg=Math.round((muni+(gross>stT?0.20:0))*100);
+      R.notes.push('Excludes jobbskatteavdrag (earned-income credit), which lowers the real figure.');
+    } else if(c==='NO'){
+      var minstef=Math.min(0.46*gross, taxAdv('no_minstemax',92000)), persf=taxAdv('no_pf',88250);
+      var ordBase=Math.max(0, gross-minstef-persf), ord=0.22*ordBase;
+      var tryg=0.078*gross;
+      var trinn=txBr(gross, [[217400,0],[306050,.017],[697150,.04],[942400,.136],[1410750,.166],[Infinity,.176]]);
+      R.breakdown=[{label:'Ordinary tax (22%)',amount:ord},{label:'Trinnskatt (bracket)',amount:trinn},{label:'Trygdeavgift (7.8%)',amount:tryg}];
+      R.incomeTax=ord+trinn; R.social=tryg; R.totalTax=ord+trinn+tryg;
+      R.marg=Math.round((0.22+txMarg(gross,[[217400,0],[306050,.017],[697150,.04],[942400,.136],[1410750,.166],[Infinity,.176]])+0.078)*100);
+    } else {
+      var flat=taxAdv('xx_rate',0.25), socR=taxAdv('xx_soc',0);
+      var it3=flat*gross, soc3=socR*gross;
+      R.breakdown=[{label:'Income tax ('+(flat*100).toFixed(1)+'%)',amount:it3},{label:'Social ('+(socR*100).toFixed(1)+'%)',amount:soc3}];
+      R.incomeTax=it3; R.social=soc3; R.totalTax=it3+soc3;
+      R.marg=Math.round((flat+socR)*100);
+      R.notes.push('Generic flat estimate — set your country\'s rate in Advanced for a closer figure.');
+    }
+    R.net=gross-R.totalTax; R.eff=gross>0?Math.round(R.totalTax/gross*100):0;
+    if(withheld>0){ R.recon={ withheld:withheld, computed:R.totalTax, diff:withheld-R.totalTax }; }
+    return R;
+  }
+  // German 2025 income-tax zone formula (approx)
+  function deIncomeTax(x){
+    if(x<=12096) return 0;
+    if(x<=17443){ var y=(x-12096)/10000; return Math.round((932.30*y+1400)*y); }
+    if(x<=68480){ var z=(x-17443)/10000; return Math.round((176.64*z+2397)*z+1015.13); }
+    if(x<=277825){ return Math.round(0.42*x-10911.92); }
+    return Math.round(0.45*x-19246.67);
+  }
+  function deMarg(x){ if(x<=12096) return 0; if(x<=17443) return 0.20; if(x<=68480) return 0.32; if(x<=277825) return 0.42; return 0.45; }
+  function txMoney(n,ccy){ var s={DKK:['',' kr'],SEK:['',' kr'],NOK:['',' kr'],USD:['$',''],GBP:['£',''],EUR:['€','']}[ccy]||['',' '+(ccy||'')]; return s[0]+Math.round(n).toLocaleString('en-GB')+s[1]; }
+  var TAXUI=(function(){
+    var calcTimer=null;
+    function defCountry(){ return ({DKK:'DK',USD:'US',GBP:'GB',EUR:'DE',SEK:'SE',NOK:'NO'})[(STATE.prefs&&STATE.prefs.currency)]||'DK'; }
+    function ts(){ STATE.tax=STATE.tax||{}; var t=STATE.tax; if(!t.country) t.country=defCountry(); t.ded=t.ded||{}; t.adv=t.adv||{}; return t; }
+    function deductionsHTML(c,t){
+      var d=t.ded||{}, f=[];
+      if(c==='DK') f=[['akasse','A-kasse contribution (year)'],['union','Union / fagforening (year)'],['pension','Own pension contribution (year)'],['commute','Commute / befordring deduction (year)'],['capitalNet','Net capital income — interest (can be −)'],['other','Other deductions (year)']];
+      else if(c==='US') f=[['pension','401(k) / pre-tax contributions (year)']];
+      else if(c==='GB'||c==='DE'||c==='ES') f=[['pension','Pension contributions (year)']];
+      else return '';
+      return '<details style="margin:10px 0"><summary style="cursor:pointer;font-size:13px;color:var(--cyan)">Deductions (optional) — improves accuracy</summary><div style="margin-top:8px">'+
+        f.map(function(x){ return '<div class="field"><label>'+x[1]+'</label><input data-txded="'+x[0]+'" type="number" step="1" value="'+esc(d[x[0]]!=null?d[x[0]]:'')+'" placeholder="0"></div>'; }).join('')+'</div></details>';
+    }
+    function advancedHTML(c,t){
+      var a=t.adv||{}, f=[];
+      if(c==='DK') f=[['dk_komm','Municipality tax rate (e.g. 0.2506)'],['dk_topt','Topskat threshold'],['dk_besk','Employment-deduction rate (e.g. 0.123)']];
+      else if(c==='US') f=[['us_state','State tax rate % (overrides the table)']];
+      else if(c==='SE') f=[['se_muni','Municipal rate (e.g. 0.3237)'],['se_grund','Grundavdrag'],['se_statet','State-tax threshold']];
+      else if(c==='NO') f=[['no_pf','Personfradrag']];
+      else if(c==='ES') f=[['es_sscap','Social-security income cap']];
+      else if(c==='DE') f=[['de_capKV','Health/care ceiling'],['de_capPK','Pension/unempl. ceiling']];
+      else if(c==='XX') f=[['xx_rate','Flat income-tax rate (e.g. 0.25)'],['xx_soc','Social rate (e.g. 0.08)']];
+      if(!f.length) return '';
+      return '<details style="margin:10px 0"><summary style="cursor:pointer;font-size:13px;color:var(--cyan)">Advanced — adjust the rates used</summary><div style="margin-top:8px">'+
+        f.map(function(x){ return '<div class="field"><label>'+x[1]+'</label><input data-txadv="'+x[0]+'" type="number" step="any" value="'+esc(a[x[0]]!=null?a[x[0]]:'')+'" placeholder="default"></div>'; }).join('')+'</div></details>';
+    }
+    function renderForm(){
+      var host=document.getElementById('taxForm'); if(!host) return;
+      var t=ts(), c=t.country;
+      var badge=document.getElementById('taxCountryBadge'); if(badge){ var nm=TAX_COUNTRIES.filter(function(x){return x[0]===c;})[0]; badge.textContent=nm?nm[1]:c; }
+      var h='<div class="form-row"><div class="field"><label>Country</label><select id="txCountry">'+
+        TAX_COUNTRIES.map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===c?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select></div>';
+      if(c==='US'){ h+='<div class="field"><label>State</label><select id="txRegion">'+US_STATES.map(function(s){ return '<option value="'+s[0]+'"'+(s[0]===(t.region||'')?' selected':'')+'>'+(s[0]?s[0]:'— pick —')+'</option>'; }).join('')+'</select></div>'; }
+      h+='</div>';
+      var sub='';
+      if(c==='US') sub+='<div class="field"><label>Filing status</label><select id="txStatus">'+[['single','Single'],['mfj','Married — joint'],['hoh','Head of household']].map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===(t.status||'single')?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select></div>';
+      if(c==='DK'||c==='DE') sub+='<div class="field"><label>'+(c==='DK'?'Member of folkekirken?':'Pay church tax?')+'</label><select id="txChurch"><option value="no"'+(!t.church?' selected':'')+'>No</option><option value="yes"'+(t.church?' selected':'')+'>Yes</option></select></div>';
+      if(sub) h+='<div class="form-row">'+sub+'</div>';
+      h+='<div class="field"><label>Gross annual income (before tax)</label><input id="txGross" type="number" min="0" step="100" value="'+esc(t.gross||'')+'" placeholder="e.g. '+(c==='DK'?'319700':c==='US'?'60000':'50000')+'"></div>';
+      h+='<div class="field"><label>Tax already withheld this year (optional)</label><input id="txWithheld" type="number" min="0" value="'+esc(t.withheld||'')+'" placeholder="'+(c==='DK'?'forskudsskat from your skattekort':'total withheld so far')+'"></div>';
+      h+=deductionsHTML(c,t)+advancedHTML(c,t);
+      host.innerHTML=h;
+    }
+    function recompute(){ renderOut(computeTax()); }
+    function renderOut(R){
+      var host=document.getElementById('taxOut'); if(!host) return;
+      if(!R.ok){ host.innerHTML='<div class="empty">Enter your gross annual income above to see the estimate.</div>'; return; }
+      var M=function(n){ return txMoney(n,R.ccy); };
+      var rows=R.breakdown.map(function(b){ return '<div class="calc-row"><span>'+esc(b.label)+'</span><b'+(b.neg?' style="color:var(--lime)"':'')+'>'+M(b.amount)+'</b></div>'; }).join('');
+      var html='<div class="status"><div class="stat avg"><div class="lbl">Total tax</div><div class="val" style="font-size:17px">'+M(R.totalTax)+'</div></div>'+
+        '<div class="stat high"><div class="lbl">Take-home</div><div class="val" style="font-size:17px">'+M(R.net)+'</div></div>'+
+        '<div class="stat low"><div class="lbl">Effective</div><div class="val" style="font-size:17px">'+R.eff+'%</div></div></div>';
+      html+='<div class="subtotal" style="margin-top:12px">'+rows+
+        '<div class="calc-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:6px"><span><b>Total tax &amp; contributions</b></span><b>'+M(R.totalTax)+'</b></div>'+
+        '<div class="calc-row"><span>Net take-home / year</span><b>'+M(R.net)+'</b></div>'+
+        '<div class="calc-row"><span>≈ per month</span><b>'+M(R.net/12)+'</b></div>'+
+        '<div class="calc-row"><span>Marginal rate (next kr/€/$)</span><b>'+R.marg+'%</b></div></div>';
+      if(R.recon){ var d=R.recon.diff; html+='<div class="note" style="margin-top:12px;'+(d>=0?'color:var(--lime)':'color:var(--amber)')+'">'+(d>=0?('✅ Estimated refund'+(R.country==='DK'?' (overskydende skat)':'')+': <b>'+M(d)+'</b>'):('⚠️ You may owe'+(R.country==='DK'?' (restskat)':'')+': <b>'+M(-d)+'</b>'))+' — withheld '+M(R.recon.withheld)+' vs estimated '+M(R.recon.computed)+'.</div>'; }
+      if(R.dk){ html+='<div style="margin-top:14px;background:#08131f;border:1px solid var(--line);border-radius:12px;padding:14px"><b style="font-family:Orbitron;font-size:13px;color:#eaffff">📋 Forskudsopgørelse — suggested entries</b>'+
+        '<div class="calc-row" style="margin-top:8px"><span>Trækprocent</span><b>'+R.dk.traek+' %</b></div>'+
+        '<div class="calc-row"><span>Fradrag / month</span><b>'+M(R.dk.fradragMo)+'</b></div>'+
+        '<div class="calc-row"><span>Fradrag / 14 days</span><b>'+M(R.dk.fradrag14)+'</b></div>'+
+        (R.dk.topHit?'<div class="note" style="margin-top:6px;color:var(--amber)">You\'re into <b>topskat</b> — an extra 15% on personal income above the threshold.</div>':'')+
+        '<div class="note" style="margin-top:6px">Type these on <b>tastselv.skat.dk → Forskudsopgørelse</b> (field 201 is your yearly income). Estimate — compare with SKAT\'s own calculation.</div></div>'; }
+      if(R.notes.length) html+='<div class="note" style="margin-top:10px;color:var(--txt-dim)">'+R.notes.map(esc).join(' ')+'</div>';
+      html+='<div class="note" style="margin-top:8px;font-size:11px;color:var(--txt-dim)">⚠️ Estimate from published ~2025 rates — not tax advice. Always verify with your tax authority before filing.</div>';
+      host.innerHTML=html;
+    }
+    function wire(){
+      var form=document.getElementById('taxForm'); if(!form) return;
+      form.addEventListener('change', function(e){
+        var t=ts(), id=e.target.id;
+        if(id==='txCountry'){ t.country=e.target.value; t.region=''; renderForm(); recompute(); autosave(); return; }
+        if(id==='txRegion'){ t.region=e.target.value; recompute(); autosave(); return; }
+        if(id==='txStatus'){ t.status=e.target.value; recompute(); autosave(); return; }
+        if(id==='txChurch'){ t.church=(e.target.value==='yes'); recompute(); autosave(); return; }
+      });
+      form.addEventListener('input', function(e){
+        var t=ts(), el=e.target;
+        if(el.id==='txGross'){ t.gross=el.value; }
+        else if(el.id==='txWithheld'){ t.withheld=el.value; }
+        else if(el.hasAttribute&&el.hasAttribute('data-txded')){ t.ded[el.getAttribute('data-txded')]=el.value; }
+        else if(el.hasAttribute&&el.hasAttribute('data-txadv')){ t.adv[el.getAttribute('data-txadv')]=el.value; }
+        else return;
+        clearTimeout(calcTimer); calcTimer=setTimeout(function(){ recompute(); autosave(); }, 180);
+      });
+    }
+    wire();
+    return { render:function(){ renderForm(); recompute(); } };
+  })();
+  function renderTaxHelper(){ if(TAXUI) TAXUI.render(); }
 
   /* ===================== FOOD LOG (offline estimator + photo log) =====================
      No servers, no APIs: you type what you ate, we estimate macros from a built-in
@@ -4987,6 +5217,7 @@
   renderLog();
   renderNotebook();
   renderFoodLog();
+  renderTaxHelper();
   initLocale();       // language / currency / country — apply saved prefs + wire pickers
   applyCleanModeClass();   // hide example-only narrative for clean/new users
   if(window.rebuildScenarios) window.rebuildScenarios();
