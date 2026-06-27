@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>FINANCE HUD</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#03070e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MRLN">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
 
@@ -549,67 +557,6 @@
 </div>
 
 <!-- BACKUP / IMPORT DATA (move your data between devices, privately) -->
-<div class="modal-back" id="dataBack">
-  <div class="modal" role="dialog" aria-modal="true" style="max-width:480px">
-    <h3>⇄ Backup / Import data</h3>
-    <div class="mwarn" style="font-size:12.5px">Move your numbers between your own devices. Your data stays <b>private to your devices</b> — it is never uploaded anywhere.</div>
-    <div id="deviceTip" style="display:none;margin-top:10px;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--txt)"></div>
-
-    <h2 style="font-size:14px;margin-top:16px">1 · Back up / copy out</h2>
-    <div class="desc" style="font-size:12.5px">Make a private code of everything on this device. Paste it into the box below on another device (e.g. your iPhone) to copy your data over.</div>
-    <button class="btn ghost" id="dataExportBtn" style="margin-top:8px">Make my data code</button>
-    <div id="dataExportWrap" style="display:none;margin-top:10px">
-      <div id="dataCode" style="background:#06101c;border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:11px;padding:11px;word-break:break-all;line-height:1.45;max-height:120px;overflow:auto;cursor:pointer;user-select:text"></div>
-      <div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" id="dataCopy" style="flex:1">Copy code</button><button class="btn ghost" id="dataDownload" style="flex:1">Download as file</button></div>
-    </div>
-
-    <h2 style="font-size:14px;margin-top:20px">2 · Import (load onto this device)</h2>
-    <div class="desc" style="font-size:12.5px">Paste a data code here (or pick a downloaded data file) and load it. This <b>replaces</b> what's on this device.</div>
-    <textarea id="dataImportText" placeholder="Paste your MRLNDATA- code here" style="width:100%;min-height:64px;margin-top:8px"></textarea>
-    <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-      <button class="btn" id="dataImportBtn" style="flex:1">Import &amp; load</button>
-      <label class="btn ghost" style="flex:1;text-align:center;cursor:pointer;margin:0">Pick a file<input type="file" id="dataImportFile" accept=".txt,.json" style="display:none"></label>
-    </div>
-    <div id="dataMsg" class="note" style="display:none;margin-top:10px"></div>
-
-    <details style="margin-top:18px"><summary style="cursor:pointer;font-size:14px;font-family:Orbitron;color:#eaffff">3 · Import from another app 📥</summary>
-      <div class="desc" style="font-size:12.5px;margin-top:8px">Pick a file your other apps export. We read it <b>on your device</b> — nothing is uploaded.</div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">🏦 Bank / card statement (CSV) → income &amp; expenses<input type="file" id="impBank" accept=".csv,.txt" style="display:none"></label>
-        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">📅 Calendar (.ics) → your calendar<input type="file" id="impIcs" accept=".ics,.txt" style="display:none"></label>
-        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">⚖️ Weight (Apple Health / CSV) → body stats<input type="file" id="impWeight" accept=".csv,.txt" style="display:none"></label>
-        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">🍽️ Food (MyFitnessPal CSV) → food log<input type="file" id="impFood" accept=".csv,.txt" style="display:none"></label>
-      </div>
-      <div id="impMsg" class="note" style="display:none;margin-top:10px"></div>
-      <div id="impPreview" style="margin-top:10px"></div>
-    </details>
-
-    <details style="margin-top:14px"><summary style="cursor:pointer;font-size:14px;font-family:Orbitron;color:#eaffff">4 · Export to other apps 📤</summary>
-      <div class="desc" style="font-size:12.5px;margin-top:8px">Send your data out as standard files other apps can open.</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-        <button class="btn ghost" id="expIcs" style="flex:1;min-width:140px">📅 Calendar .ics</button>
-        <button class="btn ghost" id="expExpenses" style="flex:1;min-width:140px">💸 Expenses CSV</button>
-        <button class="btn ghost" id="expFood" style="flex:1;min-width:140px">🍽️ Food log CSV</button>
-        <button class="btn ghost" id="expShare" style="flex:1;min-width:140px">🔗 Share…</button>
-      </div>
-    </details>
-
-    <details style="margin-top:14px"><summary style="cursor:pointer;font-size:14px;font-family:Orbitron;color:#eaffff">5 · QR transfer 📱</summary>
-      <div class="desc" style="font-size:12.5px;margin-top:8px">Show a QR and scan it with another phone's <b>camera</b> — no typing. Best for short things (your access key, File ID, a link).</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-        <button class="btn ghost" id="qrKey" style="flex:1;min-width:120px">🔑 My access key</button>
-        <button class="btn ghost" id="qrLink" style="flex:1;min-width:120px">🌐 My link</button>
-        <button class="btn ghost" id="qrData" style="flex:1;min-width:120px">🗂️ My data</button>
-      </div>
-      <div id="qrWrap" style="display:none;flex-direction:column;align-items:center;margin-top:12px">
-        <canvas id="qrCanvas" style="background:#fff;border-radius:10px;max-width:100%"></canvas>
-        <div id="qrCaption" class="note" style="margin-top:8px;text-align:center"></div>
-      </div>
-    </details>
-
-    <div class="modal-actions"><button class="mcancel" id="dataClose">Close</button></div>
-  </div>
-</div>
 
 <div class="modal-back" id="dayBack">
   <div class="modal" role="dialog" aria-modal="true" style="max-width:460px">
@@ -747,7 +694,8 @@
     <button class="tab" data-p="calendar"><span class="ix">13</span>Calendar</button>
     <button class="tab" data-p="stats"><span class="ix">14</span>Stats &amp; Grades</button>
     <button class="tab" data-p="notebook"><span class="ix">15</span>Notebook</button>
-    <button class="tab" data-p="log"><span class="ix">16</span>Change Log</button>
+    <button class="tab" data-p="connect"><span class="ix">16</span>Connect</button>
+    <button class="tab" data-p="log"><span class="ix">17</span>Change Log</button>
   </nav>
 
   <!-- 01 OVERVIEW -->
@@ -1343,6 +1291,75 @@
       </div>
       <textarea id="noteBody" placeholder="Start writing…" style="width:100%;min-height:260px;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:Rajdhani;font-size:15px;line-height:1.55;resize:vertical"></textarea>
       <div class="note" id="noteMeta" style="margin-top:8px">—</div>
+    </div>
+  </section>
+
+  <!-- CONNECT -->
+  <section class="panel" id="connect">
+    <div class="card" id="installCard" style="display:none">
+      <h2>📲 Install the app</h2>
+      <div class="desc">Install MRLN to your home screen so it opens like a real app, works fully offline, and your data is kept safe from being cleared. Highly recommended on your phone.</div>
+      <button class="btn" id="installBtn" style="display:none">⬇ Install MRLN</button>
+      <div class="note" id="installNote"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔒 Backup &amp; restore</h2>
+      <div class="desc">Move your data between your own devices. It stays <b>private to your devices</b> — never uploaded.</div>
+      <div id="deviceTip" style="display:none;margin-top:6px;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--txt)"></div>
+      <h2 style="font-size:14px;margin-top:14px">Back up / copy out</h2>
+      <div class="desc" style="font-size:12.5px">Make a private code of everything on this device, then paste it on another device.</div>
+      <button class="btn ghost" id="dataExportBtn" style="margin-top:8px">Make my data code</button>
+      <div id="dataExportWrap" style="display:none;margin-top:10px">
+        <div id="dataCode" style="background:#06101c;border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:11px;padding:11px;word-break:break-all;line-height:1.45;max-height:120px;overflow:auto;cursor:pointer;user-select:text"></div>
+        <div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" id="dataCopy" style="flex:1">Copy code</button><button class="btn ghost" id="dataDownload" style="flex:1">Download as file</button></div>
+      </div>
+      <h2 style="font-size:14px;margin-top:18px">Import (load onto this device)</h2>
+      <div class="desc" style="font-size:12.5px">Paste a data code (or pick a downloaded data file). This <b>replaces</b> what's on this device.</div>
+      <textarea id="dataImportText" placeholder="Paste your MRLNDATA- code here" style="width:100%;min-height:64px;margin-top:8px"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+        <button class="btn" id="dataImportBtn" style="flex:1">Import &amp; load</button>
+        <label class="btn ghost" style="flex:1;text-align:center;cursor:pointer;margin:0">Pick a file<input type="file" id="dataImportFile" accept=".txt,.json" style="display:none"></label>
+      </div>
+      <div id="dataMsg" class="note" style="display:none;margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h2>📥 Import from another app</h2>
+      <div class="desc">Pick a file your other apps export. We read it <b>on your device</b> — nothing is uploaded.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">🏦 Bank / card statement (CSV) → income &amp; expenses<input type="file" id="impBank" accept=".csv,.txt" style="display:none"></label>
+        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">📅 Calendar (.ics) → your calendar<input type="file" id="impIcs" accept=".ics,.txt" style="display:none"></label>
+        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">⚖️ Weight (Apple Health / CSV) → body stats<input type="file" id="impWeight" accept=".csv,.txt" style="display:none"></label>
+        <label class="btn ghost" style="cursor:pointer;margin:0;text-align:left">🍽️ Food (MyFitnessPal CSV) → food log<input type="file" id="impFood" accept=".csv,.txt" style="display:none"></label>
+      </div>
+      <div id="impMsg" class="note" style="display:none;margin-top:10px"></div>
+      <div id="impPreview" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h2>📤 Export to other apps</h2>
+      <div class="desc">Send your data out as standard files other apps can open.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+        <button class="btn ghost" id="expIcs" style="flex:1;min-width:140px">📅 Calendar .ics</button>
+        <button class="btn ghost" id="expExpenses" style="flex:1;min-width:140px">💸 Expenses CSV</button>
+        <button class="btn ghost" id="expFood" style="flex:1;min-width:140px">🍽️ Food log CSV</button>
+        <button class="btn ghost" id="expShare" style="flex:1;min-width:140px">🔗 Share…</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📱 QR transfer</h2>
+      <div class="desc">Show a QR and scan it with another phone's <b>camera</b> — no typing. Best for short things (your access key, File ID, a link).</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+        <button class="btn ghost" id="qrKey" style="flex:1;min-width:120px">🔑 My access key</button>
+        <button class="btn ghost" id="qrLink" style="flex:1;min-width:120px">🌐 My link</button>
+        <button class="btn ghost" id="qrData" style="flex:1;min-width:120px">🗂️ My data</button>
+      </div>
+      <div id="qrWrap" style="display:none;flex-direction:column;align-items:center;margin-top:12px">
+        <canvas id="qrCanvas" style="background:#fff;border-radius:10px;max-width:100%"></canvas>
+        <div id="qrCaption" class="note" style="margin-top:8px;text-align:center"></div>
+      </div>
     </div>
   </section>
 
@@ -4016,13 +4033,9 @@
     autosave();
   }
   (function initDataIO(){
-    var open=document.getElementById('dataBtn'), back=document.getElementById('dataBack');
-    if(!back) return;
-    function show(){ if(typeof renderDeviceTip==='function') renderDeviceTip(); back.classList.add('show'); }
-    function hide(){ back.classList.remove('show'); }
-    if(open) open.addEventListener('click', show);
-    var cl=document.getElementById('dataClose'); if(cl) cl.addEventListener('click', hide);
-    back.addEventListener('click', function(e){ if(e.target===back) hide(); });
+    var open=document.getElementById('dataBtn');   // savebar "Backup / Import" → Connect tab
+    function gotoConnect(){ if(typeof renderDeviceTip==='function') renderDeviceTip(); var t=document.querySelector('#tabs .tab[data-p="connect"]'); if(t) t.click(); }
+    if(open) open.addEventListener('click', gotoConnect);
     function msg(t,ok){ var m=document.getElementById('dataMsg'); if(m){ m.style.display='block'; m.textContent=t; m.style.color= ok?'var(--lime)':'var(--amber)'; } }
     var ex=document.getElementById('dataExportBtn');
     if(ex) ex.addEventListener('click', function(){ try{ document.getElementById('dataCode').textContent=exportDataCode(); document.getElementById('dataExportWrap').style.display='block'; }catch(e){ msg('Could not make code: '+e.message,false); } });
@@ -5536,6 +5549,32 @@
   renderUsage();
   // celebrate the birthday once it's the day (also re-checked just after unlock)
   setTimeout(checkBirthday, 800);
+
+  /* ===================== PWA: persistent storage + offline + install ===================== */
+  (function initPWA(){
+    // 1) ask the browser to keep our localStorage (stops iOS/Safari 7-day eviction once granted)
+    try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ if(!p) navigator.storage.persist().catch(function(){}); }).catch(function(){}); } }catch(_){}
+    // 2) register the offline service worker — secure contexts only (https or localhost; file:// has no SW)
+    try{ var sec=(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'); if('serviceWorker' in navigator && sec){ navigator.serviceWorker.register('sw.js').catch(function(){}); } }catch(_){}
+    // 3) install prompt
+    var deferred=null;
+    function installed(){ try{ return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true; }catch(_){ return false; } }
+    function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+    var card=document.getElementById('installCard'), btn=document.getElementById('installBtn'), note=document.getElementById('installNote');
+    if(btn) btn.addEventListener('click', function(){ if(deferred){ deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; btn.style.display='none'; }); } });
+    function refreshInstallUI(){
+      if(!card) return;
+      if(installed()){ card.style.display='none'; return; }
+      if(deferred){ card.style.display=''; if(btn) btn.style.display=''; if(note) note.textContent=''; return; }
+      if(isIOS()){ card.style.display=''; if(btn) btn.style.display='none'; if(note) note.innerHTML='On iPhone/iPad: tap the <b>Share</b> button in Safari, then <b>“Add to Home Screen.”</b>'; return; }
+      // not installable here (e.g. opened as a downloaded file) — keep it hidden
+      card.style.display='none';
+    }
+    window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; refreshInstallUI(); });
+    window.addEventListener('appinstalled', function(){ deferred=null; if(card) card.style.display='none'; });
+    refreshInstallUI();
+    window.__pwaInstalled=installed;
+  })();
 </script>
 </body>
 </html>
