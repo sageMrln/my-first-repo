@@ -2690,7 +2690,65 @@
     {n:'Turkey meatball marinara with penne',goals:['maintain','bulk'],kcal:600,p:46,c:64,f:16,tags:['turkey','pasta','penne','meatballs','italian','tomato'],ing:['180g turkey mince (meatballs)','110g penne (dry)','marinara sauce','garlic, herbs','parmesan']}
   ];
   function splitTerms(s){ return (s||'').toLowerCase().split(/[,\n;]+/).map(function(x){ return x.trim(); }).filter(Boolean); }
-  function mealMatchesText(m,term){ if(m.n.toLowerCase().indexOf(term)>=0) return true; return m.tags.some(function(t){ return t.indexOf(term)>=0 || term.indexOf(t)>=0; }); }
+  // ---- robust like/dislike matching: typo-tolerant + synonyms + scans ingredients ----
+  // so "Chesse." still avoids parmesan, feta, cottage cheese, etc.
+  var FOOD_SYN={
+    cheese:['cheese','parmesan','feta','mozzarella','cheddar','paneer','ricotta','halloumi','brie','gouda'],
+    dairy:['milk','cream','yogurt','yoghurt','butter','cheese','parmesan','feta','mozzarella','cheddar','paneer','cottage'],
+    pork:['pork','bacon','ham','sausage','chorizo','prosciutto'],
+    beef:['beef','steak','mince','bolognese'],
+    chicken:['chicken','poultry'],
+    turkey:['turkey'],
+    fish:['fish','salmon','tuna','mackerel','cod','sardine','anchovy'],
+    shellfish:['shrimp','prawn','prawns','crab','lobster','mussel','seafood'],
+    seafood:['fish','salmon','tuna','mackerel','cod','shrimp','prawn','prawns','seafood'],
+    egg:['egg','eggs'],
+    nuts:['nut','nuts','peanut','peanuts','almond','cashew','walnut','pesto'],
+    peanut:['peanut','peanuts'],
+    gluten:['pasta','bread','wheat','rye','noodle','noodles','spaghetti','penne','linguine','macaroni','fettuccine','granola','crouton','croutons','oats','wrap'],
+    spicy:['spicy','chilli','chili','curry'],
+    meat:['chicken','beef','steak','pork','turkey','mince','meatball','bacon','ham','sausage'],
+    rice:['rice','jasmine'],
+    tomato:['tomato','marinara','passata','bolognese'],
+    vegan:[], vegetarian:[]
+  };
+  function normTerm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim(); }
+  var FOOD_VOCAB=(function(){
+    var set={}; function add(w){ normTerm(w).split(' ').forEach(function(t){ if(t.length>=3) set[t]=1; }); }
+    Object.keys(FOOD_SYN).forEach(function(k){ add(k); FOOD_SYN[k].forEach(add); });
+    MEAL_DB.forEach(function(m){ add(m.n); (m.tags||[]).forEach(add); (m.ing||[]).forEach(add); });
+    return Object.keys(set);
+  })();
+  function lev(a,b){
+    var m=a.length,n=b.length; if(!m) return n; if(!n) return m;
+    var prev=[],cur=[],i,j; for(j=0;j<=n;j++) prev[j]=j;
+    for(i=1;i<=m;i++){ cur[0]=i; for(j=1;j<=n;j++){ cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a.charAt(i-1)===b.charAt(j-1)?0:1)); } for(j=0;j<=n;j++) prev[j]=cur[j]; }
+    return prev[n];
+  }
+  function fuzzyCorrect(term){
+    if(FOOD_VOCAB.indexOf(term)>=0) return null;
+    var best=null,bd=99,thr=term.length<=4?1:2;
+    for(var i=0;i<FOOD_VOCAB.length;i++){ var w=FOOD_VOCAB[i]; if(Math.abs(w.length-term.length)>thr) continue; var d=lev(term,w); if(d<bd){ bd=d; best=w; } }
+    return (best && bd<=thr && bd<term.length) ? best : null;
+  }
+  var _expandCache={}, FOOD_STOP={very:1,with:1,and:1,the:1,for:1,some:1,any:1,more:1,less:1,plus:1,extra:1,really:1,too:1};
+  function expandTerm(term){
+    term=normTerm(term); if(term.length<2) return [];
+    if(_expandCache[term]) return _expandCache[term];
+    var out={}, toks=term.split(' ').filter(function(t){ return t.length>=3 && !FOOD_STOP[t]; });
+    toks.push(term);   // also match the whole phrase
+    toks.forEach(function(t){
+      if(FOOD_STOP[t]) return;
+      out[t]=1;
+      var corr=fuzzyCorrect(t); if(corr) out[corr]=1;
+      [t,corr].forEach(function(x){ if(x&&FOOD_SYN[x]) FOOD_SYN[x].forEach(function(w){ out[normTerm(w)]=1; }); });
+    });
+    var arr=Object.keys(out).filter(function(w){ return w.length>=3; });
+    _expandCache[term]=arr; return arr;
+  }
+  function mealHay(m){ return (m.n+' '+(m.tags||[]).join(' ')+' '+(m.ing||[]).join(' ')).toLowerCase(); }
+  function termHitsMeal(term,m){ var ws=expandTerm(term); if(!ws.length) return false; var hay=mealHay(m); return ws.some(function(w){ return hay.indexOf(w)>=0; }); }
+  function mealMatchesText(m,term){ return termHitsMeal(term,m); }   // back-compat alias
   function updateMealBadge(){
     var b=document.getElementById('mealGoalBadge'); if(!b) return;
     var g=(STATE.body&&STATE.body.goal)||'maintain';
