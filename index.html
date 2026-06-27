@@ -595,6 +595,14 @@
   </div>
 </div>
 
+<div class="modal-back" id="mealBack">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:460px">
+    <h3 id="mealMTitle">🍽️ Meal</h3>
+    <div id="mealMBody" style="max-height:70vh;overflow-y:auto"></div>
+    <div class="modal-actions"><button class="mcancel" id="mealMClose">Close</button></div>
+  </div>
+</div>
+
 <!-- GUIDED TOUR -->
 <div id="tourRing"></div>
 <div id="tourTip">
@@ -1110,7 +1118,22 @@
 
     <div class="card">
       <h2>Meal Ideas <span class="tag now" id="mealGoalBadge" style="font-size:11px">—</span></h2>
-      <div class="desc">Goal-matched meals with macros and a recipe video for each. Tell us what you love and what to avoid — we weight toward your likes and never suggest a dislike. Your goal follows the <b>Cut / Maintain / Bulk</b> buttons above.</div>
+      <div class="desc">Meals tuned to <b>your body</b> — your calorie &amp; protein targets, your fat-to-muscle balance, and the physique you're chasing. We weight toward what you like, never suggest a dislike, and tell you <b>how much</b> to eat. Tap any meal for full nutrition.</div>
+      <div class="form-row">
+        <div class="field"><label>Physique you want</label><select id="mealPhysique">
+          <option value="healthy">Just healthy / balanced</option>
+          <option value="lean">Lean &amp; toned</option>
+          <option value="athletic">Athletic / functional</option>
+          <option value="bodybuilder">Bodybuilder / muscular</option>
+        </select></div>
+        <div class="field"><label>Training focus</label><select id="mealTraining">
+          <option value="general">General fitness</option>
+          <option value="strength">Strength / weights</option>
+          <option value="calisthenics">Calisthenics</option>
+          <option value="hybrid">Hybrid (both)</option>
+        </select></div>
+      </div>
+      <div class="note" id="mealTargets" style="display:none;margin:2px 0 12px"></div>
       <div class="form-row">
         <div class="field"><label>Ingredients / cuisines you like</label><input id="mealLikes" placeholder="e.g. chicken, rice, Thai, eggs"></div>
       </div>
@@ -2564,7 +2587,10 @@
       // seed from saved
       if(STATE.body[pair[1]]!=null && STATE.body[pair[1]]!=='') el.value=STATE.body[pair[1]];
       var evt = (el.tagName==='SELECT') ? 'change' : 'input';
-      el.addEventListener(evt, function(){ STATE.body[pair[1]] = el.value; autosave(); renderBody(); });
+      el.addEventListener(evt, function(){ STATE.body[pair[1]] = el.value; autosave(); renderBody();
+        if(typeof updateMealTargets==='function') updateMealTargets();
+        var mo=document.getElementById('mealOut'); if(mo && mo.innerHTML.trim() && typeof renderMeals==='function') renderMeals(false);
+      });
     });
     var sl=document.getElementById('calSlider');
     if(sl) sl.addEventListener('input', function(){ sl.dataset.touched='1'; calSim(); });
@@ -2598,7 +2624,12 @@
     if(mg) mg.addEventListener('click', function(){ if(ml)STATE.body.diet.likes=ml.value; if(md)STATE.body.diet.dislikes=md.value; autosave(); renderMeals(true); });
     var mc=document.getElementById('mealClear');
     if(mc) mc.addEventListener('click', function(){ clearMeals(); });
+    // physique goal + training focus → feed the personalised engine
+    var mph=document.getElementById('mealPhysique'), mtr=document.getElementById('mealTraining');
+    if(mph){ if(STATE.body.physique) mph.value=STATE.body.physique; mph.addEventListener('change', function(){ STATE.body.physique=mph.value; mealOffset=0; autosave(); updateMealTargets(); if(document.getElementById('mealOut').innerHTML.trim()) renderMeals(false); }); }
+    if(mtr){ if(STATE.body.training) mtr.value=STATE.body.training; mtr.addEventListener('change', function(){ STATE.body.training=mtr.value; mealOffset=0; autosave(); updateMealTargets(); if(document.getElementById('mealOut').innerHTML.trim()) renderMeals(false); }); }
     if(typeof updateMealBadge==='function') updateMealBadge();
+    if(typeof updateMealTargets==='function') updateMealTargets();
     // PR form
     var prAdd=document.getElementById('prAdd');
     if(prAdd) prAdd.addEventListener('click', function(){
@@ -2628,27 +2659,28 @@
   /* ===================== MEAL IDEAS (goal-matched, likes/dislikes) ===================== */
   // Each meal carries macros (per serving) + tags (ingredients & cuisine) + goals it suits.
   // YouTube link is a search query so it always resolves to a real recipe video, offline-safe.
+  // macros are per standard serving; ing = ingredients shown in the detail window
   var MEAL_DB=[
-    {n:'Grilled chicken, rice & broccoli',goals:['cut','maintain','bulk'],kcal:520,p:48,c:55,f:10,tags:['chicken','rice','broccoli','high protein','meal prep']},
-    {n:'Lean beef & sweet potato bowl',goals:['maintain','bulk'],kcal:640,p:46,c:60,f:22,tags:['beef','sweet potato','high protein']},
-    {n:'Salmon, quinoa & asparagus',goals:['cut','maintain'],kcal:560,p:42,c:38,f:26,tags:['salmon','fish','quinoa','omega 3','asparagus']},
-    {n:'Egg-white veggie omelette',goals:['cut','maintain'],kcal:310,p:34,c:12,f:14,tags:['eggs','vegetarian','breakfast','low calorie']},
-    {n:'Greek yogurt, berries & granola',goals:['cut','maintain','bulk'],kcal:340,p:24,c:48,f:7,tags:['yogurt','berries','breakfast','vegetarian']},
-    {n:'Turkey & avocado wrap',goals:['maintain'],kcal:480,p:38,c:42,f:18,tags:['turkey','avocado','wrap','lunch']},
-    {n:'Thai green chicken curry & jasmine rice',goals:['maintain','bulk'],kcal:680,p:40,c:62,f:28,tags:['chicken','thai','curry','rice','spicy']},
-    {n:'Tofu & vegetable stir-fry',goals:['cut','maintain'],kcal:420,p:26,c:44,f:16,tags:['tofu','vegan','vegetarian','asian','stir fry','vegetables']},
-    {n:'Lentil & chickpea dahl',goals:['cut','maintain','bulk'],kcal:450,p:24,c:62,f:11,tags:['lentil','chickpea','indian','vegan','vegetarian','curry']},
-    {n:'Protein oats with peanut butter & banana',goals:['bulk','maintain'],kcal:620,p:38,c:72,f:20,tags:['oats','peanut butter','banana','breakfast','vegetarian']},
-    {n:'Tuna pasta with sweetcorn',goals:['maintain','bulk'],kcal:600,p:44,c:78,f:12,tags:['tuna','fish','pasta','italian']},
-    {n:'Beef & bean chilli con carne',goals:['maintain','bulk'],kcal:610,p:42,c:54,f:24,tags:['beef','beans','mexican','spicy','chilli']},
-    {n:'Shrimp & garlic zucchini noodles',goals:['cut'],kcal:330,p:34,c:16,f:14,tags:['shrimp','prawn','seafood','low carb','keto']},
-    {n:'Cottage cheese & pineapple bowl',goals:['cut','maintain'],kcal:280,p:30,c:24,f:6,tags:['cottage cheese','pineapple','vegetarian','snack','high protein']},
-    {n:'Steak, eggs & spinach',goals:['bulk','maintain'],kcal:640,p:52,c:6,f:44,tags:['beef','steak','eggs','keto','low carb','high protein']},
-    {n:'Chicken Caesar salad (light dressing)',goals:['cut','maintain'],kcal:400,p:40,c:14,f:20,tags:['chicken','salad','low carb']},
-    {n:'Black bean & rice burrito bowl',goals:['maintain','bulk'],kcal:580,p:24,c:84,f:16,tags:['beans','rice','mexican','vegan','vegetarian']},
-    {n:'Mackerel on rye with cottage cheese',goals:['cut','maintain'],kcal:430,p:34,c:28,f:22,tags:['mackerel','fish','omega 3','rye','breakfast']},
-    {n:'Pork tenderloin, potatoes & green beans',goals:['maintain','bulk'],kcal:600,p:46,c:48,f:22,tags:['pork','potato','high protein']},
-    {n:'Vegetable & paneer curry',goals:['maintain','bulk'],kcal:560,p:28,c:44,f:30,tags:['paneer','vegetarian','indian','curry','vegetables']}
+    {n:'Grilled chicken, rice & broccoli',goals:['cut','maintain','bulk'],kcal:520,p:48,c:55,f:10,tags:['chicken','rice','broccoli','high protein','meal prep'],ing:['180g chicken breast','150g cooked rice','150g broccoli','1 tsp olive oil','garlic, salt, pepper']},
+    {n:'Lean beef & sweet potato bowl',goals:['maintain','bulk'],kcal:640,p:46,c:60,f:22,tags:['beef','sweet potato','high protein'],ing:['170g lean beef mince (5%)','250g sweet potato','handful spinach','1 tbsp olive oil','spices']},
+    {n:'Salmon, quinoa & asparagus',goals:['cut','maintain'],kcal:560,p:42,c:38,f:26,tags:['salmon','fish','quinoa','omega 3','asparagus'],ing:['170g salmon fillet','120g cooked quinoa','8 asparagus spears','lemon','olive oil']},
+    {n:'Egg-white veggie omelette',goals:['cut','maintain'],kcal:310,p:34,c:12,f:14,tags:['eggs','vegetarian','breakfast','low calorie'],ing:['6 egg whites + 1 whole egg','peppers, onion, spinach','30g feta','herbs']},
+    {n:'Greek yogurt, berries & granola',goals:['cut','maintain','bulk'],kcal:340,p:24,c:48,f:7,tags:['yogurt','berries','breakfast','vegetarian'],ing:['200g 0% Greek yogurt','100g mixed berries','40g granola','drizzle honey']},
+    {n:'Turkey & avocado wrap',goals:['maintain'],kcal:480,p:38,c:42,f:18,tags:['turkey','avocado','wrap','lunch'],ing:['150g turkey breast','1 wholegrain wrap','1/2 avocado','lettuce, tomato','light mayo']},
+    {n:'Thai green chicken curry & jasmine rice',goals:['maintain','bulk'],kcal:680,p:40,c:62,f:28,tags:['chicken','thai','curry','rice','spicy'],ing:['160g chicken thigh','150g jasmine rice','100ml light coconut milk','green curry paste','veg']},
+    {n:'Tofu & vegetable stir-fry',goals:['cut','maintain'],kcal:420,p:26,c:44,f:16,tags:['tofu','vegan','vegetarian','asian','stir fry','vegetables'],ing:['200g firm tofu','mixed stir-fry veg','100g cooked noodles','soy sauce, ginger, garlic']},
+    {n:'Lentil & chickpea dahl',goals:['cut','maintain','bulk'],kcal:450,p:24,c:62,f:11,tags:['lentil','chickpea','indian','vegan','vegetarian','curry'],ing:['100g red lentils','100g chickpeas','tomato, onion, garlic','curry spices','100g rice']},
+    {n:'Protein oats with peanut butter & banana',goals:['bulk','maintain'],kcal:620,p:38,c:72,f:20,tags:['oats','peanut butter','banana','breakfast','vegetarian'],ing:['80g oats','1 scoop whey','1 tbsp peanut butter','1 banana','250ml milk']},
+    {n:'Tuna pasta with sweetcorn',goals:['maintain','bulk'],kcal:600,p:44,c:78,f:12,tags:['tuna','fish','pasta','italian'],ing:['2 tins tuna','120g pasta (dry)','100g sweetcorn','light mayo / tomato','black pepper']},
+    {n:'Beef & bean chilli con carne',goals:['maintain','bulk'],kcal:610,p:42,c:54,f:24,tags:['beef','beans','mexican','spicy','chilli'],ing:['170g beef mince','kidney beans','chopped tomatoes','onion, garlic','100g rice']},
+    {n:'Shrimp & garlic zucchini noodles',goals:['cut'],kcal:330,p:34,c:16,f:14,tags:['shrimp','prawn','seafood','low carb','keto'],ing:['180g shrimp','2 courgettes (spiralised)','garlic, chilli','1 tbsp olive oil','lemon']},
+    {n:'Cottage cheese & pineapple bowl',goals:['cut','maintain'],kcal:280,p:30,c:24,f:6,tags:['cottage cheese','pineapple','vegetarian','snack','high protein'],ing:['250g low-fat cottage cheese','100g pineapple','10g pumpkin seeds','cinnamon']},
+    {n:'Steak, eggs & spinach',goals:['bulk','maintain'],kcal:640,p:52,c:6,f:44,tags:['beef','steak','eggs','keto','low carb','high protein'],ing:['200g sirloin steak','2 whole eggs','large handful spinach','butter','salt, pepper']},
+    {n:'Chicken Caesar salad (light dressing)',goals:['cut','maintain'],kcal:400,p:40,c:14,f:20,tags:['chicken','salad','low carb'],ing:['180g chicken breast','romaine lettuce','20g parmesan','light Caesar dressing','croutons (optional)']},
+    {n:'Black bean & rice burrito bowl',goals:['maintain','bulk'],kcal:580,p:24,c:84,f:16,tags:['beans','rice','mexican','vegan','vegetarian'],ing:['150g black beans','150g rice','corn, peppers','salsa, guacamole','lime']},
+    {n:'Mackerel on rye with cottage cheese',goals:['cut','maintain'],kcal:430,p:34,c:28,f:22,tags:['mackerel','fish','omega 3','rye','breakfast'],ing:['1 mackerel fillet','2 slices rye bread','100g cottage cheese','cucumber, dill']},
+    {n:'Pork tenderloin, potatoes & green beans',goals:['maintain','bulk'],kcal:600,p:46,c:48,f:22,tags:['pork','potato','high protein'],ing:['180g pork tenderloin','250g potatoes','green beans','1 tbsp olive oil','rosemary']},
+    {n:'Vegetable & paneer curry',goals:['maintain','bulk'],kcal:560,p:28,c:44,f:30,tags:['paneer','vegetarian','indian','curry','vegetables'],ing:['150g paneer','mixed veg','tomato-onion masala','100g rice','spices']}
   ];
   function splitTerms(s){ return (s||'').toLowerCase().split(/[,\n;]+/).map(function(x){ return x.trim(); }).filter(Boolean); }
   function mealMatchesText(m,term){ if(m.n.toLowerCase().indexOf(term)>=0) return true; return m.tags.some(function(t){ return t.indexOf(term)>=0 || term.indexOf(t)>=0; }); }
@@ -2656,6 +2688,63 @@
     var b=document.getElementById('mealGoalBadge'); if(!b) return;
     var g=(STATE.body&&STATE.body.goal)||'maintain';
     b.textContent = g==='cut'?'🔻 Cut':g==='bulk'?'🔺 Bulk':'⚖️ Maintain';
+  }
+  // ---- turn the user's real body data + chosen physique into daily/per-meal targets ----
+  function nutritionTargets(){
+    var c=computeBody(); if(c.tdee==null) return null;          // need height, weight, age, sex
+    var bg=(typeof computeBodyGrade==='function')?computeBodyGrade():{ok:false};
+    var goal=(STATE.body&&STATE.body.goal)||'maintain';
+    var phys=(STATE.body&&STATE.body.physique)||'healthy';
+    var train=(STATE.body&&STATE.body.training)||'general';
+    // calorie target = TDEE ± a goal/physique-aware adjustment
+    var pct = goal==='cut'?-0.18:goal==='bulk'?0.12:0;
+    if(phys==='bodybuilder'){ if(goal==='bulk')pct=0.15; else if(goal==='cut')pct=-0.22; }
+    else if(phys==='lean'){ if(goal==='bulk')pct=0.06; else if(goal==='cut')pct=-0.20; }
+    // body composition read — skinny-fat = high fat% with low muscle% → bias to a recomp
+    var fat=bg.ok?bg.fat:null, musc=bg.ok?bg.musc:null, muscBase=(bg.sex==='female')?30:36;
+    var skinnyFat=(fat!=null && bg.ok && fat>bg.fatT.hi && (musc==null || musc<muscBase));
+    var recomp=false;
+    if(skinnyFat && goal!=='bulk'){ pct=Math.min(pct,-0.10); recomp=true; }
+    var kcal=Math.round(c.tdee*(1+pct)/10)*10;
+    // protein g/kg — higher for muscle-seeking physiques, strength work, cuts & recomps
+    var pPerKg=1.6;
+    if(phys==='bodybuilder')pPerKg=2.2; else if(phys==='athletic'||phys==='lean')pPerKg=2.0;
+    if(train==='strength')pPerKg=Math.max(pPerKg,2.0); else if(train==='calisthenics')pPerKg=Math.max(pPerKg,1.8);
+    if(skinnyFat||goal==='cut')pPerKg=Math.max(pPerKg,2.0);
+    var protein=Math.round(c.lean!=null ? Math.min(pPerKg*1.1,2.6)*c.lean : pPerKg*c.w);  // base on lean mass when known
+    var fatPct=(train==='strength'||train==='calisthenics')?0.25:0.28;                    // more carbs for performance work
+    var fatG=Math.round(kcal*fatPct/9);
+    var carbsG=Math.max(0,Math.round((kcal - protein*4 - fatG*9)/4));
+    var meals=4;
+    return { kcal:kcal, protein:protein, carbs:carbsG, fat:fatG, meals:meals,
+      perMeal:{kcal:Math.round(kcal/meals), protein:Math.round(protein/meals), carbs:Math.round(carbsG/meals), fat:Math.round(fatG/meals)},
+      tdee:Math.round(c.tdee), goal:goal, phys:phys, train:train, skinnyFat:skinnyFat, recomp:recomp, fatPctVal:fat, muscPctVal:musc, ratio:bg.ok?bg.ratio:null };
+  }
+  function scaleMeal(m,T){
+    if(!T) return {mult:1,kcal:m.kcal,p:m.p,c:m.c,f:m.f};
+    var mult=T.perMeal.kcal/m.kcal; mult=Math.max(0.5,Math.min(2.5,Math.round(mult*4)/4));
+    return {mult:mult, kcal:Math.round(m.kcal*mult), p:Math.round(m.p*mult), c:Math.round(m.c*mult), f:Math.round(m.f*mult)};
+  }
+  // how well a meal serves THIS person's body + goal (higher = better) — drives the ordering
+  function mealFitScore(m,T){
+    if(!T) return 0;
+    var s=0, pDens=m.p/m.kcal;
+    var wantProteinDense=(T.goal==='cut'||T.skinnyFat||T.phys==='bodybuilder'||T.phys==='lean');
+    s += pDens*1000 * (wantProteinDense?1.4:0.9);
+    var rawMult=T.perMeal.kcal/m.kcal; s -= Math.abs(Math.log(rawMult))*18;   // prefer meals near the right size
+    if(T.goal==='bulk') s += (m.c/m.kcal)*120;                                // bulking → carb/energy density
+    if(T.skinnyFat){ s += pDens*400; s -= (m.f/m.kcal)*120; }                 // recomp → lean protein, less fat
+    return s;
+  }
+  function physLabel(p){ return ({healthy:'balanced health',lean:'a lean, toned look',athletic:'an athletic build',bodybuilder:'a muscular, bodybuilder physique'})[p]||'balanced health'; }
+  function updateMealTargets(){
+    var el=document.getElementById('mealTargets'); if(!el) return;
+    var T=nutritionTargets();
+    if(!T){ el.style.display='block'; el.innerHTML='Add your <b>height, weight, age &amp; sex</b> in Body Stats above to get portions and calories tuned to you.'; return; }
+    var comp = T.skinnyFat ? ' Your fat-to-muscle balance reads <b>skinny-fat</b>, so we steer you toward a high-protein recomp.' :
+               (T.fatPctVal!=null ? ' Tuned to your '+T.fatPctVal+'% body fat'+(T.muscPctVal!=null?' / '+T.muscPctVal+'% muscle':'')+'.' : '');
+    el.style.display='block';
+    el.innerHTML='Daily target for <b>'+physLabel(T.phys)+'</b>: <b>'+T.kcal.toLocaleString('en-GB')+' kcal</b> · '+T.protein+'g protein · '+T.carbs+'g carbs · '+T.fat+'g fat (≈ '+T.perMeal.kcal+' kcal / '+T.perMeal.protein+'g protein per meal across '+T.meals+').'+comp;
   }
   var mealOffset=0;   // rotates the visible window so re-pressing Suggest shows fresh ideas
   function clearMeals(){
@@ -2667,37 +2756,82 @@
     var hint=document.getElementById('mealHint'); if(hint) hint.style.display='none';
     autosave();
   }
+  var _mealView=[];   // meals currently on screen, for the detail modal
   function renderMeals(advance){
     var host=document.getElementById('mealOut'); if(!host) return;
-    updateMealBadge();
+    updateMealBadge(); updateMealTargets();
     var hint=document.getElementById('mealHint');
+    var T=nutritionTargets();
     var goal=(STATE.body&&STATE.body.goal)||'maintain';
     var likes=splitTerms(STATE.body.diet&&STATE.body.diet.likes), dislikes=splitTerms(STATE.body.diet&&STATE.body.diet.dislikes);
     var pool=MEAL_DB.filter(function(m){ return m.goals.indexOf(goal)>=0; });
-    // exclude any meal that matches a disliked term
-    pool=pool.filter(function(m){ return !dislikes.some(function(d){ return mealMatchesText(m,d); }); });
-    // score by number of liked terms matched, then order liked-first (weight toward likes)
-    pool.forEach(function(m){ m._score = likes.reduce(function(s,l){ return s + (mealMatchesText(m,l)?1:0); }, 0); });
-    pool.sort(function(a,b){ return b._score - a._score; });
+    pool=pool.filter(function(m){ return !dislikes.some(function(d){ return mealMatchesText(m,d); }); });   // never a dislike
+    pool.forEach(function(m){
+      m._score = likes.reduce(function(s,l){ return s + (mealMatchesText(m,l)?1:0); }, 0);
+      m._fit = mealFitScore(m,T);
+    });
+    // primary: what you like · secondary: what best fits your body
+    pool.sort(function(a,b){ return (b._score-a._score) || (b._fit-a._fit); });
     if(!pool.length){ host.innerHTML='<div class="empty">No meals fit those filters — try removing a dislike, then Suggest again.</div>'; if(hint) hint.style.display='none'; return; }
     var PAGE=5, pages=Math.ceil(pool.length/PAGE), canRotate=pages>1;
     if(!canRotate) mealOffset=0;
-    // clean, non-overlapping pages; first press shows the best matches (page 0)
     var page=((mealOffset%pages)+pages)%pages, start=page*PAGE, end=Math.min(start+PAGE,pool.length);
     var picks=pool.slice(start,end);
-    if(advance && canRotate) mealOffset++;   // queue the next batch for the next press
+    if(advance && canRotate) mealOffset++;
+    _mealView=picks;
     var goalNote = goal==='cut'?'higher-protein, lower-calorie picks to lose fat':goal==='bulk'?'calorie- and carb-dense picks to gain':'balanced picks to hold steady';
-    host.innerHTML='<div class="note" style="margin:0 0 10px">Showing <b>'+goalNote+'</b>'+(likes.length?', weighted to what you like':'')+(dislikes.length?', avoiding '+dislikes.length+' thing(s)':'')+'.</div>'+
-      picks.map(function(m){
-        var yt='https://www.youtube.com/results?search_query='+encodeURIComponent(m.n+' recipe');
+    var head = T ? ('Ranked for <b>'+physLabel(T.phys)+'</b> — '+goalNote+(likes.length?', weighted to what you like':'')+'. Portions scaled to you; tap a meal for full nutrition.')
+                 : ('Showing <b>'+goalNote+'</b>'+(likes.length?', weighted to what you like':'')+(dislikes.length?', avoiding '+dislikes.length+' thing(s)':'')+'. Tap a meal for full nutrition.');
+    host.innerHTML='<div class="note" style="margin:0 0 10px">'+head+'</div>'+
+      picks.map(function(m,ix){
         var liked = m._score>0 ? ' <span class="tag now" style="font-size:8px">★ YOUR TASTE</span>' : '';
-        return '<div class="item-row" style="align-items:flex-start"><div class="meta" style="flex:1">'+esc(m.n)+liked+
-          '<small>'+m.kcal+' kcal · P '+m.p+'g · C '+m.c+'g · F '+m.f+'g</small></div>'+
-          '<a class="btn ghost" href="'+yt+'" target="_blank" rel="noopener" style="padding:5px 10px;font-size:12px;text-decoration:none;white-space:nowrap">▶ Recipe</a></div>';
+        var sc=scaleMeal(m,T);
+        var amount = T && sc.mult!==1 ? ('<b>'+sc.mult+'×</b> serving · ') : '';
+        var macros = amount + sc.kcal+' kcal · P '+sc.p+'g · C '+sc.c+'g · F '+sc.f+'g';
+        return '<div class="item-row meal-row" data-meal="'+ix+'" style="align-items:flex-start;cursor:pointer"><div class="meta" style="flex:1">'+esc(m.n)+liked+
+          '<small>'+macros+'</small></div>'+
+          '<span class="btn ghost" style="padding:5px 10px;font-size:12px;white-space:nowrap;pointer-events:none">Details ›</span></div>';
       }).join('');
     if(hint) hint.style.display = canRotate ? 'block' : 'none';
     if(hint && canRotate) hint.innerHTML='Showing '+(start+1)+'–'+end+' of '+pool.length+' matches — press <b>Suggest</b> again for more, or <b>Clear</b> to start over.';
   }
+  // ---- the per-meal nutrition window ----
+  function whyThisFits(m,T){
+    if(!T) return 'Add your body stats for a personalised explanation.';
+    var bits=[]; var sc=scaleMeal(m,T), pDens=Math.round(m.p/m.kcal*1000)/10;
+    if(T.skinnyFat) bits.push('You read skinny-fat, so a high-protein, lower-fat plate like this supports a recomposition — building muscle while the fat comes down.');
+    else if(T.goal==='cut') bits.push('On a cut this keeps protein high to protect muscle while the calories stay in a deficit.');
+    else if(T.goal==='bulk') bits.push('For your bulk this brings the calories and carbs to fuel growth toward '+physLabel(T.phys)+'.');
+    else bits.push('Balanced to hold your weight while feeding '+physLabel(T.phys)+'.');
+    bits.push('At <b>'+sc.mult+'×</b> the standard serving it lands near your per-meal target of '+T.perMeal.kcal+' kcal / '+T.perMeal.protein+'g protein.');
+    if(pDens>=0.08) bits.push('Protein-dense ('+pDens+'g protein per 10 kcal) — ideal for your goal.');
+    if((T.train==='strength'||T.train==='calisthenics') && m.c/m.kcal>0.4) bits.push('Carb-forward to fuel your '+T.train+' sessions.');
+    return bits.join(' ');
+  }
+  function openMealDetail(m){
+    var back=document.getElementById('mealBack'); if(!back) return;
+    var T=nutritionTargets(); var sc=scaleMeal(m,T);
+    document.getElementById('mealMTitle').textContent='🍽️ '+m.n;
+    var yt='https://www.youtube.com/results?search_query='+encodeURIComponent(m.n+' recipe');
+    var rows=function(label,std,you,unit){ return '<div class="calc-row"><span>'+label+'</span><b>'+std+unit+(T&&sc.mult!==1?(' · <span style="color:var(--cyan)">'+you+unit+' for you</span>'):'')+'</b></div>'; };
+    var html='';
+    if(T){ html+='<div class="note" style="margin:0 0 10px">Your serving: <b>'+sc.mult+'×</b> the standard recipe → <b>'+sc.kcal+' kcal</b>, '+sc.p+'g protein, '+sc.c+'g carbs, '+sc.f+'g fat.</div>'; }
+    html+='<div class="subtotal" style="margin:0 0 12px"><div class="calc-row" style="font-weight:700;color:#eaffff"><span>Standard serving</span><span>'+(T?'Scaled for you':'')+'</span></div>'+
+      rows('Calories', m.kcal, sc.kcal, ' kcal')+rows('Protein', m.p, sc.p, ' g')+rows('Carbs', m.c, sc.c, ' g')+rows('Fat', m.f, sc.f, ' g')+'</div>';
+    html+='<h2 style="font-size:14px;margin:6px 0 6px">Ingredients</h2><ul style="margin:0 0 12px;padding-left:18px;line-height:1.7;color:var(--txt)">'+
+      (m.ing||[]).map(function(i){ return '<li>'+esc(i)+'</li>'; }).join('')+'</ul>';
+    html+='<h2 style="font-size:14px;margin:6px 0 6px">Why this fits you</h2><div class="note" style="margin:0 0 12px">'+whyThisFits(m,T)+'</div>';
+    html+='<a class="btn" href="'+yt+'" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">▶ Watch a recipe video</a>';
+    document.getElementById('mealMBody').innerHTML=html;
+    back.classList.add('show');
+  }
+  (function initMealModal(){
+    var back=document.getElementById('mealBack'); if(!back) return;
+    var cl=document.getElementById('mealMClose'); if(cl) cl.addEventListener('click', function(){ back.classList.remove('show'); });
+    back.addEventListener('click', function(e){ if(e.target===back) back.classList.remove('show'); });
+    var out=document.getElementById('mealOut');
+    if(out) out.addEventListener('click', function(e){ var r=e.target.closest('.meal-row'); if(!r) return; var ix=+r.getAttribute('data-meal'); if(_mealView[ix]) openMealDetail(_mealView[ix]); });
+  })();
   function epley1rm(w,r){ return w*(1+r/30); }
   function renderPRs(){
     var host=document.getElementById('prList'); if(!host) return;
