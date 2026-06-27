@@ -20,6 +20,42 @@ previous one. Two mechanisms keep that true:
 Result: as long as a string is (a) wrapped in `t()` or static markup and (b) present
 in the dictionary, it translates and leaves no remnant.
 
+### Language watchdog (`MRLN_I18N`) — always-on enforcement + audit
+
+A runtime guard (`I18N_WATCH`, exposed as `window.MRLN_I18N`) keeps **both** baked-in
+and dynamically-rendered ("circumstantial") text in the chosen language:
+
+- **Enforce / self-heal** — on a 2.5 s heartbeat and whenever the app regains
+  focus/visibility (on top of the instant `MutationObserver`), it re-runs the forward
+  translator + remnant sweep. Anything the dictionary knows snaps to the active
+  language; stale previous-language text is swept forward. It's idempotent and skips
+  user content, form fields and the lock screen.
+- **Audit / the checker** — it walks every visible text node and tests it against the
+  dictionary **and** the target language's alphabet (expected diacritics + an
+  English-stopword heuristic). Anything that looks like UI English with **no**
+  translation is recorded on `window.__i18nAudit = { lang, missing: [...] }`. It never
+  alters the page.
+  - Turn on the visual checker with `MRLN_I18N.setAudit(true)` (persists) or load the
+    page with `#i18n-audit` — suspects are outlined in red and logged to the console.
+  - `MRLN_I18N.audit()` returns the current list on demand.
+
+A runtime watchdog can only translate what the dictionary holds — it **can't invent**
+a translation for a string that was never added. So the audit's job is to *surface*
+gaps (which then get fixed via the build-time step below), while enforce guarantees
+everything already in the dictionary stays correct on screen.
+
+### Source scanner — catch conditional/dynamic literals
+
+```sh
+node tools/i18n/scan_source.js
+```
+
+Rendering with one sample dataset only exercises the branches that data triggers, so
+conditional copy (a mission that needs `loan>0`, a tax label only the US path emits)
+can ship in English unnoticed. This scans the **source** for UI string literals that
+reach the DOM but aren't wrapped in `t()`/`tf()` and aren't a dictionary key — every
+branch, regardless of data. Review the candidates, wrap the real ones, then run `sync.js`.
+
 ## 2. Build-time — run after ANY text change
 
 When you add or change UI copy, the dictionary can drift. Detect it:
