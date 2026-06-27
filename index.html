@@ -1106,6 +1106,19 @@
       </div>
     </div>
 
+    <div class="card">
+      <h2>Meal Ideas <span class="tag now" id="mealGoalBadge" style="font-size:11px">—</span></h2>
+      <div class="desc">Goal-matched meals with macros and a recipe video for each. Tell us what you love and what to avoid — we weight toward your likes and never suggest a dislike. Your goal follows the <b>Cut / Maintain / Bulk</b> buttons above.</div>
+      <div class="form-row">
+        <div class="field"><label>Ingredients / cuisines you like</label><input id="mealLikes" placeholder="e.g. chicken, rice, Thai, eggs"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Anything to avoid</label><input id="mealDislikes" placeholder="e.g. pork, mushrooms, very spicy"></div>
+      </div>
+      <button class="btn" id="mealGo">🍽️ Suggest meals for my goal</button>
+      <div id="mealOut" style="margin-top:14px"></div>
+    </div>
+
     <div class="card" data-collapse data-collapsed>
       <h2>Personal Records (PRs)</h2>
       <div class="desc">Log your best lifts and watch them climb. We track your best per exercise and estimate your 1-rep max.</div>
@@ -1458,6 +1471,8 @@
   function itemMonthly(it){
     var t = __sys.token();              // 1 when unlocked & intact, NaN when tampered
     if(it.varies) return 0;
+    // financed / leased items with a payoff date stop counting once that date passes
+    if(it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)) && todayKey() > String(it.until)) return 0;
     if(it.cost != null){
       var c = Number(it.cost) || 0;
       return t * (it.freq==='yearly' ? c/12 : it.freq==='quarterly' ? c/3 : c);
@@ -2161,8 +2176,10 @@
             '<button class="btn" data-save="' + it.id + '" style="padding:5px 10px;font-size:12px">Save</button>' +
             '<button class="btn ghost" data-cancel="1" style="padding:5px 10px;font-size:12px">Cancel</button></div></div>';
         }
+        var paidOff = it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)) && todayKey() > String(it.until);
         var sub = it.varies ? 'varies (not counted)' :
-          (it.cost!=null && it.freq && it.freq!=='monthly' ? fmtN(it.cost)+' kr/'+(it.freq==='yearly'?'yr':'q')+' ≈ ' : '') + fmtN(itemMonthly(it)) + ' kr/mo';
+          (it.cost!=null && it.freq && it.freq!=='monthly' ? fmtN(it.cost)+' kr/'+(it.freq==='yearly'?'yr':'q')+' ≈ ' : '') + fmtN(itemMonthly(it)) + ' kr/mo' +
+          (it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)) ? (paidOff ? ' · ✅ paid off '+esc(it.until) : ' · 🔁 until '+esc(it.until)) : '');
         return '<div class="item-row"><div class="meta">' + esc(it.name) + (it.custom?' <span class="tag now" style="font-size:8px">ADDED</span>':'') +
           '<small>' + sub + '</small></div><div style="display:flex;gap:6px">' +
           (it.varies ? '' : '<button class="btn ghost" data-edit="' + it.id + '" style="padding:5px 10px;font-size:12px">Edit</button>') +
@@ -2265,26 +2282,37 @@
     var h=Number(bd.height)||0, w=Number(bd.weight)||0, a=Number(bd.age)||0, sex=(bd.sex==='female')?'female':'male';
     var fat=(bd.fat!==''&&bd.fat!=null)?Number(bd.fat):null;
     var musc=(bd.muscle!==''&&bd.muscle!=null)?Number(bd.muscle):null;
+    var eth = (bd.ethnicity || (MODEL && MODEL.profile && MODEL.profile.ethnicity) || '').toString();
     if(!h || !w) return { ok:false };
+    // WHO (2004) recommends lower BMI/body-fat action points for Asian populations,
+    // who carry more body fat and higher cardiometabolic risk at the same BMI.
+    // We keep Mifflin-St Jeor for *calories* (gender-specific, real-data) and only
+    // shift the HEALTH thresholds here. No invented calorie multipliers.
+    var asian = (eth==='asian' || eth==='south_asian');
     var bmi = w/Math.pow(h/100,2);
-    var idealLo = Math.round(20*Math.pow(h/100,2)), idealHi = Math.round(25*Math.pow(h/100,2));
+    var idealTopBMI = asian ? 23 : 25;          // WHO Asian overweight cut-off = 23
+    var ovBMI = asian ? 23 : 25, obBMI = asian ? 27.5 : 30;
+    var idealLo = Math.round(18.5*Math.pow(h/100,2)), idealHi = Math.round(idealTopBMI*Math.pow(h/100,2));
     var fatT = sex==='female' ? {lo:18,hi:25,ideal:22} : {lo:10,hi:18,ideal:14};
+    if(asian){ fatT.lo+=1; fatT.hi-=2; fatT.ideal-=1; }   // higher fat per BMI → tighter healthy band
     if(a>=40){ fatT.lo+=2; fatT.hi+=3; fatT.ideal+=2; }
     if(a>=55){ fatT.lo+=2; fatT.hi+=2; fatT.ideal+=2; }
     var score=0;
-    // primary signal: body-fat band if known, else BMI proximity to 22
+    // primary signal: body-fat band if known, else BMI proximity to mid-healthy
+    var bmiMid = (18.5+idealTopBMI)/2;
     if(fat!=null){ var off = fat<fatT.lo ? (fatT.lo-fat) : fat>fatT.hi ? (fat-fatT.hi) : 0; score += Math.max(0, 62 - off*4.5); }
-    else { score += Math.max(0, 62 - Math.abs(bmi-22)*5.5); }
+    else { score += Math.max(0, 62 - Math.abs(bmi-bmiMid)*5.5); }
     // muscle: more lean mass is better, to a point
     if(musc!=null){ var base = sex==='female'?30:36; score += Math.max(0, Math.min(23, (musc-base)*3.2)); }
     else score += 11;   // neutral when unknown
-    // BMI sanity guard (penalise extremes even if other inputs look ok)
-    if(bmi>=18.5 && bmi<28) score += 15; else if(bmi>=17 && bmi<32) score += 7;
+    // BMI sanity guard (penalise extremes even if other inputs look ok) — uses ethnicity cut-offs
+    if(bmi>=18.5 && bmi<(obBMI-2)) score += 15; else if(bmi>=17 && bmi<(obBMI+2)) score += 7;
     score = Math.max(0, Math.min(100, Math.round(score)));
     var tier = tierOf(score);
     // muscle-to-fat ratio (when both known)
     var ratio = (fat!=null && musc!=null && fat>0) ? (musc/fat) : null;
-    return { ok:true, score:score, tier:tier, bmi:bmi, bmiCat:bmiCat(bmi), idealLo:idealLo, idealHi:idealHi, fatT:fatT, fat:fat, musc:musc, ratio:ratio, sex:sex, w:w, h:h, a:a };
+    var bcat = bmi<18.5?'underweight':bmi<ovBMI?'healthy':bmi<obBMI?'overweight':'obese';
+    return { ok:true, score:score, tier:tier, bmi:bmi, bmiCat:bcat, idealLo:idealLo, idealHi:idealHi, fatT:fatT, fat:fat, musc:musc, ratio:ratio, sex:sex, w:w, h:h, a:a, eth:eth, asian:asian };
   }
   function kcal(n){ return Math.round(n).toLocaleString('en-GB') + ' kcal'; }
   function renderBody(){
@@ -2527,10 +2555,18 @@
       b.addEventListener('click', function(){
         var g=b.getAttribute('data-goal'); STATE.body.goal=g; setGoalBtns(g); autosave();
         var c=computeBody(); if(c.tdee!=null && sl){ sl.value=Math.round((c.tdee+(GOAL_OFFSET[g]||0))/50)*50; sl.dataset.touched='1'; }
-        calSim();
+        calSim(); if(typeof updateMealBadge==='function') updateMealBadge();
       });
     });
     if(STATE.body.goal) setGoalBtns(STATE.body.goal);
+    // Meal ideas
+    STATE.body.diet = STATE.body.diet || {likes:'',dislikes:''};
+    var ml=document.getElementById('mealLikes'), md=document.getElementById('mealDislikes');
+    if(ml){ ml.value=STATE.body.diet.likes||''; ml.addEventListener('input', function(){ STATE.body.diet.likes=ml.value; autosave(); }); }
+    if(md){ md.value=STATE.body.diet.dislikes||''; md.addEventListener('input', function(){ STATE.body.diet.dislikes=md.value; autosave(); }); }
+    var mg=document.getElementById('mealGo');
+    if(mg) mg.addEventListener('click', function(){ if(ml)STATE.body.diet.likes=ml.value; if(md)STATE.body.diet.dislikes=md.value; autosave(); renderMeals(); });
+    if(typeof updateMealBadge==='function') updateMealBadge();
     // PR form
     var prAdd=document.getElementById('prAdd');
     if(prAdd) prAdd.addEventListener('click', function(){
@@ -2556,6 +2592,63 @@
     STATE.prs=STATE.prs.filter(function(x){ return x.id!==id; });
     if(p) logChange('remove-pr', p.ex+' '+p.wt+'kg');
     autosave(); renderPRs();
+  }
+  /* ===================== MEAL IDEAS (goal-matched, likes/dislikes) ===================== */
+  // Each meal carries macros (per serving) + tags (ingredients & cuisine) + goals it suits.
+  // YouTube link is a search query so it always resolves to a real recipe video, offline-safe.
+  var MEAL_DB=[
+    {n:'Grilled chicken, rice & broccoli',goals:['cut','maintain','bulk'],kcal:520,p:48,c:55,f:10,tags:['chicken','rice','broccoli','high protein','meal prep']},
+    {n:'Lean beef & sweet potato bowl',goals:['maintain','bulk'],kcal:640,p:46,c:60,f:22,tags:['beef','sweet potato','high protein']},
+    {n:'Salmon, quinoa & asparagus',goals:['cut','maintain'],kcal:560,p:42,c:38,f:26,tags:['salmon','fish','quinoa','omega 3','asparagus']},
+    {n:'Egg-white veggie omelette',goals:['cut','maintain'],kcal:310,p:34,c:12,f:14,tags:['eggs','vegetarian','breakfast','low calorie']},
+    {n:'Greek yogurt, berries & granola',goals:['cut','maintain','bulk'],kcal:340,p:24,c:48,f:7,tags:['yogurt','berries','breakfast','vegetarian']},
+    {n:'Turkey & avocado wrap',goals:['maintain'],kcal:480,p:38,c:42,f:18,tags:['turkey','avocado','wrap','lunch']},
+    {n:'Thai green chicken curry & jasmine rice',goals:['maintain','bulk'],kcal:680,p:40,c:62,f:28,tags:['chicken','thai','curry','rice','spicy']},
+    {n:'Tofu & vegetable stir-fry',goals:['cut','maintain'],kcal:420,p:26,c:44,f:16,tags:['tofu','vegan','vegetarian','asian','stir fry','vegetables']},
+    {n:'Lentil & chickpea dahl',goals:['cut','maintain','bulk'],kcal:450,p:24,c:62,f:11,tags:['lentil','chickpea','indian','vegan','vegetarian','curry']},
+    {n:'Protein oats with peanut butter & banana',goals:['bulk','maintain'],kcal:620,p:38,c:72,f:20,tags:['oats','peanut butter','banana','breakfast','vegetarian']},
+    {n:'Tuna pasta with sweetcorn',goals:['maintain','bulk'],kcal:600,p:44,c:78,f:12,tags:['tuna','fish','pasta','italian']},
+    {n:'Beef & bean chilli con carne',goals:['maintain','bulk'],kcal:610,p:42,c:54,f:24,tags:['beef','beans','mexican','spicy','chilli']},
+    {n:'Shrimp & garlic zucchini noodles',goals:['cut'],kcal:330,p:34,c:16,f:14,tags:['shrimp','prawn','seafood','low carb','keto']},
+    {n:'Cottage cheese & pineapple bowl',goals:['cut','maintain'],kcal:280,p:30,c:24,f:6,tags:['cottage cheese','pineapple','vegetarian','snack','high protein']},
+    {n:'Steak, eggs & spinach',goals:['bulk','maintain'],kcal:640,p:52,c:6,f:44,tags:['beef','steak','eggs','keto','low carb','high protein']},
+    {n:'Chicken Caesar salad (light dressing)',goals:['cut','maintain'],kcal:400,p:40,c:14,f:20,tags:['chicken','salad','low carb']},
+    {n:'Black bean & rice burrito bowl',goals:['maintain','bulk'],kcal:580,p:24,c:84,f:16,tags:['beans','rice','mexican','vegan','vegetarian']},
+    {n:'Mackerel on rye with cottage cheese',goals:['cut','maintain'],kcal:430,p:34,c:28,f:22,tags:['mackerel','fish','omega 3','rye','breakfast']},
+    {n:'Pork tenderloin, potatoes & green beans',goals:['maintain','bulk'],kcal:600,p:46,c:48,f:22,tags:['pork','potato','high protein']},
+    {n:'Vegetable & paneer curry',goals:['maintain','bulk'],kcal:560,p:28,c:44,f:30,tags:['paneer','vegetarian','indian','curry','vegetables']}
+  ];
+  function splitTerms(s){ return (s||'').toLowerCase().split(/[,\n;]+/).map(function(x){ return x.trim(); }).filter(Boolean); }
+  function mealMatchesText(m,term){ if(m.n.toLowerCase().indexOf(term)>=0) return true; return m.tags.some(function(t){ return t.indexOf(term)>=0 || term.indexOf(t)>=0; }); }
+  function updateMealBadge(){
+    var b=document.getElementById('mealGoalBadge'); if(!b) return;
+    var g=(STATE.body&&STATE.body.goal)||'maintain';
+    b.textContent = g==='cut'?'🔻 Cut':g==='bulk'?'🔺 Bulk':'⚖️ Maintain';
+  }
+  function renderMeals(){
+    var host=document.getElementById('mealOut'); if(!host) return;
+    updateMealBadge();
+    var goal=(STATE.body&&STATE.body.goal)||'maintain';
+    var likes=splitTerms(STATE.body.diet&&STATE.body.diet.likes), dislikes=splitTerms(STATE.body.diet&&STATE.body.diet.dislikes);
+    var pool=MEAL_DB.filter(function(m){ return m.goals.indexOf(goal)>=0; });
+    // exclude any meal that matches a disliked term
+    pool=pool.filter(function(m){ return !dislikes.some(function(d){ return mealMatchesText(m,d); }); });
+    // score by number of liked terms matched (weight toward likes)
+    pool.forEach(function(m){ m._score = likes.reduce(function(s,l){ return s + (mealMatchesText(m,l)?1:0); }, 0); });
+    pool.sort(function(a,b){ return b._score - a._score; });
+    var picks = (likes.length ? pool.filter(function(m){ return m._score>0; }) : pool);
+    if(!picks.length) picks = pool;          // nothing matched a like → still show goal-fit meals
+    picks = picks.slice(0,6);
+    if(!picks.length){ host.innerHTML='<div class="empty">No meals fit those filters — try removing a dislike.</div>'; return; }
+    var goalNote = goal==='cut'?'higher-protein, lower-calorie picks to lose fat':goal==='bulk'?'calorie- and carb-dense picks to gain':'balanced picks to hold steady';
+    host.innerHTML='<div class="note" style="margin:0 0 10px">Showing <b>'+goalNote+'</b>'+(likes.length?', weighted to what you like':'')+(dislikes.length?', avoiding '+dislikes.length+' thing(s)':'')+'.</div>'+
+      picks.map(function(m){
+        var yt='https://www.youtube.com/results?search_query='+encodeURIComponent(m.n+' recipe');
+        var liked = m._score>0 ? ' <span class="tag now" style="font-size:8px">★ YOUR TASTE</span>' : '';
+        return '<div class="item-row" style="align-items:flex-start"><div class="meta" style="flex:1">'+esc(m.n)+liked+
+          '<small>'+m.kcal+' kcal · P '+m.p+'g · C '+m.c+'g · F '+m.f+'g</small></div>'+
+          '<a class="btn ghost" href="'+yt+'" target="_blank" rel="noopener" style="padding:5px 10px;font-size:12px;text-decoration:none;white-space:nowrap">▶ Recipe</a></div>';
+      }).join('');
   }
   function epley1rm(w,r){ return w*(1+r/30); }
   function renderPRs(){
@@ -3475,7 +3568,7 @@
   function collectExpenses(m){
     var out=[]; (m.groups||[]).forEach(function(g){ (g.items||[]).forEach(function(it){
       if(it.varies) return;
-      out.push({ name:it.name, cat:g.name, cost:(it.cost!=null?it.cost:Math.round(Number(it.amt)||0)), freq:it.freq||'monthly' });
+      out.push({ name:it.name, cat:g.name, cost:(it.cost!=null?it.cost:Math.round(Number(it.amt)||0)), freq:it.freq||'monthly', until:it.until||'' });
     }); }); return out;
   }
   function refreshEverything(){
@@ -3566,7 +3659,9 @@
 
   /* ===================== ONBOARDING WIZARD ===================== */
   var WIZ = (function(){
-    var STEPS=['welcome','profile','income','expenses','review'];
+    var STEPS=['welcome','profile','income','expenses','hobbies','transport','review'];
+    var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var ETHNS=[['','Prefer not to say'],['white','White / European'],['black','Black / African'],['asian','East Asian'],['south_asian','South Asian'],['hispanic','Hispanic / Latino'],['mena','Middle Eastern / N. African'],['mixed','Mixed / Other']];
     var el = {
       box:document.getElementById('onboard'), body:document.getElementById('wBody'), bar:document.getElementById('wBar'),
       stepLbl:document.getElementById('wStepLbl'), back:document.getElementById('wBack'), next:document.getElementById('wNext'),
@@ -3581,9 +3676,10 @@
       return {
         lang:p.lang||'en', currency:p.currency||'DKK', country:p.country||'',
         name:m?(m.profile.name||''):'', age:m?(m.profile.age||''):'', employer:m?(m.profile.employer||''):'', birthday:m?(m.profile.birthday||''):'',
+        ethnicity:m?(m.profile.ethnicity||''):'',
         incomeAvg:m&&m.income.avg?m.income.avg:'', incomeLow:m&&m.income.low?m.income.low:'', incomeHigh:m&&m.income.high?m.income.high:'',
         loan:m&&m.loanPayment?m.loanPayment:'', save:m&&m.savingsMatch?m.savingsMatch:'',
-        expenses:m?collectExpenses(m):[]
+        expenses:m?collectExpenses(m):[], hobbies:[], transport:[]
       };
     }
     var CHIPS=[ ['Rent','Housing'],['Groceries','Food'],['Phone','Subscriptions'],['Transport','Transport'],
@@ -3608,7 +3704,9 @@
           '<label>Your name</label><input id="wName" value="'+esc(data.name)+'" placeholder="e.g. Alex">'+
           '<div class="wrow"><div><label>Age (optional)</label><input id="wAge" type="number" min="0" max="120" value="'+esc(data.age)+'" placeholder="—"></div>'+
           '<div><label>Work (optional)</label><input id="wEmp" value="'+esc(data.employer)+'" placeholder="Employer / self"></div></div>'+
-          '<label>Birthday 🎂 (optional)</label><input id="wBday" type="date" value="'+esc(data.birthday)+'"><div class="wsub" style="margin-top:4px">We\'ll mark it on your calendar and celebrate it with you.</div>';
+          '<label>Birthday 🎂 (optional)</label><input id="wBday" type="date" value="'+esc(data.birthday)+'"><div class="wsub" style="margin-top:4px">We\'ll mark it on your calendar and celebrate it with you.</div>'+
+          '<label style="margin-top:12px">Ethnicity (optional)</label><select id="wEth">'+ETHNS.map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===data.ethnicity?' selected':'')+'>'+esc(o[1])+'</option>'; }).join('')+'</select>'+
+          '<div class="wsub" style="margin-top:4px">Used only to set accurate <b>WHO health thresholds</b> (BMI / body-fat) — it never changes your calorie targets.</div>';
       } else if(s==='income'){
         h='<h2>Your income</h2><p class="wsub">Your typical <b>monthly take-home</b> (after tax). You can change it anytime.</p>'+
           '<label>Typical monthly income</label><input id="wInc" type="number" min="0" step="1" value="'+esc(data.incomeAvg)+'" placeholder="e.g. 2500">'+
@@ -3626,15 +3724,35 @@
           '<button class="chip" id="wExpAdd" style="margin-top:10px">＋ Add this expense</button>'+
           '<div class="wlist" id="wExpList"></div>'+
           '<div class="wtot"><span>Monthly expenses so far</span><b id="wExpTot">'+fmt(0)+'</b></div>';
+      } else if(s==='hobbies'){
+        h='<h2>Sports &amp; hobbies 🏀</h2><p class="wsub">Add anything you do on a regular day &amp; time — we\'ll drop it on your calendar as a weekly repeat so it\'s always there.</p>'+
+          '<div class="wrow"><div style="flex:2"><label>What is it?</label><input id="wHobName" placeholder="e.g. Football, Gym, Piano"></div></div>'+
+          '<div class="wrow"><div><label>Day</label><select id="wHobDay">'+DAYS.map(function(d,ix){ return '<option value="'+ix+'"'+(ix===1?' selected':'')+'>'+d+'</option>'; }).join('')+'</select></div>'+
+          '<div><label>Time</label><input id="wHobTime" type="time" value="18:00"></div></div>'+
+          '<button class="chip" id="wHobAdd" style="margin-top:10px">＋ Add to my week</button>'+
+          '<div class="wlist" id="wHobList"></div>';
+      } else if(s==='transport'){
+        h='<h2>Getting around 🚗</h2><p class="wsub">A car, bike, scooter, transit pass — anything with a running cost. Mark it <b>financed/leasing</b> and set the last payment date, and it\'ll drop off your budget automatically once it\'s paid off.</p>'+
+          '<div class="wrow"><div><label>Type</label><select id="wTrType"><option value="🚗 Car">🚗 Car</option><option value="🏍️ Motorbike">🏍️ Motorbike</option><option value="🛵 Scooter">🛵 Scooter</option><option value="🚲 Bike">🚲 Bike</option><option value="🚌 Public transit">🚌 Public transit</option><option value="🚕 Other">🚕 Other</option></select></div>'+
+          '<div><label>Name (optional)</label><input id="wTrName" placeholder="e.g. VW Golf"></div></div>'+
+          '<div class="wrow"><div><label>Monthly cost</label><input id="wTrCost" type="number" min="0" step="1" placeholder="fuel/lease/pass"></div>'+
+          '<div><label>Insurance / mo</label><input id="wTrIns" type="number" min="0" step="1" placeholder="0"></div></div>'+
+          '<label class="loantoggle" style="margin:10px 0 4px"><input type="checkbox" id="wTrFin"> <b>This is financed / leasing (has an end date)</b></label>'+
+          '<div class="wrow" id="wTrFinRow" style="display:none"><div><label>Last payment date</label><input id="wTrUntil" type="date"></div></div>'+
+          '<button class="chip" id="wTrAdd" style="margin-top:10px">＋ Add transport</button>'+
+          '<div class="wlist" id="wTrList"></div>';
       } else if(s==='review'){
         var avg=Number(data.incomeAvg)||0, exp=expTotal(), loan=Number(data.loan)||0, save=Number(data.save)||0;
-        var left=avg-exp-loan;
+        var trTot=data.transport.reduce(function(s,t){ return s+(Number(t.cost)||0)+(Number(t.insurance)||0); },0);
+        var left=avg-exp-loan-trTot;
         h='<h2>You’re all set 🎉</h2><p class="wsub">Here’s your starting picture. Everything stays editable — and only on your device.</p>'+
           '<div class="wsum">'+
           '<div class="r"><span>Name</span><span class="v">'+esc(data.name||'—')+'</span></div>'+
           '<div class="r"><span>Monthly income</span><span class="v">'+fmt(avg)+'</span></div>'+
           '<div class="r"><span>Monthly expenses</span><span class="v">'+fmt(exp)+'</span></div>'+
           (loan?'<div class="r"><span>Debt/loan payment</span><span class="v">'+fmt(loan)+'</span></div>':'')+
+          (data.hobbies.length?'<div class="r"><span>Weekly activities</span><span class="v">'+data.hobbies.length+'</span></div>':'')+
+          (data.transport.length?'<div class="r"><span>Transport</span><span class="v">'+data.transport.length+'</span></div>':'')+
           '<div class="r big"><span>Left over each month</span><span class="v">'+fmt(left)+'</span></div>'+
           '</div><p class="wsub" style="margin-top:6px">Tip: press <b>💾 Save / Export</b> often to keep a backup file.</p>';
       }
@@ -3675,10 +3793,60 @@
         var list=document.getElementById('wExpList');
         if(list) list.addEventListener('click', function(e){ var x=e.target.closest('[data-x]'); if(x){ data.expenses.splice(+x.getAttribute('data-x'),1); renderExpList(); } });
       }
+      if(s==='hobbies'){
+        renderHobList();
+        var add=document.getElementById('wHobAdd');
+        if(add) add.addEventListener('click', function(){
+          var nm=(document.getElementById('wHobName').value||'').trim();
+          if(!nm){ el.msg.textContent='Give it a name first.'; return; }
+          el.msg.textContent='';
+          data.hobbies.push({ name:nm, day:+document.getElementById('wHobDay').value, time:document.getElementById('wHobTime').value||'' });
+          document.getElementById('wHobName').value=''; document.getElementById('wHobName').focus();
+          renderHobList();
+        });
+        var hl=document.getElementById('wHobList');
+        if(hl) hl.addEventListener('click', function(e){ var x=e.target.closest('[data-x]'); if(x){ data.hobbies.splice(+x.getAttribute('data-x'),1); renderHobList(); } });
+      }
+      if(s==='transport'){
+        renderTrList();
+        var fin=document.getElementById('wTrFin');
+        if(fin) fin.addEventListener('change', function(){ var r=document.getElementById('wTrFinRow'); if(r) r.style.display=fin.checked?'flex':'none'; });
+        var add=document.getElementById('wTrAdd');
+        if(add) add.addEventListener('click', function(){
+          var cost=parseFloat(document.getElementById('wTrCost').value)||0;
+          var ins=parseFloat(document.getElementById('wTrIns').value)||0;
+          var financed=document.getElementById('wTrFin').checked;
+          var until=financed?(document.getElementById('wTrUntil').value||''):'';
+          if(financed && !until){ el.msg.textContent='Set the last payment date for a financed item (or untick financed).'; return; }
+          el.msg.textContent='';
+          data.transport.push({ kind:document.getElementById('wTrType').value, name:(document.getElementById('wTrName').value||'').trim(), cost:cost, insurance:ins, financed:financed, until:until });
+          document.getElementById('wTrName').value=''; document.getElementById('wTrCost').value=''; document.getElementById('wTrIns').value='';
+          document.getElementById('wTrFin').checked=false; document.getElementById('wTrFinRow').style.display='none'; document.getElementById('wTrUntil').value='';
+          renderTrList();
+        });
+        var tl=document.getElementById('wTrList');
+        if(tl) tl.addEventListener('click', function(e){ var x=e.target.closest('[data-x]'); if(x){ data.transport.splice(+x.getAttribute('data-x'),1); renderTrList(); } });
+      }
+    }
+    function renderHobList(){
+      var host=document.getElementById('wHobList'); if(!host) return;
+      host.innerHTML = data.hobbies.length ? data.hobbies.map(function(e,idx){
+        return '<div class="wexp"><span class="nm">'+esc(e.name)+' <span style="color:var(--txt-dim);font-size:11px">'+DAYS[e.day]+(e.time?' · '+esc(e.time):'')+' · weekly</span></span>'+
+          '<button class="x" data-x="'+idx+'" title="Remove">✕</button></div>';
+      }).join('') : '<div class="empty" style="font-size:13px">Nothing yet — add a sport or hobby, or skip it.</div>';
+    }
+    function renderTrList(){
+      var host=document.getElementById('wTrList'); if(!host) return;
+      host.innerHTML = data.transport.length ? data.transport.map(function(e,idx){
+        var m=(Number(e.cost)||0)+(Number(e.insurance)||0);
+        var tag=e.financed?' <span style="color:var(--txt-dim);font-size:11px">financed → ends '+esc(e.until)+'</span>':'';
+        return '<div class="wexp"><span class="nm">'+esc(e.kind)+(e.name?' '+esc(e.name):'')+tag+'</span>'+
+          '<span class="am">'+fmt(m)+'/mo</span><button class="x" data-x="'+idx+'" title="Remove">✕</button></div>';
+      }).join('') : '<div class="empty" style="font-size:13px">No transport added — that\'s fine, add it later if you like.</div>';
     }
     function collect(s){
       if(s==='welcome'){ data.lang=val('wLang',data.lang); data.currency=val('wCur',data.currency); data.country=val('wCountry',data.country); }
-      else if(s==='profile'){ data.name=val('wName',data.name); data.age=val('wAge',data.age); data.employer=val('wEmp',data.employer); data.birthday=val('wBday',data.birthday); }
+      else if(s==='profile'){ data.name=val('wName',data.name); data.age=val('wAge',data.age); data.employer=val('wEmp',data.employer); data.birthday=val('wBday',data.birthday); data.ethnicity=val('wEth',data.ethnicity); }
       else if(s==='income'){ data.incomeAvg=val('wInc',data.incomeAvg); data.incomeLow=val('wIncLow',data.incomeLow); data.incomeHigh=val('wIncHigh',data.incomeHigh); data.loan=val('wLoan',data.loan); data.save=val('wSave',data.save); }
     }
     function val(id,dflt){ var e=document.getElementById(id); return e?e.value:dflt; }
@@ -3690,7 +3858,8 @@
       // language / currency / country
       STATE.prefs.lang=data.lang; STATE.prefs.currency=data.currency; STATE.prefs.country=(data.country||'').trim();
       // profile
-      MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim(), birthday:(data.birthday||'').trim() };
+      MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim(), birthday:(data.birthday||'').trim(), ethnicity:(data.ethnicity||'').trim() };
+      if(STATE.body){ STATE.body.ethnicity=MODEL.profile.ethnicity; }   // health thresholds (WHO) read this
       if(typeof syncBirthday==='function') syncBirthday();   // put 🎂 on the calendar
       // income
       var avg=Number(data.incomeAvg)||0, low=Number(data.incomeLow)||avg, high=Number(data.incomeHigh)||avg;
@@ -3701,10 +3870,31 @@
       data.expenses.forEach(function(e){
         var key=(e.cat||'Other').toLowerCase(), g=byName[key];
         if(!g){ g={id:'g'+uid(), icon:'✦', name:e.cat||'Other', items:[]}; base.push(g); byName[key]=g; }
-        g.items.push({ id:uid(), name:e.name, cost:Number(e.cost)||0, freq:e.freq||'monthly', detail:'Added in setup', custom:true });
+        g.items.push({ id:uid(), name:e.name, cost:Number(e.cost)||0, freq:e.freq||'monthly', detail:'Added in setup', custom:true, until:e.until||'' });
       });
+      // transport -> a Transport category; financed items carry a payoff date that auto-drops
+      if(data.transport.length){
+        var trg=byName['transport']; if(!trg){ trg={id:'g'+uid(), icon:'🚗', name:'Transport', items:[]}; base.push(trg); byName['transport']=trg; }
+        data.transport.forEach(function(t){
+          var label=(t.kind||'Transport')+(t.name?' — '+t.name:'');
+          if((Number(t.cost)||0)>0) trg.items.push({ id:uid(), name:label+(t.financed?' (financing)':''), cost:Number(t.cost)||0, freq:'monthly', detail:'Added in setup', custom:true, until:(t.financed?t.until:'') });
+          if((Number(t.insurance)||0)>0) trg.items.push({ id:uid(), name:label+' — insurance', cost:Number(t.insurance)||0, freq:'monthly', detail:'Added in setup', custom:true });
+        });
+      }
       MODEL.groups=base; ensureIds(MODEL);
-      STATE.fresh=false; STATE.cfg=MODEL;
+      // hobbies/sports -> weekly recurring calendar events
+      if(data.hobbies.length && STATE.calendar){
+        data.hobbies.forEach(function(hb){
+          var d=new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          var diff=( (hb.day - d.getDay()) + 7 ) % 7;            // next matching weekday (today counts)
+          d.setDate(d.getDate()+diff);
+          var key=dateKey(d.getFullYear(), d.getMonth(), d.getDate());
+          STATE.calendar[key]=STATE.calendar[key]||[];
+          STATE.calendar[key].push({ id:uid(), text:'🏃 '+hb.name+(hb.time?' · '+hb.time:''), repeat:'weekly' });
+        });
+      }
+      STATE.fresh=false; STATE.skippedSetup=false; STATE.cfg=MODEL;
+      var nag=document.getElementById('personalizeNag'); if(nag) nag.remove();
       // sync locale selects
       var ls=document.getElementById('langSel'), cs=document.getElementById('curSel'), ci=document.getElementById('countryInp'), lk=document.getElementById('lkLangSel');
       if(ls)ls.value=data.lang; if(lk)lk.value=data.lang; if(cs)cs.value=data.currency; if(ci)ci.value=STATE.prefs.country;
@@ -3713,7 +3903,7 @@
       refreshEverything();
       logChange('onboard','Completed setup — '+data.expenses.length+' expense(s)'); autosave();
       hide();
-      if(!STATE.tourDone && window.TOURSTART) setTimeout(window.TOURSTART, 350);
+      showSetupGuide(function(){ if(!STATE.tourDone && window.TOURSTART) setTimeout(window.TOURSTART, 250); });
     }
     function show(){ el.box.classList.add('show'); }
     function hide(){ el.box.classList.remove('show'); }
@@ -3725,9 +3915,46 @@
     }
     if(el.next) el.next.addEventListener('click', function(){ go(1); });
     if(el.back) el.back.addEventListener('click', function(){ go(-1); });
-    if(el.skip) el.skip.addEventListener('click', function(){ collect(STEPS[i]); STATE.fresh=false; autosave(); hide(); if(!STATE.tourDone && window.TOURSTART) setTimeout(window.TOURSTART, 300); });
+    if(el.skip) el.skip.addEventListener('click', function(){ collect(STEPS[i]); STATE.fresh=false; STATE.skippedSetup=true; autosave(); hide(); showPersonalizeReminder(); });
     return { open:function(prefill){ data=freshData(prefill); i=0; render(); show(); } };
   })();
+  window.WIZOPEN = function(prefill){ STATE.skippedSetup=false; var r=document.getElementById('personalizeNag'); if(r) r.remove(); WIZ.open(prefill); };
+
+  /* ---- "finish personalizing" reminder shown when setup is skipped ---- */
+  function showPersonalizeReminder(){
+    if(document.getElementById('personalizeNag')) return;
+    var bar=document.createElement('div'); bar.id='personalizeNag';
+    bar.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9000;max-width:92%;background:linear-gradient(135deg,#10243a,#0a1828);border:1px solid var(--cyan,#0ce);border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center;font-family:Rajdhani,sans-serif';
+    bar.innerHTML='<span style="font-size:22px">✨</span><div style="flex:1;min-width:0"><b style="color:#eaffff;font-family:Orbitron,sans-serif;font-size:13px">Finish personalizing</b><div style="color:var(--txt-dim,#9bb);font-size:13px">Your dashboard works, but adding your income, expenses &amp; body stats makes every grade and simulator real.</div></div>'+
+      '<button id="nagGo" style="background:var(--cyan,#0ce);color:#021019;border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-family:Orbitron,sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">Finish setup</button>'+
+      '<button id="nagX" aria-label="Dismiss" style="background:transparent;color:var(--txt-dim,#9bb);border:0;font-size:20px;cursor:pointer;line-height:1">✕</button>';
+    document.body.appendChild(bar);
+    document.getElementById('nagGo').addEventListener('click', function(){ window.WIZOPEN(true); });
+    document.getElementById('nagX').addEventListener('click', function(){ bar.remove(); });
+  }
+
+  /* ---- end-of-setup category explainer popup ---- */
+  function showSetupGuide(cb){
+    var GUIDE=[
+      ['💸','Income &amp; Cash Flow','See what lands each month and what\'s left after the bills — test good months vs slow months.'],
+      ['🧾','Expenses &amp; Subscriptions','Every recurring cost in one place. Add, edit or kill subscriptions and watch the totals move.'],
+      ['💳','Loan &amp; Klarna','Model debt payments and buy-now-pay-later plans before you commit to them.'],
+      ['🏋️','Gym &amp; Body','Body stats, calorie &amp; macro simulators, a shape model, PRs — and meal ideas matched to your goal.'],
+      ['📅','Calendar &amp; Reminders','Birthdays, your weekly sports/hobbies and any reminder — alarms included.'],
+      ['📊','Stats &amp; Grades','Your overall S–E grade explained: money, body and income class, with the next step to climb.'],
+      ['💾','Save / Export','Everything lives on your device. Export a private backup file whenever you make changes.']
+    ];
+    var back=document.createElement('div'); back.className='modal-back show'; back.id='guideBack';
+    back.style.cssText='position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(2,8,16,.78);padding:16px';
+    var rows=GUIDE.map(function(g){ return '<div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(120,200,255,.1)"><span style="font-size:20px;flex:0 0 26px">'+g[0]+'</span><div><b style="color:#eaffff;font-family:Orbitron,sans-serif;font-size:13px">'+g[1]+'</b><div style="color:var(--txt-dim,#9bb);font-size:13px;margin-top:2px">'+g[2]+'</div></div></div>'; }).join('');
+    back.innerHTML='<div style="background:linear-gradient(160deg,#0c1c2e,#081320);border:1px solid var(--cyan,#0ce);border-radius:16px;max-width:460px;width:100%;max-height:88vh;overflow:auto;padding:20px 20px 16px;box-shadow:0 12px 50px rgba(0,0,0,.6)">'+
+      '<h2 style="font-family:Orbitron,sans-serif;color:#eaffff;font-size:17px;margin:0 0 4px">What\'s in here 🗺️</h2>'+
+      '<p style="color:var(--txt-dim,#9bb);font-size:13px;margin:0 0 10px">A quick tour of each section so you know where everything lives.</p>'+
+      rows+
+      '<button id="guideDone" style="margin-top:16px;width:100%;background:var(--cyan,#0ce);color:#021019;border:0;border-radius:10px;padding:12px;font-weight:700;font-family:Orbitron,sans-serif;font-size:13px;cursor:pointer">Got it — show me around</button></div>';
+    document.body.appendChild(back);
+    document.getElementById('guideDone').addEventListener('click', function(){ back.remove(); if(typeof cb==='function') cb(); });
+  }
 
   /* ===================== GUIDED TOUR (plays once; replayable) ===================== */
   var TOUR = (function(){
@@ -3784,13 +4011,14 @@
   (function(){
     var tb=document.getElementById('tourBtn'); if(tb) tb.addEventListener('click', function(){ TOUR.start(); });
     var sb=document.getElementById('setupBtn'); if(sb) sb.addEventListener('click', function(){
-      uiConfirm({ title:'⚙ Re-run setup?', message:'Reopen the setup wizard pre-filled with your current details. Finishing will <b>replace</b> your current income & expenses with what you enter. Nothing is deleted until you finish.', confirmText:'Open setup', danger:false }, function(){ WIZ.open(true); });
+      uiConfirm({ title:'⚙ Re-run setup?', message:'Reopen the setup wizard pre-filled with your current details. Finishing will <b>replace</b> your current income & expenses with what you enter. Nothing is deleted until you finish.', confirmText:'Open setup', danger:false }, function(){ window.WIZOPEN(true); });
     });
   })();
   window.__afterUnlock = function(){
     applyCleanModeClass();
     if(typeof checkBirthday==='function') setTimeout(checkBirthday, 600);   // 🎂 if it's the day
     if(STATE.fresh && !STATE.demo){ WIZ.open(false); return; }
+    if(STATE.skippedSetup){ setTimeout(showPersonalizeReminder, 500); return; }
     if(!STATE.tourDone){ setTimeout(function(){ TOUR.start(); }, 500); }
   };
 
