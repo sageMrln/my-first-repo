@@ -553,6 +553,7 @@
   <div class="modal" role="dialog" aria-modal="true" style="max-width:480px">
     <h3>⇄ Backup / Import data</h3>
     <div class="mwarn" style="font-size:12.5px">Move your numbers between your own devices. Your data stays <b>private to your devices</b> — it is never uploaded anywhere.</div>
+    <div id="deviceTip" style="display:none;margin-top:10px;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--txt)"></div>
 
     <h2 style="font-size:14px;margin-top:16px">1 · Back up / copy out</h2>
     <div class="desc" style="font-size:12.5px">Make a private code of everything on this device. Paste it into the box below on another device (e.g. your iPhone) to copy your data over.</div>
@@ -691,7 +692,8 @@
     <button class="tab" data-p="gym"><span class="ix">11</span>Gym Plan</button>
     <button class="tab" data-p="calendar"><span class="ix">12</span>Calendar</button>
     <button class="tab" data-p="stats"><span class="ix">13</span>Stats &amp; Grades</button>
-    <button class="tab" data-p="log"><span class="ix">14</span>Change Log</button>
+    <button class="tab" data-p="notebook"><span class="ix">14</span>Notebook</button>
+    <button class="tab" data-p="log"><span class="ix">15</span>Change Log</button>
   </nav>
 
   <!-- 01 OVERVIEW -->
@@ -1201,6 +1203,28 @@
     </div>
   </section>
 
+  <!-- NOTEBOOK -->
+  <section class="panel" id="notebook">
+    <div class="card">
+      <h2>📒 Notebook</h2>
+      <div class="desc">Jot anything down — ideas, lists, passwords-hints, anything you don't want to lose. Notes save with your file and stay on your device. Nothing leaves it.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <button class="btn" id="noteNew">＋ New note</button>
+        <input id="noteSearch" placeholder="🔍 Search notes" style="flex:1;min-width:160px;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+      </div>
+      <div id="noteList"></div>
+    </div>
+    <div class="card" id="noteEditorCard" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+        <input id="noteTitle" placeholder="Title" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--line);color:#eaffff;font-family:'Orbitron';font-size:16px;padding:6px 2px">
+        <button class="btn danger" id="noteDelete" style="padding:6px 11px;font-size:12px">🗑</button>
+        <button class="btn ghost" id="noteClose" style="padding:6px 11px;font-size:12px">Done</button>
+      </div>
+      <textarea id="noteBody" placeholder="Start writing…" style="width:100%;min-height:260px;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:Rajdhani;font-size:15px;line-height:1.55;resize:vertical"></textarea>
+      <div class="note" id="noteMeta" style="margin-top:8px">—</div>
+    </div>
+  </section>
+
   <section class="panel" id="log">
     <div class="card">
       <h2>Time on the HUD ⏱</h2>
@@ -1327,7 +1351,7 @@
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -1350,7 +1374,7 @@
     return Object.assign({}, DEFAULTS, pick||{}, {
       customItems:(pick&&pick.customItems)||[], workouts:(pick&&pick.workouts)||[],
       calendar:(pick&&pick.calendar)||{}, log:(pick&&pick.log)||[],
-      body:(pick&&pick.body)||{}, prs:(pick&&pick.prs)||[]
+      body:(pick&&pick.body)||{}, prs:(pick&&pick.prs)||[], notes:(pick&&pick.notes)||[]
     });
   }
   var STATE = loadState();
@@ -3088,19 +3112,20 @@
     if(typeof renderDay==='function') renderDay();
     if(typeof renderEvents==='function') renderEvents();
     if(typeof renderLog==='function') renderLog();
+    if(typeof renderNotebook==='function') renderNotebook();
     if(window.rebuildScenarios) window.rebuildScenarios();
     if(typeof refreshFinance==='function') refreshFinance();
   }
   function exportBlank(fid){
     var hs = document.getElementById('hud-state');
     var oks = document.getElementById('__ownerKeySrc');
-    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapOK = oks?oks.textContent:'';
+    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapN = STATE.notes, snapOK = oks?oks.textContent:'';
     try{
       // 0) CRITICAL: strip the owner's private signing key — a Blank copy / customer
       //    file must NEVER contain it, or anyone could mint keys.
       if(oks) oks.textContent = '';
       // 1) blank every data-bearing thing and re-render so NO personal text remains
-      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = [];
+      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = []; STATE.notes = [];
       STATE.reminders = []; STATE.usage = { totalSec:0, streak:0, lastDay:'' }; delete STATE.bdayYear; STATE.missionsDone = {};
       renderAll();
       // 2) mark it a FRESH template (ignores any device's stored data on open),
@@ -3126,7 +3151,7 @@
     } finally {
       // 3) restore YOUR data + private key exactly as they were
       if(oks) oks.textContent = snapOK;
-      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP;
+      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP; STATE.notes = snapN;
       renderAll();
     }
   }
@@ -3577,6 +3602,7 @@
     if(typeof refreshFinance==='function') refreshFinance();
     if(typeof renderManage==='function') renderManage();
     if(typeof renderProfile==='function') renderProfile();
+    if(typeof renderNotebook==='function') renderNotebook();
     if(typeof initLocale==='function'){ var ci=document.getElementById('countryInp'); if(ci) ci.value=STATE.prefs.country||''; }
   }
   function loadDemoData(){
@@ -3587,9 +3613,28 @@
     logChange('demo', 'Loaded sample data');
   }
 
+  /* ---------- device-tailored save/backup guidance (uses the startup answers) ---------- */
+  function renderDeviceTip(){
+    var el=document.getElementById('deviceTip'); if(!el) return;
+    var p=(MODEL&&MODEL.profile)||{}, ph=p.phone||'', co=p.computer||'';
+    var tip='';
+    if(ph==='iphone'){
+      tip='📱 <b>iPhone tip:</b> save the data code or HTML file to the <b>Files</b> app or AirDrop it. To reopen a saved <code>.html</code> file, open it <b>in Safari/Chrome</b> (the Files preview won’t run it). The fastest backup between your devices is the data code below.';
+    } else if(ph==='android'){
+      tip='📱 <b>Android tip:</b> your browser can save and reopen the HTML file directly from Downloads. To move data to another device, make the data code below and paste it there, or use “Download as file”.';
+    } else if(ph){
+      tip='📱 The data code below is the simplest way to copy everything to another device — no upload, no account.';
+    }
+    if(co==='laptop'||co==='desktop'){
+      tip += (tip?'<br>':'') + '💻 On your '+co+', keep a copy of the exported HTML file in a folder you back up — double-click it to open any time.';
+    }
+    if(!tip){ el.style.display='none'; return; }
+    el.innerHTML=tip; el.style.display='block';
+  }
+
   /* ---------- BACKUP / IMPORT DATA (private, device-to-device, no upload) ---------- */
   function exportDataCode(){
-    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
+    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
     return 'MRLNDATA-' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));   // UTF-8 safe (emoji/names)
   }
   function importDataCode(code){
@@ -3600,7 +3645,7 @@
     var d = JSON.parse(json);
     if(!d || !d.cfg || !d.cfg.groups) throw new Error('Not a valid MRLN data code');
     MODEL = d.cfg; ensureIds(MODEL); STATE.cfg = MODEL;
-    STATE.workouts=d.workouts||[]; STATE.calendar=d.calendar||{}; STATE.log=d.log||[]; STATE.body=d.body||{}; STATE.prs=d.prs||[];
+    STATE.workouts=d.workouts||[]; STATE.calendar=d.calendar||{}; STATE.log=d.log||[]; STATE.body=d.body||{}; STATE.prs=d.prs||[]; STATE.notes=d.notes||[];
     if(d.reminders) STATE.reminders=d.reminders;
     // carry the LIFETIME total across to this device — never lose progress (take the higher)
     if(d.usage){ STATE.usage=STATE.usage||{totalSec:0,streak:0,lastDay:''}; STATE.usage.totalSec=Math.max(STATE.usage.totalSec||0, d.usage.totalSec||0); STATE.usage.streak=Math.max(STATE.usage.streak||0, d.usage.streak||0); }
@@ -3618,7 +3663,7 @@
   (function initDataIO(){
     var open=document.getElementById('dataBtn'), back=document.getElementById('dataBack');
     if(!back) return;
-    function show(){ back.classList.add('show'); }
+    function show(){ if(typeof renderDeviceTip==='function') renderDeviceTip(); back.classList.add('show'); }
     function hide(){ back.classList.remove('show'); }
     if(open) open.addEventListener('click', show);
     var cl=document.getElementById('dataClose'); if(cl) cl.addEventListener('click', hide);
@@ -3657,6 +3702,68 @@
     });
   }
 
+  /* ===================== NOTEBOOK (offline notes, iPhone-Notes style) ===================== */
+  var NOTEBOOK = (function(){
+    var curId=null, q='';
+    function notes(){ STATE.notes = STATE.notes || []; return STATE.notes; }
+    function fmtWhen(iso){ if(!iso) return ''; try{ var d=new Date(iso); return d.toLocaleDateString()+' '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }catch(_){ return ''; } }
+    function preview(n){ var t=(n.body||'').replace(/\s+/g,' ').trim(); return t? t.slice(0,90) : 'No additional text'; }
+    function renderList(){
+      var host=document.getElementById('noteList'); if(!host) return;
+      var list=notes().slice().sort(function(a,b){ return (b.updated||'').localeCompare(a.updated||''); });
+      if(q){ var ql=q.toLowerCase(); list=list.filter(function(n){ return ((n.title||'')+' '+(n.body||'')).toLowerCase().indexOf(ql)>=0; }); }
+      if(!list.length){ host.innerHTML='<div class="empty">'+(q?'No notes match your search.':'No notes yet — tap <b>＋ New note</b> to start.')+'</div>'; return; }
+      host.innerHTML=list.map(function(n){
+        return '<div class="item-row" data-open="'+n.id+'" style="cursor:pointer;align-items:flex-start"><div class="meta" style="flex:1">'+
+          esc(n.title||'Untitled')+'<small>'+esc(preview(n))+' · '+fmtWhen(n.updated)+'</small></div>'+
+          '<button class="btn danger" data-delnote="'+n.id+'" style="padding:5px 10px;font-size:12px">Delete</button></div>';
+      }).join('');
+    }
+    function openEditor(id){
+      curId=id; var n=notes().filter(function(x){ return x.id===id; })[0]; if(!n) return;
+      document.getElementById('noteEditorCard').style.display='';
+      document.getElementById('noteTitle').value=n.title||'';
+      document.getElementById('noteBody').value=n.body||'';
+      document.getElementById('noteMeta').textContent='Last edited '+(fmtWhen(n.updated)||'just now');
+      document.getElementById('noteBody').focus();
+    }
+    function closeEditor(){ curId=null; document.getElementById('noteEditorCard').style.display='none'; renderList(); }
+    function save(){
+      if(!curId) return; var n=notes().filter(function(x){ return x.id===curId; })[0]; if(!n) return;
+      n.title=document.getElementById('noteTitle').value;
+      n.body=document.getElementById('noteBody').value;
+      n.updated=nowISO();
+      document.getElementById('noteMeta').textContent='Last edited '+fmtWhen(n.updated);
+      autosave();
+    }
+    function create(){
+      var n={ id:uid(), title:'', body:'', updated:nowISO() };
+      notes().unshift(n); logChange('note-new','Created a note'); autosave();
+      renderList(); openEditor(n.id);
+    }
+    function del(id){
+      STATE.notes=notes().filter(function(x){ return x.id!==id; });
+      logChange('note-del','Deleted a note'); autosave();
+      if(curId===id) closeEditor(); else renderList();
+    }
+    function wire(){
+      var nn=document.getElementById('noteNew'); if(nn) nn.addEventListener('click', create);
+      var nc=document.getElementById('noteClose'); if(nc) nc.addEventListener('click', closeEditor);
+      var nt=document.getElementById('noteTitle'); if(nt) nt.addEventListener('input', save);
+      var nb=document.getElementById('noteBody'); if(nb) nb.addEventListener('input', save);
+      var nd=document.getElementById('noteDelete'); if(nd) nd.addEventListener('click', function(){ if(curId) uiConfirm({title:'🗑️ Delete note?', message:'Delete this note? This can’t be undone.'}, function(){ del(curId); }); });
+      var ns=document.getElementById('noteSearch'); if(ns) ns.addEventListener('input', function(){ q=ns.value; renderList(); });
+      var nl=document.getElementById('noteList');
+      if(nl) nl.addEventListener('click', function(e){
+        var d=e.target.closest('[data-delnote]'); if(d){ e.stopPropagation(); var id=d.getAttribute('data-delnote'); uiConfirm({title:'🗑️ Delete note?', message:'Delete this note? This can’t be undone.'}, function(){ del(id); }); return; }
+        var o=e.target.closest('[data-open]'); if(o){ openEditor(o.getAttribute('data-open')); }
+      });
+    }
+    wire();
+    return { render:function(){ if(curId && !notes().some(function(x){return x.id===curId;})) closeEditor(); renderList(); } };
+  })();
+  function renderNotebook(){ if(NOTEBOOK) NOTEBOOK.render(); }
+
   /* ===================== ONBOARDING WIZARD ===================== */
   var WIZ = (function(){
     var STEPS=['welcome','profile','income','expenses','hobbies','transport','review'];
@@ -3676,7 +3783,7 @@
       return {
         lang:p.lang||'en', currency:p.currency||'DKK', country:p.country||'',
         name:m?(m.profile.name||''):'', age:m?(m.profile.age||''):'', employer:m?(m.profile.employer||''):'', birthday:m?(m.profile.birthday||''):'',
-        ethnicity:m?(m.profile.ethnicity||''):'',
+        ethnicity:m?(m.profile.ethnicity||''):'', phone:m?(m.profile.phone||''):'', computer:m?(m.profile.computer||''):'',
         incomeAvg:m&&m.income.avg?m.income.avg:'', incomeLow:m&&m.income.low?m.income.low:'', incomeHigh:m&&m.income.high?m.income.high:'',
         loan:m&&m.loanPayment?m.loanPayment:'', save:m&&m.savingsMatch?m.savingsMatch:'',
         expenses:m?collectExpenses(m):[], hobbies:[], transport:[]
@@ -3706,7 +3813,12 @@
           '<div><label>Work (optional)</label><input id="wEmp" value="'+esc(data.employer)+'" placeholder="Employer / self"></div></div>'+
           '<label>Birthday 🎂 (optional)</label><input id="wBday" type="date" value="'+esc(data.birthday)+'"><div class="wsub" style="margin-top:4px">We\'ll mark it on your calendar and celebrate it with you.</div>'+
           '<label style="margin-top:12px">Ethnicity (optional)</label><select id="wEth">'+ETHNS.map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===data.ethnicity?' selected':'')+'>'+esc(o[1])+'</option>'; }).join('')+'</select>'+
-          '<div class="wsub" style="margin-top:4px">Used only to set accurate <b>WHO health thresholds</b> (BMI / body-fat) — it never changes your calorie targets.</div>';
+          '<div class="wsub" style="margin-top:4px">Used only to set accurate <b>WHO health thresholds</b> (BMI / body-fat) — it never changes your calorie targets.</div>'+
+          '<div class="wrow" style="margin-top:12px"><div><label>Your phone</label><select id="wPhone">'+
+            [['','—'],['iphone','iPhone (iOS)'],['android','Android'],['other','Other']].map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===data.phone?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select></div>'+
+          '<div><label>Mainly use a…</label><select id="wComputer">'+
+            [['','—'],['laptop','Laptop'],['desktop','Desktop'],['tablet','Tablet'],['none','Just my phone']].map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===data.computer?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select></div></div>'+
+          '<div class="wsub" style="margin-top:4px">We tailor the <b>save &amp; backup tips</b> to your device — iPhone and Android keep files differently.</div>';
       } else if(s==='income'){
         h='<h2>Your income</h2><p class="wsub">Your typical <b>monthly take-home</b> (after tax). You can change it anytime.</p>'+
           '<label>Typical monthly income</label><input id="wInc" type="number" min="0" step="1" value="'+esc(data.incomeAvg)+'" placeholder="e.g. 2500">'+
@@ -3846,7 +3958,7 @@
     }
     function collect(s){
       if(s==='welcome'){ data.lang=val('wLang',data.lang); data.currency=val('wCur',data.currency); data.country=val('wCountry',data.country); }
-      else if(s==='profile'){ data.name=val('wName',data.name); data.age=val('wAge',data.age); data.employer=val('wEmp',data.employer); data.birthday=val('wBday',data.birthday); data.ethnicity=val('wEth',data.ethnicity); }
+      else if(s==='profile'){ data.name=val('wName',data.name); data.age=val('wAge',data.age); data.employer=val('wEmp',data.employer); data.birthday=val('wBday',data.birthday); data.ethnicity=val('wEth',data.ethnicity); data.phone=val('wPhone',data.phone); data.computer=val('wComputer',data.computer); }
       else if(s==='income'){ data.incomeAvg=val('wInc',data.incomeAvg); data.incomeLow=val('wIncLow',data.incomeLow); data.incomeHigh=val('wIncHigh',data.incomeHigh); data.loan=val('wLoan',data.loan); data.save=val('wSave',data.save); }
     }
     function val(id,dflt){ var e=document.getElementById(id); return e?e.value:dflt; }
@@ -3858,7 +3970,7 @@
       // language / currency / country
       STATE.prefs.lang=data.lang; STATE.prefs.currency=data.currency; STATE.prefs.country=(data.country||'').trim();
       // profile
-      MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim(), birthday:(data.birthday||'').trim(), ethnicity:(data.ethnicity||'').trim() };
+      MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim(), birthday:(data.birthday||'').trim(), ethnicity:(data.ethnicity||'').trim(), phone:(data.phone||'').trim(), computer:(data.computer||'').trim() };
       if(STATE.body){ STATE.body.ethnicity=MODEL.profile.ethnicity; }   // health thresholds (WHO) read this
       if(typeof syncBirthday==='function') syncBirthday();   // put 🎂 on the calendar
       // income
@@ -3942,6 +4054,7 @@
       ['🏋️','Gym &amp; Body','Body stats, calorie &amp; macro simulators, a shape model, PRs — and meal ideas matched to your goal.'],
       ['📅','Calendar &amp; Reminders','Birthdays, your weekly sports/hobbies and any reminder — alarms included.'],
       ['📊','Stats &amp; Grades','Your overall S–E grade explained: money, body and income class, with the next step to climb.'],
+      ['📒','Notebook','A free-writing space like your phone’s Notes — jot anything down and it saves with your file.'],
       ['💾','Save / Export','Everything lives on your device. Export a private backup file whenever you make changes.']
     ];
     var back=document.createElement('div'); back.className='modal-back show'; back.id='guideBack';
@@ -4316,6 +4429,7 @@
   renderDay();
   renderEvents();
   renderLog();
+  renderNotebook();
   initLocale();       // language / currency / country — apply saved prefs + wire pickers
   applyCleanModeClass();   // hide example-only narrative for clean/new users
   if(window.rebuildScenarios) window.rebuildScenarios();
