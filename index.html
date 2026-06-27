@@ -457,6 +457,15 @@
   .wiz .wsum .r{display:flex;justify-content:space-between;font-size:14px;color:var(--txt);border-bottom:1px solid rgba(27,58,92,.5);padding-bottom:8px}
   .wiz .wsum .r .v{font-family:'Share Tech Mono';color:var(--cyan)}
   .wiz .wsum .r.big .v{color:var(--lime);font-size:16px}
+  .wiz .instwrap{display:flex;flex-direction:column;gap:10px;margin:4px 0;max-height:46vh;overflow-y:auto}
+  .wiz .instcard{border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:var(--panel)}
+  .wiz .instcard.hot{border-color:var(--lime);background:linear-gradient(180deg,rgba(124,255,178,.07),transparent)}
+  .wiz .instcard .ih{font-size:14.5px;color:var(--txt);margin-bottom:6px}
+  .wiz .instcard .ih b{color:#eaffff}
+  .wiz .instcard .yours{font-family:'Share Tech Mono';font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#04121a;background:var(--lime);border-radius:6px;padding:2px 6px;margin-left:4px;vertical-align:middle}
+  .wiz .instcard ol.isteps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px}
+  .wiz .instcard ol.isteps li{font-size:13px;color:var(--txt-dim);line-height:1.45}
+  .wiz .instcard ol.isteps li b{color:var(--txt)}
   .wiz .wact{display:flex;gap:10px;margin-top:20px}
   .wiz .wact button{flex:1;font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.03em;text-transform:uppercase;
     border-radius:11px;padding:13px;cursor:pointer;border:1px solid var(--line);transition:all .15s}
@@ -712,7 +721,7 @@
           </ul>
         </div>
         <div>
-          <div class="bignum"><small>Left over · typical month</small><span id="ovLeft">—</span><span style="font-size:20px"> kr</span></div>
+          <div class="bignum"><small>Left over · typical month</small><span id="ovLeft">—</span><span class="ccySuffix" style="font-size:20px"> kr</span></div>
           <div class="note">What's left after every bill and any debt payment, before you move money to savings. Comfort money after savings: <b id="ovComfort">—</b>. This is the "spend without doing checkout math" number.</div>
         </div>
       </div>
@@ -748,8 +757,8 @@
       <div class="desc">Every recurring cost you have, grouped by type. Tap any group to open it. Add, edit or delete anything in the <b>Subscriptions</b> tab — items marked as "varies" are left out of the total.</div>
 
       <div class="subtotal" style="margin-bottom:18px">
-        <div class="stat avg"><div class="lbl">Total / month</div><div class="val" id="expMonth">—<small> kr</small></div></div>
-        <div class="stat high"><div class="lbl">Total / year</div><div class="val" id="expYear">—<small> kr</small></div></div>
+        <div class="stat avg"><div class="lbl">Total / month</div><div class="val" id="expMonth">—<small class="ccySuffix"> kr</small></div></div>
+        <div class="stat high"><div class="lbl">Total / year</div><div class="val" id="expYear">—<small class="ccySuffix"> kr</small></div></div>
       </div>
 
       <div id="expGroups"><!-- rendered from MODEL --></div>
@@ -893,7 +902,7 @@
         <div class="field"><label>Category</label><select id="addCat"></select></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>Cost (kr)</label><input id="addCost" type="number" min="0" step="1" placeholder="99"></div>
+        <div class="field"><label>Cost (<span class="ccyLbl">kr</span>)</label><input id="addCost" type="number" min="0" step="1" placeholder="99"></div>
         <div class="field"><label>Billing</label><select id="addFreq"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="yearly">Yearly</option></select></div>
       </div>
       <div class="field"><label>Note (optional)</label><input id="addNote" placeholder="What it's for / why you keep it"></div>
@@ -1469,8 +1478,10 @@
   };
 
   /* ---------- helpers ---------- */
-  // Currency is a DISPLAY choice: symbol + number formatting. It does NOT convert
-  // your stored amounts (that would corrupt your real figures) — only how they read.
+  // Currency is BOTH a display choice (symbol + number formatting) AND a real unit:
+  // switching it converts every stored amount at the bundled exchange rate, so 8.000 kr
+  // becomes the correct ~$1,150 — not a relabelled 8,000. Rates are an offline snapshot
+  // (no server, no API key); FX_RATES.asOf documents the date they were taken.
   var CURRENCIES = {
     USD:{sym:'$',  before:true,  loc:'en-US'}, EUR:{sym:'€',  before:true,  loc:'de-DE'},
     GBP:{sym:'£',  before:true,  loc:'en-GB'}, DKK:{sym:'kr', before:false, loc:'da-DK'},
@@ -1478,10 +1489,42 @@
     CHF:{sym:'CHF',before:true,  loc:'de-CH'}, CAD:{sym:'$',  before:true,  loc:'en-CA'},
     AUD:{sym:'$',  before:true,  loc:'en-AU'}, JPY:{sym:'¥',  before:true,  loc:'ja-JP'}
   };
+  // Units of each currency per 1 USD (offline snapshot). 8000 DKK / 6.9 ≈ 1159 USD.
+  var FX_RATES = {
+    asOf:'2026-01',
+    perUSD:{ USD:1, EUR:0.92, GBP:0.79, DKK:6.87, SEK:10.6, NOK:10.7, CHF:0.88, CAD:1.37, AUD:1.52, JPY:150 }
+  };
+  function fxPerUSD(c){ var r=FX_RATES.perUSD[c]; return (typeof r==='number' && r>0) ? r : 1; }
+  // Convert an amount from one currency to another at the snapshot rate.
+  function convAmount(n, from, to){ if(from===to || n==null || !isFinite(n)) return n; return n * (fxPerUSD(to) / fxPerUSD(from)); }
   function curInfo(){ return CURRENCIES[(STATE && STATE.prefs && STATE.prefs.currency) || 'DKK'] || CURRENCIES.DKK; }
   function fmt(n){ var c=curInfo(); var v=Math.round(n).toLocaleString(c.loc); return c.before ? (c.sym + v) : (v + ' ' + c.sym); }
   function fmtN(n){ return Math.round(n).toLocaleString(curInfo().loc); }
   function fmtK(n){ return Math.round(n/1000) + 'k'; }
+  // money milestone like "12k kr" / "$12k" — symbol follows the currency, not hardcoded
+  function fmtKMoney(n){ var c=curInfo(); var v=fmtK(n); return c.before ? (c.sym + v) : (v + ' ' + c.sym); }
+  // Convert every stored monetary figure when the user switches currency, so the
+  // numbers stay meaningful (8000 kr -> ~$1159) instead of being silently relabelled.
+  // Non-money fields (rates, percentages, body, food, tax brackets) are left untouched.
+  function convertAllMoney(from, to){
+    if(from===to) return;
+    function cv(n){ return Math.round(convAmount(n, from, to)); }
+    if(MODEL && MODEL.income){ ['low','avg','high'].forEach(function(k){ if(typeof MODEL.income[k]==='number') MODEL.income[k]=cv(MODEL.income[k]); }); }
+    if(MODEL && typeof MODEL.loanPayment==='number') MODEL.loanPayment=cv(MODEL.loanPayment);
+    if(MODEL && typeof MODEL.savingsMatch==='number') MODEL.savingsMatch=cv(MODEL.savingsMatch);
+    if(MODEL && MODEL.loan && typeof MODEL.loan.amount==='number') MODEL.loan.amount=cv(MODEL.loan.amount);
+    if(MODEL) (MODEL.groups||[]).forEach(function(g){ (g.items||[]).forEach(function(it){
+      if(typeof it.amt==='number') it.amt=cv(it.amt);
+      if(typeof it.cost==='number') it.cost=cv(it.cost);
+    }); });
+  }
+  // Push the active currency symbol into the few static labels that show it (so a
+  // switch to USD never leaves a stray "kr" behind).
+  function updateCcyLabels(){
+    var sym = curInfo().sym;
+    document.querySelectorAll('.ccySuffix').forEach(function(el){ el.textContent = ' ' + sym; });
+    document.querySelectorAll('.ccyLbl').forEach(function(el){ el.textContent = sym; });
+  }
   function pad2(n){ return (n<10?'0':'') + n; }
   function uid(){ return 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4); }
   function nowISO(){ return new Date().toISOString(); }
@@ -1784,9 +1827,9 @@
   }
 
   function updateMilestones(pts){
-    document.getElementById('m12').textContent = fmtK(pts[11]) + ' kr';
-    document.getElementById('m36').textContent = fmtK(pts[35]) + ' kr';
-    document.getElementById('m96').textContent = fmtK(pts[95]) + ' kr';
+    document.getElementById('m12').textContent = fmtKMoney(pts[11]);
+    document.getElementById('m36').textContent = fmtKMoney(pts[35]);
+    document.getElementById('m96').textContent = fmtKMoney(pts[95]);
   }
 
   function drawChart(){
@@ -2248,13 +2291,13 @@
     if(!g) g = MODEL.groups[MODEL.groups.length-1];
     var item = { id:uid(), name:name, detail:(note||'Added by you'), cost:Number(cost), freq:(freq||'monthly'), custom:true };
     g.items.push(item);
-    logChange('add-cost', name + ' → ' + g.name + ' (' + fmtN(itemMonthly(item)) + ' kr/mo' + (freq!=='monthly'?', '+freq:'') + ')');
+    logChange('add-cost', name + ' → ' + g.name + ' (' + fmtN(itemMonthly(item)) + ' '+curInfo().sym+'/mo' + (freq!=='monthly'?', '+freq:'') + ')');
     refreshFinance(); renderManage(); return item;
   }
   function updateItemPrice(id, cost, freq){
     var f = findItem(id); if(!f) return;
     f.it.cost = Number(cost); if(freq) f.it.freq = freq;
-    logChange('update-cost', f.it.name + ' → ' + fmtN(itemMonthly(f.it)) + ' kr/mo');
+    logChange('update-cost', f.it.name + ' → ' + fmtN(itemMonthly(f.it)) + ' '+curInfo().sym+'/mo');
     refreshFinance(); renderManage();
   }
   function removeItem(id){
@@ -2295,7 +2338,7 @@
       addItem(name, cat, cost, freq, note);
       document.getElementById('addName').value=''; document.getElementById('addCost').value=''; document.getElementById('addNote').value='';
       msg.style.display='block'; msg.style.color='var(--lime)';
-      msg.textContent='Added "'+name+'". Monthly total is now '+fmtN(GRAND)+' kr — all simulators updated.';
+      msg.textContent='Added "'+name+'". Monthly total is now '+fmtN(GRAND)+' '+curInfo().sym+' — all simulators updated.';
     });
     var addCatBtn = document.getElementById('addCatBtn');
     if(addCatBtn) addCatBtn.addEventListener('click', function(){
@@ -2340,7 +2383,7 @@
         }
         var paidOff = it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)) && todayKey() > String(it.until);
         var sub = it.varies ? 'varies (not counted)' :
-          (it.cost!=null && it.freq && it.freq!=='monthly' ? fmtN(it.cost)+' kr/'+(it.freq==='yearly'?'yr':'q')+' ≈ ' : '') + fmtN(itemMonthly(it)) + ' kr/mo' +
+          (it.cost!=null && it.freq && it.freq!=='monthly' ? fmtN(it.cost)+' '+curInfo().sym+'/'+(it.freq==='yearly'?'yr':'q')+' ≈ ' : '') + fmtN(itemMonthly(it)) + ' '+curInfo().sym+'/mo' +
           (it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)) ? (paidOff ? ' · ✅ paid off '+esc(it.until) : ' · 🔁 until '+esc(it.until)) : '');
         return '<div class="item-row"><div class="meta">' + esc(it.name) + (it.custom?' <span class="tag now" style="font-size:8px">ADDED</span>':'') +
           '<small>' + sub + '</small></div><div style="display:flex;gap:6px">' +
@@ -2373,12 +2416,12 @@
   function setIncome(key, value){
     if(['low','avg','high'].indexOf(key) < 0) return;
     MODEL.income[key] = Number(value);
-    logChange('set-income', key + ' → ' + fmtN(value) + ' kr');
+    logChange('set-income', key + ' → ' + fmtN(value) + ' ' + curInfo().sym);
     if(window.rebuildScenarios) window.rebuildScenarios();
     refreshFinance();
   }
-  function setLoanPayment(value){ MODEL.loanPayment = Number(value); logChange('set-loan-payment', fmtN(value)+' kr/mo'); refreshFinance(); }
-  function setSavingsMatch(value){ MODEL.savingsMatch = Number(value); logChange('set-savings-match', fmtN(value)+' kr/mo'); refreshFinance(); }
+  function setLoanPayment(value){ MODEL.loanPayment = Number(value); logChange('set-loan-payment', fmtN(value)+' '+curInfo().sym+'/mo'); refreshFinance(); }
+  function setSavingsMatch(value){ MODEL.savingsMatch = Number(value); logChange('set-savings-match', fmtN(value)+' '+curInfo().sym+'/mo'); refreshFinance(); }
 
   /* ---------- GYM / WORKOUTS ---------- */
   (function initGym(){
@@ -3347,8 +3390,8 @@
     if((m = c.match(/^(?:my\s+)?name\s+is\s+(.+)$/i))){ var nn=m[1].trim(); return { op:'setProfile', field:'name', value:nn, description:'Set name → '+nn }; }
     if(/\bbirth\s?day\b|\bbday\b|\bborn\b/.test(low)){ var dm=c.match(/(\d{4}-\d{2}-\d{2})/); if(dm) return { op:'setProfile', field:'birthday', value:dm[1], description:'Set birthday → '+dm[1] }; }
     if((m = c.match(/\b(?:i\s+(?:live|moved)\s+(?:in|to)|location\s+is|moved\s+to)\s+(.+)$/i))){ var loc=m[1].trim().replace(/[.\s]+$/,''); return { op:'setProfile', field:'location', value:loc, description:'Set location → '+loc }; }
-    if(/\bloan\b/.test(low) && /\b(?:payment|repayment|instal)/.test(low)){ var lv=_num(c); if(lv!=null) return { op:'setLoanPayment', value:lv, description:'Set loan payment → '+fmtN(lv)+' kr/mo' }; }
-    if(/\bsavings?\s+(?:match|transfer)\b|\bforced\s+(?:savings?|match)\b/.test(low) || /\bsave\b.*\bper\s+month\b/.test(low)){ var sv=_num(c); if(sv!=null) return { op:'setSavingsMatch', value:sv, description:'Set savings match → '+fmtN(sv)+' kr/mo' }; }
+    if(/\bloan\b/.test(low) && /\b(?:payment|repayment|instal)/.test(low)){ var lv=_num(c); if(lv!=null) return { op:'setLoanPayment', value:lv, description:'Set loan payment → '+fmtN(lv)+' '+curInfo().sym+'/mo' }; }
+    if(/\bsavings?\s+(?:match|transfer)\b|\bforced\s+(?:savings?|match)\b/.test(low) || /\bsave\b.*\bper\s+month\b/.test(low)){ var sv=_num(c); if(sv!=null) return { op:'setSavingsMatch', value:sv, description:'Set savings match → '+fmtN(sv)+' '+curInfo().sym+'/mo' }; }
     if(/\b(?:salary|income|wage|paycheck|after[\s-]?tax)\b/.test(low) || /\bi\s+(?:earn|make|get paid)\b/.test(low) || /\b(?:low|good|high|typical|average)\s+month\b/.test(low)){
       var iv=_num(c);
       if(iv!=null){
@@ -3366,12 +3409,12 @@
       var catPhrase=(c.match(/\s+(?:to|under|in|into)\s+([\w&'’ ]+)$/i)||[])[1];
       var cat=_matchCategory(c) || (catPhrase?catPhrase.trim():null);
       var name=_cleanName(c);
-      if(name) return { op:'addItem', name:name, category:cat, cost:amt, freq:fq, description:'Add '+name+' — '+fmtN(amt)+' kr/'+(fq==='yearly'?'yr':fq==='quarterly'?'q':'mo')+(cat?' to '+cat:'') };
+      if(name) return { op:'addItem', name:name, category:cat, cost:amt, freq:fq, description:'Add '+name+' — '+fmtN(amt)+' '+curInfo().sym+'/'+(fq==='yearly'?'yr':fq==='quarterly'?'q':'mo')+(cat?' to '+cat:'') };
     }
     var f=_matchItem(c), uv=_num(c);
     if(f && uv!=null && /\b(?:now|to|costs?|is|=|went up|increased|raised|dropped|decreased|changed|updated)\b/.test(low)){
       var ufq=_freq(c);
-      return { op:'updateItem', match:f.it.name, cost:uv, freq:ufq, description:'Update '+f.it.name+' → '+fmtN(uv)+' kr/'+(ufq==='yearly'?'yr':ufq==='quarterly'?'q':'mo') };
+      return { op:'updateItem', match:f.it.name, cost:uv, freq:ufq, description:'Update '+f.it.name+' → '+fmtN(uv)+' '+curInfo().sym+'/'+(ufq==='yearly'?'yr':ufq==='quarterly'?'q':'mo') };
     }
     return null;
   }
@@ -3421,7 +3464,7 @@
       logChange('quick-update', (aiProposal.summary||'update') + ' [' + results.join('; ') + ']');
       autosave(); refreshFinance(); renderManage(); renderProfile();
       document.getElementById('aiProposal').style.display='none'; aiProposal=null;
-      status('✓ Applied. Monthly total is now ' + fmtN(GRAND) + ' kr. Don’t forget to Save / Export to keep it.', 'var(--lime)');
+      status('✓ Applied. Monthly total is now ' + fmtN(GRAND) + ' ' + curInfo().sym + '. Don’t forget to Save / Export to keep it.', 'var(--lime)');
       document.getElementById('aiText').value='';
     });
   })();
@@ -3891,20 +3934,90 @@
   // runtime strings, so adding a translation is a single dictionary line.
   function t(s){ if(typeof I18N==='undefined'||!I18N) return s; var d=I18N[(STATE.prefs&&STATE.prefs.lang)||'en']; return (d && d[s]!=null) ? d[s] : s; }
   var _i18nNodes = null;
+  // Build the set of every static text node worth translating. We capture each node's
+  // original English ONCE; the per-language pass then swaps it. A "pristine" guard
+  // means we only ever overwrite a node that still shows its English original or a
+  // translation WE set — so JS-written values (numbers, currency, live status) are
+  // never clobbered even though we walk the whole document.
+  function collectI18nNodes(){
+    var SKIP = { SCRIPT:1, STYLE:1, NOSCRIPT:1, CANVAS:1, SVG:1, TEXTAREA:1 };
+    var nodes=[], walker=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode:function(n){
+        var v=n.nodeValue; if(!v) return NodeFilter.FILTER_REJECT;
+        var key=v.trim(); if(!key) return NodeFilter.FILTER_REJECT;
+        // must contain at least one letter (skip pure numbers / symbols / currency)
+        if(!/[A-Za-zÀ-ÿ]/.test(key)) return NodeFilter.FILTER_REJECT;
+        var p=n.parentNode; while(p && p.nodeType===1){ if(SKIP[p.nodeName]) return NodeFilter.FILTER_REJECT; p=p.parentNode; }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var tn; while((tn=walker.nextNode())){ tn.__en = tn.nodeValue; nodes.push(tn); }
+    return nodes;
+  }
+  // a node is safe to (re)translate only if it currently shows its English original
+  // or one of the known translations of that original
+  function i18nPristine(tn){
+    var cur=tn.nodeValue; if(cur===tn.__en) return true;
+    var key=tn.__en.trim(), ck=cur.trim();
+    for(var L in I18N){ if(I18N[L] && I18N[L][key]===ck) return true; }
+    return false;
+  }
   function applyLang(lang){
     var dict = I18N[lang] || {};
-    if(!_i18nNodes){
-      _i18nNodes = [];
-      document.querySelectorAll('#tabs .tab').forEach(function(t){ var tn=t.childNodes[t.childNodes.length-1]; if(tn && tn.nodeType===3) _i18nNodes.push(tn); });
-      document.querySelectorAll('.panel h2').forEach(function(h){ var tn=h.childNodes[0]; if(tn && tn.nodeType===3 && tn.nodeValue.trim()) _i18nNodes.push(tn); });
-      var eb=document.querySelector('header .eyebrow'); if(eb){ var t=eb.childNodes[0]; if(t && t.nodeType===3) _i18nNodes.push(t); }
-      _i18nNodes.forEach(function(tn){ tn.__en = tn.nodeValue; });
+    if(!_i18nNodes){ _i18nNodes = collectI18nNodes(); }
+    _i18nNodes.forEach(function(tn){
+      if(!tn.parentNode) return;                 // node detached by a re-render
+      if(!i18nPristine(tn)) return;              // JS changed it — leave it alone
+      var en=tn.__en, key=en.trim(), tr=dict[key];
+      tn.nodeValue = (tr!=null) ? en.replace(key, tr) : en;
+    });
+    // prose elements that mix text with inline <b>/<i> become several fragments above;
+    // translate those as a whole, keyed by their normalized text (safe: skips anything
+    // with an id / form control / dynamic child).
+    function _norm(s){ return String(s==null?'':s).replace(/\s+/g,' ').trim(); }
+    if(!applyLang._prose){
+      applyLang._prose=[];
+      document.querySelectorAll('p, li, .desc, .note, .wsub').forEach(function(el){
+        if(el.id || !el.children.length) return;
+        if(el.querySelector('[id], input, select, textarea, canvas, button, a[href]')) return;
+        el.__enHTML=el.innerHTML; el.__enText=_norm(el.textContent); applyLang._prose.push(el);
+      });
     }
-    _i18nNodes.forEach(function(tn){ var en=tn.__en, key=en.trim(), tr=dict[key]; tn.nodeValue = (tr!=null) ? en.replace(key, tr) : en; });
+    applyLang._prose.forEach(function(el){
+      var curN=_norm(el.textContent), key=el.__enText;
+      var pristine = (curN===key);
+      if(!pristine){ for(var L in I18N){ if(I18N[L] && _norm(I18N[L][key])===curN){ pristine=true; break; } } }
+      if(!pristine) return;                       // JS changed it — leave it alone
+      var tr=dict[key];
+      if(tr!=null) el.textContent=tr; else el.innerHTML=el.__enHTML;
+    });
+    // attributes: titles, placeholders, and explicit data-i18n hooks
     document.querySelectorAll('[data-i18n]').forEach(function(el){ var k=el.getAttribute('data-i18n'), tr=dict[k]; el.textContent = (tr!=null) ? tr : k; });
     document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ var k=el.getAttribute('data-i18n-ph'), tr=dict[k]; el.setAttribute('placeholder', tr!=null?tr:k); });
+    document.querySelectorAll('[placeholder]').forEach(function(el){ if(el.hasAttribute('data-i18n-ph')) return; if(el.__ph==null) el.__ph=el.getAttribute('placeholder'); var tr=dict[(el.__ph||'').trim()]; if(tr!=null) el.setAttribute('placeholder',tr); else el.setAttribute('placeholder',el.__ph); });
+    document.querySelectorAll('[title]').forEach(function(el){ if(el.__title==null) el.__title=el.getAttribute('title'); var tr=dict[(el.__title||'').trim()]; if(tr!=null) el.setAttribute('title',tr); else el.setAttribute('title',el.__title); });
     document.documentElement.setAttribute('lang', lang==='nb'?'no':lang);
     if(typeof renderBody==='function' && document.getElementById('calVerdict')) renderBody();   // re-translate live health text
+  }
+  // Translate a freshly-rendered subtree (e.g. the setup wizard, which builds its
+  // markup on demand AFTER applyLang's one-time capture). Same dictionary, scoped to
+  // a root — clean text nodes plus inline-tag prose, no pristine guard needed because
+  // the subtree is rebuilt in English on every render.
+  function translateSubtree(root){
+    if(!root) return;
+    var dict = I18N[(STATE.prefs&&STATE.prefs.lang)||'en']; if(!dict) return;
+    var w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode:function(n){
+      var v=n.nodeValue; if(!v||!v.trim()||!/[A-Za-zÀ-ÿ]/.test(v)) return NodeFilter.FILTER_REJECT;
+      var p=n.parentNode; while(p&&p.nodeType===1){ if(/^(SCRIPT|STYLE|TEXTAREA|CANVAS)$/.test(p.nodeName)) return NodeFilter.FILTER_REJECT; p=p.parentNode; }
+      return NodeFilter.FILTER_ACCEPT;
+    }});
+    var arr=[],tn; while((tn=w.nextNode())) arr.push(tn);
+    arr.forEach(function(tn){ var key=tn.nodeValue.trim(), tr=dict[key]; if(tr!=null) tn.nodeValue=tn.nodeValue.replace(key,tr); });
+    root.querySelectorAll('p, li, .wsub, .desc, .note, .instcard .ih').forEach(function(el){
+      if(!el.children.length) return;
+      if(el.querySelector('input, select, textarea, canvas, button, a[href]')) return;
+      var key=el.textContent.replace(/\s+/g,' ').trim(), tr=dict[key]; if(tr!=null) el.textContent=tr;
+    });
   }
   function initLocale(){
     var p = STATE.prefs;
@@ -3913,14 +4026,15 @@
         ci=document.getElementById('countryInp'), lk=document.getElementById('lkLangSel');
     if(ls) ls.value=p.lang; if(lk) lk.value=p.lang; if(cs) cs.value=p.currency; if(ci) ci.value=p.country||'';
     applyLang(p.lang);
-    function refreshMoney(){ if(typeof refreshFinance==='function') refreshFinance(); if(typeof renderManage==='function') renderManage(); if(window.rebuildScenarios) window.rebuildScenarios(); }
+    if(typeof updateCcyLabels==='function') updateCcyLabels();
+    function refreshMoney(){ if(typeof updateCcyLabels==='function') updateCcyLabels(); if(window.rebuildScenarios) window.rebuildScenarios(); if(typeof refreshFinance==='function') refreshFinance(); if(typeof renderManage==='function') renderManage(); if(typeof renderProfile==='function') renderProfile(); }
     function setLang(v){ p.lang=v; if(ls)ls.value=v; if(lk)lk.value=v; applyLang(v); autosave();
       if(typeof renderDow==='function') renderDow();
       if(typeof renderCalendar==='function'){ renderCalendar(); renderDay(); renderEvents(); }
     }
     if(ls) ls.addEventListener('change', function(){ setLang(this.value); logChange('set-language', this.value); });
     if(lk) lk.addEventListener('change', function(){ setLang(this.value); });
-    if(cs) cs.addEventListener('change', function(){ p.currency=this.value; refreshMoney(); autosave(); logChange('set-currency', this.value); });
+    if(cs) cs.addEventListener('change', function(){ var from=p.currency, to=this.value; if(typeof convertAllMoney==='function') convertAllMoney(from,to); p.currency=to; refreshMoney(); autosave(); logChange('set-currency', from+' → '+to+' (amounts converted)'); });
     if(ci){
       ci.addEventListener('input', function(){ p.country=this.value; if(MODEL.profile) MODEL.profile.location=this.value; if(typeof renderProfile==='function') renderProfile(); });
       ci.addEventListener('change', function(){ autosave(); logChange('set-country', this.value); });
@@ -4868,7 +4982,7 @@
 
   /* ===================== ONBOARDING WIZARD ===================== */
   var WIZ = (function(){
-    var STEPS=['welcome','profile','income','expenses','hobbies','transport','review'];
+    var STEPS=['welcome','profile','income','expenses','hobbies','transport','install','review'];
     var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     var ETHNS=[['','Prefer not to say'],['white','White / European'],['black','Black / African'],['asian','East Asian'],['south_asian','South Asian'],['hispanic','Hispanic / Latino'],['mena','Middle Eastern / N. African'],['mixed','Mixed / Other']];
     var el = {
@@ -4896,11 +5010,11 @@
                 ['Gym','Other'],['Monthly savings','Savings'] ];
     function render(){
       var s=STEPS[i];
-      el.stepLbl.textContent='Step '+(i+1)+' of '+STEPS.length;
+      el.stepLbl.textContent=t('Step')+' '+(i+1)+' '+t('of')+' '+STEPS.length;
       el.bar.style.width=Math.round((i+1)/STEPS.length*100)+'%';
       el.msg.textContent='';
       el.back.style.visibility = i===0 ? 'hidden':'visible';
-      el.next.textContent = (i===STEPS.length-1) ? 'Open my dashboard' : 'Next';
+      el.next.textContent = (i===STEPS.length-1) ? t('Open my dashboard') : t('Next');
       var h='';
       if(s==='welcome'){
         h='<h2>Welcome 👋</h2><p class="wsub">Let’s set this up in under a minute. First, how should it read?</p>'+
@@ -4955,6 +5069,8 @@
           '<div class="wrow" id="wTrFinRow" style="display:none"><div><label>Last payment date</label><input id="wTrUntil" type="date"></div></div>'+
           '<button class="chip" id="wTrAdd" style="margin-top:10px">＋ Add transport</button>'+
           '<div class="wlist" id="wTrList"></div>';
+      } else if(s==='install'){
+        h=installStepHTML();
       } else if(s==='review'){
         var avg=Number(data.incomeAvg)||0, exp=expTotal(), loan=Number(data.loan)||0, save=Number(data.save)||0;
         var trTot=data.transport.reduce(function(s,t){ return s+(Number(t.cost)||0)+(Number(t.insurance)||0); },0);
@@ -4971,7 +5087,37 @@
           '</div><p class="wsub" style="margin-top:6px">Tip: press <b>💾 Save / Export</b> often to keep a backup file.</p>';
       }
       el.body.innerHTML=h;
+      if(typeof translateSubtree==='function') translateSubtree(el.body);
       wire(s);
+    }
+    function installStepHTML(){
+      // tailor the emphasis to the device they told us about (highlighted first),
+      // but always show all three so any household device is covered.
+      var phone=data.phone||'', comp=data.computer||'';
+      var ios = { id:'ios', icon:'📱', title:t('On iPhone / iPad'),
+        steps:[ t('Open this page in <b>Safari</b> (not Chrome).'), t('Tap the <b>Share</b> button (the square with an arrow ↑).'), t('Scroll down and tap <b>“Add to Home Screen.”</b>'), t('Tap <b>Add</b> — the MRLN icon appears on your home screen.') ] };
+      var android = { id:'android', icon:'🤖', title:t('On Android'),
+        steps:[ t('Open this page in <b>Chrome</b>.'), t('Tap the <b>⋮</b> menu (top-right).'), t('Tap <b>“Install app”</b> or <b>“Add to Home screen.”</b>'), t('Confirm — the MRLN icon appears with your other apps.') ] };
+      var pc = { id:'pc', icon:'💻', title:t('On a computer (Windows / Mac)'),
+        steps:[ t('Open this page in <b>Chrome</b> or <b>Edge</b>.'), t('Look for the <b>install icon</b> (⊕ / a small screen) at the right of the address bar.'), t('Click it, then click <b>Install</b>.'), t('MRLN opens in its own window and lives in your apps / dock.') ] };
+      var cards=[ios,android,pc];
+      // reorder so the user's device comes first and is highlighted
+      var primary = phone==='iphone'?'ios' : phone==='android'?'android' : (comp==='laptop'||comp==='desktop')?'pc' : '';
+      if(primary) cards.sort(function(a,b){ return (a.id===primary?-1:0)-(b.id===primary?-1:0); });
+      function cardHTML(c){
+        var hot = c.id===primary;
+        return '<div class="instcard'+(hot?' hot':'')+'">'+
+          '<div class="ih">'+c.icon+' <b>'+c.title+'</b>'+(hot?' <span class="yours">'+t('your device')+'</span>':'')+'</div>'+
+          '<ol class="isteps">'+c.steps.map(function(s){ return '<li>'+s+'</li>'; }).join('')+'</ol></div>';
+      }
+      var oneTap = (typeof window.__canInstall==='function' && window.__canInstall())
+        ? '<button class="chip" id="wInstallNow" style="margin:2px 0 14px;border-color:var(--lime);color:var(--lime)">⬇ '+t('Install now (one tap)')+'</button>'
+        : '';
+      return '<h2>'+t('Add it to your home screen 📲')+'</h2>'+
+        '<p class="wsub">'+t('Installing makes MRLN open like a real app — full-screen, works offline, and keeps your data safe between visits. It\'s free and takes 10 seconds.')+'</p>'+
+        oneTap +
+        '<div class="instwrap">'+cards.map(cardHTML).join('')+'</div>'+
+        '<p class="wsub" style="margin-top:10px">'+t('You can skip this and do it later from the <b>Connect</b> tab.')+'</p>';
     }
     function langOpts(sel){ return [['en','English'],['es','Español'],['da','Dansk'],['de','Deutsch'],['sv','Svenska'],['nb','Norsk']].map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+o[1]+'</option>'; }).join(''); }
     function curOpts(sel){ return ['USD','EUR','GBP','DKK','SEK','NOK','CHF','CAD','AUD','JPY'].map(function(c){ return '<option value="'+c+'"'+(c===sel?' selected':'')+'>'+c+'</option>'; }).join(''); }
@@ -5020,6 +5166,12 @@
         });
         var hl=document.getElementById('wHobList');
         if(hl) hl.addEventListener('click', function(e){ var x=e.target.closest('[data-x]'); if(x){ data.hobbies.splice(+x.getAttribute('data-x'),1); renderHobList(); } });
+      }
+      if(s==='install'){
+        var ib=document.getElementById('wInstallNow');
+        if(ib) ib.addEventListener('click', function(){ if(window.__triggerInstall && window.__triggerInstall()){ ib.textContent='✓ '+t('Follow the prompt…'); } });
+        // if install state changes while we're on this step, re-render to reflect it
+        window.__onInstallStateChange=function(){ if(STEPS[i]==='install') render(); };
       }
       if(s==='transport'){
         renderTrList();
@@ -5577,7 +5729,12 @@
     function installed(){ try{ return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true; }catch(_){ return false; } }
     function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
     var card=document.getElementById('installCard'), btn=document.getElementById('installBtn'), note=document.getElementById('installNote');
-    if(btn) btn.addEventListener('click', function(){ if(deferred){ deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; btn.style.display='none'; }); } });
+    // Expose the native install prompt so the setup wizard's Install step can use the
+    // one-tap button when the browser supports it (Android/Chrome/Edge). Returns true
+    // if a native prompt was shown, false if we should fall back to manual steps.
+    window.__canInstall=function(){ return !!deferred && !installed(); };
+    window.__triggerInstall=function(){ if(deferred){ try{ deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; if(btn) btn.style.display='none'; if(typeof window.__onInstallStateChange==='function') window.__onInstallStateChange(); }); return true; }catch(_){ return false; } } return false; };
+    if(btn) btn.addEventListener('click', function(){ window.__triggerInstall(); });
     function refreshInstallUI(){
       if(!card) return;
       if(installed()){ card.style.display='none'; return; }
@@ -5586,8 +5743,8 @@
       // not installable here (e.g. opened as a downloaded file) — keep it hidden
       card.style.display='none';
     }
-    window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; refreshInstallUI(); });
-    window.addEventListener('appinstalled', function(){ deferred=null; if(card) card.style.display='none'; });
+    window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; refreshInstallUI(); if(typeof window.__onInstallStateChange==='function') window.__onInstallStateChange(); });
+    window.addEventListener('appinstalled', function(){ deferred=null; if(card) card.style.display='none'; if(typeof window.__onInstallStateChange==='function') window.__onInstallStateChange(); });
     refreshInstallUI();
     window.__pwaInstalled=installed;
   })();
