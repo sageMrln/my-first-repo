@@ -202,6 +202,10 @@ Sounds are **soft by design** (~0.09–0.12 gain) and **respect reduced-motion**
 
 All four mechanics are **per-device, never synced** (they reset if you import to a new phone) and are **stripped from any file you share** — so a customer file or a test upload stays clean, and the habit counters don't follow your export.
 
+**📍 Organize Your Dashboard** — Double-tap any navigation tab (Money, Health, Calendar, etc.) to open its options. You'll see a "Position in the menu" control (◀ _number_ ▶) that lets you **reorder the tabs** in your navigation bar. Slide a tab to position 1 and it jumps to the front; a smooth ripple animates the other tabs into place. Your custom order saves automatically and persists across sessions. Make the app work your way.
+
+**🔊 Category Sounds** — When you open an Expense category (Groceries, Transport, etc.) to see what you're spending, it plays a soft, satisfying "unfold" chime. Like the streak fanfare and Apply success chime, it's **voice outcome, not input** — the sound says *"look what opened"* without needing to explain it. Fully offline, no files, and respects your mute toggle (🔊/🔇).
+
 ---
 
 ## 12. Updates — how new features reach you

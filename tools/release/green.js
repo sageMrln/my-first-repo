@@ -53,11 +53,15 @@ run(['tools/test/streak_test.js'], 'streak suite');
 section('Tier 0 sound engine — tools/test/sound_test.js');
 run(['tools/test/sound_test.js'], 'sound suite');
 
-// 5) deep pre-publish guard on the app itself
+// 5) committed tab reorder test — nav tab repositioning + ripple logic
+section('tab reorder engine — tools/test/reorder_test.js');
+run(['tools/test/reorder_test.js'], 'reorder suite');
+
+// 6) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
 
-// 6) leak scan across every OTHER published text file (the "whole surface" rule)
+// 7) leak scan across every OTHER published text file (the "whole surface" rule)
 //    Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
 //    by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
 const PUBLISHED_TEXT = ['GUIDE.md', 'manifest.webmanifest', 'sw.js', 'team-chat.html'];
