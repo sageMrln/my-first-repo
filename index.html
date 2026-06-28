@@ -780,6 +780,7 @@
       <span class="pill">AGE <b id="hdrAge">—</b></span>
       <span class="pill">WORK <b id="hdrEmployer">—</b></span>
       <span class="pill" id="hdrGradePill" title="Your overall life grade — tap Stats for the full breakdown">GRADE <b id="hdrGrade">—</b></span>
+      <span class="pill" id="streakPill" data-i18n-skip style="display:none" title="Days in a row you've used MRLN — keep it alive!">🔥 <b id="streakN">0</b></span>
     </div>
 
     <div class="status">
@@ -1746,8 +1747,63 @@
   function logChange(action, detail){
     STATE.log.unshift({ ts:nowISO(), action:action, detail:detail||'' });
     if(STATE.log.length>3000) STATE.log.length=3000;
+    __bumpStreak();
     autosave();
     if(typeof renderLog==='function') renderLog();
+  }
+  // ---- Tier 0 engagement: daily streak (a day you used MRLN keeps it alive) ----
+  function __sDay(d){ d=d||new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  function __bumpStreak(){
+    var d=__sDay();
+    STATE.streak = STATE.streak || { count:0, last:'' };
+    if(STATE.streak.last===d) return;                                  // already counted today
+    var y=__sDay(new Date(Date.now()-86400000));
+    STATE.streak.count = (STATE.streak.last===y) ? (STATE.streak.count+1) : 1;  // consecutive day, else reset
+    STATE.streak.last=d;
+    if(typeof renderStreak==='function') renderStreak();
+  }
+  function renderStreak(){
+    var pill=document.getElementById('streakPill'), n=document.getElementById('streakN');
+    if(!pill||!n) return;
+    var st=STATE.streak||{count:0,last:''};
+    if(!st.count){ pill.style.display='none'; return; }
+    n.textContent=st.count; pill.style.display='';
+    var today=(st.last===__sDay());
+    // green when you've logged today; amber loss-aversion nudge when you haven't yet
+    pill.style.borderColor = today ? 'var(--lime)' : 'var(--amber)';
+    pill.style.color = today ? 'var(--lime)' : 'var(--amber)';
+    pill.title = today ? (st.count+' '+t('day streak — keep it alive!'))
+                       : t('Log anything today to keep your streak alive 🔥');
+  }
+  // warm, localized, name-personalized greeting — once per day, on open
+  function morningBriefing(){
+    try{
+      if(typeof TEMPLATE_MODE!=='undefined' && TEMPLATE_MODE) return;    // never greet in a fresh try-mode copy
+      var d=__sDay();
+      if(STATE.briefedOn===d) return;                                    // once per day only
+      STATE.briefedOn=d; autosave();
+      var st=STATE.streak||{count:0,last:''};
+      var raw=(MODEL&&MODEL.profile&&MODEL.profile.name)||'';
+      var nm=(raw && raw.toLowerCase()!=='sample') ? String(raw).trim().split(/\s+/)[0] : '';
+      var greet = nm ? tf('Hi {name} 👋', {name:nm}) : t('Hi 👋');
+      var line = st.count>1 ? tf('{n} days in a row — keep it going! 🔥', {n:st.count})
+                            : t('Welcome back — log something today to start a streak 🔥');
+      if(typeof toast==='function') toast(greet+' '+line);
+    }catch(_){}
+  }
+  // quick "alive" feedback flash when a change is applied
+  function scoreFlash(msg){
+    try{
+      var d=document.createElement('div');
+      d.textContent=msg||('✓ '+t('Nice!'));
+      d.style.cssText='position:fixed;top:18%;left:50%;transform:translateX(-50%);z-index:98500;'+
+        'background:var(--lime,#7CFFB2);color:#012;font-weight:800;font-size:15px;padding:8px 16px;'+
+        'border-radius:999px;box-shadow:0 0 20px rgba(124,255,178,.6);pointer-events:none;'+
+        'transition:opacity .6s ease, transform .6s ease;opacity:1';
+      document.body.appendChild(d);
+      setTimeout(function(){ d.style.opacity='0'; d.style.transform='translateX(-50%) translateY(-18px)'; }, 700);
+      setTimeout(function(){ d.remove(); }, 1400);
+    }catch(_){}
   }
 
   /* ---------- adopt MODEL as the persisted, mutable config ---------- */
@@ -4088,8 +4144,10 @@
     document.getElementById('aiApply').addEventListener('click', function(){
       if(!aiProposal || !aiProposal.changes || !aiProposal.changes.length) return;
       var results = aiProposal.changes.map(function(c){ return applyChange(c); });
+      var nApplied = aiProposal.changes.length;
       logChange('quick-update', (aiProposal.summary||'update') + ' [' + results.join('; ') + ']');
       autosave(); refreshFinance(); renderManage(); renderProfile();
+      if(typeof scoreFlash==='function') scoreFlash('✓ '+tf('{n} applied', {n:nApplied}));   // Tier 0: alive feedback
       document.getElementById('aiProposal').style.display='none'; aiProposal=null;
       status('✓ Applied. Monthly total is now ' + fmtN(GRAND) + ' ' + curInfo().sym + '. Don’t forget to Save / Export to keep it.', 'var(--lime)');
       document.getElementById('aiText').value='';
@@ -6732,6 +6790,8 @@
   renderUsage();
   // celebrate the birthday once it's the day (also re-checked just after unlock)
   setTimeout(checkBirthday, 800);
+  renderStreak();                       // Tier 0: show the daily-streak pill
+  setTimeout(morningBriefing, 1400);    // Tier 0: warm daily greeting once the UI settles
 
   /* ===================== PWA: persistent storage + offline + install ===================== */
   (function initPWA(){
