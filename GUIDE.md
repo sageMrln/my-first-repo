@@ -183,7 +183,21 @@ Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask que
 
 ---
 
-## 11. Updates — how new features reach you
+## 11. Daily Habits — engagement & motivation
+
+Three mechanics keep you coming back:
+
+**🔥 Streak Counter** — Track consecutive days you've logged income or expenses. The header shows a flame 🔥 pill with your count — green when you logged something today, amber when it's been a day or two. Breaking a streak resets you to 1, so dailies become a ritual. It's the oldest retention mechanic in apps like Duolingo and Habitica — and it works.
+
+**☀️ Morning Briefing** — On app load between 7 AM and noon, you see a warm, personalized greeting: *"Hey {name}, 7 days in a row! You've saved €2,140 this month. Keep it up!"* It combines your streak, your savings progress, and a regional-emotional nudge (Danish: "så er du på vej!" / Spanish: "¡Vas muy bien!" / German: "Das sieht gut aus!"). **Offline-only, local-only** — never leaves your device. It's your app saying *"I see what you're doing, and I'm proud of you"* every morning.
+
+**✨ Apply Feedback** — When you apply a command or confirm an edit, a 2-second toast pops up: *"nice! 7-second parse"* or *"saved ✓"*. It's a tiny score (how fast you wrote it) and an emoji, giving instant proof that the app heard you and the numbers updated. Keeps your hands engaged and the app *feeling alive*.
+
+All three are **per-device, never synced** (they reset if you import to a new phone) and are **stripped from any file you share** — so a customer file or a test upload stays clean, and the habit counters don't follow your export.
+
+---
+
+## 12. Updates — how new features reach you
 
 - **On the hosted link / installed app:** updates are **automatic**. Open it online and the newest version loads itself (network-first service worker); offline still works from cache. Your data is preserved across every update — no migration, no re-login.
 - **On a downloaded file:** that file is frozen. To get new features, open the hosted app (or a newer file) and **import your data** across.
@@ -192,7 +206,7 @@ Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask que
 
 ---
 
-## 12. Privacy & anti-tamper (the security model)
+## 13. Privacy & anti-tamper (the security model)
 
 - **Your data is yours.** It lives in your browser's local storage (and embedded in your saved file). It is never uploaded — there's no server to upload to.
 - **Unforgeable access.** Keys are signed with a private key that exists **only** in the owner's master file. The public app holds just the public half — enough to verify keys, never to make them.
@@ -201,7 +215,7 @@ Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask que
 
 ---
 
-## 13. For the owner — running the show
+## 14. For the owner — running the show
 
 These tools appear only on **your master file** (where the private key lives):
 
@@ -215,7 +229,7 @@ These tools appear only on **your master file** (where the private key lives):
 
 ---
 
-## 14. Quick troubleshooting
+## 15. Quick troubleshooting
 
 | Symptom | Fix |
 |---|---|

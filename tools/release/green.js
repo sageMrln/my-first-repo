@@ -41,11 +41,19 @@ function run(args, label) {
 section('parser regression — tools/test/parse_test.js');
 run(['tools/test/parse_test.js'], 'parser suite');
 
-// 2) deep pre-publish guard on the app itself
+// 2) committed assistant MRLN test suite — router + Q&A engine
+section('assistant MRLN test — tools/test/assistant_test.js');
+run(['tools/test/assistant_test.js'], 'assistant suite');
+
+// 3) committed Tier 0 streak engine test
+section('Tier 0 streak engine — tools/test/streak_test.js');
+run(['tools/test/streak_test.js'], 'streak suite');
+
+// 5) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
 
-// 3) leak scan across every OTHER published text file (the "whole surface" rule)
+// 6) leak scan across every OTHER published text file (the "whole surface" rule)
 //    Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
 //    by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
 const PUBLISHED_TEXT = ['GUIDE.md', 'manifest.webmanifest', 'sw.js', 'team-chat.html'];
