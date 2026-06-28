@@ -76,3 +76,13 @@ Entry format:
 - Decision / verdict: process now tight where it bent; gate tooling sound. No security gap.
 - Commits / SHAs: my chat/log commits only (no app-code changes this session).
 - Still open: backlog has the low-sev Spar/Lønstrup + "add salary" parser residuals.
+
+## [2026-06-28] — direct (Osefe, "do extra if useful") — holistic pass on tip 56af3f9
+- Did: whole-surface security pass after the day's multiple ships (Assistant MRLN, Send).
+  green.js GREEN; invariants intact (owner/hud slots empty, watchdogs, exportBlank strip).
+- Team Room viewer (only fetch in app, index.html ~6818-6858): fetch is OWNER-GATED — early
+  return at :6824 unless #__ownerKeySrc non-empty OR mrln_team flag → customer files never
+  fetch (offline guarantee holds). Render escaped (esc+fmt) → no XSS from chat file.
+- Verdict: SAFE / clean. 3 non-blocking backlog notes: no CSP (recommend connect-src lock),
+  hardcoded working-branch raw URL (:6826), #team flag enableable on any device (:6822).
+- Still open: those 3 are hardening, owner-only impact; not gating anything.
