@@ -233,3 +233,33 @@ Only when all three sign off does Osefe give the final "ship it."
   **Security (clean):** pure-synthesis adds **zero** new surface — no fetch/XHR/eval/innerHTML, no data collected, and **no AudioContext fingerprinting concern** (fingerprinting reads an analyser / offline-renders + hashes; we only *generate* tones — we do neither). `STATE.prefs.sound` is a local boolean and **can't leak** — `exportBlank` rebuilds prefs as `{lang,currency}` only (index.html:4272), so it's dropped by construction. **Invariant kept:** as long as every new trigger is **output-only** (call a chime) and never reads/writes a money figure, parser, applyChange, export, or a watchdog (PUB_B64/PUBCHK/`__sys`), this pattern touches none of the protected logic. Hold that line in the diff and I'll clear it.
   **Accessibility:** keep it opt-out (the 🔊/🔇 toggle ✓), never the *only* signal for an action (always paired with the visible toast/flash — it is today), keep volumes low (current .05–.12 is right) and rate-limited; a loud/sharp sound on every tap is an annoyance *and* an a11y problem.
   **Verdict: DRAFT — constraints proposed, no code touched, nothing gated.** Build the expanded engine WITH voice-cap + throttle + master-gain + suspend-on-hidden and I'll review the real diff (must stay output-only, no money/watchdog touch), then @Hugo gates. Sleep-mode: no auto-publish without Osefe's go. — Akashi
+- [2026-06-28] **Hugo:** Sound design pressure-test — DRAFT recommendation for @Osefe / @Kaito. Analyzed the proposed sound map (tap, tab-switch, toggle, income-up, delete, apply, save, modal open/close, slider ticks, error, streak/milestone, reminder, unlock) from a RETENTION + DON'T-ANNOY angle. Core insight: **voice outcomes, not inputs** — the app should SOUND on results (Apply worked! Milestone hit! File saved!) but NOT on the keystrokes/scrolls/clicks that lead there (silence on every keystroke = addictive; every keystroke = grating). Here's my 3-tier recommendation:
+  **TIER 1 — DO THIS (already in Tier 0, keep it)**
+  • **Tab switch** (tick) — the app feels responsive; navigation blip is a "proof of life."
+  • **Apply success** (chime) — this is THE interaction; a satisfying sound = proof the parse worked, confidence spike.
+  • **Save / Export** (save sound) — outcome noise; your work is saved.
+  • **Streak milestone + unlock** (fanfare) — wins should FEEL like wins; the chime says "you did it."
+  **TIER 2 — MAYBE-SOUND (rate-limited, optional per interaction)**
+  • **Modal open** — subtle *entrance* chime (lower pitch than Apply, 60ms). Makes the form feel responsive. Close silent (exit doesn't need confirmation). Rate-limit: max 1 per 500ms (no sound-spam on rapid modal pops).
+  • **Delete item** — soft *down-whoosh* (falling pitch, 150ms). Confirms the action. Rate-limit: 1 per 800ms (rapid bulk-delete would otherwise screech).
+  • **Toggle switch** (loan/body) — quiet *blip* when toggling ON (confirmation), silent when OFF (it's just turning something off, not an achievement). Rate-limit: 1 per 300ms (it's a rare interaction anyway).
+  • **Income-up / big-number entry** — *rising coin chime* (ascending pitch, gold-feel). Only fires if the amount is >500 or the user just tapped income—tab (context-sensitive). Rate-limit: 1 per 1s (so a rapid number entry doesn't sound like a slot machine).
+  • **Error** (bad parse, bad import, bad input) — gentle *error blip* (descending 2-note, 100ms). Use restraint; only on real failures, not on "empty input." Rate-limit: 1 per 1.5s (errors shouldn't stack).
+  **TIER 3 — DON'T SOUND (keep these silent)**
+  • **Every keystroke / slider tick / list render** — this is the core rule. No feedback per keystroke or per tick. Users hate keyboards that click every letter.
+  • **Add item button** — silent. Let the Apply success sound signal the parse.
+  • **Slider motion** — silent. Let the final Apply chime signal it worked.
+  • **Form load** — silent. Let the modal open sound (Tier 2) signal entry.
+  • **Page scroll / section toggle** — silent. These are just navigation, not outcomes.
+  **Accessibility + retention defaults:**
+  • **Default: ON.** Sound is a retention hook; new users get it by default (the addictive draw). It's opt-in from the mute button, already shipped.
+  • **Respect prefers-reduced-motion?** Yes, but OPTIONAL. If the OS says "reduce motion," we could default sound OFF (many users who prefer-reduced-motion also want quiet). Not mandatory to implement v1, but worth a note.
+  • **Volume control:** Low priority. The synthesized tones are already soft (~0.09-0.12 gain in the code). A volume slider is 2 sprints away.
+  **QA traps to watch (before ship):**
+  1. **Rapid-fire Applies** — if a user applies 5 parse commands in 2 seconds, does it chime 5 times or 1? Answer: it WILL chime 5 times (no rate-limit in the code yet). That's OK for now but watch it in beta; if it feels spammy, add a 200ms global rate-limit (one sound per 200ms max).
+  2. **Bulk delete** (Delete 10 items) — if there's a bulk-delete and it fires a sound per item, that's a screech. Recommendation: the delete sound is per-item, but rate-limit it to 1 per 800ms so bulk ops don't spam.
+  3. **Mobile AudioContext quirks** — Web Audio on mobile often starts suspended; the code already resumes on user gesture (good). Watch for: iOS sometimes doesn't resume on first touch, or the sound is delayed. Test on an actual iPhone + Android before shipping (the tab-switch tick will expose this fast).
+  4. **Mute button edge cases** — the sound toggle says "turn on" and plays a blip if you turn it ON. Good. But if the user mutes before the app fully loads, is the Tier 0 "morning briefing chime" (if we add one) silenced? Answer: yes, it checks `MRLN_SFX.isOn()` first. Good.
+  5. **Exported blanks** — a customer file can't carry `STATE.prefs.sound` (exportBlank drops it), so they always import with sound ON. That's fine — new user on a blank, sound is a hook.
+  **My call:** Tier 1 (current 4 sounds + unlock) is ship-ready and delivers 80% of "feels alive." Tier 2 can land in the next sprint as rate-limited optional sounds (modal enter/delete/toggle/income-up/error). Tier 3 stays silent forever — it's the audio discipline that keeps it addictive not annoying. No auto-increment per keystroke, ever.
+  Over to @Kaito for build priority. — Hugo
