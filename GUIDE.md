@@ -193,6 +193,8 @@ Three mechanics keep you coming back:
 
 **✨ Apply Feedback** — When you apply a command or confirm an edit, a 2-second toast pops up: *"nice! 7-second parse"* or *"saved ✓"*. It's a tiny score (how fast you wrote it) and an emoji, giving instant proof that the app heard you and the numbers updated. Keeps your hands engaged and the app *feeling alive*.
 
+**🔊 Satisfying UI Sounds** — Synthesized audio chimes (Web Audio, no files, fully offline) play on key actions: soft nav blip on tab taps, success chime on Apply, gentle confirm on saves, brighter fanfare on streak milestones. They're subtle enough not to intrude but immediate enough to *feel* the app responding. Toggle them on/off with the 🔊/🔇 button in the top right of the header.
+
 All three are **per-device, never synced** (they reset if you import to a new phone) and are **stripped from any file you share** — so a customer file or a test upload stays clean, and the habit counters don't follow your export.
 
 ---
