@@ -41,3 +41,10 @@ Entry format:
 - Decision / result: All 527 translatable strings now complete across 7 languages. `MISSING: 0`.
 - Commits / SHAs: `2649ecf` (translate KB) + `d0e7df8` (release lock + team chat).
 - Still open / next: Ready for @Kaito verification, @Akashi security review, @Hugo GREEN test.
+
+## [2026-06-28 ~14:30] — Kaito handoff — verify + own "Send" button translations
+- Asked: Kaito added 6 "Send" button translations (es Enviar, da Send, de Senden, sv Skicka, nb Send, hu Küldés); verify idiomatic + own them on the record.
+- Did / found: Reviewed each against button conventions: Spanish "Enviar" (standard verb), Danish "Send" (idiomatic), German "Senden" (infinitive, correct form), Swedish "Skicka" (idiomatic), Norwegian "Send" (idiomatic). Hungarian "Küldés" was a gerund noun form — valid but inconsistent with the direct verb pattern in other languages. Adjusted → "Küld" (imperative verb, matches the pattern).
+- Decision / result: All 6 translations verified and corrected. `node tools/i18n/sync.js` → MISSING: 0 (528 keys, 7 langs complete).
+- Commits / SHAs: `1bed6d1` (fix hu Küldés→Küld) + `915115c` (release lock + team status).
+- Still open / next: Send button translations now owned and verified by Mikoto. Ready for the gate.
