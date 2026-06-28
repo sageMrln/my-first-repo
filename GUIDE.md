@@ -183,7 +183,28 @@ Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask que
 
 ---
 
-## 11. Updates — how new features reach you
+## 11. Daily Habits — engagement & motivation
+
+Three mechanics keep you coming back:
+
+**🔥 Streak Counter** — Track consecutive days you've logged income or expenses. The header shows a flame 🔥 pill with your count — green when you logged something today, amber when it's been a day or two. Breaking a streak resets you to 1, so dailies become a ritual. It's the oldest retention mechanic in apps like Duolingo and Habitica — and it works.
+
+**☀️ Morning Briefing** — Once per day on app load, you see a time-aware greeting by name. *"Good morning, Ingrid 👋 — 7 days in a row — keep it going! 🔥 · on track to keep €2,140 this month 🔥"* The greeting changes by time of day (Good morning/afternoon/evening); combines your streak count and your **monthly surplus** (the amount you're on track to have left over after expenses and loan payments). **Offline-only, local-only** — never leaves your device. It's your app saying *"I see what you're doing, and I'm proud of you"* once a day.
+
+**✨ Apply Feedback** — When you apply a command or confirm an edit, a 2-second toast pops up: *"nice! 7-second parse"* or *"saved ✓"*. It's a tiny score (how fast you wrote it) and an emoji, giving instant proof that the app heard you and the numbers updated. Keeps your hands engaged and the app *feeling alive*.
+
+**🔊 Satisfying UI Sounds** — Synthesized audio chimes (Web Audio, no files, fully offline) play on key actions. The core rule: **sounds voice *outcomes*, not inputs** — you hear confirmation when something works or changes, but not on every keystroke or slider tick. This keeps the app feeling responsive without becoming grating.
+  - **Always sound:** tab navigation (soft tick), Apply success (C–E–G chime), save/export (two-note), streak milestones (celebration fanfare).
+  - **Never sound:** keystrokes, slider motion, scrolls, or page loads.
+  - **Optional (context-aware):** modal open (subtle entrance), delete (down-whoosh if you've just deleted something), income-up alerts, error feedback — these respect your usage pattern and throttle so rapid actions don't spam.
+
+Sounds are **soft by design** (~0.09–0.12 gain) and **respect reduced-motion** mode: if your OS is set to prefer reduced motion, sounds default OFF (toggle back ON anytime with 🔊/🔇). Even with sound ON, the visual toast (✓ or ✨) always confirms every action — sound is the *bonus*, never the only signal.
+
+All four mechanics are **per-device, never synced** (they reset if you import to a new phone) and are **stripped from any file you share** — so a customer file or a test upload stays clean, and the habit counters don't follow your export.
+
+---
+
+## 12. Updates — how new features reach you
 
 - **On the hosted link / installed app:** updates are **automatic**. Open it online and the newest version loads itself (network-first service worker); offline still works from cache. Your data is preserved across every update — no migration, no re-login.
 - **On a downloaded file:** that file is frozen. To get new features, open the hosted app (or a newer file) and **import your data** across.
@@ -192,7 +213,7 @@ Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask que
 
 ---
 
-## 12. Privacy & anti-tamper (the security model)
+## 13. Privacy & anti-tamper (the security model)
 
 - **Your data is yours.** It lives in your browser's local storage (and embedded in your saved file). It is never uploaded — there's no server to upload to.
 - **Unforgeable access.** Keys are signed with a private key that exists **only** in the owner's master file. The public app holds just the public half — enough to verify keys, never to make them.
@@ -201,7 +222,7 @@ Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask que
 
 ---
 
-## 13. For the owner — running the show
+## 14. For the owner — running the show
 
 These tools appear only on **your master file** (where the private key lives):
 
@@ -215,7 +236,7 @@ These tools appear only on **your master file** (where the private key lives):
 
 ---
 
-## 14. Quick troubleshooting
+## 15. Quick troubleshooting
 
 | Symptom | Fix |
 |---|---|
