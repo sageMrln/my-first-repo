@@ -319,8 +319,10 @@
   .lockcard .lk-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
   .lockcard .lk-status{min-height:18px;margin-top:14px;font-family:'Share Tech Mono';font-size:12px;line-height:1.5}
   .lockcard .lk-foot{margin-top:20px;font-size:11px;color:var(--txt-dim);line-height:1.55}
-  .lockcard .lk-lang{margin-bottom:18px;text-align:right}
-  .lockcard .lk-lang select{background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:'Share Tech Mono';font-size:12px;padding:5px 8px;outline:none}
+  .lockcard .lk-lang{margin-bottom:18px;display:flex;align-items:center;justify-content:flex-end;gap:7px}
+  .lockcard .lk-lang .lk-globe{font-size:15px;line-height:1;filter:drop-shadow(0 0 5px rgba(0,229,255,.5))}
+  .lockcard .lk-lang select{background:#08131f;border:1px solid var(--cyan-dim);border-radius:999px;color:var(--cyan);font-family:'Share Tech Mono';font-size:12px;letter-spacing:.04em;padding:6px 12px;outline:none;cursor:pointer;box-shadow:0 0 12px rgba(0,229,255,.12)}
+  .lockcard .lk-lang select:focus{border-color:var(--cyan)}
 
   /* ---- LOCALE BAR ---- */
   .localebar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:flex-end;margin:0 0 14px;font-family:'Rajdhani',sans-serif}
@@ -517,7 +519,8 @@
 <div id="lockScreen">
   <div class="lockcard">
     <div class="lk-lang">
-      <select id="lkLangSel" aria-label="Language">
+      <span class="lk-globe" aria-hidden="true">🌐</span>
+      <select id="lkLangSel" aria-label="Language" title="Language / Idioma / Sprache / Nyelv">
         <option value="en">English</option>
         <option value="es">Español</option>
         <option value="da">Dansk</option>
