@@ -282,3 +282,56 @@ Entry format:
 - Verdict: DRAFT — constraints proposed, NO code changed by me, nothing gated. The engine is safe to EXPAND only with the voice-cap + throttle + master-gain + suspend-on-hidden guards; without them an app-wide high-frequency layer risks a runaway-node CPU/battery problem on phones (a stability bug, not a leak/key bug).
 - Commits / SHAs: this log + TEAM-CHAT post only. App tip unchanged.
 - Still open: Kaito to build the expanded engine WITH these constraints, then I security-review the actual diff (output-only, no money/watchdog touch) + Hugo gates. Sleep-mode: no auto-publish without Osefe's go.
+
+## [2026-06-28] — via Kaito — REVIEW: full sound design build, MRLN_SFX v2 (`7c919a5`)
+- Asked: security-review the v2 sound engine + app-wide wiring I specced. Verify MY constraints
+  (shared ctx+master gain, voice cap 14, global throttle ~55ms, suspend-on-bg, autoplay-safe)
+  are actually IMPLEMENTED; confirm no money/parser/watchdog/export touch; run sound + green.
+- Did / found (read the engine + setIncome + exportBlank on the tip, ran both suites — not on faith):
+  - SCOPE: diff = index.html (+72/-15) + TEAM-CHAT + new tools/test/sound_test.js. No
+    sw.js/manifest/parser/applyChange/export edits. Grepped the +/- lines for fetch/XHR/eval/
+    innerHTML/new Function/document.write/.src=/exportBlank/exportHTML/importData/applyChange/
+    parseClause/PUBCHK/PUB_B64/__sys/localStorage → ZERO hits. Pure-synthesis output layer.
+  - MY CONSTRAINTS — all implemented, verified line-by-line @1819-1866:
+    1. SHARED CTX + MASTER GAIN ✓ — ac() creates ctx ONCE (if(!ctx)) and master ONCE in the
+       same guard; master.connect(ctx.destination); every note g.connect(master). One ctx,
+       one master. Not a context-per-sound.
+    2. VOICE CAP ✓ — note() early-returns if voices>=CAP (14); voices++ on start; o.onended
+       decrements + o.disconnect()/g.disconnect() (try-wrapped). No node leak; GC stays auto
+       because o.stop() is always scheduled (t0+dur+.03).
+    3. GLOBAL THROTTLE ✓ — play() gates on t-last < (gap||GAP=55ms) using the AUDIO clock
+       (c.currentTime*1000). The new delegated click listener routes every tap through tap()→
+       play(...,55) so a rapid drag/tap BURST collapses to ≤1 blip per 55ms window — verified
+       by sound_test.js ("60 rapid taps < 60 nodes", throttle bounds node creation). Per-sound
+       longer gaps too (toggle 120 / remove 700 / coin 800 / error 1200).
+    4. SUSPEND-ON-BG ✓ — visibilitychange → hidden ? MRLN_SFX.suspend() : resume(); suspend
+       only acts if ctx.state==='running'. Handler is ADDED (count 3→4), not fighting the
+       existing 3 — exactly as I specced.
+    5. AUTOPLAY-SAFE ✓ — nothing plays on load; ctx is lazy (ac()) and resume() happens only
+       INSIDE play(), which fires on a user gesture. on-boolean still gates. Default ON but
+       OFF for prefers-reduced-motion (good a11y call).
+    - Subtle arch note (benign): throttle reads currentTime which freezes while suspended → a
+      sound right at resume can be suppressed for one window. No leak/runaway/crash; acceptable.
+  - MONEY LOGIC UNTOUCHED ✓ — setIncome @2954: `_up` is a pure read-compare; the assignment
+    MODEL.income[key]=Number(value) is byte-identical to before (written value unchanged, NOT
+    derived from _up); coin() is output-only, additive; logChange/rebuild/refresh order intact.
+    Parser path: the only added call is MRLN_SFX.error() on the EMPTY-result branch (p.changes
+    .length==0) — a chime on "nothing recognised", touches no value. parser 21/21 unchanged.
+  - NO LEAK / EXPORT SAFE ✓ — STATE.prefs.sound stays a plain boolean. exportBlank @4300
+    HARD-reconstructs hud-state as {__fresh,fid,prefs:{lang,currency}} — `sound` dropped by
+    construction → can never reach a customer/blank file. Owner's exportHTML dumps full STATE
+    (his master, fine; a bool pref is non-sensitive).
+  - NO INJECTION ✓ — delegated listener is a PASSIVE observer: no preventDefault/stopPropagation/
+    return false; guarded (e.target.closest &&); only reads classList/matches → calls a sound.
+    Can't alter clicks/DOM/money. soundBtn icon via textContent. No innerHTML anywhere in diff.
+  - NO NEW STRINGS ✓ — no data-i18n=/t('…') added (the one grep "hit" is the CSS selector
+    string in closest()). MISSING:0 holds.
+  - INVARIANTS ✓ — #__ownerKeySrc empty (@1592), #hud-state empty (@1588), PUB_B64(×3)+
+    PUBCHK(4047293148)+__sys threading intact; __sys count IDENTICAL parent vs tip (23==23) →
+    no watchdog weakened/removed.
+  - Ran node tools/test/sound_test.js → 6/6 (throttle/cap/mute). node tools/release/green.js →
+    GREEN exit 0 (parser 21/21, assistant 16/16, streak 4/4, preflight CLEAR, all published clean).
+- Verdict: SAFE. Every constraint I specced is implemented correctly; zero money/key/network/
+  injection/leak surface. A pure-synthesis output layer with the guardrails that make it phone-safe.
+- Commits / SHAs reviewed: 7c919a5 (tip). If tip moves index.html, I re-sign.
+- Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
