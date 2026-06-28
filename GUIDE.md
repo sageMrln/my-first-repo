@@ -189,7 +189,7 @@ Three mechanics keep you coming back:
 
 **🔥 Streak Counter** — Track consecutive days you've logged income or expenses. The header shows a flame 🔥 pill with your count — green when you logged something today, amber when it's been a day or two. Breaking a streak resets you to 1, so dailies become a ritual. It's the oldest retention mechanic in apps like Duolingo and Habitica — and it works.
 
-**☀️ Morning Briefing** — On app load between 7 AM and noon, you see a warm, personalized greeting: *"Hey {name}, 7 days in a row! You've saved €2,140 this month. Keep it up!"* It combines your streak, your savings progress, and a regional-emotional nudge (Danish: "så er du på vej!" / Spanish: "¡Vas muy bien!" / German: "Das sieht gut aus!"). **Offline-only, local-only** — never leaves your device. It's your app saying *"I see what you're doing, and I'm proud of you"* every morning.
+**☀️ Morning Briefing** — Once per day on app load, you see a time-aware greeting by name. *"Good morning, Ingrid 👋 — 7 days in a row — keep it going! 🔥 · on track to keep €2,140 this month 🔥"* The greeting changes by time of day (Good morning/afternoon/evening); combines your streak count and your **monthly surplus** (the amount you're on track to have left over after expenses and loan payments). **Offline-only, local-only** — never leaves your device. It's your app saying *"I see what you're doing, and I'm proud of you"* once a day.
 
 **✨ Apply Feedback** — When you apply a command or confirm an edit, a 2-second toast pops up: *"nice! 7-second parse"* or *"saved ✓"*. It's a tiny score (how fast you wrote it) and an emoji, giving instant proof that the app heard you and the numbers updated. Keeps your hands engaged and the app *feeling alive*.
 
