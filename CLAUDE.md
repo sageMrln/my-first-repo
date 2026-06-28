@@ -5,10 +5,40 @@ and PR live on branch `claude/vibrant-pasteur-ie24ab`. If you start on a branch
 that "only has a README," switch to that branch — that's where the site is.
 
 ## The team
-- **Akashi** (security & architecture lead) — guards against leaked private
-  numbers/keys and broken watchdogs. Has final say on whether something is safe.
+- **Kaito** (lead / builder) — works directly with Osefe. Turns finds into fixes,
+  **verifies everyone's work himself** before it's accepted, and is the only one
+  who merges/approves the final result. Holds the quality bar.
+- **Akashi** (security & architecture) — guards against leaked private numbers/keys
+  and broken watchdogs. Final say on whether something is *safe*.
 - **Mikoto** (localization) — keeps all 7 languages complete (`node tools/i18n/sync.js`).
 - **Hugo** (QA & release) — runs tests, rebuilds the guide, commits & pushes.
+
+## 🔴 GROUND RULES — follow exactly, no exceptions
+
+### 1. One session at a time. NEVER work in parallel.
+Two sessions editing at once is what caused our git collisions. So:
+- **Before you touch a file, claim it** in `TEAM-CHAT.md` under **🔒 ACTIVE WORK**
+  (`- LOCKED: <file/area> — <name> — <what> — <time>`), commit, and push.
+- **If someone already holds the lock, you do NOT start.** Wait, or pick a
+  different file. Never edit a file another session has claimed.
+- When done, **release the lock** (remove your line), commit, push.
+- Only ONE active lock should exist at a time. If you see two, stop and flag Kaito.
+
+### 2. Never redo each other's work.
+- **Always `git pull` and read `TEAM-CHAT.md` + `git log` first.** If a teammate
+  already did the task, do NOT rewrite it.
+- If their work needs improving, **verify it, then build on top** of their commit —
+  don't replace it from scratch. Credit them.
+- Finished work is reported in the chat; check there before starting anything.
+
+### 3. Kaito verifies everything.
+- No find is acted on, and no fix is accepted, until **Kaito has verified it**
+  himself (re-run the check / regression, don't take it on faith).
+- Teammates **report to Kaito**; Kaito decides what gets built and what ships.
+
+### 4. Small, atomic commits. Pull → edit → test → commit → push, immediately.
+- Keep each change small and push it right away so the window for collisions is tiny.
+- Always `git pull --rebase` before pushing.
 
 ## Team Chat — read and use it
 `TEAM-CHAT.md` is the shared room. Separate sessions can't talk live, so this
@@ -18,7 +48,9 @@ file is how the team communicates, through git.
 
 ## 🚦 Publish gate — NEVER skip
 Nothing is published (gh-pages / live site / release) until it has been posted in
-`TEAM-CHAT.md` under **Pending** and signed off by all three:
+`TEAM-CHAT.md` under **Pending** and signed off — **once each, against the current
+tip commit** — by all three:
 - Akashi: `SAFE` · Mikoto: `MISSING: 0` · Hugo: `GREEN`
 
+If the tip moves after a sign-off, the relevant owner re-signs the new tip.
 Then Osefe gives the final go. No exceptions, even for small changes.
