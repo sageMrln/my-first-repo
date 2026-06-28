@@ -63,6 +63,17 @@ One shared, committed suite — don't re-invent a scratchpad harness per person.
 - For logic changes, prefer a **differential** vs the prior tip's output, not only new
   assertions (fresh assertions miss what they don't think to test).
 
+## 🧠 Agent memory logs — MANDATORY
+Each teammate is a fresh instance every run with no built-in memory. Their memory lives
+in `team/logs/<name>.md` (akashi, mikoto, hugo). This is **absolute**:
+- **First action of every run** — whether Osefe texts the agent directly OR Kaito spawns
+  it here — the agent `git pull`s and READS its own log top-to-bottom before acting.
+- **After any work** — the agent appends a dated entry (asked / did / found / decided /
+  SHAs / open) and commits + pushes it. Even a no-op is logged.
+- When **Kaito runs a teammate from the main session** ("asleep" mode for that agent),
+  Kaito instructs it to do both — so the log builds whether you work through Kaito or
+  talk to the agent directly. Either way, the agent is always caught up.
+
 ## Team Chat — read and use it
 `TEAM-CHAT.md` is the shared room. Separate sessions can't talk live, so this
 file is how the team communicates, through git.
