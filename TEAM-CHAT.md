@@ -32,13 +32,10 @@ in **Pending** below and must collect:
 Only when all three sign off does Osefe give the final "ship it."
 
 ### Pending
-**[Jun-28] Candidate → gh-pages: Assistant MRLN (rename + offline Q&A about every feature)** — tip `cdddd40`.
-- ✅ **Akashi** — `SAFE` (reviewed engine `0d03dbb`; Kaito verified index.html logic is byte-identical since — only the AUTO-MERGED i18n block changed)
-- ✅ **Mikoto** — `MISSING: 0` (527 strings, all 7 langs; KB answers translated)
-- ✅ **Hugo** — `GREEN` (parser 21/21, assistant 16/16, green.js exit 0; guide §10 + PDF updated)
-- ✅ **Kaito (lead)** — verified all three on tip `cdddd40`: green.js GREEN, MISSING:0, logic-diff i18n-only → **awaiting Osefe's "ship it"**
+_(nothing waiting — clear)_
 
 ### Shipped
+- [Jun-28] **Assistant MRLN** (rename + offline Q&A about every feature, 7 langs) → live (gh-pages `fc51fc1`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
 - [Jun-28] **7-language Quick Update parser + bank-name guards** → live (gh-pages `1ea5525`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
 
 ---
@@ -105,3 +102,4 @@ Only when all three sign off does Osefe give the final "ship it."
 - [Jun-28] **Akashi:** Reviewed Assistant MRLN `0d03dbb`. **Security: SAFE.** It's exactly what it says — a keyword matcher + static `t()` answer strings, no money ops, no eval/fetch/XHR, no network. Answer is rendered via `textContent` (not innerHTML) so no injection, and the answer path applies nothing (only Apply→applyChange mutates, untouched). Verified the router by my own 20-case differential, not on faith: every edit command (`income is now 2600`, `add Netflix 99`, `save 2000/mo`, `loan 4500`, `min alder er 41`, `jeg sparer 250`) returns null and reaches `parseInstructions` as before — questions don't hijack commands, commands aren't misrouted. Diff touches no `__sys`/`exportHTML`/`importData`/`PUBCHK`/`PUB_B64`/parser code; `#__ownerKeySrc` empty, PUB_B64 + PUBCHK + `__sys.trip` watchdogs intact, no private-key markers, KB example numbers illustrative only, no SW/export/import change. `node tools/release/green.js` → GREEN exit 0 (parser 21/21, preflight CLEAR, all published files clean); assistant_test 16/16. **SAFE from security's side.** @Mikoto over to you for the 21 KB translations → MISSING:0, then @Hugo for GREEN. If the tip moves index.html, I re-sign. — Akashi
 - [Jun-28] **Hugo:** GREEN — Assistant MRLN feature complete. All tests green: `parse_test.js` 21/21, `assistant_test.js` 16/16, full gate `green.js` exit 0. Guide sync done: section 10 renamed "Quick Update" → "Assistant MRLN" + documented the offline Q&A engine (questions in any of 7 langs answered from KB covering every feature; commands route to parser as before). PDF rebuilt. Re-ran full gate post-rebuild, still GREEN. Lock released. Commits: `a0667d6` (lock claim), `94cbd19` (guide + PDF). Ready for Osefe's ship gate. — Hugo
 - [Jun-28] **Kaito (lead):** Assistant MRLN gate is FULL and I've verified each sign-off on the current tip `cdddd40` myself — Akashi SAFE (logic untouched since his review, proven by diff), Mikoto MISSING:0, Hugo GREEN. Candidate is frozen. Over to @Osefe for the final "ship it" and I'll mirror to gh-pages.
+- [Jun-28] **Kaito (lead):** 🚀 SHIPPED. Osefe gave the go. Final pre-publish: green.js GREEN, MISSING:0, preflight CLEAR on the public copy. Mirrored to gh-pages (`fc51fc1`). Assistant MRLN is live — it now answers questions about every feature in all 7 languages and still applies plain-language changes. Gate cleared, no open locks. Great team run. 🤖
