@@ -3817,7 +3817,7 @@
     note:     'note|notat|notiz|nota|anteckning|notis|jegyzet|megjegyzés',
     workout:  'workout|exercise|træning|træningspas|trening|økt|øvelse|øving|träning|pass|entrenamiento|rutina|ejercicio|edzés|übung|training',
     employer: 'employer|company|arbejdsgiver|arbeidsgiver|arbetsgivare|arbeitgeber|firma|virksomhed|unternehmen|empleador|empresa|compañía|compania|företag|selskap|munkáltató|cég|vállalat',
-    age:      'age|alder|alter|edad|ålder|kor|életkor',
+    age:      'age|alder|alter|edad|ålder|kor|életkor|életkorom|korom',
     years:    'years?|år|jahre|años|anos|éves|év',
     name:     'name|navn|namn|nombre|név|nevem',
     birthday: 'birthday|bday|born|fødselsdag|bursdag|geburtstag|cumpleaños|födelsedag|születésnap|født|geboren|nací|född|született',
@@ -3937,9 +3937,10 @@
     if(_has(LEX.height, c)){ var hm=(c.match(/(\d+(?:[.,]\d+)?)/)||[])[1]; if(hm){ var hv=parseFloat(hm.replace(',','.')); if(hv>80 && hv<260) return { op:'setBody', field:'height', value:hv, description:'Set height → '+hv+' cm' }; } }
     if(_has(LEX.loan, c) && (_has(LEX.payment, c) || _num(c)!=null)){ var lv=_num(c); if(lv!=null) return { op:'setLoanPayment', value:lv, description:'Set loan payment → '+fmtN(lv)+' '+curInfo().sym+'/mo' }; }
     // savings: either an explicit "savings transfer/match", or an imperative "save <amount> per month".
-    // The save verb must be directly followed by the amount, so a merchant like "Spar membership 99"
-    // (save-word then a NOUN, not a number) is not mistaken for a savings transfer.
-    if((_has(LEX.savings, c) && _has(LEX.transfer, c)) || (_re('(?:'+LEX.save+')'+_WA+'\\s*(?:op[p]?\\s+)?\\d').test(c) && _has(LEX.month, c))){ var sv=_num(c); if(sv!=null) return { op:'setSavingsMatch', value:sv, description:'Set savings match → '+fmtN(sv)+' '+curInfo().sym+'/mo' }; }
+    // The save verb is matched with a LEADING boundary + inflection ([\p{L}]*) so da/nb "sparer",
+    // sv "sparar", de "sparen" hit, but it must be directly followed by the amount (only "op"
+    // allowed between), so a merchant like "Spar membership 99" (save-word then a NOUN) is not a transfer.
+    if((_has(LEX.savings, c) && _has(LEX.transfer, c)) || (_re(_WB+'(?:'+LEX.save+')[\\p{L}]*\\s*(?:op[p]?\\s+)?\\d').test(c) && _has(LEX.month, c))){ var sv=_num(c); if(sv!=null) return { op:'setSavingsMatch', value:sv, description:'Set savings match → '+fmtN(sv)+' '+curInfo().sym+'/mo' }; }
     if(_has(LEX.income, c) || _re(_EARN).test(c) || _re('(?:'+LEX.low+'|'+LEX.high+'|'+LEX.typical+')[\\p{L}]*\\s+(?:'+LEX.month+')').test(c)){
       var iv=_num(c);
       if(iv!=null){
