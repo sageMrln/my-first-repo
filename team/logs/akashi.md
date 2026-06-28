@@ -227,3 +227,42 @@ Entry format:
 - Commits / SHAs reviewed: e34253b (tip). If tip moves index.html, I re-sign.
 - Still open: nothing security-side. Gate not opened; 4 new strings → Mikoto (MISSING), Hugo
   GREEN/guide. Sleep-mode: no auto-publish — needs Osefe's explicit go.
+
+## [2026-06-28] — via Kaito — REVIEW: Tier 0 UI sounds (`5221b6d`)
+- Asked: security-review the synthesized Web Audio UI sounds — MRLN_SFX engine
+  (no files), 🔊/🔇 mute toggle persisted to STATE.prefs.sound. Confirm pure synth/
+  no network, no leak, sound flag can't reach customer export, no injection,
+  watchdogs intact; run green.js.
+- Did / found (read the FULL diff + verified load-bearing lines on the tip, not on faith):
+  - SCOPE: commit touches only index.html (+43) + TEAM-CHAT (1 line). No sw.js/manifest/
+    parser/applyChange/finance/export edits. Diff is 4 hunks: soundBtn span @769
+    (data-i18n-skip), MRLN_SFX.streak() call inside __bumpStreak @1765, MRLN_SFX engine
+    @1818-1840, MRLN_SFX.success() on Apply @4184, wireSound() boot IIFE @6829-6845.
+  - PURE WEB AUDIO ✓: engine creates OscillatorNode+GainNode only (synthesizes tones).
+    Grepped ADDED lines for fetch/eval/innerHTML/XHR/new Function/.src=/document.write →
+    ZERO. No external assets, no network, no new data collected. AudioContext is created
+    lazily (ac()) and only resumed inside play() which runs on a user gesture (Apply/tab/
+    save/toggle click) → autoplay-safe; nothing auto-plays on load.
+  - NO LEAK / EXPORT SAFE ✓: STATE.prefs.sound is a plain boolean (default true). It can
+    NOT reach a customer/blank file — exportBlank @4272 HARD-writes hud-state to a
+    reconstructed { __fresh, fid, prefs:{ lang, currency } } only; `sound` is not in that
+    object, so it's dropped by construction (same mechanism that strips streak/briefedOn).
+    Owner's own exportHTML dumps full STATE incl. sound — his private master, fine, and a
+    boolean prefs flag is non-sensitive regardless.
+  - NO MONEY LOGIC TOUCHED ✓: Apply path only ADDS one MRLN_SFX.success() call after the
+    existing applyChange loop + scoreFlash; the money ops line is untouched. parser 21/21
+    unchanged. __bumpStreak gains a milestone-fanfare call gated on streak.count ∈ set —
+    audio only, no figure read/written.
+  - NO INJECTION ✓: soundBtn icon set via sb.textContent ('🔊'/'🔇') @paint — no innerHTML
+    anywhere in the diff. All listeners are addEventListener; the whole boot block is
+    try/catch wrapped so a missing element can't throw.
+  - INVARIANTS ✓: #__ownerKeySrc empty (@1592), #hud-state empty (@1588), PUB_B64 +
+    PUBCHK (4047293148) + __sys threading all present; __sys count identical parent vs tip
+    (23 == 23) → no watchdog weakened/removed. data-i18n-skip on soundBtn keeps it off the
+    i18n engine (zero new strings, MISSING:0 holds).
+  - Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, assistant 16/16,
+    streak 4/4, preflight CLEAR, all published files clean).
+- Verdict: SAFE. Cosmetic audio-output layer; zero money/key/network/injection/leak surface.
+- Commits / SHAs reviewed: 5221b6d (tip). If tip moves index.html, I re-sign.
+- Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish —
+  needs Osefe's explicit go.
