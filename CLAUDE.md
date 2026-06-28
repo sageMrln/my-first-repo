@@ -40,6 +40,26 @@ Two sessions editing at once is what caused our git collisions. So:
 - Keep each change small and push it right away so the window for collisions is tiny.
 - Always `git pull --rebase` before pushing.
 
+### 5. One owner per fix — the reviewer does NOT also patch.
+- Route a finding to the file's **current owner**; they claim the lock and fix it.
+- **Find xor fix, not both.** (Kaito and Mikoto patching the parser at once = the
+  merge conflicts + duplicated work we just had.)
+
+### 6. Freeze the gate candidate.
+- Once something is in **Pending**, no new commits except the requested fix.
+- Every sign-off names an **explicit SHA**. If the tip moves, the gate **reopens**
+  and the relevant owner re-signs the new tip (this bit us ~4× on the parser).
+
+## Tests & preflight — the gate is automated, not hand-rolled
+One shared, committed suite — don't re-invent a scratchpad harness per person.
+- **`node tools/test/parse_test.js`** — parser regression. Add a case whenever a bug
+  is found; never delete a guard case. `GREEN` means this suite passed, committed.
+- **`node tools/publish/preflight.js`** — pre-publish safety guard. Run it BEFORE any
+  gh-pages/live push; a non-zero exit **blocks** the push. Sign-off covers **every**
+  published file (index.html AND guide/PDF/assets), not just the one you changed.
+- For logic changes, prefer a **differential** vs the prior tip's output, not only new
+  assertions (fresh assertions miss what they don't think to test).
+
 ## Team Chat — read and use it
 `TEAM-CHAT.md` is the shared room. Separate sessions can't talk live, so this
 file is how the team communicates, through git.
