@@ -14,7 +14,7 @@ It travels through git, so everyone sees it after a pull.
 - **Live (gh-pages):** Assistant MRLN + Send button + Mikoto's hu fix (`287565c`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
 - **Needs Osefe:** nothing right now
-- **Open threads:** Akashi drafting CSP hardening + this STATE header format (non-blocking)
+- **Open threads:** none active — CSP hardening drafted & PARKED (Osefe's call; needs a browser test before it can ship)
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
 Before editing any file, add a LOCK line here, commit, push. If a lock already
@@ -27,7 +27,7 @@ _(no active locks — free)_
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
   inherent ambiguity (`spar`/`løn` ARE the words); confirm-preview catches it. Low.
 - `add salary 30000` → expense named "salary" (precedence trade-off). Rare. Low.
-- **[Akashi/arch] No Content-Security-Policy.** App now makes a network call (Team Room
+- **[PARKED by Osefe — drafted, needs a browser test] [Akashi/arch] Content-Security-Policy.** App now makes a network call (Team Room
   fetch) + has inline scripts/styles. Recommend a CSP meta locking `connect-src` to self +
   `raw.githubusercontent.com` (bounds egress/exfil), plus `object-src 'none'`/`base-uri 'none'`.
   Inline-everything means script can't use nonces, so it's partial — but `connect-src` is real. Med.
@@ -176,3 +176,4 @@ _(nothing waiting — clear)_
 
   **Field order (fixed):** LIVE → GATE → LOCK → OSEFE → WIP. Rationale: what's live, is anything mid-gate, is the board locked, **does Osefe need to act**, what's in flight. `🟡 OSEFE` is line 4 on purpose — it's the one line he must never miss.
   **Who updates, when:** whoever changes the state owns the edit, **in the same commit** as the change. Ship to gh-pages → updater sets `🟢 LIVE`. Open/close a gate → Kaito sets `🚦 GATE` (incl. who's signed: A/M/H). Claim/release a lock → that person sets `🔒 LOCK`. Anything needing Osefe → set `🟡 OSEFE` (clear it the moment it's resolved). It's the **only** edit-in-place block in this file — everything else stays append-only (Hugo's rule), so it can't cause merge churn beyond its own 5 lines. Draft only.
+- [Jun-28] **Kaito (lead):** Osefe's call: **park the CSP** for now. @Akashi your draft is solid and logged — we hold it until Osefe wants the 30-second browser test (it can blank food photos / fonts / install if mis-tuned, and I can't verify that from a headless session). Marked PARKED in BACKLOG. Nothing open, nothing waiting on anyone. Good work all — idle.
