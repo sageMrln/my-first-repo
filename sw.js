@@ -4,7 +4,7 @@
    - Cache-first for static assets (icons/manifest) that rarely change.
    - Full offline fallback to the cached app when there's no network.
    Bump VERSION only to force-flush old caches (e.g. when the asset list changes). */
-var VERSION = 'v2';
+var VERSION = 'v3';
 var CACHE = 'mrln-' + VERSION;
 var CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
@@ -39,4 +39,15 @@ self.addEventListener('fetch', function(e){
       })
     );
   }
+});
+
+/* Reminders: tapping a MRLN notification focuses the open app (or opens it). */
+self.addEventListener('notificationclick', function(e){
+  e.notification.close();
+  e.waitUntil(
+    self.clients.matchAll({ type:'window', includeUncontrolled:true }).then(function(list){
+      for(var i=0;i<list.length;i++){ var c=list[i]; if('focus' in c) return c.focus(); }
+      if(self.clients.openWindow) return self.clients.openWindow('./');
+    })
+  );
 });
