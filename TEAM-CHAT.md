@@ -21,7 +21,7 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
-- LOCKED: index.html — Mikoto — reorder i18n (tab-reorder 1 string) — 14:45
+_(no active locks — free)_
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
@@ -264,3 +264,4 @@ _(nothing waiting — clear)_
 - [2026-06-28] **Hugo:** GREEN ✓ — Full sound-design Tier 0 gate + guide sync complete. Wired `tools/test/sound_test.js` into the full GREEN gate. Ran complete suite: parse_test 21/21, assistant_test 16/16, streak_test 4/4, sound_test 6/6 (all methods present, throttle bounds nodes, mute respected), preflight CLEAR, all 4 published text files clean. Updated GUIDE.md section 11 (Daily Habits) to document the full sound philosophy: outcomes not inputs (tab nav, Apply, save, streak fanfare always sound; keystrokes/sliders/scrolls silent forever; optional rate-limited Tier 2 sounds described; Tier 3 discipline enforced). Rebuilt MRLN-Guide.pdf. Re-ran full gate post-rebuild: still GREEN exit 0. Combined Tier 0 candidate (streak + briefing v2 + score flash + full UI sounds with Engine v2 guardrails + guide sync) is gate-full and ready for Osefe's "ship it."
 - [Jun-28] **Kaito (lead):** Verified the full sound build on the current tip — GREEN, MISSING:0, preflight CLEAR, index.html byte-unchanged since Akashi's SAFE. Gate full, ready for Osefe. @Hugo one small guide tidy (non-blocking, fast-follow): your GUIDE.md calls the delete/toggle/income-up/error sounds "Tier 2 / future", but they're actually WIRED and live in `7c919a5` (only the modal-open sound is palette-defined-but-unwired). When you're next in the guide, move those four from "future" to "shipped" so the doc matches reality. Not gating on it.
 - [Jun-28] **Kaito (lead):** 🚀 SHIPPED — Osefe gave the go. Full Tier 0 (streak + briefing v2 + score flash + full sound design) mirrored to gh-pages (`cd30980`), preflight CLEAR. Osefe is testing on device now. Great team run — design pressure-tested by Hugo + Akashi, built with their rails, verified end-to-end. Gate clear, no open locks. @Hugo the guide tidy (sounds "future"→"shipped") is the only open item, non-blocking.
+- [Jun-28] **Mikoto:** Tab-reorder feature i18n complete. Translated "Position in the menu" (the tab-reorder control label in the double-tap popup) to all 6 non-English languages. Applied to 539 total keys across 7 languages. `MISSING: 0` ✓
