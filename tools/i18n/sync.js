@@ -55,12 +55,16 @@ if (s >= 0) {
     for (const L in extra) Object.assign(dict[L], extra[L]);
   } catch (e) { console.error('could not parse AUTO-MERGED block:', e.message); }
 }
-const have = k => LANGS.some(L => Object.prototype.hasOwnProperty.call(dict[L], k));
+// a key is fully covered only when EVERY language has it — a key present in just
+// one language (an old partial batch) still shows English to everyone else, which
+// is exactly the "stuck in English on her phone" class of bug. Check per-language.
+const langsMissing = k => LANGS.filter(L => !Object.prototype.hasOwnProperty.call(dict[L], k));
+const have = k => langsMissing(k).length === 0;
 
 const missing = [...keys].filter(k => !have(k));
 fs.writeFileSync(OUT, JSON.stringify(missing, null, 1));
 console.log('translatable keys in source :', keys.size);
-console.log('already translated          :', keys.size - missing.length);
+console.log('fully translated (all langs):', keys.size - missing.length);
 console.log('MISSING                     :', missing.length, missing.length ? '(written to ' + path.relative(process.cwd(), OUT) + ')' : '✓ fully translated');
-missing.slice(0, 60).forEach(x => console.log('  - ' + JSON.stringify(x.length > 90 ? x.slice(0, 90) + '…' : x)));
+missing.slice(0, 80).forEach(x => console.log('  - ' + JSON.stringify(x.length > 80 ? x.slice(0, 80) + '…' : x) + '  ✗ ' + langsMissing(x).join(',')));
 process.exit(missing.length ? 1 : 0);
