@@ -57,6 +57,9 @@ One shared, committed suite — don't re-invent a scratchpad harness per person.
 - **`node tools/publish/preflight.js`** — pre-publish safety guard. Run it BEFORE any
   gh-pages/live push; a non-zero exit **blocks** the push. Sign-off covers **every**
   published file (index.html AND guide/PDF/assets), not just the one you changed.
+- **`node tools/release/green.js`** — the single release gate. Runs the parser suite +
+  preflight + a leak scan over every published file. **`GREEN` = this exits 0.** Run
+  this before publishing; do not hand-roll the check.
 - For logic changes, prefer a **differential** vs the prior tip's output, not only new
   assertions (fresh assertions miss what they don't think to test).
 
