@@ -192,3 +192,38 @@ Entry format:
 - Commits / SHAs reviewed: cddff9d (tip). If tip moves index.html, I re-sign.
 - Still open: nothing security-side. Gate not opened; 8 new strings await Mikoto (i18n),
   Hugo's GREEN/guide. Sleep-mode: no auto-publish — needs Osefe's explicit go.
+
+## [2026-06-28] — via Kaito — REVIEW: morning briefing v2 (money figure) `e34253b`
+- Asked: re-review briefing v2 — now DISPLAYS the user's monthly surplus. Security-critical
+  (first time it shows a money figure). Confirm accuracy / tamper-guard / no-leak / no money
+  logic change; run green.js.
+- Did / found (read the diff + all load-bearing fns on the tip, not on faith):
+  - DIFF (index.html @1785-1799, +13/-5): time-aware greeting (Good morning/afternoon/evening
+    by hour) + name + streak + new figure line `on track to keep {amt} this month`.
+  - ACCURACY ✓: figure = `fmtN(leftOver(MODEL.income.avg))+curInfo().sym` (@1794/1797) — BYTE-
+    for-logic identical to the existing "Left over" display `set('ovLeft', fmtN(leftOver(MODEL.
+    income.avg)))` @2066. leftOver(income)=token*income−GRAND−loanAmt() @1920 (income−all
+    expenses−loan). User's OWN computed surplus, on their OWN device. Not fabricated.
+  - TAMPER GUARD ✓ HOLDS: __sys.token() @1870 returns 1 (armed&!tripped) else NaN. GRAND @1916
+    and leftOver @1920 both multiply by token → on a tampered/bypassed copy leftOver=NaN.
+    Briefing gates `isFinite(surplus) && surplus>0` @1797 → NaN drops the figure (and surplus≤0
+    also hides it). A poisoned copy can surface NO bogus number. Verified the poison path, not
+    just the comment.
+  - NO LEAK ✓: shown only via toast() @6682 → `d.textContent=msg` @6684 (NOT innerHTML) → no
+    injection, no fetch/XHR, never written to a public element. STATE.briefedOn/streak can't
+    reach an export: exportBlank @4246 HARD-overwrites hud-state to a reconstructed
+    {__fresh,fid,prefs} (not a STATE dump) + zeroes usage @4242, so blank/customer files never
+    carry it; exportHTML @4191 dumps full STATE incl. briefedOn — but that's the owner's OWN
+    private master (and it trips @4187 on a tampered copy). Briefing also gated by TEMPLATE_MODE
+    @1781 (no greet in a fresh share copy) + once-per-day @1783.
+  - NO MONEY LOGIC CHANGED ✓: read-only display of an existing computed value. parseClause/
+    applyChange/finance calc/leftOver/GRAND all untouched by the diff. parser 21/21 unchanged.
+  - INVARIANTS: #__ownerKeySrc empty, #hud-state empty, PUB_B64+PUBCHK(4047293148)+__sys
+    poison threading all intact (diff doesn't touch them). 4 new i18n strings (greetings +
+    figure line) await Mikoto.
+  - Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, assistant 16/16, streak 4/4,
+    preflight CLEAR, all published files clean).
+- Verdict: SAFE.
+- Commits / SHAs reviewed: e34253b (tip). If tip moves index.html, I re-sign.
+- Still open: nothing security-side. Gate not opened; 4 new strings → Mikoto (MISSING), Hugo
+  GREEN/guide. Sleep-mode: no auto-publish — needs Osefe's explicit go.
