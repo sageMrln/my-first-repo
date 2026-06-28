@@ -112,6 +112,8 @@
   .tab{touch-action:manipulation}
   /* per-tab colour shade (double-tap a tab to set) */
   .tab.tab-tinted{border-color:var(--tabtint)}
+  .tab.tab-moved{animation:tabMoved .7s ease}
+  @keyframes tabMoved{0%{box-shadow:0 0 0 0 var(--cyan);transform:translateY(-3px) scale(1.05)}55%{box-shadow:0 0 16px 3px var(--cyan)}100%{box-shadow:none;transform:none}}
   .tab.tab-tinted .ix{color:var(--tabtint)}
   .tab.tab-tinted.active{background:var(--tabtint);border-color:var(--tabtint);color:#06121a;box-shadow:0 0 18px var(--tabtint)}
   .tab.tab-tinted.active .ix{color:#06121a}
@@ -605,6 +607,13 @@
     <button class="btn ghost" id="catHoldBtn" style="width:100%;margin-bottom:14px">📌 Hold this tab</button>
     <div class="desc" style="font-size:12.5px;margin-bottom:8px">Colour shade</div>
     <div id="catSwatches" style="display:flex;flex-wrap:wrap;gap:9px"></div>
+    <div class="desc" data-i18n="Position in the menu" style="font-size:12.5px;margin:14px 0 8px">Position in the menu</div>
+    <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+      <button class="btn ghost" id="catPosDown" data-i18n-skip title="Move earlier" style="padding:6px 13px;font-size:15px">◀</button>
+      <input id="catPos" type="number" min="1" inputmode="numeric" data-i18n-skip style="width:66px;text-align:center;background:#08111e;border:1px solid var(--cyan);border-radius:8px;color:var(--txt);font-family:'Share Tech Mono';font-size:16px;padding:7px">
+      <button class="btn ghost" id="catPosUp" data-i18n-skip title="Move later" style="padding:6px 13px;font-size:15px">▶</button>
+      <span class="desc" id="catPosOf" data-i18n-skip style="font-size:12px;color:var(--txt-dim)"></span>
+    </div>
     <div class="modal-actions"><button class="mok" id="catDone" style="width:100%">Done</button></div>
   </div>
 </div>
@@ -1695,7 +1704,7 @@
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], tax:{}, savingsBoxes:[], showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, prefs:{ lang:'en', currency:'DKK', country:'' } };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], tax:{}, savingsBoxes:[], showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -1856,6 +1865,8 @@
       success: function(){ play(function(){ note(523.25,0,.12,'sine',.09); note(659.25,.07,.12,'sine',.09); note(783.99,.14,.18,'sine',.10); }); }, // C–E–G chime
       save:    function(){ play(function(){ note(659.25,0,.10,'sine',.08); note(987.77,.08,.16,'sine',.09); }); },
       modal:   function(){ play(function(){ note(329.63,0,.14,'sine',.05); },400); },             // subtle open swell
+      panel:   function(){ play(function(){ note(392,0,.07,'sine',.06); note(587.33,.055,.13,'sine',.06); },150); },  // category unfold (rising)
+      ping:    function(){ play(function(){ note(1318.5,0,.05,'sine',.07); note(1567.98,.05,.16,'sine',.08); },150); }, // bright double-tap ping
       unlock:  function(){ play(function(){ note(392,0,.1,'sine',.08); note(523.25,.08,.1,'sine',.09); note(659.25,.16,.1,'sine',.09); note(880,.24,.22,'sine',.10); }); }, // power-on
       streak:  function(){ play(function(){ note(659.25,0,.10,'sine',.10); note(783.99,.09,.10,'sine',.10); note(1046.5,.18,.24,'sine',.12); }); }, // celebration
       suspend: function(){ try{ if(ctx && ctx.state==='running') ctx.suspend(); }catch(_){} },
@@ -1989,6 +2000,17 @@
      Single tap = navigate (normal, swift scrolling preserved — see touch-action:
      manipulation in CSS). Double-tap a tab to open its options: pin/"hold" it and
      pick an individual colour shade. Both persist in STATE and travel with the file. */
+  // Pure ripple reorder: given the full data-p order, the visible data-p order, the
+  // tab being moved, and its new 1-based visible position → returns the new full order.
+  // Moving a tab to position N slots it there and ripples the rest (the old N → N+1…).
+  // Hidden tabs ride along in place. Kept pure + top-level so reorder_test.js can verify it.
+  function __tabReorder(order, vis, p, pos){
+    var n=vis.length; pos=Math.max(1, Math.min(n, pos|0));
+    var curVis=vis.indexOf(p); if(curVis<0 || vis[pos-1]===p) return order.slice();
+    var o=order.slice(); o.splice(o.indexOf(p),1);
+    var ti=o.indexOf(vis[pos-1]); if(pos-1>curVis) ti+=1;   // moving later → land AFTER the target
+    o.splice(ti,0,p); return o;
+  }
   (function tabOptions(){
     var tabsEl = document.getElementById('tabs');
     if(!tabsEl) return;
@@ -2016,11 +2038,43 @@
     }
     window.__styleTabs = function(){ styleAll(); renumber(); };
 
+    // ---- reorder: double-tap a tab, set its number, the rest ripple ----
+    function allTabs(){ return Array.prototype.slice.call(tabsEl.querySelectorAll('.tab')); }
+    function visTabs(){ return allTabs().filter(function(t){ return t.style.display!=='none'; }); }
+    function applyTabOrder(){                         // re-lay the DOM from the saved order on load
+      var saved=(STATE.tabOrder||[]).slice(); if(!saved.length) return;
+      var present=allTabs().map(function(t){ return t.getAttribute('data-p'); });
+      var order=saved.filter(function(p){ return present.indexOf(p)>=0; });
+      present.forEach(function(p){ if(order.indexOf(p)<0) order.push(p); });   // new tabs from an update land at the end
+      order.forEach(function(p){ var el=tabsEl.querySelector('.tab[data-p="'+p+'"]'); if(el) tabsEl.appendChild(el); });
+    }
+    function moveTabTo(tab, pos){
+      var visPs=visTabs().map(function(t){ return t.getAttribute('data-p'); });
+      var order=allTabs().map(function(t){ return t.getAttribute('data-p'); });
+      var p=tab.getAttribute('data-p');
+      var next=__tabReorder(order, visPs, p, pos);   // pure ripple — see tools/test/reorder_test.js
+      if(next.join(',')===order.join(',')) return;   // no change
+      next.forEach(function(dp){ var el=tabsEl.querySelector('.tab[data-p="'+dp+'"]'); if(el) tabsEl.appendChild(el); });
+      STATE.tabOrder=next; autosave(); renumber(); styleAll();
+      tab.classList.add('tab-moved'); setTimeout(function(){ tab.classList.remove('tab-moved'); }, 700);   // ripple flash
+      if(typeof MRLN_SFX!=='undefined') MRLN_SFX.success();
+      logChange('tab-order', name(tab)+' → #'+(visTabs().indexOf(tab)+1));
+    }
+    function curPos(tab){ return visTabs().indexOf(tab)+1; }
+    window.__applyTabOrder = applyTabOrder;
+
     // ---- the options popup ----
     var back=document.getElementById('catBack'), titleEl=document.getElementById('catTitle'),
         holdBtn=document.getElementById('catHoldBtn'), sw=document.getElementById('catSwatches'),
         done=document.getElementById('catDone');
+    var posIn=document.getElementById('catPos'), posUp=document.getElementById('catPosUp'),
+        posDown=document.getElementById('catPosDown'), posOf=document.getElementById('catPosOf');
     var current=null;
+    function refreshPos(){
+      if(!current||!posIn) return;
+      var n=visTabs().length, p=curPos(current);
+      posIn.value=p; posIn.max=n; if(posOf) posOf.textContent='/ '+n;
+    }
     function refreshHoldBtn(){
       if(!current||!holdBtn) return;
       var held=!!STATE.tabHold[current.getAttribute('data-p')];
@@ -2042,8 +2096,9 @@
       current=tab;
       var name=(tab.childNodes[tab.childNodes.length-1].nodeValue||tab.textContent||'').trim();
       if(titleEl) titleEl.textContent=name;
-      refreshHoldBtn(); buildSwatches();
+      refreshHoldBtn(); buildSwatches(); refreshPos();
       if(back) back.classList.add('show');
+      if(typeof MRLN_SFX!=='undefined') MRLN_SFX.ping();   // a "ping" confirms the tab opened its options
     }
     function close(){ if(back) back.classList.remove('show'); current=null; }
     if(holdBtn) holdBtn.addEventListener('click', function(){
@@ -2059,6 +2114,10 @@
       styleTab(current); buildSwatches(); autosave();
       logChange('tab-colour', name(current)+' → '+(col||'default'));
     });
+    function applyPos(){ if(!current||!posIn) return; var v=parseInt(posIn.value,10); if(v>0) moveTabTo(current, v); refreshPos(); }
+    if(posIn){ posIn.addEventListener('change', applyPos); posIn.addEventListener('keydown', function(e){ if(e.key==='Enter'){ applyPos(); posIn.blur(); } }); }
+    if(posUp)   posUp.addEventListener('click',   function(){ if(current){ moveTabTo(current, curPos(current)+1); refreshPos(); } });   // ▶ later
+    if(posDown) posDown.addEventListener('click', function(){ if(current){ moveTabTo(current, curPos(current)-1); refreshPos(); } });   // ◀ earlier
     function name(t){ return (t.childNodes[t.childNodes.length-1].nodeValue||t.textContent||'').trim(); }
     if(done) done.addEventListener('click', close);
     if(back) back.addEventListener('click', function(e){ if(e.target===back) close(); });
@@ -2075,7 +2134,7 @@
       } else { lastT=now; lastEl=tab; }
     }, true);
 
-    styleAll(); renumber();
+    applyTabOrder(); styleAll(); renumber();
   })();
 
   /* ---------- RENDER EXPENSES FROM MODEL (+ user items) ---------- */
@@ -2107,7 +2166,11 @@
     document.getElementById('expMonth').innerHTML = '~' + fmtN(GRAND) + '<small> ' + sym + '</small>';
     document.getElementById('expYear').innerHTML  = '~' + fmtN(GRAND * 12) + '<small> ' + sym + '</small>';
     host.querySelectorAll('.exp-head').forEach(function(h){
-      h.addEventListener('click', function(){ h.closest('.exp-group').classList.toggle('open'); });
+      h.addEventListener('click', function(){
+        var grp=h.closest('.exp-group'); var opening=!grp.classList.contains('open');
+        grp.classList.toggle('open');
+        if(opening && typeof MRLN_SFX!=='undefined') MRLN_SFX.panel();   // distinct "unfold" sound on open
+      });
     });
   }
 
