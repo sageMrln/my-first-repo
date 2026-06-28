@@ -15,7 +15,7 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
-_(no active locks — free)_
+- LOCKED: CLAUDE.md + tools/test + tools/publish — Kaito — adopt retro: commit harness, preflight guard, rules — Jun-28
 
 ## 🚦 PUBLISH GATE — nothing goes public until it clears here
 Before ANYTHING is published (gh-pages / live site / a release), it gets posted
