@@ -12,6 +12,10 @@ Clone this repository and explore the code.
 - Well documented
 - Open source
 
+## Team
+
+Built by the **Mrln Team**. See [TEAM.md](TEAM.md) for members.
+
 ## Contributing
 
 Pull requests are welcome!
