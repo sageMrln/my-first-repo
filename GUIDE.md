@@ -164,9 +164,9 @@ The hub for everything that crosses devices (all **on-device**, nothing uploaded
 
 ---
 
-## 10. 💬 Quick Update — the plain-English updater
+## 10. 💬 Quick Update — the plain-language updater
 
-The fastest way to change things: tap **💬 Quick Update** and type changes in plain language, one per line. It's interpreted **free, offline, in your browser**, and **nothing changes until you confirm**. It understands:
+The fastest way to change things: tap **💬 Quick Update** and type changes in plain language, one per line. It's interpreted **free, offline, in your browser**, and **nothing changes until you confirm**. It now understands commands in **all 7 languages** — type the way you'd naturally say it in English, Español, Dansk, Deutsch, Svenska, Norsk or Magyar (e.g. *"jeg sparer 400 om måneden"*, *"min alder er 41"*). Your item, employer and note names are always kept exactly as you typed them. It understands:
 
 - Income — *"income is now 2600"*, *"good month income is 22000"*
 - Costs — *"add Gym 29/mo to Other"*, *"rent is now 1200"*, *"cancel Netflix"*
