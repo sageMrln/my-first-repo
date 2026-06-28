@@ -768,6 +768,7 @@
       <input id="countryInp" type="text" placeholder="Country" autocomplete="off" maxlength="40"></div>
     <button class="iconbtn" id="tourBtn" title="Replay the tour" data-i18n="❔ Tour">❔ Tour</button>
     <button class="iconbtn" id="setupBtn" title="Re-run setup / start fresh" data-i18n="⚙ Setup">⚙ Setup</button>
+    <button class="iconbtn" id="soundBtn" data-i18n-skip title="Sound on/off">🔊</button>
   </div>
 
 
@@ -1761,6 +1762,7 @@
     STATE.streak.count = (STATE.streak.last===y) ? (STATE.streak.count+1) : 1;  // consecutive day, else reset
     STATE.streak.last=d;
     if(typeof renderStreak==='function') renderStreak();
+    if(typeof MRLN_SFX!=='undefined' && [3,7,14,30,50,100,200,365].indexOf(STATE.streak.count)>=0) MRLN_SFX.streak();  // milestone fanfare
   }
   function renderStreak(){
     var pill=document.getElementById('streakPill'), n=document.getElementById('streakN');
@@ -1813,6 +1815,29 @@
       setTimeout(function(){ d.remove(); }, 1400);
     }catch(_){}
   }
+  // ---- Tier 0: satisfying UI sounds — synthesized (Web Audio), no files, fully offline ----
+  var MRLN_SFX = (function(){
+    var ctx=null, on=true;
+    function ac(){ try{ if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(_){} return ctx; }
+    function note(freq, at, dur, type, vol){
+      var c=ac(); if(!c) return;
+      var o=c.createOscillator(), g=c.createGain(), t0=c.currentTime+at;
+      o.type=type||'sine'; o.frequency.value=freq;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.linearRampToValueAtTime(vol||0.10, t0+0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+      o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0+dur+0.03);
+    }
+    function play(fn){ if(!on) return; try{ var c=ac(); if(c&&c.state==='suspended') c.resume(); fn(); }catch(_){} }
+    return {
+      tick:    function(){ play(function(){ note(880,0,.05,'triangle',.05); }); },              // soft nav blip
+      success: function(){ play(function(){ note(523.25,0,.12,'sine',.09); note(659.25,.07,.12,'sine',.09); note(783.99,.14,.18,'sine',.10); }); }, // C–E–G chime
+      save:    function(){ play(function(){ note(659.25,0,.10,'sine',.08); note(987.77,.08,.16,'sine',.09); }); },   // gentle two-note confirm
+      streak:  function(){ play(function(){ note(659.25,0,.10,'sine',.10); note(783.99,.09,.10,'sine',.10); note(1046.5,.18,.24,'sine',.12); }); }, // brighter celebration
+      setOn:   function(v){ on=!!v; },
+      isOn:    function(){ return on; }
+    };
+  })();
 
   /* ---------- adopt MODEL as the persisted, mutable config ---------- */
   var MODEL;
@@ -4156,6 +4181,7 @@
       logChange('quick-update', (aiProposal.summary||'update') + ' [' + results.join('; ') + ']');
       autosave(); refreshFinance(); renderManage(); renderProfile();
       if(typeof scoreFlash==='function') scoreFlash('✓ '+tf('{n} applied', {n:nApplied}));   // Tier 0: alive feedback
+      if(typeof MRLN_SFX!=='undefined') MRLN_SFX.success();                                  // satisfying chime
       document.getElementById('aiProposal').style.display='none'; aiProposal=null;
       status('✓ Applied. Monthly total is now ' + fmtN(GRAND) + ' ' + curInfo().sym + '. Don’t forget to Save / Export to keep it.', 'var(--lime)');
       document.getElementById('aiText').value='';
@@ -6800,6 +6826,23 @@
   setTimeout(checkBirthday, 800);
   renderStreak();                       // Tier 0: show the daily-streak pill
   setTimeout(morningBriefing, 1400);    // Tier 0: warm daily greeting once the UI settles
+  (function wireSound(){                 // Tier 0: satisfying sounds (synthesized, offline)
+    try{
+      if(STATE.prefs.sound==null) STATE.prefs.sound=true;          // default on
+      MRLN_SFX.setOn(STATE.prefs.sound!==false);
+      var sb=document.getElementById('soundBtn');
+      function paint(){ if(sb) sb.textContent = MRLN_SFX.isOn() ? '🔊' : '🔇'; }
+      paint();
+      if(sb) sb.addEventListener('click', function(){
+        var nv=!MRLN_SFX.isOn(); MRLN_SFX.setOn(nv); STATE.prefs.sound=nv; autosave(); paint();
+        if(nv) MRLN_SFX.tick();                                    // confirm with a blip when turning on
+      });
+      // soft blip on tab switches
+      document.querySelectorAll('#tabs .tab').forEach(function(tb){ tb.addEventListener('click', function(){ MRLN_SFX.tick(); }); });
+      // gentle confirm when saving/exporting
+      var save=document.getElementById('saveBtn'); if(save) save.addEventListener('click', function(){ MRLN_SFX.save(); });
+    }catch(_){}
+  })();
 
   /* ===================== PWA: persistent storage + offline + install ===================== */
   (function initPWA(){
