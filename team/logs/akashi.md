@@ -86,3 +86,33 @@ Entry format:
 - Verdict: SAFE / clean. 3 non-blocking backlog notes: no CSP (recommend connect-src lock),
   hardcoded working-branch raw URL (:6826), #team flag enableable on any device (:6822).
 - Still open: those 3 are hardening, owner-only impact; not gating anything.
+
+## [2026-06-28] — via Kaito — DRAFT: CSP hardening + STATE-header format (propose only)
+- Asked: Kaito routed two backlog/owned items to me. DRAFT only, no edits to index.html, no ship.
+  (1) propose exact CSP meta tag; (2) refine the pinned STATE block format. Kaito reviews → Osefe.
+- Did / found (read the app, did NOT guess):
+  - <head> @1-14: manifest link, apple-touch/icon PNGs, theme-color. Style block @15 opens with a
+    Google Fonts @import (fonts.googleapis.com) → that pulls font FILES from fonts.gstatic.com.
+  - Inline-everything confirmed: 4 <script> blocks + 1 <style>, AND 14 inline on*= handlers
+    (onclick setScen/klSetScen @929-931/1127-1129, plus img onerror etc). => script-src MUST keep
+    'unsafe-inline' and MUST NOT use a nonce/hash (a nonce silently disables 'unsafe-inline' →
+    breaks every inline handler + script block). This is the load-bearing constraint.
+  - Food photos: stored + rendered as data: URIs in <img src> (@5827 list thumb, @5839 viewer,
+    readAsDataURL @5763). => img-src needs data:. Icons are same-origin PNGs ('self').
+  - Exports (@4139/4193/5084/5599) build a Blob + <a download> (not rendered) → blob: in img-src
+    is belt-and-suspenders, harmless. Manifest is REWRITTEN to a blob: URL at runtime @6754 (bakes
+    File ID into start_url) => manifest-src MUST allow blob: or installed-app manifest breaks.
+  - Service worker: register('sw.js') @6741 same-origin → worker-src 'self' (script-src fallback
+    also covers it). showNotification @6635 needs no CSP directive.
+  - The ONE outbound fetch: Team Room tick() @6850 → RAW @6826 = raw.githubusercontent.com (owner-
+    gated). => connect-src 'self' https://raw.githubusercontent.com. THIS is the real win (bounds
+    exfil); the inline 'unsafe-inline' is the honest partial.
+  - No eval / new Function / string-timer found.
+- Proposal: see TEAM-CHAT post (full meta tag + per-directive rationale + breakage-to-test list).
+  Honest limit logged: 'unsafe-inline' on script-src means CSP does NOT stop injected-inline JS;
+  it's defense-in-depth on egress (connect-src) + object/base lockdown, not XSS-proof. Stated so.
+- Verdict: DRAFT proposed, not shipped. No code changed by me. Not gating anything.
+- Commits / SHAs: this log + TEAM-CHAT post only (no index.html touch).
+- Still open: Kaito to implement+test (esp. fonts loading, food photos, install/manifest, Team Room
+  fetch still works, no console CSP violations), then take to Osefe. Backlog CSP item stays open
+  until landed. Hardcoded-branch RAW URL + #team-flag reachability still open, separate items.
