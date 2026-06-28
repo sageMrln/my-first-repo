@@ -116,3 +116,41 @@ Entry format:
 - Still open: Kaito to implement+test (esp. fonts loading, food photos, install/manifest, Team Room
   fetch still works, no console CSP violations), then take to Osefe. Backlog CSP item stays open
   until landed. Hardcoded-branch RAW URL + #team-flag reachability still open, separate items.
+
+## [2026-06-28] — via Kaito — BRAINSTORM (draft, no code): how far can we push the PWA
+- Asked: Osefe wants a big security+architecture brainstorm — push this single-file,
+  offline, free, no-server PWA to limits no one's shipped, WITHOUT breaking invariants
+  (offline / private / no data leaves device / owner key never exposed / watchdogs intact).
+  Rank by wow × feasibility × safety. Draft only, no code.
+- Did / found (grounded in the actual app, not guessing):
+  - Licensing engine is a SELF-CONTAINED pure-JS P-256 ECDSA + SHA-256 verifier (index.html
+    @4243-4312), deliberately NOT crypto.subtle — runs in file:// / content:// non-secure
+    contexts. Public key in PUB_B64 only; private key signs licenses (owner master only).
+    This is already the hard part of "self-sovereign SaaS" — verify side is done & offline.
+  - App already touches: navigator.bluetooth (weight scale @3175), navigator.share (@5139),
+    serviceWorker (@6741), storage.persist (@6739), showNotification (@6635), data:/blob:
+    URIs for food photos + exports, one owner-gated fetch (Team Room). 38 watchdog/key sites.
+- My ranked take (wow × feasibility × safety), full text in TEAM-CHAT brainstorm post:
+  1. SELF-SOVEREIGN LICENSE TOOLKIT (extend existing ECDSA): owner-master-only signing UI,
+     offline. Highest feasibility (engine exists), highest safety (private key never moves),
+     real wow. TOP PICK.
+  2. P2P E2E SYNC between owner's OWN devices via WebRTC DataChannel, payload encrypted with
+     a key DERIVED FROM THE EXISTING ECDSA KEYPAIR (ECDH), manual SDP paste = no signaling
+     server. Safe IF: opt-in, owner-only, E2E so relay never sees plaintext, no fallback to
+     cleartext. Medium feasibility, high wow. Risk: STUN/TURN can leak IP/metadata — must be
+     manual-SDP or self-hosted only; never a public TURN that sees ciphertext+metadata.
+  3. ON-DEVICE AI assistant (WebGPU/WASM small model, e.g. 0.5-1B quantized) for conversational
+     MRLN. Highest wow, LOWEST feasibility-in-single-file (model is 100s of MB — can't inline;
+     breaks "single file" + offline-first unless cached via SW on first online load). SAFETY
+     OK only if model is static weights, runs 100% local, NO telemetry, NO model-hosted fetch
+     at inference. The current static-KB assistant already gives 80% of value at 0% risk.
+  - Device APIs verdict: SAFE to add — File System Access (owner save/load, user-gesture),
+    Web Share Target (import-in), Badging, Periodic Background Sync (local-only recompute).
+    RISKY / NO without care — anything that needs a server, push (needs push service = phones
+    home), geolocation, contacts. NFC = niche, owner-only at most.
+- THE ONE INVARIANT I WILL NOT TRADE FOR ENGAGEMENT: no private financial data and no private
+  key ever leaves the device. Every idea above is gated on that. P2P only ships E2E-or-not-at-all;
+  AI only ships fully-local-or-not-at-all. Trust is the product for a finance app.
+- Verdict: DRAFT brainstorm posted. No code touched, nothing gated, nothing to ship.
+- Commits / SHAs: this log + TEAM-CHAT brainstorm post only. App tip unchanged.
+- Still open: if Osefe picks one, it gets a real arch spec + threat model before any build.
