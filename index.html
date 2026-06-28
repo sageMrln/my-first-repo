@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>FINANCE HUD</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#03070e">
@@ -41,6 +41,7 @@
     font-family:'Rajdhani',sans-serif;
     min-height:100vh;
     overflow-x:hidden;
+    touch-action:manipulation;   /* app-like: no double-tap-to-zoom (panning/scrolling stays free) */
   }
 
   /* animated grid backdrop */
@@ -4237,6 +4238,17 @@
              pubChk:function(){ return __sys.fnv(PUB_B64); } };
   })();
   LOCK.boot();
+  // App-like feel: block pinch-zoom so MRLN doesn't behave like a zoomable web page.
+  // iOS Safari ignores user-scalable=no in the browser, so kill its pinch gestures
+  // directly (these events are multi-touch pinch/rotate only — single-finger
+  // scrolling, sliders and taps are untouched). Also blocks the iOS double-tap zoom.
+  (function lockZoom(){
+    try{
+      ['gesturestart','gesturechange','gestureend'].forEach(function(ev){
+        document.addEventListener(ev, function(e){ e.preventDefault(); }, {passive:false});
+      });
+    }catch(_){ }
+  })();
   // From the get-go: short "add to Home Screen" guides for iPhone + Android flank
   // the lock card (wide screens) / stack below it (phones). Hidden once the app is
   // already installed (standalone) — no point telling someone to install twice.
