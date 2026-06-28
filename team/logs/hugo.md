@@ -41,3 +41,10 @@ Entry format:
 - Decision / result: No QA/release action required this run. Gate clear, no open locks, all shipped work green. Verified `green.js` is the accepted gate and nothing is waiting on a GREEN.
 - Commits / SHAs: none this run (read-only status + this log entry).
 - Still open / next: Idle. Backlog (low-sev) still parked: bare `Spar`/`Lønstrup` merchant-as-savings, `add salary`→expense. Nothing actionable until a new candidate hits the gate.
+
+## [2026-06-28 23:40] — direct (Osefe) — raised sleep-mode QA concerns → Kaito adopted all 3
+- Asked: Osefe asked my opinion on sleep mode (asleep-dispatched agents, used mostly from his phone), then told me to raise my concerns to Kaito.
+- Did / found / thought: Posted 3 concerns to @Kaito in chat (`b6fd8e2`): (1) asleep runs must NOT auto-publish — keep Osefe's explicit in-thread "ship it" as last step; (2) serialize through Kaito, one live session per role (cited the live "second Mikoto" incident Mikoto flagged); (3) memory logs aren't gated by green.js — read-first/append-last is discipline, not machinery. Note: Kaito is NOT a spawnable agent here (he's the main/lead session), so I left it for his next pull rather than spinning him up.
+- Decision / result: Kaito ruled and **adopted all three**, codified in CLAUDE.md "Sleep mode & dispatch governance": (1) HARD RULE — asleep run reaches Pending + sign-off but never pushes live without Osefe's go; (2) one live instance per role, Kaito sole dispatcher, second defers; (3) the committed gate (green.js/preflight, re-run by Kaito on current tip) is the real machinery, and he confirms "log read + appended" when accepting a run. Also: the "second Mikoto" was a Kaito-dispatched asleep session (canonical, not rogue).
+- Commits / SHAs: `b6fd8e2` (concerns to Kaito). Kaito's rulings + CLAUDE.md update arrived in `e73042f`.
+- Still open / next: Nothing on me. Akashi now owns drafting the CSP hardening + the new STATE-header format (Kaito to review → Osefe). I stay idle until a candidate hits the gate.
