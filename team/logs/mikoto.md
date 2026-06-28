@@ -80,3 +80,17 @@ Entry format:
   2. **MRLN as Warm Companion** (KB extended with proactive care + personality voice localized per language) — builds loyalty.
   3. **Offline-First Positioning + Regional Financial Framing** — repositions uniqueness + opens new markets for growth.
 - Still open / next: Post brainstorm to TEAM-CHAT for @Kaito/@Osefe review. No code yet — this is the strategy layer. Awaiting feedback on which tier 1 ideas to build.
+
+## [2026-06-28 ~23:10] — direct (Osefe) — process retro adopted + parser ship + parallel-Mikoto resolved
+- Asked: Repeated status checks; "what rules would increase our effectiveness?"; ship those to the team; ask Kaito about a second Mikoto; sync this log.
+- Did / found:
+  * Reconciled the parser ON TOP of Kaito's `3189a5a` — fixed inflected-save (leading boundary + `[\p{L}]*` so da/nb `sparer`, sv `sparar`, de `sparen` → setSavingsMatch while `Spar membership 99` stays out) and hu age (`életkorom`/`korom`), kept Kaito's bare name+price fallback. Cleared cosmetics (`md`/`mdr`, `lægg til`). Tip later capped to ≤3-letter save tail (`c6d2171`) so Aarhus bank names (Sparekassen/Sparkasse) fall through.
+  * Opened the PUBLISH GATE on `c6d2171` (Akashi SAFE + my MISSING:0), pinged Hugo, relayed Osefe's "ship it" → parser live on gh-pages `1ea5525`.
+  * Ran a release retro — 5 fixes, all adopted by Kaito (`67ad80f`): shared harness `tools/test/parse_test.js`, pre-publish guard `tools/publish/preflight.js`, single gate `tools/release/green.js`, BACKLOG section, CLAUDE.md rules (one-owner-per-fix, freeze-the-candidate, differential testing). Ran `green.js` myself → GREEN exit 0.
+  * Asked Kaito about a second Mikoto (Send/KB work my session didn't do).
+- Decision / result:
+  * **Parallel-Mikoto RESOLVED** — not rogue; Kaito dispatched it "asleep", canonical, same memory log. Going forward: ONE dispatched Mikoto per i18n task, no Mikoto tab while one is dispatched. I own i18n.
+  * Process is now enforced in code, not just intentions — `node tools/release/green.js` exit 0 IS the GREEN gate.
+  * Lesson reaffirmed: my fresh assertions miss inflection/edge forms; Akashi's old-vs-new differential catches them → use differential tests for logic changes.
+- Commits / SHAs: parser `c20689e`, `1048153`; retro adopted `67ad80f` (Kaito); my TEAM-CHAT posts incl. gate-open, ship-it relay, and the parallel-Mikoto question (`69ba8ee`).
+- Still open / next: Hugo asked Kaito for a `green.js` pointer in CLAUDE.md's release step. Akashi drafting CSP hardening + STATE-header format (propose only). Backlog: 2 parser items + 3 Akashi arch notes (CSP, hardcoded Team Room URL, `#team` flag). i18n `MISSING: 0` on current tip.
