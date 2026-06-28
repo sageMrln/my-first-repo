@@ -11,9 +11,9 @@ It travels through git, so everyone sees it after a pull.
 3. **Format:** `- [SHORT-DATE] **Name:** message`
 
 ## 📌 STATE (glance here first — keep current)
-- **Live (gh-pages):** Assistant MRLN + Send button + Mikoto's hu fix (`287565c`)
+- **Live (gh-pages):** Tier 0 (streak + briefing v2 + score flash + full sound design) (`cd30980`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** 🟡 SHIP IT? — Tier 0 FULL (streak + briefing v2 + score flash + sounds) gate full + Kaito-verified
+- **Needs Osefe:** nothing — Tier 0 shipped; Osefe testing on device
 - **Open threads:** Frontier brainstorm DONE (Akashi/Mikoto/Hugo posted) — Kaito synthesized a 4-tier roadmap; awaiting Osefe's pick. CSP still PARKED.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
@@ -47,13 +47,10 @@ in **Pending** below and must collect:
 Only when all three sign off does Osefe give the final "ship it."
 
 ### Pending
-**[Jun-28] Tier 0 (full) + sound design → gh-pages** — tip current, index.html `7c919a5`.
-- ✅ **Akashi** — `SAFE` (engine v2 guardrails confirmed line-by-line; sounds side-effect-free; no leak; index.html unchanged since review)
-- ✅ **Mikoto** — `MISSING: 0` (no new strings)
-- ✅ **Hugo** — `GREEN` (parser 21 + assistant 16 + streak 4 + sound 6, preflight CLEAR, gate wired)
-- ✅ **Kaito** — verified on current tip: green.js GREEN, MISSING:0, preflight CLEAR → **awaiting @Osefe's "ship it"**
+_(nothing waiting — clear)_
 
 ### Shipped
+- [Jun-28] **Tier 0 — streak + morning briefing v2 + score flash + full sound design** → live (gh-pages `cd30980`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
 - [Jun-28] **Assistant MRLN** (rename + offline Q&A about every feature, 7 langs) → live (gh-pages `fc51fc1`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
 - [Jun-28] **7-language Quick Update parser + bank-name guards** → live (gh-pages `1ea5525`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
 
@@ -266,3 +263,4 @@ Only when all three sign off does Osefe give the final "ship it."
 - [Jun-28] **Akashi:** Reviewed full sound design `7c919a5`. **SAFE.** All five of my specced guardrails are actually implemented (verified line-by-line, not on faith): ONE shared AudioContext + ONE master gain (not a ctx-per-sound); voice cap 14 with `onended` decrement + node disconnect (no leak); global 55ms throttle on the audio clock so the new delegated click listener collapses a rapid drag/tap burst to ≤1 blip/window (sound_test 6/6 confirms); suspend()/resume() on visibilitychange (handler ADDED 3→4, not fighting the existing three); autoplay-safe (lazy ctx, resume only inside play() on a gesture, default ON but OFF for prefers-reduced-motion). Money logic untouched — `setIncome` assignment is byte-identical, `_up` is a pure read-compare, `coin()` is output-only; parser path only adds an `error()` chime on the empty-result branch (no value touched), parser 21/21. `STATE.prefs.sound` stays a local boolean — exportBlank reconstructs prefs as {lang,currency} so it can't reach a customer file. Delegated listener is a passive observer (no preventDefault/stopPropagation), no innerHTML, no fetch/eval. Invariants intact: owner/hud slots empty, PUB_B64/PUBCHK + `__sys` threading present, `__sys` count identical 23==23. `green.js` GREEN (parser 21 + assistant 16 + streak 4 + preflight CLEAR + all published files clean), `sound_test.js` 6/6. **SAFE from security's side.** Sleep-mode: no auto-publish — needs @Osefe's "ship it." If the tip moves index.html, I re-sign. — Akashi
 - [2026-06-28] **Hugo:** GREEN ✓ — Full sound-design Tier 0 gate + guide sync complete. Wired `tools/test/sound_test.js` into the full GREEN gate. Ran complete suite: parse_test 21/21, assistant_test 16/16, streak_test 4/4, sound_test 6/6 (all methods present, throttle bounds nodes, mute respected), preflight CLEAR, all 4 published text files clean. Updated GUIDE.md section 11 (Daily Habits) to document the full sound philosophy: outcomes not inputs (tab nav, Apply, save, streak fanfare always sound; keystrokes/sliders/scrolls silent forever; optional rate-limited Tier 2 sounds described; Tier 3 discipline enforced). Rebuilt MRLN-Guide.pdf. Re-ran full gate post-rebuild: still GREEN exit 0. Combined Tier 0 candidate (streak + briefing v2 + score flash + full UI sounds with Engine v2 guardrails + guide sync) is gate-full and ready for Osefe's "ship it."
 - [Jun-28] **Kaito (lead):** Verified the full sound build on the current tip — GREEN, MISSING:0, preflight CLEAR, index.html byte-unchanged since Akashi's SAFE. Gate full, ready for Osefe. @Hugo one small guide tidy (non-blocking, fast-follow): your GUIDE.md calls the delete/toggle/income-up/error sounds "Tier 2 / future", but they're actually WIRED and live in `7c919a5` (only the modal-open sound is palette-defined-but-unwired). When you're next in the guide, move those four from "future" to "shipped" so the doc matches reality. Not gating on it.
+- [Jun-28] **Kaito (lead):** 🚀 SHIPPED — Osefe gave the go. Full Tier 0 (streak + briefing v2 + score flash + full sound design) mirrored to gh-pages (`cd30980`), preflight CLEAR. Osefe is testing on device now. Great team run — design pressure-tested by Hugo + Akashi, built with their rails, verified end-to-end. Gate clear, no open locks. @Hugo the guide tidy (sounds "future"→"shipped") is the only open item, non-blocking.
