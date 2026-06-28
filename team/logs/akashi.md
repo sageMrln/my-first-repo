@@ -335,3 +335,51 @@ Entry format:
   injection/leak surface. A pure-synthesis output layer with the guardrails that make it phone-safe.
 - Commits / SHAs reviewed: 7c919a5 (tip). If tip moves index.html, I re-sign.
 - Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
+
+## [2026-06-28] — via Kaito — REVIEW: tab reorder + category-open sound (`c7c5810`)
+- Asked: security-review the double-tap-tab Position control + __tabReorder/moveTabTo
+  DOM re-append reorder (persisted in STATE.tabOrder, restored by applyTabOrder on load),
+  plus a distinct `panel` sound on expense-category open and `panel`/`ping` added to
+  MRLN_SFX. Confirm tab integrity / persistence-safe / no money-logic-or-watchdog touch /
+  sounds pure / no injection. Run reorder_test + green.
+- Did / found (read the full diff + load-bearing fns on the tip, ran both suites — not on faith):
+  - SCOPE: diff = index.html (+71/-5) + TEAM-CHAT + new tools/test/reorder_test.js. NO added
+    line touches a sensitive API — grepped the `+` lines for innerHTML/fetch/eval/new Function/
+    document.write/.src=/parseClause/applyChange/setIncome/exportBlank/PUBCHK/__sys → ZERO hits.
+    (The only innerHTML grep matches are pre-existing CONTEXT lines expMonth/expYear @diff157-158,
+    shown because the panel() sound was added to the adjacent exp-head click handler — not added.)
+  - TAB INTEGRITY ✓: nav handler @1993 does `getElementById(t.getAttribute('data-p'))` — keyed
+    off data-p, NOT DOM position. Reorder only re-appends existing .tab nodes (data-p preserved),
+    so order changes can't change which panel a tab opens. __tabReorder is pure (top-level, no
+    DOM) → reorder_test 7/7 incl. clamp + "hidden tab stays put".
+  - HIDDEN-TAB CANNOT BE REVEALED ✓ (the key worry): reorder NEVER touches .style.display — it
+    only appendChild's. Klarna visibility is gated solely on STATE.showKlarna (reveal @5249 customer
+    /@6636 master set display=''); visTabs() filters display!=='none' so a hidden tab rides along in
+    the order but stays hidden. A customer reordering cannot surface a master-only tab.
+  - PERSISTENCE SAFE ✓: STATE.tabOrder is an array of data-p STRINGS (overview/income/…), no
+    numbers/secrets. exportBlank @4363 HARD-reconstructs hud-state as {__fresh,fid,prefs:{lang,
+    currency}} — tabOrder NOT in that object → dropped by construction, can't reach a customer/
+    blank file (same proven mechanism as streak/sound). Owner's exportHTML dumps full STATE incl.
+    tabOrder — his master, fine (tab order is non-sensitive layout, no figures).
+  - SOUNDS ✓: panel/ping are defined exactly like existing sounds — pure play(fn,150) into the
+    SAME engine (note() CAP=14/master/voices, play() on-boolean+55ms throttle+resume). No new
+    AudioContext, no new surface, output-only. Guardrails (cap/throttle/master/suspend/autoplay)
+    UNCHANGED — sound_test 6/6. ping fires on options-popup open; panel on category unfold.
+  - NO INJECTION ✓: position control writes only posIn.value=p / posIn.max=n (numeric) /
+    posOf.textContent='/ '+n (textContent) / titleEl.textContent=name (textContent). name(tab)
+    goes to logChange → STATE.log[].detail (data, not DOM; change log is data-i18n-skip + escaped
+    on render). No innerHTML with user data anywhere in the diff.
+  - I18N ✓: exactly ONE new translatable string "Position in the menu" (data-i18n) → Mikoto's
+    MISSING. The arrows/number input/`/N` counter are all data-i18n-skip so the position number
+    isn't mangled. user content untouched.
+  - INVARIANTS ✓: #__ownerKeySrc empty (@1601), #hud-state empty (@1597), PUB_B64(@4421)+PUBCHK
+    (4047293148 @4607)+__sys threading intact; __sys count IDENTICAL parent vs tip (23==23) → no
+    watchdog weakened/removed. No SW/manifest change.
+  - Ran node tools/test/reorder_test.js → 7/7. node tools/release/green.js → GREEN exit 0
+    (parser 21/21, assistant 16/16, streak 4/4, sound 6/6, preflight CLEAR, all published clean).
+- Verdict: SAFE. DOM-reorder + two pure-synth sounds; zero money/key/network/injection/leak
+  surface, watchdogs intact, hidden tabs can't be revealed by reorder, tabOrder can't reach a
+  customer file.
+- Commits / SHAs reviewed: c7c5810 (tip). If tip moves index.html, I re-sign.
+- Still open: nothing security-side. Gate not opened; 1 new i18n string → Mikoto (MISSING),
+  Hugo GREEN/guide. Sleep-mode: no auto-publish — needs Osefe's explicit go.
