@@ -32,6 +32,13 @@ while ((m = re.exec(src))) {
     .replace(/\\\\/g, '\\').replace(/\\n/g, '\n').replace(/\\t/g, '\t');
   if (/[A-Za-zÀ-ÿ]/.test(body)) keys.add(body);
 }
+// 1b) data-i18n="..." / data-i18n-ph="..." attribute values (static markup translated
+//     at runtime by applyLang — e.g. the lock screen, tab labels, setup wizard).
+const attrRe = /data-i18n(?:-ph)?="((?:[^"\\]|\\.)*)"/g;
+while ((m = attrRe.exec(src))) {
+  const body = m[1].replace(/\\"/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  if (/[A-Za-zÀ-ÿ]/.test(body)) keys.add(body);
+}
 // 2) WHATS_NEW items (release-note popup)
 const wn = src.match(/var WHATS_NEW\s*=\s*\{[\s\S]*?items:\s*\[([\s\S]*?)\]/);
 if (wn) {
@@ -43,9 +50,29 @@ if (wn) {
   });
 }
 
-// live dictionary: the AUTO-MERGED block (pure JSON) + base-section keys
+// live dictionary = the base `var I18N = {…}` object  +  the AUTO-MERGED block.
 const dict = {};
 LANGS.forEach(L => (dict[L] = {}));
+// (a) base I18N object literal — brace-match it and eval (it's a pure JS object literal)
+const bi = src.indexOf('var I18N = {');
+if (bi >= 0) {
+  let i = src.indexOf('{', bi), depth = 0, str = 0, esc = false, end = -1;
+  for (; i < src.length; i++) {
+    const ch = src[i];
+    if (esc) { esc = false; continue; }
+    if (str) { if (ch === '\\') esc = true; else if (ch === str) str = 0; continue; }
+    if (ch === '"' || ch === "'") { str = ch; continue; }
+    if (ch === '{') depth++;
+    else if (ch === '}') { depth--; if (depth === 0) { end = i + 1; break; } }
+  }
+  if (end > 0) {
+    try {
+      const base = (new Function('return (' + src.slice(src.indexOf('{', bi), end) + ')'))();
+      for (const L in base) if (dict[L]) Object.assign(dict[L], base[L]);
+    } catch (e) { console.error('could not parse base I18N:', e.message); }
+  }
+}
+// (b) AUTO-MERGED block (pure JSON)
 const s = src.indexOf('AUTO-MERGED FULL UI TRANSLATIONS (generated) >>> */');
 if (s >= 0) {
   const seg = src.slice(s, src.indexOf('<<< AUTO-MERGED', s));
