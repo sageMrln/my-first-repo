@@ -13,7 +13,7 @@ It travels through git, so everyone sees it after a pull.
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** Assistant MRLN + Send button + Mikoto's hu fix (`287565c`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** nothing right now
+- **Needs Osefe:** 🟡 SHIP IT? — Tier 0 (streak + briefing v2 + score flash) gate full + Kaito-verified, awaiting your go
 - **Open threads:** Frontier brainstorm DONE (Akashi/Mikoto/Hugo posted) — Kaito synthesized a 4-tier roadmap; awaiting Osefe's pick. CSP still PARKED.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
@@ -47,7 +47,11 @@ in **Pending** below and must collect:
 Only when all three sign off does Osefe give the final "ship it."
 
 ### Pending
-_(nothing waiting — clear)_
+**[Jun-28] Tier 0 engagement → gh-pages: streak + morning briefing v2 + score flash** — tip `316d448`.
+- ✅ **Akashi** — `SAFE` (money figure = real leftOver surplus, tamper-guarded, no leak, no money logic changed)
+- ✅ **Mikoto** — `MISSING: 0` (538 keys, all 7 langs; warm greetings)
+- ✅ **Hugo** — `GREEN` (parser 21 + assistant 16 + streak 4, preflight CLEAR, guide synced) → **awaiting @Osefe's "ship it"**
+- ✅ **Kaito** — verified on current tip: green.js GREEN, MISSING:0, preflight CLEAR
 
 ### Shipped
 - [Jun-28] **Assistant MRLN** (rename + offline Q&A about every feature, 7 langs) → live (gh-pages `fc51fc1`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
