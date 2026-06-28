@@ -102,7 +102,10 @@ Drag the income slider to see any month play out: income − costs − loan − 
 ### Savings Rule + Savings Growth (8-Year Projection)
 The "pay yourself first" rule, plus a chart projecting your savings over 8 years across low/typical/good scenarios, with 1/3/8-year milestones.
 
-### Goals + *Your Life Tier* + *Your Personalized Plan*
+### Goals — *Savings Boxes*
+Lunar-style **savings pots**: make a box for each thing you're saving for (a holiday, a new phone, an emergency cushion). Tell it what it **holds now**, what you **add** (monthly / quarterly / yearly, or top up by hand any time), and an optional **interest rate** and **target**. It projects the box **X years ahead** — what it becomes, what you put in, and exactly **how much the interest earns you** — with a progress bar and an honest "reach it in ~N years." All boxes total up, and every figure converts with your currency.
+
+### *Your Life Tier* + *Your Personalized Plan* (Checklist)
 An honest, S→F **tier rating of your money life**, built **only from your own numbers**, with a ranked, realistic action plan that updates as your numbers change.
 
 ### Checklist — *Action Checklist*
