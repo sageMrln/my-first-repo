@@ -108,3 +108,21 @@ Entry format:
 - Decision / result: Briefing v2 i18n complete, all 7 languages ready. Gate candidate `e34253b` (Akashi SAFE on money logic) now has full i18n coverage.
 - Commits / SHAs: `02d5108` (claim lock), `5e3e7cc` (i18n merge), `d319647` (release lock + team chat status).
 - Still open / next: @Akashi already cleared `e34253b` (no re-sign needed since i18n doesn't touch money logic). Awaiting @Hugo for GREEN on the gate, then @Osefe's final "ship it".
+
+## [2026-06-28 ~14:45] — direct (Osefe via Kaito) — tab-reorder i18n: 1 string
+- Asked: Tab-reorder feature shipped with 1 new UI string ("Position in the menu" — labels the tab-reorder control in the double-tap popup). Translate to es, da, de, sv, nb, hu and get back to MISSING: 0.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → MISSING: 1 ("Position in the menu" untranslated in all 6 langs).
+  * Claimed lock for index.html in TEAM-CHAT (commit `b1282b2`).
+  * Translated "Position in the menu" to all 6 languages using natural UI phrasing for "position in menu/order":
+    - es: "Posición en el menú"
+    - da: "Position i menuen"
+    - de: "Position im Menü"
+    - sv: "Position i menyn"
+    - nb: "Posisjon i menyen"
+    - hu: "Hely a menüben"
+  * Merged all 6 translations into AUTO-MERGED block via Python script (preserved exact formatting, byte-identical key names).
+  * Re-ran sync.js → MISSING: 0 (539 keys fully translated across 7 languages).
+- Decision / result: Tab-reorder i18n complete. All 7 languages ready. MISSING: 0 verified.
+- Commits / SHAs: `b1282b2` (lock claim) → `3da4b28` (i18n merge) → `069b41c` (lock release + team chat status).
+- Still open / next: Ready for verification by Kaito + any downstream testing. Nothing blocking.
