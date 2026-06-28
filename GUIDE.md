@@ -193,9 +193,14 @@ Three mechanics keep you coming back:
 
 **✨ Apply Feedback** — When you apply a command or confirm an edit, a 2-second toast pops up: *"nice! 7-second parse"* or *"saved ✓"*. It's a tiny score (how fast you wrote it) and an emoji, giving instant proof that the app heard you and the numbers updated. Keeps your hands engaged and the app *feeling alive*.
 
-**🔊 Satisfying UI Sounds** — Synthesized audio chimes (Web Audio, no files, fully offline) play on key actions: soft nav blip on tab taps, success chime on Apply, gentle confirm on saves, brighter fanfare on streak milestones. They're subtle enough not to intrude but immediate enough to *feel* the app responding. Toggle them on/off with the 🔊/🔇 button in the top right of the header.
+**🔊 Satisfying UI Sounds** — Synthesized audio chimes (Web Audio, no files, fully offline) play on key actions. The core rule: **sounds voice *outcomes*, not inputs** — you hear confirmation when something works or changes, but not on every keystroke or slider tick. This keeps the app feeling responsive without becoming grating.
+  - **Always sound:** tab navigation (soft tick), Apply success (C–E–G chime), save/export (two-note), streak milestones (celebration fanfare).
+  - **Never sound:** keystrokes, slider motion, scrolls, or page loads.
+  - **Optional (context-aware):** modal open (subtle entrance), delete (down-whoosh if you've just deleted something), income-up alerts, error feedback — these respect your usage pattern and throttle so rapid actions don't spam.
 
-All three are **per-device, never synced** (they reset if you import to a new phone) and are **stripped from any file you share** — so a customer file or a test upload stays clean, and the habit counters don't follow your export.
+Sounds are **soft by design** (~0.09–0.12 gain) and **respect reduced-motion** mode: if your OS is set to prefer reduced motion, sounds default OFF (toggle back ON anytime with 🔊/🔇). Even with sound ON, the visual toast (✓ or ✨) always confirms every action — sound is the *bonus*, never the only signal.
+
+All four mechanics are **per-device, never synced** (they reset if you import to a new phone) and are **stripped from any file you share** — so a customer file or a test upload stays clean, and the habit counters don't follow your export.
 
 ---
 

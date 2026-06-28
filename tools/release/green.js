@@ -49,6 +49,10 @@ run(['tools/test/assistant_test.js'], 'assistant suite');
 section('Tier 0 streak engine — tools/test/streak_test.js');
 run(['tools/test/streak_test.js'], 'streak suite');
 
+// 4) committed sound engine test — Tier 0 UI sounds (Web Audio, offline, no files)
+section('Tier 0 sound engine — tools/test/sound_test.js');
+run(['tools/test/sound_test.js'], 'sound suite');
+
 // 5) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
