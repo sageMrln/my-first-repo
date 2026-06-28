@@ -1817,23 +1817,49 @@
   }
   // ---- Tier 0: satisfying UI sounds — synthesized (Web Audio), no files, fully offline ----
   var MRLN_SFX = (function(){
-    var ctx=null, on=true;
-    function ac(){ try{ if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(_){} return ctx; }
+    // Engine v2 — Akashi's guardrails: ONE shared context + master gain, a voice cap so
+    // rapid taps can't spawn runaway nodes, and a global throttle so a drag can't machine-gun.
+    // Notes sit in a C-major pentatonic so any overlap sounds pleasant; each gets a tiny random
+    // detune so repeats never grate. Pure synthesis — no files, offline, autoplay-safe.
+    var ctx=null, master=null, on=true, voices=0, last=0;
+    var CAP=14, GAP=55;    // max concurrent voices · min ms between sounds (global throttle)
+    function ac(){
+      try{ if(!ctx){ ctx=new (window.AudioContext||window.webkitAudioContext)();
+        master=ctx.createGain(); master.gain.value=0.9; master.connect(ctx.destination); } }catch(_){}
+      return ctx;
+    }
     function note(freq, at, dur, type, vol){
-      var c=ac(); if(!c) return;
+      var c=ac(); if(!c || voices>=CAP) return;
       var o=c.createOscillator(), g=c.createGain(), t0=c.currentTime+at;
-      o.type=type||'sine'; o.frequency.value=freq;
+      o.type=type||'sine'; o.frequency.value=freq; o.detune.value=(Math.random()*14-7);
       g.gain.setValueAtTime(0.0001, t0);
       g.gain.linearRampToValueAtTime(vol||0.10, t0+0.012);
       g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
-      o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0+dur+0.03);
+      o.connect(g); g.connect(master);
+      voices++; o.start(t0); o.stop(t0+dur+0.03);
+      o.onended=function(){ voices--; try{ o.disconnect(); g.disconnect(); }catch(_){} };
     }
-    function play(fn){ if(!on) return; try{ var c=ac(); if(c&&c.state==='suspended') c.resume(); fn(); }catch(_){} }
+    function play(fn, gap){
+      if(!on) return;
+      try{ var c=ac(); if(!c) return;
+        var t=c.currentTime*1000; if(t-last < (gap||GAP)) return; last=t;   // throttle on the audio clock
+        if(c.state==='suspended') c.resume(); fn();
+      }catch(_){}
+    }
     return {
-      tick:    function(){ play(function(){ note(880,0,.05,'triangle',.05); }); },              // soft nav blip
+      tap:     function(){ play(function(){ note(659.25,0,.04,'triangle',.035); }); },           // generic button — very soft
+      tick:    function(){ play(function(){ note(880,0,.05,'triangle',.05); }); },               // nav blip
+      toggle:  function(){ play(function(){ note(659.25,0,.05,'sine',.06); note(880,.045,.07,'sine',.06); },120); },
+      remove:  function(){ play(function(){ note(440,0,.06,'sine',.07); note(311.13,.05,.12,'sine',.06); },700); },  // soft down-whoosh
+      coin:    function(){ play(function(){ note(987.77,0,.05,'square',.045); note(1318.5,.05,.13,'square',.055); },800); }, // income up
+      error:   function(){ play(function(){ note(415.3,0,.09,'sine',.06); note(311.13,.09,.15,'sine',.06); },1200); }, // gentle "nope"
       success: function(){ play(function(){ note(523.25,0,.12,'sine',.09); note(659.25,.07,.12,'sine',.09); note(783.99,.14,.18,'sine',.10); }); }, // C–E–G chime
-      save:    function(){ play(function(){ note(659.25,0,.10,'sine',.08); note(987.77,.08,.16,'sine',.09); }); },   // gentle two-note confirm
-      streak:  function(){ play(function(){ note(659.25,0,.10,'sine',.10); note(783.99,.09,.10,'sine',.10); note(1046.5,.18,.24,'sine',.12); }); }, // brighter celebration
+      save:    function(){ play(function(){ note(659.25,0,.10,'sine',.08); note(987.77,.08,.16,'sine',.09); }); },
+      modal:   function(){ play(function(){ note(329.63,0,.14,'sine',.05); },400); },             // subtle open swell
+      unlock:  function(){ play(function(){ note(392,0,.1,'sine',.08); note(523.25,.08,.1,'sine',.09); note(659.25,.16,.1,'sine',.09); note(880,.24,.22,'sine',.10); }); }, // power-on
+      streak:  function(){ play(function(){ note(659.25,0,.10,'sine',.10); note(783.99,.09,.10,'sine',.10); note(1046.5,.18,.24,'sine',.12); }); }, // celebration
+      suspend: function(){ try{ if(ctx && ctx.state==='running') ctx.suspend(); }catch(_){} },
+      resume:  function(){ try{ if(ctx && ctx.state==='suspended') ctx.resume(); }catch(_){} },
       setOn:   function(v){ on=!!v; },
       isOn:    function(){ return on; }
     };
@@ -2927,7 +2953,9 @@
   }
   function setIncome(key, value){
     if(['low','avg','high'].indexOf(key) < 0) return;
+    var _up = Number(value) > (MODEL.income[key]||0);   // income going up → reward sound
     MODEL.income[key] = Number(value);
+    if(_up && typeof MRLN_SFX!=='undefined') MRLN_SFX.coin();
     logChange('set-income', key + ' → ' + fmtN(value) + ' ' + curInfo().sym);
     if(window.rebuildScenarios) window.rebuildScenarios();
     refreshFinance();
@@ -4171,7 +4199,7 @@
       var p = parseInstructions(text);
       showProposal(p);
       if(p.changes.length) status('Review the proposed changes below, then Apply.', 'var(--lime)');
-      else status(p.recommendation, 'var(--amber)');
+      else { status(p.recommendation, 'var(--amber)'); if(typeof MRLN_SFX!=='undefined') MRLN_SFX.error(); }   // gentle "nope" on nothing recognised
     });
     document.getElementById('aiCancel').addEventListener('click', function(){ aiProposal=null; document.getElementById('aiProposal').style.display='none'; });
     document.getElementById('aiApply').addEventListener('click', function(){
@@ -6826,9 +6854,12 @@
   setTimeout(checkBirthday, 800);
   renderStreak();                       // Tier 0: show the daily-streak pill
   setTimeout(morningBriefing, 1400);    // Tier 0: warm daily greeting once the UI settles
-  (function wireSound(){                 // Tier 0: satisfying sounds (synthesized, offline)
+  (function wireSound(){                 // full sound design: synthesized, offline, app-wide
     try{
-      if(STATE.prefs.sound==null) STATE.prefs.sound=true;          // default on
+      if(STATE.prefs.sound==null){      // default ON, but OFF for users who prefer reduced motion
+        var rm=false; try{ rm=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(_){}
+        STATE.prefs.sound=!rm;
+      }
       MRLN_SFX.setOn(STATE.prefs.sound!==false);
       var sb=document.getElementById('soundBtn');
       function paint(){ if(sb) sb.textContent = MRLN_SFX.isOn() ? '🔊' : '🔇'; }
@@ -6837,10 +6868,23 @@
         var nv=!MRLN_SFX.isOn(); MRLN_SFX.setOn(nv); STATE.prefs.sound=nv; autosave(); paint();
         if(nv) MRLN_SFX.tick();                                    // confirm with a blip when turning on
       });
-      // soft blip on tab switches
       document.querySelectorAll('#tabs .tab').forEach(function(tb){ tb.addEventListener('click', function(){ MRLN_SFX.tick(); }); });
-      // gentle confirm when saving/exporting
       var save=document.getElementById('saveBtn'); if(save) save.addEventListener('click', function(){ MRLN_SFX.save(); });
+      // battery: drop the audio clock when the app is backgrounded (Akashi)
+      document.addEventListener('visibilitychange', function(){ if(document.hidden) MRLN_SFX.suspend(); else MRLN_SFX.resume(); });
+      // ONE delegated listener gives every meaningful tap a sound — outcomes, not inputs
+      // (Hugo): buttons → soft tap, checkboxes → toggle, delete/danger → down-whoosh. The
+      // engine's throttle + voice cap keep rapid taps from machine-gunning. Keystrokes,
+      // sliders and scrolls never reach here, so they stay silent (Tier 3).
+      document.addEventListener('click', function(e){
+        if(!MRLN_SFX.isOn()) return;
+        var el = e.target && e.target.closest && e.target.closest('button, .iconbtn, label.btn, a.btn, input[type=checkbox]');
+        if(!el) return;
+        if(el.classList.contains('tab') || el.id==='saveBtn' || el.id==='soundBtn') return;   // already wired above
+        if(el.matches('input[type=checkbox]')){ MRLN_SFX.toggle(); return; }
+        if(el.matches('.danger, [data-del], [data-cancel], .sb-del')){ MRLN_SFX.remove(); return; }
+        MRLN_SFX.tap();
+      }, true);
     }catch(_){}
   })();
 
