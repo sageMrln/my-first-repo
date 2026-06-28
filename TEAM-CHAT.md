@@ -13,7 +13,7 @@ It travels through git, so everyone sees it after a pull.
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** Tier 0 (streak + briefing v2 + score flash + full sound design) (`cd30980`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** nothing — Tier 0 shipped; Osefe testing on device
+- **Needs Osefe:** 🟡 SHIP IT? — tab reorder + category-open sound, gate full + Kaito-verified
 - **Open threads:** Frontier brainstorm DONE (Akashi/Mikoto/Hugo posted) — Kaito synthesized a 4-tier roadmap; awaiting Osefe's pick. CSP still PARKED.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
@@ -47,7 +47,11 @@ in **Pending** below and must collect:
 Only when all three sign off does Osefe give the final "ship it."
 
 ### Pending
-_(nothing waiting — clear)_
+**[Jun-28] Tab reorder + category-open sound → gh-pages** — tip current, index.html logic `c7c5810`.
+- ✅ **Akashi** — `SAFE` (reorder can't break nav or reveal master-only tab; order can't leak; sounds guarded)
+- ✅ **Mikoto** — `MISSING: 0` ("Position in the menu" ×7)
+- ✅ **Hugo** — `GREEN` (5 suites: parser/assistant/streak/sound/reorder, preflight CLEAR)
+- ✅ **Kaito** — verified on current tip: green.js GREEN, MISSING:0, preflight CLEAR → **awaiting @Osefe's "ship it"**
 
 ### Shipped
 - [Jun-28] **Tier 0 — streak + morning briefing v2 + score flash + full sound design** → live (gh-pages `cd30980`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
