@@ -3810,7 +3810,7 @@
      Word boundaries use Unicode lookbehind/lookahead so accented keywords (å, é, ü,
      ñ …) match cleanly — every command regex below is compiled with the 'u' flag. */
   var LEX = {
-    add:      'add|new|create|include|got|signed up for|tilføj|tilføje|opret|opretter|tilmeld|lägg till|skapa|lägg|legg til|opprett|lag|hinzufügen|hinzufüge|füge|neu|neue|neues|erstelle|erstellen|anlegen|añade|añadir|agrega|agregar|crea|crear|nuevo|nueva|incluir|incluye|adj hozzá|hozzáad|hozzáadás|létrehoz|új',
+    add:      'add|new|create|include|got|signed up for|tilføj|tilføje|opret|opretter|tilmeld|lägg till|skapa|lägg|legg til|lægg til|læg til|opprett|lag|hinzufügen|hinzufüge|füge|neu|neue|neues|erstelle|erstellen|anlegen|añade|añadir|agrega|agregar|crea|crear|nuevo|nueva|incluir|incluye|adj hozzá|hozzáad|hozzáadás|létrehoz|új',
     newWord:  'new|nyt?|nytt|neu|neue|neues|nuevo|nueva|ny|új',
     remove:   'remove|delete|drop|cancel|cancelled|canceled|stop|quit|got rid of|fjern|slet|slette|annuller|annullér|opsig|opsige|drop|stop|ta bort|radera|avbryt|avsluta|säg upp|si opp|sluta|stoppa|stopp|entferne|entfernen|lösche|löschen|kündige|kündigen|abbestellen|stoppe|elimina|eliminar|borra|borrar|quita|quitar|cancela|cancelar|detén|para|parar|mondd le|töröl|törölj|töröld|eltávolít|lemond|lemondom|leállít',
     category: 'category|categoría|categoria|kategori|kategorie|kategória',
@@ -3871,7 +3871,7 @@
     s = s.replace(/(?<![\p{L}\p{N}])\d[\d.,]*/gu,' ');   // strip standalone numbers, keep alnum names like "Antivirus2"
     // strip currency + period/filler words in all 7 languages, keep the real item name
     s = s.replace(/\b(?:kr|kroner|dkk|sek|nok|eur|euros?|usd|chf|huf|ft|forint)\b/giu,' ');
-    s = s.replace(/(?<![\p{L}])(?:per|month|months|monthly|mo|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of|om|måneden|pr|måned|månedlig|al|mes|por|mensual|pro|monat|monatlich|månad|månaden|i|året|år|havonta|évente|hónap|pris|coste|preis|costo)(?![\p{L}])/giu,' ');
+    s = s.replace(/(?<![\p{L}])(?:per|month|months|monthly|mo|md|mdr|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of|om|måneden|pr|måned|månedlig|al|mes|por|mensual|pro|monat|monatlich|månad|månaden|i|året|år|havonta|évente|hónap|pris|coste|preis|costo)(?![\p{L}])/giu,' ');
     s = s.replace(/[\/,]/g,' ').replace(/\s{2,}/g,' ').trim();
     return s;
   }
