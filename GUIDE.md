@@ -97,13 +97,12 @@ A read-only, grouped view of every recurring cost (with monthly/yearly totals). 
 Track a loan payment, amount, and (optional) interest rate; toggle whether it counts in your monthly math.
 
 ### Cash Flow — *Cash-Flow Simulator*
-Drag the income slider to see any month play out: income − costs − loan − savings = what's left. The range auto-fits your real income.
+Drag the income slider to see any month play out: income − costs − loan − savings = what's left. The range auto-fits your real income. Below it, an **8-year savings-growth projection** charts your pooled savings across low/typical/good scenarios with 1/3/8-year milestones.
 
-### Savings Rule + Savings Growth (8-Year Projection)
-The "pay yourself first" rule, plus a chart projecting your savings over 8 years across low/typical/good scenarios, with 1/3/8-year milestones.
+### Savings — *rules + boxes*
+The "**Savings**" tab opens with the short list of **wealth-building rules** (pay yourself first, build a buffer, make it earn, clear pricey debt first, bank your good months) — the habits that do almost all the work.
 
-### Goals — *Savings Boxes*
-Lunar-style **savings pots**: make a box for each thing you're saving for (a holiday, a new phone, an emergency cushion). Tell it what it **holds now**, what you **add** (monthly / quarterly / yearly, or top up by hand any time), and an optional **interest rate** and **target**. It projects the box **X years ahead** — what it becomes, what you put in, and exactly **how much the interest earns you** — with a progress bar and an honest "reach it in ~N years." All boxes total up, and every figure converts with your currency.
+Below the rules are your **Savings Boxes** — Lunar-style pots. Make a box for each thing you're saving for (a holiday, a new phone, an emergency cushion). Tell it what it **holds now**, what you **add** (monthly / quarterly / yearly, or top up by hand any time), and an optional **interest rate** and **target**. A slider projects every box **X years ahead** — what it becomes, what you put in, and exactly **how much the interest earns you** — with a progress bar and an honest "reach it in ~N years." All boxes total up, and every figure converts with your currency.
 
 ### *Your Life Tier* + *Your Personalized Plan* (Checklist)
 An honest, S→F **tier rating of your money life**, built **only from your own numbers**, with a ranked, realistic action plan that updates as your numbers change.
