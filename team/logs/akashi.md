@@ -60,3 +60,19 @@ Entry format:
   index.html unchanged from my reviewed state).
 - Still open: nothing security-side. Mikoto owns the 21 MISSING KB translations; Hugo's
   GREEN + guide §. Gate not opened yet. If tip moves index.html, I re-sign.
+
+## [2026-06-28] — direct (Osefe) — release retro + gate tooling verification
+- Asked: suggest process improvements, ship them to the team, keep running `status` sweeps.
+- Did / found:
+  - Proposed 5 process changes (shared harness, pre-publish guard, freeze-the-tip,
+    sign-offs state HOW verified, artifact = every published file). Team adopted all;
+    Hugo + Mikoto added lock-lifecycle, one-session-per-role, BACKLOG, differential rule.
+  - Verified `tools/publish/preflight.js` fails-closed by exit code: clean→0; key in
+    #__ownerKeySrc / PEM in comment / PUBCHK altered / data in #hud-state → BLOCK exit 1.
+  - Verified `tools/release/green.js` both paths: clean→GREEN exit 0; planted PEM in
+    GUIDE.md → RED exit 1 (multi-file scan catches non-index.html leak). Closes my #5.
+  - Caught + cleared a stale-tip wrinkle pre-ship: gate stamped on c6d2171 while HEAD
+    drifted to include GUIDE.md/PDF rebuild; verified live mirror clean, re-signed tip.
+- Decision / verdict: process now tight where it bent; gate tooling sound. No security gap.
+- Commits / SHAs: my chat/log commits only (no app-code changes this session).
+- Still open: backlog has the low-sev Spar/Lønstrup + "add salary" parser residuals.
