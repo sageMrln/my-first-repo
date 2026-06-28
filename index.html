@@ -1785,10 +1785,18 @@
       var st=STATE.streak||{count:0,last:''};
       var raw=(MODEL&&MODEL.profile&&MODEL.profile.name)||'';
       var nm=(raw && raw.toLowerCase()!=='sample') ? String(raw).trim().split(/\s+/)[0] : '';
-      var greet = nm ? tf('Hi {name} 👋', {name:nm}) : t('Hi 👋');
-      var line = st.count>1 ? tf('{n} days in a row — keep it going! 🔥', {n:st.count})
-                            : t('Welcome back — log something today to start a streak 🔥');
-      if(typeof toast==='function') toast(greet+' '+line);
+      // time-aware greeting so it feels like a real morning briefing (still greets evening users)
+      var hr=new Date().getHours();
+      var gw = hr<12 ? t('Good morning') : hr<18 ? t('Good afternoon') : t('Good evening');
+      var greet = gw + (nm ? ', '+nm : '') + ' 👋';
+      // truthful figure: leftOver(avg income) = income − all expenses − loan = your monthly surplus.
+      // __sys.token() poisons it to NaN on a tampered copy, so isFinite() drops the number then.
+      var surplus = (typeof leftOver==='function' && MODEL && MODEL.income) ? leftOver(MODEL.income.avg) : NaN;
+      var lines=[];
+      if(st.count>1) lines.push(tf('{n} days in a row — keep it going! 🔥', {n:st.count}));
+      if(isFinite(surplus) && surplus>0) lines.push(tf('on track to keep {amt} this month 🔥', {amt: fmtN(surplus)+' '+curInfo().sym}));
+      var body = lines.length ? lines.join(' · ') : t('Welcome back — log something today to start a streak 🔥');
+      if(typeof toast==='function') toast(greet+' — '+body);
     }catch(_){}
   }
   // quick "alive" feedback flash when a change is applied
