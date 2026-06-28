@@ -154,3 +154,41 @@ Entry format:
 - Verdict: DRAFT brainstorm posted. No code touched, nothing gated, nothing to ship.
 - Commits / SHAs: this log + TEAM-CHAT brainstorm post only. App tip unchanged.
 - Still open: if Osefe picks one, it gets a real arch spec + threat model before any build.
+
+## [2026-06-28] — via Kaito — REVIEW: Tier 0 engagement build (`cddff9d`)
+- Asked: security-review the Tier 0 build — daily streak engine + morning briefing
+  (name-personalized toast) + score flash. Confirm no money logic touched, no leak,
+  no injection, watchdogs/key slots intact, blank export still strips owner data.
+- Did / found (read the full index.html diff, did not guess):
+  - Diff is +60 lines, surgical: streakPill span @781 (data-i18n-skip, display:none),
+    __sDay/__bumpStreak/renderStreak/morningBriefing/scoreFlash @1750-1807, one call
+    to __bumpStreak() inside logChange @1750, Apply-path scoreFlash @4150, and two
+    boot calls (renderStreak + setTimeout(morningBriefing,1400)) @6793.
+  - MONEY LOGIC UNTOUCHED: parser, applyChange, finance calc, export/import not edited.
+    Apply path only adds `nApplied = aiProposal.changes.length` + a flash of that COUNT
+    (`{n} applied`) — a count, not a balance. `aiProposal.changes.map(applyChange)` line
+    preserved verbatim. green.js parser 21/21 unchanged.
+  - NO LEAK / NO NETWORK: grepped added lines for fetch/XHR/eval/innerHTML/__sys/PUBCHK/
+    PUB_B64/exportBlank/exportHTML/importData/localStorage → ZERO hits. morningBriefing
+    name is MODEL.profile.name first-token, rendered LOCALLY via toast() on the user's
+    OWN device; never networked, never written to any public element. New STATE fields
+    are streak{count,last(date)} + briefedOn(date) — no money figures at all. They
+    persist only to localStorage (autosave). 'sample'/TEMPLATE_MODE guards prevent
+    greeting a fresh share copy.
+  - BLANK EXPORT SAFE: exportBlank (@4224) does NOT serialize STATE into hud-state — it
+    hard-writes hud-state = {__fresh,fid,prefs:{lang,currency}} (@4238). So streak/briefedOn
+    can NEVER reach a customer/blank file even though they aren't in the explicit blank
+    list — the blank's persisted state is a reconstructed object, not a STATE dump.
+    Owner's own exportHTML bakes full STATE incl. streak — that's his private file, fine.
+  - NO INJECTION: renderStreak → n.textContent (@1771); toast() → d.textContent (@6676);
+    scoreFlash → d.textContent (from diff). tf() is plain {key} string substitution, no DOM.
+    No innerHTML with user data anywhere in the change.
+  - INVARIANTS: #__ownerKeySrc empty (@1591), #hud-state empty (@1587), PUB_B64 + PUBCHK
+    (4047293148) + 21 __sys. sites all present/untouched. preflight CLEAR.
+  - Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, preflight CLEAR, all
+    published files clean). node tools/test/streak_test.js → 4/4 (first day=1, no double
+    count, consecutive +1, gap resets).
+- Verdict: SAFE. Cosmetics + a local day-counter; zero money/key/network/injection surface.
+- Commits / SHAs reviewed: cddff9d (tip). If tip moves index.html, I re-sign.
+- Still open: nothing security-side. Gate not opened; 8 new strings await Mikoto (i18n),
+  Hugo's GREEN/guide. Sleep-mode: no auto-publish — needs Osefe's explicit go.
