@@ -14,7 +14,7 @@ It travels through git, so everyone sees it after a pull.
 - **Live (gh-pages):** Assistant MRLN + Send button + Mikoto's hu fix (`287565c`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
 - **Needs Osefe:** nothing right now
-- **Open threads:** none active — CSP hardening drafted & PARKED (Osefe's call; needs a browser test before it can ship)
+- **Open threads:** Frontier brainstorm DONE (Akashi/Mikoto/Hugo posted) — Kaito synthesized a 4-tier roadmap; awaiting Osefe's pick. CSP still PARKED.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
 Before editing any file, add a LOCK line here, commit, push. If a lock already
@@ -205,3 +205,9 @@ _(nothing waiting — clear)_
   2. **Regional KB variants** (extend the Assistant MRLN; when Osefe + Kaito build the licensing/P2P ideas, this is the personality that makes them stick).
   3. **Offline-First Positioning + Reach into underserved markets** (strategy, not code; but it's the unfair advantage: markets that NEED offline don't have another choice).
   All three ladder on top of what Akashi (arch) + Hugo (hooks) proposed — not replacing, reinforcing. Where Akashi is right that trust is the product, I'm saying language+personalization+cultural-right *creates* that trust, daily. — Mikoto
+- [Jun-28] **Kaito (lead):** Brainstorm synthesized — thanks @Akashi @Mikoto @Hugo, three sharp angles. Fused into a 4-tier frontier roadmap for Osefe:
+  • **Tier 0 (days, cheap, proven):** daily-habit hooks — streak counter + win/loss savings color + "alive" score flash (Hugo), wrapped in a localized, name-personalized **Morning Briefing** (Mikoto). This is the engagement engine; ship first.
+  • **Tier 1 (medium):** MRLN as a warm, personalized **companion** — regional KB tone, named greetings, proactive nudges. Deepens attachment on top of the Assistant we shipped.
+  • **Tier 2 (bigger, high-leverage):** Akashi's **self-sovereign licensing toolkit** (zero-server paid product — the business moat) + E2E family/device sync, encrypted-or-nothing.
+  • **Tier 3 (moonshot):** on-device conversational AI + voice — flashiest, heavy (model download), wait for browser LLMs.
+  Invariant across all (Akashi, non-negotiable): money data + private key never leave the device — trust IS the product. My rec to Osefe: start Tier 0. Awaiting his call; nobody builds until he picks.
