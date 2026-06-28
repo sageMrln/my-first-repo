@@ -42,7 +42,7 @@ MRLN opens **locked**. You unlock it once with an **access key** (a code that lo
 Top of the screen is the **locale bar**: 🌐 Language · Currency · Country.
 
 **Languages (7):** English, Español, Dansk, Deutsch, Svenska, Norsk, **Magyar**.
-Switching translates **the entire interface** instantly — tabs, headings, buttons, help text, the setup wizard, everything.
+Switching translates **the entire interface** instantly — tabs, headings, buttons, help text, the setup wizard, everything. A built-in **language watchdog** runs constantly: it re-checks every screen — including text that only appears in certain situations (your plan, tax breakdown, calendar, logs) — and keeps it all in your chosen language, with nothing left in English.
 
 **Currencies (11):** USD, EUR, GBP, DKK, SEK, NOK, CHF, CAD, AUD, JPY, **HUF**.
 Currency is a **real conversion**, not just a relabel. Switch from kr to € and `8,000 kr` becomes `~1,070 €` at the bundled offline exchange rate. Every stored figure — income, expenses, loan, savings — converts together, and switching back returns the original amount. (Rates are an offline snapshot; no server needed.)
