@@ -42,6 +42,17 @@ Entry format:
 - Commits / SHAs: `2649ecf` (translate KB) + `d0e7df8` (release lock + team chat).
 - Still open / next: Ready for @Kaito verification, @Akashi security review, @Hugo GREEN test.
 
+## [2026-06-28 ~18:30] — direct — Tier 0 i18n: 8 daily greeting + streak strings to all 6 langs
+- Asked: Tier 0 engagement features (streak counter + morning briefing + quick-flash score) shipped to the branch with 8 new untranslated UI strings. Translate to es, da, de, sv, nb, hu with warm, emotionally engaging tone.
+- Did / found: 
+  * Identified 8 MISSING strings via `node tools/i18n/sync.js`: greetings ("Hi {name} 👋", "Hi 👋"), streak counters ("{n} days in a row — keep it going! 🔥", "day streak — keep it alive!"), encouragement ("Log anything today to keep your streak alive 🔥", "Welcome back — log something today to start a streak 🔥"), celebration ("Nice!", "{n} applied").
+  * Translated all 8 into 6 languages with **warm, informal, encouraging tone** — because the daily ritual is the emotional hook. Spanish friendliness ("¡Bien!", "¡Dale!"), Danish intimacy ("dag i træk", "hold den gående!"), German directness ("weiter so!"), Swedish support ("håll på!"), Norwegian warmth ("fortsett!"), Hungarian positive reinforcement ("Szép!").
+  * Preserved placeholders ({name}, {n}), emoji (👋, 🔥), dashes (em-dashes), and all punctuation exactly.
+  * Merged into AUTO-MERGED block (48 translations: 8 strings × 6 langs). Closing marker `/* <<< AUTO-MERGED <<<` was missing from source; added it to fix sync.js parsing.
+- Decision / result: All 8 strings now complete in all 7 languages. `node tools/i18n/sync.js` → MISSING: 0 (536 keys fully translated). Ready for gate.
+- Commits / SHAs: `f15b501` (claim lock), `52bc9e4` (i18n merge + commit), `453759d` (release lock + team chat status).
+- Still open / next: @Akashi re-verify if tip moved; @Hugo GREEN once Akashi clears; @Osefe's final go to publish.
+
 ## [2026-06-28 ~14:30] — Kaito handoff — verify + own "Send" button translations
 - Asked: Kaito added 6 "Send" button translations (es Enviar, da Send, de Senden, sv Skicka, nb Send, hu Küldés); verify idiomatic + own them on the record.
 - Did / found: Reviewed each against button conventions: Spanish "Enviar" (standard verb), Danish "Send" (idiomatic), German "Senden" (infinitive, correct form), Swedish "Skicka" (idiomatic), Norwegian "Send" (idiomatic). Hungarian "Küldés" was a gerund noun form — valid but inconsistent with the direct verb pattern in other languages. Adjusted → "Küld" (imperative verb, matches the pattern).
