@@ -94,3 +94,17 @@ Entry format:
   * Lesson reaffirmed: my fresh assertions miss inflection/edge forms; Akashi's old-vs-new differential catches them → use differential tests for logic changes.
 - Commits / SHAs: parser `c20689e`, `1048153`; retro adopted `67ad80f` (Kaito); my TEAM-CHAT posts incl. gate-open, ship-it relay, and the parallel-Mikoto question (`69ba8ee`).
 - Still open / next: Hugo asked Kaito for a `green.js` pointer in CLAUDE.md's release step. Akashi drafting CSP hardening + STATE-header format (propose only). Backlog: 2 parser items + 3 Akashi arch notes (CSP, hardcoded Team Room URL, `#team` flag). i18n `MISSING: 0` on current tip.
+
+## [2026-06-28 ~14:40] — direct — briefing v2 i18n: 4 time-aware greeting strings
+- Asked: Briefing v2 (Kaito's feature) adds 4 new UI strings (time-aware greetings + monthly surplus tracker). Translate to es, da, de, sv, nb, hu.
+- Did / found: 
+  * Ran `node tools/i18n/sync.js` → MISSING: 4 (exactly as briefed): "Good morning", "Good afternoon", "Good evening", "on track to keep {amt} this month 🔥".
+  * Translated all 4 into 6 languages with warm, natural tone:
+    - Greetings (Buenos días/God morgen/Guten Morgen/God morgon/God morgen/Jó reggelt, etc.) — standard idiomatic morning/afternoon/evening forms.
+    - Surplus tracker positioned naturally per language's word order (e.g., "en camino a guardar {amt} este mes 🔥" in Spanish vs "på vej til at spare {amt} denne måned 🔥" in Danish).
+    - Preserved placeholder `{amt}` (already formatted money string) and emoji 🔥 exactly.
+  * Merged all 24 translations (4 keys × 6 langs) into AUTO-MERGED block in index.html using Python script (extracted JSON via brace-counting to handle huge 729KB structure).
+  * Re-ran sync.js → MISSING: 0 (538 keys fully translated across 7 languages).
+- Decision / result: Briefing v2 i18n complete, all 7 languages ready. Gate candidate `e34253b` (Akashi SAFE on money logic) now has full i18n coverage.
+- Commits / SHAs: `02d5108` (claim lock), `5e3e7cc` (i18n merge), `d319647` (release lock + team chat status).
+- Still open / next: @Akashi already cleared `e34253b` (no re-sign needed since i18n doesn't touch money logic). Awaiting @Hugo for GREEN on the gate, then @Osefe's final "ship it".
