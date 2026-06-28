@@ -75,7 +75,7 @@ Your headline: left-over money in a typical month, comfort margin, and worst-cas
 
 ### Income
 Your monthly take-home across **slow / typical / good** months. The **typical** month is the baseline every simulator uses.
-→ To change income, use **💬 Quick Update** (e.g. *"I earn 18000 a month"*).
+→ To change income, use **💬 Assistant MRLN** (e.g. *"I earn 18000 a month"*).
 
 #### 🧾 Tax Helper (inside Income)
 An offline **estimate** of your income tax, adapting to your country/region:
@@ -164,9 +164,13 @@ The hub for everything that crosses devices (all **on-device**, nothing uploaded
 
 ---
 
-## 10. 💬 Quick Update — the plain-language updater
+## 10. 💬 Assistant MRLN — offline Q&A + plain-language commands
 
-The fastest way to change things: tap **💬 Quick Update** and type changes in plain language, one per line. It's interpreted **free, offline, in your browser**, and **nothing changes until you confirm**. It now understands commands in **all 7 languages** — type the way you'd naturally say it in English, Español, Dansk, Deutsch, Svenska, Norsk or Magyar (e.g. *"jeg sparer 400 om måneden"*, *"min alder er 41"*). Your item, employer and note names are always kept exactly as you typed them. It understands:
+Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **free, offline, in your browser** — nothing changes until you confirm. 
+
+**Questions:** Ask anything about the app in **any of 7 languages** (English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar). The assistant answers from a complete knowledge base covering every tab and feature.
+
+**Commands:** Update your numbers using natural language — type the way you'd naturally say it. It understands commands in all 7 languages (e.g. *"jeg sparer 400 om måneden"*, *"min alder er 41"*). Your item, employer and note names are always kept exactly as you typed them. It understands:
 
 - Income — *"income is now 2600"*, *"good month income is 22000"*
 - Costs — *"add Gym 29/mo to Other"*, *"rent is now 1200"*, *"cancel Netflix"*
