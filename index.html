@@ -3803,9 +3803,48 @@
     var v = parseFloat(raw); if(isNaN(v)) return null; if(m[2]) v *= 1000;
     return Math.round(v);
   }
+  /* ---------- multilingual command lexicon (en + es, da, de, sv, nb, hu) ----------
+     The parser stays keyword-driven; here we list the keyword synonyms per concept
+     in all 7 languages. Content (item/employer/note/person names) is still captured
+     RAW from the original text, so nothing the user typed gets translated or mangled.
+     Word boundaries use Unicode lookbehind/lookahead so accented keywords (å, é, ü,
+     ñ …) match cleanly — every command regex below is compiled with the 'u' flag. */
+  var LEX = {
+    add:      'add|new|create|include|got|signed up for|tilføj|tilføje|opret|opretter|tilmeld|lägg till|skapa|lägg|legg til|opprett|lag|hinzufügen|hinzufüge|füge|neu|neue|neues|erstelle|erstellen|anlegen|añade|añadir|agrega|agregar|crea|crear|nuevo|nueva|incluir|incluye|adj hozzá|hozzáad|hozzáadás|létrehoz|új',
+    newWord:  'new|nyt?|nytt|neu|neue|neues|nuevo|nueva|ny|új',
+    remove:   'remove|delete|drop|cancel|cancelled|canceled|stop|quit|got rid of|fjern|slet|slette|annuller|annullér|opsig|opsige|drop|stop|ta bort|radera|avbryt|avsluta|säg upp|si opp|sluta|stoppa|stopp|entferne|entfernen|lösche|löschen|kündige|kündigen|abbestellen|stoppe|elimina|eliminar|borra|borrar|quita|quitar|cancela|cancelar|detén|para|parar|mondd le|töröl|törölj|töröld|eltávolít|lemond|lemondom|leállít',
+    category: 'category|categoría|categoria|kategori|kategorie|kategória',
+    note:     'note|notat|notiz|nota|anteckning|notis|jegyzet|megjegyzés',
+    workout:  'workout|exercise|træning|træningspas|trening|økt|øvelse|øving|träning|pass|entrenamiento|rutina|ejercicio|edzés|übung|training',
+    employer: 'employer|company|arbejdsgiver|arbeidsgiver|arbetsgivare|arbeitgeber|firma|virksomhed|unternehmen|empleador|empresa|compañía|compania|företag|selskap|munkáltató|cég|vállalat',
+    age:      'age|alder|alter|edad|ålder|kor|életkor',
+    years:    'years?|år|jahre|años|anos|éves|év',
+    name:     'name|navn|namn|nombre|név|nevem',
+    birthday: 'birthday|bday|born|fødselsdag|bursdag|geburtstag|cumpleaños|födelsedag|születésnap|født|geboren|nací|född|született',
+    weight:   'weigh|weight|vægt|vejer|vekt|veier|vikt|väger|gewicht|wiege|wiegt|peso|pesa|súly|súlyom',
+    height:   'height|tall|højde|høyde|größe|körpergröße|altura|estatura|längd|magasság|mido',
+    loan:     'loan|lån|kredit|darlehen|préstamo|prestamo|hitel|kölcsön',
+    payment:  'payment|repayment|instalment|installment|instal|betaling|ydelse|afdrag|rate|zahlung|pago|cuota|betalning|avbetalning|avdrag|törlesztés|részlet',
+    savings:  'savings?|opsparing|sparen|ersparnis|ahorros?|sparande|sparing|megtakarítás',
+    transfer: 'match|transfer|forced|overførsel|overføring|übertrag|sparrate|transferencia|överföring|átutalás',
+    save:     'save|spar|spare|spara|ahorrar|ahorro|félreteszek|megtakarítok|félretesz',
+    income:   'income|salary|wage|paycheck|after[\\s-]?tax|indkomst|inntekt|inkomst|løn|lønn|nettoløn|nettolønn|gehalt|lohn|nettolön|einkommen|ingresos?|salario|sueldo|nómina|lön|jövedelem|fizetés|bér|netto|neto',
+    month:    'month|måned|monat|mes|månad|hónap',
+    low:      'low|bad|worst|slow|soft|lav|niedrig|bajo|låg|alacsony|dårlig|schlecht|malo|dålig|rossz|værste|verste|peor|sämsta|gyenge|svag|schwach|flojo|svak',
+    high:     'high|good|best|great|strong|høj|høy|hoch|alto|hög|magas|god|gut|bueno|bra|jó|bedste|beste|mejor|bästa|legjobb|stærk|stark|fuerte|sterk|erős',
+    typical:  'typical|average|typisk|typisch|típico|tipico|tipikus|gennemsnit|durchschnitt|promedio|medio|genomsnitt|gjennomsnitt|átlagos|átlag',
+    to:       'to|under|in|into|til|zu|nach|auf|till|hozzá',
+    chg:      'now|to|costs?|is|are|=|went up|increased|raised|dropped|decreased|changed|updated|nu|nå|jetzt|ahora|er|ist|sind|är|koster|kostar|kostet|cuesta|cuestan|ændret|ændres|geändert|endret|ändrad|módosítva|módosít'
+  };
+  var _WB='(?<![\\p{L}\\p{N}])', _WA='(?![\\p{L}\\p{N}])';
+  function _re(src){ return new RegExp(src, 'iu'); }          // every command regex is unicode-aware
+  function _w(g){ return _WB+'(?:'+g+')'+_WA; }               // a word from a lexicon group, boundary-safe
+  // presence test with a LEADING boundary only, so inflected/compound forms still hit
+  // (da "dårlige"→"dårlig", nb "lønnen"→"lønn", de "Kreditrate"→"kredit", "måneden"→"måned")
+  function _has(g, s){ return _re(_WB+'(?:'+g+')').test(s); }
   function _freq(s){
-    if(/year|annual|\/\s?yr|\bp\.?a\b/i.test(s)) return 'yearly';
-    if(/quarter|\/\s?q\b/i.test(s)) return 'quarterly';
+    if(/year|annual|\/\s?yr|\bp\.?a\b|å?ret\b|\bår\b|jahr|jähr|\baño|\bano|évent|\bévi\b|årlig|jährlich|anual|yearly/iu.test(s)) return 'yearly';
+    if(/quarter|\/\s?q\b|kvartal|trimestral|vierteljähr|negyedév/iu.test(s)) return 'quarterly';
     return 'monthly';
   }
   function _esc(re){ return re.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
@@ -3827,77 +3866,88 @@
     return best;
   }
   function _cleanName(clause){
-    var s = clause.replace(/^\s*(?:add|new|include|got|signed up for)\s+/i,'');
-    s = s.replace(/\s+(?:to|under|in|into)\s+[\w&'’ ]+$/i,'');
-    s = s.replace(/\b\d[\d.,]*\b/g,' ');
-    s = s.replace(/\b(?:kr|kroner|dkk|per|month|months|monthly|mo|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of)\b/gi,' ');
+    var s = clause.replace(_re('^\\s*(?:'+LEX.add+')[\\p{L}]*\\s+'), '');
+    s = s.replace(_re('\\s+(?:'+LEX.to+')\\s+[\\p{L}\\d&\'’ ]+$'), '');
+    s = s.replace(/(?<![\p{L}\p{N}])\d[\d.,]*/gu,' ');   // strip standalone numbers, keep alnum names like "Antivirus2"
+    // strip currency + period/filler words in all 7 languages, keep the real item name
+    s = s.replace(/\b(?:kr|kroner|dkk|sek|nok|eur|euros?|usd|chf|huf|ft|forint)\b/giu,' ');
+    s = s.replace(/(?<![\p{L}])(?:per|month|months|monthly|mo|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of|om|måneden|pr|måned|månedlig|al|mes|por|mensual|pro|monat|monatlich|månad|månaden|i|året|år|havonta|évente|hónap|pris|coste|preis|costo)(?![\p{L}])/giu,' ');
     s = s.replace(/[\/,]/g,' ').replace(/\s{2,}/g,' ').trim();
     return s;
   }
+  // verb at clause start, tolerant of conjugation suffixes (tilføj→tilføjer, agrega→agregar)
+  function _verbStart(g){ return '^\\s*(?:'+g+')[\\p{L}]*\\s+'; }
+  // free-text "X is / works at / lives in / my name is" phrases across the 7 languages
+  var _EMP = '(?:work(?:s|ing)?\\s+(?:at|for)|work\\s+is(?:\\s+now)?|job\\s+is(?:\\s+now)?|arbejder\\s+(?:hos|for)|jobber\\s+(?:hos|for)|arbeider\\s+hos|jobbar\\s+(?:på|hos)|arbetar\\s+på|arbeite\\s+(?:bei|für)|trabajo\\s+(?:en|para|de)|dolgozom\\s+a)\\s+(.+)$';
+  var _NAME = '^\\s*(?:my\\s+name\\s+is|name\\s+is|mit\\s+navn\\s+er|navn(?:et)?\\s+er|mitt\\s+navn\\s+er|mitt\\s+namn\\s+är|namn(?:et)?\\s+är|jeg\\s+hedder|jeg\\s+heter|jag\\s+heter|mein\\s+name\\s+ist|name\\s+ist|ich\\s+heiße|ich\\s+heisse|me\\s+llamo|mi\\s+nombre\\s+es|a\\s+nevem|nevem)\\s+(.+)$';
+  var _LOC  = '(?:i\\s+(?:live|moved)\\s+(?:in|to)|location\\s+is|moved\\s+to|jeg\\s+bor\\s+i|jeg\\s+flytte(?:de|t)\\s+til|jag\\s+bor\\s+i|jag\\s+flyttade\\s+till|ich\\s+wohne\\s+in|ich\\s+bin\\s+umgezogen\\s+nach|me\\s+mud(?:é|e)\\s+a|vivo\\s+en|bor\\s+i|wohne\\s+in|lakom\\s+a)\\s+(.+)$';
+  var _EARN = '(?:i\\s+(?:earn|make|get\\s+paid)|jeg\\s+tjener|jag\\s+tjänar|jeg\\s+tjener|ich\\s+verdiene|yo\\s+gano|gano|keresek|får\\s+udbetalt|får\\s+i\\s+løn)';
   function parseClause(c){
     c = c.trim(); if(!c) return null;
-    var low = c.toLowerCase(), m;
-    if((m = c.match(/^(?:remove|delete|drop)\s+(?:the\s+)?category\s+(.+)$/i))){
+    var m;
+    if((m = c.match(_re(_verbStart(LEX.remove)+'(?:the\\s+|den\\s+|das\\s+|la\\s+|el\\s+|az?\\s+)?(?:'+LEX.category+')'+_WA+'\\s+(.+)$')))){
       var nm = m[1].trim().replace(/[.\s]+$/,'');
       return { op:'removeCategory', name:nm, description:'Remove category “'+nm+'” and its items' };
     }
-    if((m = c.match(/^(?:add|new|create)\s+(?:a\s+)?category\s+(.+)$/i))){
-      var rest = m[1].trim(), em = rest.match(/([^\w\s].*)$/);
+    if((m = c.match(_re(_verbStart(LEX.add)+'(?:a\\s+|en\\s+|et\\s+|ein(?:e)?\\s+|una?\\s+|egy\\s+)?(?:'+LEX.category+')'+_WA+'\\s+(.+)$')))){
+      var rest = m[1].trim(), em = rest.match(/([^\p{L}\p{N}\s].*)$/u);
       var icon = em ? em[1].trim().slice(0,2) : '•';
       var nm2 = (em ? rest.slice(0, em.index) : rest).trim().replace(/[.\s]+$/,'');
       return { op:'addCategory', name:nm2, icon:icon, description:'Add category “'+nm2+'” '+icon };
     }
-    if((m = c.match(/^(?:add\s+)?note\s+(?:on\s+|for\s+)?(\d{4}-\d{2}-\d{2})[\s:,–-]+(.+)$/i))){
+    if((m = c.match(_re('^\\s*(?:(?:'+LEX.add+')[\\p{L}]*\\s+)?(?:'+LEX.note+')'+_WA+'\\s+(?:on\\s+|for\\s+|på\\s+|den\\s+|am\\s+|el\\s+)?(\\d{4}-\\d{2}-\\d{2})[\\s:,–-]+(.+)$')))){
       return { op:'addNote', date:m[1], text:m[2].trim(), description:'Calendar note on '+m[1]+': '+m[2].trim() };
     }
-    if((m = c.match(/^(?:add\s+)?workout\s+(.+)$/i))){
+    if((m = c.match(_re('^\\s*(?:(?:'+LEX.add+')[\\p{L}]*\\s+)?(?:'+LEX.workout+')'+_WA+'\\s+(.+)$')))){
       var w = m[1].trim(), parts = w.split(/:/);
       var day = parts.length>1 ? parts[0].trim() : w, body = parts.length>1 ? parts.slice(1).join(':').trim() : '';
       return { op:'addWorkout', day:day, body:body, description:'Add workout “'+day+'”'+(body?' — '+body:'') };
     }
-    if((m = c.match(/\b(?:employer|company)\b[^a-z0-9]*(?:is\s*)?(?:now\s+)?(.+)$/i)) || (m = c.match(/\bwork(?:s|ing)?\s+(?:at|for)\s+(.+)$/i))){
+    if((m = c.match(_re(_w(LEX.employer)+'[^\\p{L}\\p{N}]*(?:'+LEX.chg+')?\\s*(.+)$'))) || (m = c.match(_re(_EMP)))){
       var emp = m[1].trim().replace(/[.\s]+$/,'');
-      return { op:'setProfile', field:'employer', value:emp, description:'Set employer → '+emp };
+      if(emp) return { op:'setProfile', field:'employer', value:emp, description:'Set employer → '+emp };
     }
-    if(/\bage\b|\bi(?:'m| am)\b/.test(low)){
+    // gate on the AGE noun or an "I am"-style phrase only — NOT on "year(s)", which
+    // collides with the yearly-frequency phrase ("per year" / "om året" / "pro Jahr").
+    if(_has(LEX.age, c) || /\bi(?:'m| am)\b|\bjeg er\b|\bich bin\b|\bjag är\b|\btengo\b/iu.test(c)){
       var an = (c.match(/(\d{1,3})/)||[])[1];
-      if(an && /\bage\b|\byears?\b|\bi(?:'m| am)\b/.test(low)) return { op:'setProfile', field:'age', value:an, description:'Set age → '+an };
+      if(an) return { op:'setProfile', field:'age', value:an, description:'Set age → '+an };
     }
-    if((m = c.match(/^(?:my\s+)?name\s+is\s+(.+)$/i))){ var nn=m[1].trim(); return { op:'setProfile', field:'name', value:nn, description:'Set name → '+nn }; }
-    if(/\bbirth\s?day\b|\bbday\b|\bborn\b/.test(low)){ var dm=c.match(/(\d{4}-\d{2}-\d{2})/); if(dm) return { op:'setProfile', field:'birthday', value:dm[1], description:'Set birthday → '+dm[1] }; }
-    if((m = c.match(/\b(?:i\s+(?:live|moved)\s+(?:in|to)|location\s+is|moved\s+to)\s+(.+)$/i))){ var loc=m[1].trim().replace(/[.\s]+$/,''); return { op:'setProfile', field:'location', value:loc, description:'Set location → '+loc }; }
-    if(/\b(?:weigh|weight)\b/.test(low)){ var wm=(c.match(/(\d+(?:[.,]\d+)?)/)||[])[1]; if(wm){ var wv=parseFloat(wm.replace(',','.')); if(/\blb|pound/.test(low)) wv=Math.round(wv*0.4536*10)/10; if(wv>0 && wv<500) return { op:'setBody', field:'weight', value:wv, description:'Set weight → '+wv+' kg' }; } }
-    if(/\bheight\b|\btall\b/.test(low)){ var hm=(c.match(/(\d+(?:[.,]\d+)?)/)||[])[1]; if(hm){ var hv=parseFloat(hm.replace(',','.')); if(hv>80 && hv<260) return { op:'setBody', field:'height', value:hv, description:'Set height → '+hv+' cm' }; } }
-    if(/\bloan\b/.test(low) && /\b(?:payment|repayment|instal)/.test(low)){ var lv=_num(c); if(lv!=null) return { op:'setLoanPayment', value:lv, description:'Set loan payment → '+fmtN(lv)+' '+curInfo().sym+'/mo' }; }
-    if(/\bsavings?\s+(?:match|transfer)\b|\bforced\s+(?:savings?|match)\b/.test(low) || /\bsave\b.*\bper\s+month\b/.test(low)){ var sv=_num(c); if(sv!=null) return { op:'setSavingsMatch', value:sv, description:'Set savings match → '+fmtN(sv)+' '+curInfo().sym+'/mo' }; }
-    if(/\b(?:salary|income|wage|paycheck|after[\s-]?tax)\b/.test(low) || /\bi\s+(?:earn|make|get paid)\b/.test(low) || /\b(?:low|good|high|typical|average)\s+month\b/.test(low)){
+    if((m = c.match(_re(_NAME)))){ var nn=m[1].trim(); return { op:'setProfile', field:'name', value:nn, description:'Set name → '+nn }; }
+    if(_has(LEX.birthday, c)){ var dm=c.match(/(\d{4}-\d{2}-\d{2})/); if(dm) return { op:'setProfile', field:'birthday', value:dm[1], description:'Set birthday → '+dm[1] }; }
+    if((m = c.match(_re(_LOC)))){ var loc=m[1].trim().replace(/[.\s]+$/,''); return { op:'setProfile', field:'location', value:loc, description:'Set location → '+loc }; }
+    if(_has(LEX.weight, c)){ var wm=(c.match(/(\d+(?:[.,]\d+)?)/)||[])[1]; if(wm){ var wv=parseFloat(wm.replace(',','.')); if(/\blb\b|pound|pund|libra/iu.test(c)) wv=Math.round(wv*0.4536*10)/10; if(wv>0 && wv<500) return { op:'setBody', field:'weight', value:wv, description:'Set weight → '+wv+' kg' }; } }
+    if(_has(LEX.height, c)){ var hm=(c.match(/(\d+(?:[.,]\d+)?)/)||[])[1]; if(hm){ var hv=parseFloat(hm.replace(',','.')); if(hv>80 && hv<260) return { op:'setBody', field:'height', value:hv, description:'Set height → '+hv+' cm' }; } }
+    if(_has(LEX.loan, c) && (_has(LEX.payment, c) || _num(c)!=null)){ var lv=_num(c); if(lv!=null) return { op:'setLoanPayment', value:lv, description:'Set loan payment → '+fmtN(lv)+' '+curInfo().sym+'/mo' }; }
+    if((_has(LEX.savings, c) && _has(LEX.transfer, c)) || (_has(LEX.save, c) && _has(LEX.month, c))){ var sv=_num(c); if(sv!=null) return { op:'setSavingsMatch', value:sv, description:'Set savings match → '+fmtN(sv)+' '+curInfo().sym+'/mo' }; }
+    if(_has(LEX.income, c) || _re(_EARN).test(c) || _re('(?:'+LEX.low+'|'+LEX.high+'|'+LEX.typical+')[\\p{L}]*\\s+(?:'+LEX.month+')').test(c)){
       var iv=_num(c);
       if(iv!=null){
-        var key = /\b(?:low|bad|worst|slow|soft)\b/.test(low) ? 'low' : /\b(?:high|good|best|great|strong)\b/.test(low) ? 'high' : 'avg';
+        var key = _has(LEX.low, c) ? 'low' : _has(LEX.high, c) ? 'high' : 'avg';
         return { op:'setIncome', key:key, value:iv, description:'Set '+(key==='avg'?'typical':key)+' income → '+fmtN(iv)+' '+curInfo().sym };
       }
     }
-    if((m = c.match(/^(?:cancel|cancell?ed|remove|delete|stop|drop|quit|got rid of)\s+(.+)$/i))){
-      var rn = m[1].trim().replace(/\b(?:subscription|membership|my|the)\b/gi,'').replace(/[.\s]+$/,'').trim();
+    if((m = c.match(_re(_verbStart(LEX.remove)+'(.+)$')))){
+      var rn = m[1].trim().replace(/(?<![\p{L}])(?:subscription|membership|abonnement|abo|mitgliedschaft|suscripción|prenumeration|medlemskap|előfizetés|my|the|min|mit|mein|mi|mitt|az?)(?![\p{L}])/giu,'').replace(/[.\s]+$/,'').trim();
       var rf = findItemByName(rn);
       return { op:'removeItem', match:(rf?rf.it.name:rn), description:'Remove '+(rf?rf.it.name:rn)+(rf?'':' (no exact match — skipped if not found)') };
     }
-    if(/^(?:add|new|include|got|signed up for)\b/i.test(c) && _num(c)!=null){
+    if(_re('^\\s*(?:'+LEX.add+')[\\p{L}]*\\s').test(c) && _num(c)!=null){
       var amt=_num(c), fq=_freq(c);
-      var catPhrase=(c.match(/\s+(?:to|under|in|into)\s+([\w&'’ ]+)$/i)||[])[1];
+      var catPhrase=(c.match(_re('\\s+(?:'+LEX.to+')\\s+([\\p{L}\\d&\'’ ]+)$'))||[])[1];
       var cat=_matchCategory(c) || (catPhrase?catPhrase.trim():null);
       var name=_cleanName(c);
       if(name) return { op:'addItem', name:name, category:cat, cost:amt, freq:fq, description:'Add '+name+' — '+fmtN(amt)+' '+curInfo().sym+'/'+(fq==='yearly'?'yr':fq==='quarterly'?'q':'mo')+(cat?' to '+cat:'') };
     }
     var f=_matchItem(c), uv=_num(c);
-    if(f && uv!=null && /\b(?:now|to|costs?|is|=|went up|increased|raised|dropped|decreased|changed|updated)\b/.test(low)){
+    if(f && uv!=null && _has(LEX.chg, c)){
       var ufq=_freq(c);
       return { op:'updateItem', match:f.it.name, cost:uv, freq:ufq, description:'Update '+f.it.name+' → '+fmtN(uv)+' '+curInfo().sym+'/'+(ufq==='yearly'?'yr':ufq==='quarterly'?'q':'mo') };
     }
     return null;
   }
   function parseInstructions(text){
-    var clauses = String(text).split(/\n|;|\s+and\s+/i).map(function(x){ return x.trim(); }).filter(Boolean);
+    var clauses = String(text).split(/\n|;|\s+(?:and|og|und|och|y|e|és)\s+/iu).map(function(x){ return x.trim(); }).filter(Boolean);
     var changes=[], unparsed=[];
     clauses.forEach(function(cl){ var ch=parseClause(cl); if(ch) changes.push(ch); else unparsed.push(cl); });
     var rec;
