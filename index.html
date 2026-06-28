@@ -5719,7 +5719,7 @@
       host.innerHTML=order.map(function(d){
         var dt={kcal:0,p:0}; byDay[d].forEach(function(e){ dt.kcal+=e.total.kcal; dt.p+=e.total.p; });
         var rows=byDay[d].map(function(e){
-          var pic=e.photo?('<img data-foodpic="'+e.id+'" src="'+e.photo+'" alt="meal" style="height:40px;width:40px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:pointer;flex:0 0 auto">'):'';
+          var pic=e.photo?('<img data-foodpic="'+e.id+'" src="'+esc(e.photo)+'" alt="meal" style="height:40px;width:40px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:pointer;flex:0 0 auto">'):'';
           return '<div class="item-row" style="align-items:center"><div style="display:flex;gap:10px;align-items:center;flex:1;min-width:0">'+pic+
             '<div class="meta" style="min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(e.text||'(photo)')+'</div>'+
             '<small>'+e.total.kcal+' kcal · P '+e.total.p+'g · C '+e.total.c+'g · F '+e.total.f+'g</small></div></div>'+
