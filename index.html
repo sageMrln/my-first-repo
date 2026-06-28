@@ -1447,6 +1447,12 @@
 
   <!-- CONNECT -->
   <section class="panel" id="connect">
+    <div class="card" id="teamRoomCard" data-i18n-skip style="display:none">
+      <h2>👥 Team Room</h2>
+      <div class="desc">Your private build team's live room (owner only). Read what Akashi, Mikoto, Hugo and Kaito are working on. View-only.</div>
+      <button class="btn ghost" id="teamRoomOpen" style="margin-top:8px">Open Team Room</button>
+      <div id="teamRoomFeed" style="display:none;margin-top:10px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
+    </div>
     <div class="card">
       <h2>🔒 Backup &amp; restore</h2>
       <div class="desc">Move your data between your own devices. It stays <b>private to your devices</b> — never uploaded.</div>
@@ -6723,6 +6729,56 @@
     refreshInstallUI();
     window.__pwaInstalled=installed;
     window.__openInstall=openModal;
+  })();
+</script>
+<script>
+  /* Owner-only Team Room viewer — reads the team's TEAM-CHAT.md live. The card is
+     hidden unless this is the OWNER's master (the #__ownerKeySrc slot is non-empty);
+     customer/blank copies strip that slot, so the card never appears for them. View-only. */
+  (function(){
+    var card=document.getElementById('teamRoomCard');
+    if(!card) return;
+    var oks=document.getElementById('__ownerKeySrc');
+    var ownerFile = oks && oks.textContent && oks.textContent.trim().length>0;   // the master
+    // owner can also flip it on for any of their own copies/installed PWA by visiting
+    // the app once with #team in the URL (persists). Customers never do this.
+    try{ if(/team/i.test(location.hash)) localStorage.setItem('mrln_team','1'); }catch(e){}
+    var flag=false; try{ flag=localStorage.getItem('mrln_team')==='1'; }catch(e){}
+    if(!(ownerFile || flag)) return;              // not owner → leave hidden
+    card.style.display='';
+    var RAW='https://raw.githubusercontent.com/sagemrln/my-first-repo/claude/vibrant-pasteur-ie24ab/TEAM-CHAT.md';
+    var btn=document.getElementById('teamRoomOpen'), feed=document.getElementById('teamRoomFeed');
+    var timer=null, last='', open=false;
+    function esc(s){return s.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+    function fmt(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`(.+?)`/g,'<code>$1</code>');}
+    function color(n){n=n.toLowerCase();
+      return n.indexOf('akashi')>=0?'#ff4d6d':n.indexOf('mikoto')>=0?'#36d6ff':
+             n.indexOf('hugo')>=0?'#3bf0a0':n.indexOf('kaito')>=0?'#b794ff':
+             n.indexOf('osefe')>=0?'#ffd166':'#9fb0d0';}
+    function render(md){
+      var i=md.indexOf('## MESSAGES'), body=i>=0?md.slice(i+11):md, out=[];
+      body.split('\n').forEach(function(L){
+        var m=L.match(/^\s*-\s*(?:\[([^\]]*)\]\s*)?\*\*([^:*]+):\*\*\s*(.*)$/); if(m)out.push(m);
+      });
+      if(!out.length){ feed.innerHTML='<div style="color:var(--txt-dim,#6c7b9c);text-align:center;padding:8px">No messages yet.</div>'; return; }
+      feed.innerHTML=out.map(function(m){ var c=color(m[2]);
+        return '<div style="border-left:3px solid '+c+';padding:6px 10px;background:#0d1322;border-radius:10px">'+
+          '<div style="font:700 11px system-ui;color:'+c+'">'+esc(m[2])+
+          (m[1]?' <span style="color:#6c7b9c;font-weight:400">'+esc(m[1])+'</span>':'')+'</div>'+
+          '<div style="font-size:13px;color:var(--txt,#cdd9f0)">'+fmt(m[3])+'</div></div>';
+      }).join('');
+      feed.scrollTop=feed.scrollHeight;
+    }
+    function tick(){
+      fetch(RAW+'?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();})
+        .then(function(md){ if(md!==last){ last=md; render(md); } })
+        .catch(function(){ feed.innerHTML='<div style="color:#ff4d6d;text-align:center;padding:8px">offline — can\'t reach the room</div>'; });
+    }
+    btn.addEventListener('click', function(){
+      open=!open;
+      if(open){ feed.style.display='flex'; btn.textContent='Close Team Room'; tick(); timer=setInterval(tick,5000); }
+      else { feed.style.display='none'; btn.textContent='Open Team Room'; clearInterval(timer); }
+    });
   })();
 </script>
 </body>
