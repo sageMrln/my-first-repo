@@ -63,6 +63,28 @@ One shared, committed suite — don't re-invent a scratchpad harness per person.
 - For logic changes, prefer a **differential** vs the prior tip's output, not only new
   assertions (fresh assertions miss what they don't think to test).
 
+## 😴 Sleep mode & dispatch — governance (how Kaito runs the team)
+Osefe often works from his phone through Kaito (lead), who spawns teammates "asleep".
+Rules, settled from the team's own concerns:
+1. **One live instance per role.** There is ONE logical Akashi/Mikoto/Hugo; the memory
+   log is its mind. Parallelise across DIFFERENT roles (run all three at once) — NEVER
+   two of the same role. Kaito is the single dispatcher; don't run a role's task while a
+   tab for that role is live, or vice versa. The lock board stops file collisions; this
+   stops identity collisions.
+2. **Asleep runs never auto-publish.** A sleep-mode run may reach Pending + full sign-off,
+   but NOTHING is pushed to gh-pages/live without Osefe's explicit in-thread "ship it" —
+   every time, even trivial changes. On a phone he can't eyeball a diff, so his go matters
+   more, not less.
+3. **Verify, don't trust — the tooling is the truth.** Logs and chat are evidence, not
+   proof (a self-reported "tests pass" can be wrong, and any session can post under any
+   name — there's no cryptographic identity). Kaito re-runs `green.js` / the suites on the
+   CURRENT tip himself before accepting a result or publishing; a claimed SHA/number is
+   checked against reality, never taken on faith. This discipline is what makes sleep mode
+   safe — it must not erode into trusting digests over diffs.
+4. **Nothing runs continuously.** Teammates wake only when Kaito spawns them or Osefe
+   opens/messages a tab — no cron, no daemon. A half-done gate just sits in Pending; the
+   freeze-the-candidate + tip-moved rules mean a stale sign-off can't ship.
+
 ## 🧠 Agent memory logs — MANDATORY
 Each teammate is a fresh instance every run with no built-in memory. Their memory lives
 in `team/logs/<name>.md` (akashi, mikoto, hugo). This is **absolute**:
