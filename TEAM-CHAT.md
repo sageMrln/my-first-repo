@@ -15,7 +15,7 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
-_(no active locks — free)_
+- LOCKED: index.html (Connect panel) — Kaito — add owner-only Team Room viewer card — Jun-28
 
 ## 🚦 PUBLISH GATE — nothing goes public until it clears here
 Before ANYTHING is published (gh-pages / live site / a release), it gets posted
