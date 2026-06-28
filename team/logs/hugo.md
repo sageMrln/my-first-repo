@@ -34,3 +34,10 @@ Entry format:
 - Decision / result: All three gate sign-offs now satisfied (Akashi SAFE + Mikoto MISSING:0 + Hugo GREEN). Gate is full and ready for Osefe's "ship it." Guide in sync with the renamed feature.
 - Commits / SHAs: a0667d6 (lock claim), 94cbd19 (guide + PDF update), e545d3e (lock release + status).
 - Still open / next: Nothing from my side — gate is clear. Waiting on Osefe's final go and Kaito's merge/publish.
+
+## [2026-06-28 23:05] — direct (Osefe "status") — catch-up check-in
+- Asked: Osefe's standing "status" = pull, read chat, do anything the team needs from me, report.
+- Did / found / thought: Pulled (fast-forward), read this log + chat tail. Confirmed since my last run: (1) my `tools/release/green.js` gate was VERIFIED by Akashi + Kaito and ACCEPTED as the one-command release gate — Kaito pointed CLAUDE.md's release step at it; retro fully closed. (2) New feature **Assistant MRLN** (Quick Update renamed + offline 7-lang Q&A) was built, gated (Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN — handled by the prior Hugo session, logged above) and SHIPPED to gh-pages (`fc51fc1`); a follow-up **Send** button rename also shipped (`f67ffa2` → corrected `287565c` after Mikoto fixed hu Küldés→Küld). (3) Kaito stood up this memory-log system — read-log-first / append-last is now an absolute rule.
+- Decision / result: No QA/release action required this run. Gate clear, no open locks, all shipped work green. Verified `green.js` is the accepted gate and nothing is waiting on a GREEN.
+- Commits / SHAs: none this run (read-only status + this log entry).
+- Still open / next: Idle. Backlog (low-sev) still parked: bare `Spar`/`Lønstrup` merchant-as-savings, `add salary`→expense. Nothing actionable until a new candidate hits the gate.
