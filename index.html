@@ -3924,7 +3924,9 @@
     // "N years old" form). A short age token merely embedded in a name (de "Alter Ego",
     // hu "Kort"/"Korn") is NOT adjacent to a number, so it no longer reads as an age.
     // Also excludes "year(s)" from the gate (it collides with yearly frequency).
-    var _agem = c.match(_re('(?:'+LEX.age+')'+_WA+'\\s*[:=]?\\s*(\\d{1,3})(?!\\d)'))
+    // copula allowed between the age word and the number ("alder er 41", "age is 41",
+    // "Alter ist 41") — a whitelist, so "Alter Ego sub 120" still can't slip through.
+    var _agem = c.match(_re('(?:'+LEX.age+')'+_WA+'(?:\\s+(?:is|am|are|was|er|ist|bin|war|är|es|van|vagyok)\\b)?\\s*[:=]?\\s*(\\d{1,3})(?!\\d)'))
              || c.match(_re('(\\d{1,3})\\s*(?:years?|år|años|anos|jahre|éves|év)'+_WA))
              || c.match(/\b(?:i(?:'m| am)|jeg er|ich bin|jag är|tengo)\s+(\d{1,3})\b/iu);
     if(_agem){ var an=_agem[1]; if(+an>0 && +an<130) return { op:'setProfile', field:'age', value:an, description:'Set age → '+an }; }
@@ -3955,6 +3957,12 @@
       var ufq=_freq(c);
       return { op:'updateItem', match:f.it.name, cost:uv, freq:ufq, description:'Update '+f.it.name+' → '+fmtN(uv)+' '+curInfo().sym+'/'+(ufq==='yearly'?'yr':ufq==='quarterly'?'q':'mo') };
     }
+    // last resort: a bare "<name> <amount>[/period]" with no command verb is almost
+    // always an expense being logged ("Spar membership 99/mo", "Alter Ego sub 120").
+    // Reuse the same _addItem builder so it logs as an item rather than silently dropping.
+    // Runs only after every specific intent above, so legit money/age/profile phrases
+    // never reach here. Still gated behind the apply-confirm preview.
+    var _aiLast = _addItem(c); if(_aiLast) return _aiLast;
     return null;
   }
   function parseInstructions(text){
