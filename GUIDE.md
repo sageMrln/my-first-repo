@@ -144,11 +144,18 @@ A built-in notes app (like iPhone Notes) — title + body, autosaved, private.
 
 ---
 
-## 8. Connect — move data & install
+## 8. Installing the app
+
+Installing is **front and centre**, not buried in a menu:
+
+- **Lock screen** — before you even sign in, short **"Add to Home Screen"** guides for iPhone and Android sit beside the unlock card.
+- **"Get the app" banner** — a bright banner across the top of the dashboard. Tap **Install** and it either installs in **one tap** (Android / Chrome / Edge) or opens a **step-by-step** card for your exact device (iPhone Safari, Android, or desktop).
+- It **removes itself automatically** the moment the app is installed — no clutter once you're set up.
+
+## 9. Connect — move data between devices
 
 The hub for everything that crosses devices (all **on-device**, nothing uploaded):
 
-- **📲 Install the app** — one-tap install where supported (Android/Chrome/Edge), with manual steps for iPhone.
 - **🔒 Backup & restore** — make a private **data code** of everything and paste it onto another device; or **📦 Import my master file (.html)** to load an entire saved file in one tap (data + Klarna tab; never the owner key).
 - **📥 Import from another app** — bank/card **CSV** → income & expenses; **.ics** → calendar; Apple Health/CSV → weight; MyFitnessPal CSV → food log.
 - **📤 Export to other apps** — your calendar as **.ics**, expenses/food as **CSV**, or the native **Share** sheet.
@@ -157,7 +164,7 @@ The hub for everything that crosses devices (all **on-device**, nothing uploaded
 
 ---
 
-## 9. 💬 Quick Update — the plain-English updater
+## 10. 💬 Quick Update — the plain-English updater
 
 The fastest way to change things: tap **💬 Quick Update** and type changes in plain language, one per line. It's interpreted **free, offline, in your browser**, and **nothing changes until you confirm**. It understands:
 
@@ -172,7 +179,7 @@ The fastest way to change things: tap **💬 Quick Update** and type changes in 
 
 ---
 
-## 10. Updates — how new features reach you
+## 11. Updates — how new features reach you
 
 - **On the hosted link / installed app:** updates are **automatic**. Open it online and the newest version loads itself (network-first service worker); offline still works from cache. Your data is preserved across every update — no migration, no re-login.
 - **On a downloaded file:** that file is frozen. To get new features, open the hosted app (or a newer file) and **import your data** across.
@@ -181,7 +188,7 @@ The fastest way to change things: tap **💬 Quick Update** and type changes in 
 
 ---
 
-## 11. Privacy & anti-tamper (the security model)
+## 12. Privacy & anti-tamper (the security model)
 
 - **Your data is yours.** It lives in your browser's local storage (and embedded in your saved file). It is never uploaded — there's no server to upload to.
 - **Unforgeable access.** Keys are signed with a private key that exists **only** in the owner's master file. The public app holds just the public half — enough to verify keys, never to make them.
@@ -190,7 +197,7 @@ The fastest way to change things: tap **💬 Quick Update** and type changes in 
 
 ---
 
-## 12. For the owner — running the show
+## 13. For the owner — running the show
 
 These tools appear only on **your master file** (where the private key lives):
 
@@ -204,7 +211,7 @@ These tools appear only on **your master file** (where the private key lives):
 
 ---
 
-## 13. Quick troubleshooting
+## 14. Quick troubleshooting
 
 | Symptom | Fix |
 |---|---|
