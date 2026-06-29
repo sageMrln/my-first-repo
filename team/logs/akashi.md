@@ -764,3 +764,13 @@ Entry format:
 - Commits / SHAs reviewed: 767017f (index.html identical at HEAD ff9f160). If index.html moves, I re-sign.
 - Still open: nothing security-side. Gate (steps 7-11): my SAFE in; needs Mikoto MISSING:0 + Hugo GREEN + Osefe
   ship. Sleep-mode: no auto-publish without Osefe's explicit go.
+
+## [2026-06-29] — direct (Osefe) — routed IndexedDB migration directive to Kaito
+- Osefe: max storage for text+images, remove 5MB localStorage ceiling, "done". Routed to Kaito (builds).
+- My gating constraints posted: vendored-not-CDN helper; navigator.storage.persist()+handle denial;
+  fail-loud on QuotaExceeded (check current autosave); one-time lossless migration; integrity token +
+  on-device/no-network preserved.
+- Flagged the hard coupling to surface to Osefe: big photo storage BREAKS the QR/clipboard "Move my data"
+  path (can't move GB optically) — heavy data needs file-based/separate transfer. Storage vs transfer
+  trade must be a deliberate decision.
+- Open: review Kaito's design + vendored helper + persistence/quota handling before it touches STATE.
