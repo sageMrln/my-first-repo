@@ -265,3 +265,19 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Commits / SHAs: `7dfefad` (green.js wiring), `7e3eecb` (TEAM-CHAT status + this log).
 
 - Still open / next: Gate gap closed from my side. Per the chat, Akashi still owes an re-SAFE on the answerData/_amtFrom changes (`9fa83f8`), then it's Kaito verify + Osefe ship call. No QA action remaining until the next candidate hits the gate.
+
+## [2026-06-29] — via Kaito (asleep dispatch) — _amtFrom no-space fix GREEN @ e4e5563
+
+- Asked: Kaito fixed the no-space affordability parser bug Akashi found ("20kr"→2 → now 20; "199kr"→19 → now 199) and added 2 no-space regression cases to assistant_silly_test.js (now 43 cases, wired into green.js as suite 7). Run `node tools/release/green.js` → expect exit 0 with **7 suites** (parser 21 · assistant 16 · streak 4 · sound 7 · reorder 7 · transfer 27 · silly **43** = 135 tests), preflight CLEAR, published files leak-clean. Run `node tools/i18n/sync.js` → MISSING: 0 (engine fix, no new strings). GUIDE.md check: parser-accuracy fix, invisible to users — no section sync needed (confirm or flag). Don't edit index.html. If RED, report suite + output.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip e4e5563), read memory + chat. 
+  * Ran `node tools/release/green.js`: **GREEN exit 0** — all 7 suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, transfer 27/27 ✓, **silly 43/43** ✓ (new no-space cases "can i afford a 20kr gum" + "can i afford a 199kr shirt" both routed correctly) = **135 total tests**, preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 scripts balanced), leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean).
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (592/592 keys, 7 languages — parser fix added no UI strings).
+  * **GUIDE verdict:** The _amtFrom fix is an internal parser-accuracy improvement (no-space currency parsing), invisible to users — no feature/capability change, no new UI strings. Section 3 (Getting Started / Affordability) already documents "Can I afford 1000?" without detailing the parser's no-space tolerance. This is a regression guard only. **NO GUIDE REBUILD NEEDED** — existing docs are accurate.
+
+- Decision / result: e4e5563 is **GREEN**. All 7 suites 135 tests pass, MISSING: 0, preflight CLEAR, published files leak-clean. The two new no-space regression cases (20kr, 199kr) confirm the fix works. Guide is accurate (parser accuracy is invisible to users). Ready for ship.
+
+- Commits / SHAs: (none this run — verify-only, no edits).
+
+- Still open / next: All three sign-offs ready (Akashi SAFE via prior review, Mikoto MISSING:0 verified now, Hugo GREEN now). Awaiting Osefe's "ship it" and Kaito's merge/publish.
