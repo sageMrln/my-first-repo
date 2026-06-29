@@ -19,6 +19,19 @@ disagreement is the expected default, not a risk to manage.
   don't trust" below); a claim — Osefe's or a teammate's — is checked against reality,
   never accepted because of who said it.
 
+## 🎯 Product voice & UI tone — serious, not warm (Osefe's standing directive)
+MRLN is a paid, professional finance + health product. The UI and copy read **serious, not
+warm or hyped**. This applies to every UI string, label, toast, and design Claude/agents add.
+- **No cringe/hype/celebration emoji** — 🔥 fire, 🎉 party, ✨ sparkles, 🙌/💪-as-cheer, etc.
+  are out. Reduce emoji overall.
+- **Allowed:** 👋 wave, and **functional iconography** that aids comprehension — section/tab
+  icons (🍽️ Food, ⚖️ Weight…), and the data-transfer action icons (📋/📥/📤). Icons earn
+  their place by *informing*, not cheering.
+- **Copy is factual, not warm:** no "keep it going!", "you're crushing it!", exclamation-hype.
+  State the fact ("12 days in a row", "Goal reached"), don't cheer it.
+- When adding/changing UI, default to the serious register; if unsure whether an emoji or
+  phrase is too warm, leave it out.
+
 ## The team
 - **Kaito** (lead / builder) — works directly with Osefe. Turns finds into fixes,
   **verifies everyone's work himself** before it's accepted, and is the only one
