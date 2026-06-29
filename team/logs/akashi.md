@@ -419,3 +419,47 @@ Entry format:
   zero money/key/network/injection/leak surface; watchdogs intact.
 - Commits / SHAs reviewed: ea94ab2 (tip). If tip moves index.html, I re-sign.
 - Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
+
+## [2026-06-29] — via Kaito — REVIEW: HUD long-press selection privacy fix (`a674002`)
+- Asked: privacy + correctness review of a selective CSS rule that stops Android long-press
+  → "Web search" from sending a private HUD figure (income etc.) to Google. Confirm it closes
+  the leak vector, didn't over-disable copyable elements (#mintKey/#mintLink/#dataCode + all
+  inputs), is CSS-only (no logic/watchdog/money touch). Run green.js.
+- Did / found (read the diff + every select-to-copy fallback on the tip, ran green.js — not on faith):
+  - SCOPE: diff = index.html only, TWO CSS hunks (index.html @45-56). Hunk 1: body{} gains
+    -webkit-user-select:none; user-select:none; -webkit-touch-callout:none. Hunk 2: re-enable
+    block `input, textarea, select, [contenteditable="true"], .selectable, #dataCode, #mintKey,
+    #mintLink, #lkInput { user-select:text; -webkit-touch-callout:default }`. The `none` attaches
+    to `body{` (verified @35 — body is the rule above the new block). NO money/parser/watchdog/
+    export/SW line in the diff.
+  - CLOSES THE LEAK ✓: HUD figures/labels are plain divs/spans, NOT inputs, so they fall under
+    the body `user-select:none`. With user-select:none + -webkit-touch-callout:none on the
+    container, Android's long-press text-selection + the callout menu (Copy/Share/Web search /
+    "tap to search") cannot grab a HUD number → it can't be sent to Google. Directive covers the
+    figures by inheritance (none is inherited; the re-enable list is the only escape and it's
+    inputs/key/code only). Leak vector closed.
+  - DID NOT OVER-DISABLE ✓ — the load-bearing find: the app's copy-out UX on phones opening a
+    local file:// (insecure context, navigator.clipboard blocked) falls back to PROGRAMMATIC
+    select-then-"long-press → Copy". I traced all three on-screen select-to-copy targets:
+      • #dataCode — data export code box; selBox() selectNodeContents @5274, click→selBox @5275,
+        copy fallback selBox @5280. IN re-enable list ✓ (also has inline user-select:text @1486).
+      • #mintKey — the ACCESS KEY box; selectKeyText() selectNodeContents @6701, copyKey fallback
+        @6723. IN re-enable list ✓.
+      • #mintLink — share link; selectNodeContents on click @6688. IN re-enable list ✓ (inline
+        user-select:text @6686).
+    All three users-need-to-copy elements stay selectable, so the file://-phone Copy fallback
+    still works. Every <input>/<textarea> stays typeable/selectable (covered by the list);
+    #lkInput (unlock paste) explicitly included. QR path is canvas (scan-to-copy) + instructional
+    caption — no select-to-copy text there, nothing missed. No File ID / recovery-phrase
+    select-to-copy block exists outside these three. Re-enable list is complete; nothing critical
+    wrongly disabled.
+  - CSS-ONLY, NO LOGIC ✓: diff is two style rules; no __sys/PUBCHK/PUB_B64/parseClause/applyChange/
+    exportBlank/exportHTML/importData/fetch/eval/innerHTML touched. No new i18n string (MISSING:0
+    holds — CSS only). Invariants untouched by construction.
+  - Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, assistant 16/16, streak 4/4,
+    sound 7/7, reorder 7/7, preflight CLEAR — owner/hud slots empty, PUBCHK intact, 1 public key,
+    all published files clean).
+- Verdict: SAFE. Closes a real privacy leak (HUD figure → Google Web-search); copyable key/code/
+  link/inputs all preserved via the re-enable list; pure CSS, zero money/key/watchdog/network touch.
+- Commits / SHAs reviewed: a674002 (tip). If tip moves index.html, I re-sign.
+- Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
