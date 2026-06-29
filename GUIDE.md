@@ -154,9 +154,29 @@ Installing is **front and centre**, not buried in a menu:
 
 ## 9. Connect — move data between devices
 
-The hub for everything that crosses devices (all **on-device**, nothing uploaded):
+The hub for moving your data — all **on-device**, nothing is ever uploaded.
 
-- **🔒 Backup & restore** — make a private **data code** of everything and paste it onto another device; or **📦 Import my master file (.html)** to load an entire saved file in one tap (data + Klarna tab; never the owner key).
+### 📦 Move my data (new phone, or just installed the app)
+This is the simple way to carry everything across. The app reads your situation and
+puts the **right step first** (📥 *bring in* when you're on a fresh install, 📤 *copy off*
+when you already have your data here), and labels them **STEP 1 / STEP 2** so it's clear
+which to do first.
+
+- **📥 Bring my data onto this device** — already tapped **"Copy my data"** on your other
+  phone or browser? Tap **"📋 Bring in my data"** and MRLN finds what you copied and loads
+  it all. *(On iPhone, Safari and the installed app keep separate data, so this is how your
+  numbers get across — your phone may ask permission to paste; that's normal, just allow it.)*
+  Can't paste? Open **"Can't paste? Do it by hand"** to paste the text or pick a saved file —
+  or load a whole saved **master / exported `.html`** in one tap (income, expenses, notes,
+  calendar, food log + Klarna tab; your private key is **never** imported).
+- **📤 Copy my data off this device** — tap **"Copy my data"**, then open MRLN on the other
+  device and tap *"Bring in my data."* Need another route? **"Other ways to send"** shows your
+  data **code** to copy, or lets you **download it as a file**.
+
+Importing **replaces** what's on the device you bring it onto, and the app **asks you to
+confirm** before anything changes.
+
+### Other Connect tools
 - **📥 Import from another app** — bank/card **CSV** → income & expenses; **.ics** → calendar; Apple Health/CSV → weight; MyFitnessPal CSV → food log.
 - **📤 Export to other apps** — your calendar as **.ics**, expenses/food as **CSV**, or the native **Share** sheet.
 - **📱 QR transfer** — move your link/data by scanning a QR code (generated fully offline).
