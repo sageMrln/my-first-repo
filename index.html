@@ -4949,6 +4949,11 @@
     translateForwardAll(lang);        // translate dynamic English the render code produced
     document.documentElement.setAttribute('lang', lang==='nb'?'no':lang);
     if(typeof renderBody==='function' && document.getElementById('calVerdict')) renderBody();   // re-translate live health text
+    // re-render the Move-my-data card's JS-set content (STEP badges + situation banner are
+    // built via tf(), so a static walk can't retranslate them) — fixes the card staying in
+    // the old language when you switch language while on the Connect tab.
+    if(typeof window.__refreshMoveCard==='function'){ try{ window.__refreshMoveCard(); }catch(_){ } }
+    if(typeof renderDeviceTip==='function' && document.getElementById('deviceTip')){ try{ renderDeviceTip(); }catch(_){ } }
   }
   // Reverse index: every known translation value -> its English source. Lets us
   // detect a text node still showing a PREVIOUS language and move it to the target,
@@ -5535,6 +5540,7 @@
     var ql=document.getElementById('qrLink'); if(ql) ql.addEventListener('click', function(){ var u=location.origin+location.pathname+(STATE.fid?('#'+STATE.fid):''); showQR(u,'Scan to open your dashboard link'+(STATE.fid?' (File ID '+esc(STATE.fid)+')':'')+'.'); });
     var qd=document.getElementById('qrData'); if(qd) qd.addEventListener('click', function(){ var code=exportDataCode(); showQR(code, 'Scan to copy your <b>full data</b> to another device, then paste into Import. (Only works if it fits — large data with photos may not.)'); });
     try{ setupMoveSituation(); }catch(_){ }   // set the right step/banner on first paint too
+    window.__refreshMoveCard = setupMoveSituation;   // so applyLang() can re-render the card's JS content (STEP badges + banner) on a live language switch
     var connectTab=document.querySelector('#tabs .tab[data-p="connect"]'); if(connectTab) connectTab.addEventListener('click', function(){ try{ setupMoveSituation(); if(typeof renderDeviceTip==='function') renderDeviceTip(); }catch(_){ } });
   })();
   function resetAll(){
