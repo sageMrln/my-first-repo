@@ -1548,7 +1548,8 @@
         <!-- SEND: copy data OFF this device -->
         <div id="moveSend" style="border:1px solid var(--line);border-radius:12px;padding:16px">
           <h2 style="font-size:14px;margin:0;display:flex;align-items:center;gap:8px"><span class="stepBadge" id="sendStep" style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;padding:2px 7px;border-radius:6px;white-space:nowrap"></span><span data-i18n="📤 Copy my data off this device">📤 Copy my data off this device</span></h2>
-          <div class="desc" style="font-size:12.5px;margin-top:8px">Tap to copy everything. Then open MRLN on your other device and tap <b>“Bring in my data”</b>.</div>
+          <div class="desc" data-i18n="Tap to copy your data, then open MRLN on your other device and tap “📋 Bring in my data”." style="font-size:12.5px;margin-top:8px">Tap to copy your data, then open MRLN on your other device and tap “📋 Bring in my data”.</div>
+          <div class="note" data-i18n="Food photos aren’t in this copy — send them with “📤 Export my photos” below." style="font-size:11.5px;margin-top:6px;color:var(--txt-dim)">Food photos aren’t in this copy — send them with “📤 Export my photos” below.</div>
           <button class="btn ghost" id="copyOutBtn" data-i18n="📋 Copy my data" style="width:100%;margin-top:12px;font-size:15px;padding:12px">📋 Copy my data</button>
           <div id="copyOutMsg" class="note" style="display:none;margin-top:10px"></div>
           <details id="sendMore" style="margin-top:12px">
@@ -1563,7 +1564,7 @@
       </div>
       <div id="movePhotos" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
         <div class="note" data-i18n="PHOTOS MOVE SEPARATELY" style="font-size:11px;letter-spacing:.05em;color:var(--txt-dim);text-transform:uppercase">Photos move separately</div>
-        <div class="desc" data-i18n="Your food photos can be large, so they travel as their own file — not in the quick copy above. Save them here, then load them on your other device." style="font-size:12px;margin-top:6px">Your food photos can be large, so they travel as their own file — not in the quick copy above. Save them here, then load them on your other device.</div>
+        <div class="desc" data-i18n="Move your data first (above), then move your photos here — they travel as their own file because food photos can be large." style="font-size:12px;margin-top:6px">Move your data first (above), then move your photos here — they travel as their own file because food photos can be large.</div>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
           <button class="btn ghost" id="photoExportBtn" data-i18n="📤 Export my photos" style="flex:1;min-width:150px">📤 Export my photos</button>
           <label class="btn ghost" style="flex:1;min-width:150px;text-align:center;cursor:pointer;margin:0"><span data-i18n="📥 Import photos">📥 Import photos</span><input type="file" id="photoImportFile" accept=".json,application/json" style="display:none"></label>
@@ -5667,7 +5668,11 @@
     function copyOutData(){
       var code; try{ code=exportDataCode(); }catch(e){ coMsg('✗ '+esc(e.message),false); return; }
       var dc=document.getElementById('dataCode'); if(dc) dc.textContent=code;   // ready under "Other ways to send"
-      var done=function(){ coMsg(tf('✓ Copied! Now open MRLN on your other device and tap “📋 Bring in my data”.'),true); if(window.MRLN_SFX&&MRLN_SFX.success) MRLN_SFX.success(); };
+      var done=function(){
+        var photoNote = (STATE.foodLog||[]).some(function(e){ return e.hasPhoto||e.photo; }) ? (' '+tf('Photos are separate — tap “📤 Export my photos” below to bring them too.')) : '';
+        coMsg(tf('✓ Copied! Now open MRLN on your other device and tap “📋 Bring in my data”.')+photoNote,true);
+        if(window.MRLN_SFX&&MRLN_SFX.success) MRLN_SFX.success();
+      };
       if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(code).then(done).catch(fb); } else fb();
       function fb(){ var ok=false; try{ var ta=document.createElement('textarea'); ta.value=code; ta.style.position='fixed'; ta.style.top='-1000px'; document.body.appendChild(ta); ta.select(); ok=document.execCommand('copy'); document.body.removeChild(ta); }catch(_){ } if(ok){ done(); return; } var sm=document.getElementById('sendMore'); if(sm) sm.open=true; var w=document.getElementById('dataExportWrap'); if(w) w.style.display='block'; coMsg(tf('Couldn’t copy automatically — your code is shown under “Other ways to send” below; long-press it to copy, or download it as a file.'),false); }
     }
