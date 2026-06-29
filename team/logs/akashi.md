@@ -639,3 +639,42 @@ Entry format:
   surface; watchdogs intact; only changes WHEN a CSS animation plays.
 - Commits / SHAs reviewed: 5e04ee3 (tip). If index.html moves, I re-sign.
 - Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
+
+## [2026-06-29] — via Kaito (asleep) — REVIEW (steps 4+10): Move-my-data i18n bugfix + setBox weight (`684197e`)
+- Asked: steps 4 (errors/security + decide if NEW surface needs poison) + 10 (SAFE green) of the
+  11-step workflow, for (1) Mikoto's Move-my-data static-label i18n wiring (`0192136`) and (2) Kaito's
+  setBox active-step fontWeight emphasis (`684197e`). Confirm purely presentational; decide poison;
+  AUTO-MERGED block well-formed + slots empty + watchdogs + no leak; re-run green.js for SAFE.
+- Did / found (read both immediate diffs in context, validated JSON, ran the gate — not on faith):
+  - SCOPE: index.html only. (a) Mikoto `9c7d36f..0192136`: 64-line diff = 8 `data-i18n` attrs added
+    (card h2; 2 step-title spans; bringInBtn; copyOutBtn; dataExportBtn; 2 <summary>; 1 .note) + the
+    AUTO-MERGED dictionary line regenerated. (b) Kaito `09a2737..684197e`: +4 lines in setBox @5395 —
+    one querySelector + a fontWeight string. HEAD db879c4 = CLAUDE.md/TEAM-CHAT only; index.html
+    BYTE-IDENTICAL 684197e..HEAD.
+  - PURELY PRESENTATIONAL ✓ — no new STATE/value/network/financial logic. data-i18n attrs are display
+    labels resolved by the existing i18n engine; setBox change is `el.querySelector('h2 span:not(.stepBadge)').style.fontWeight = active?'700':'600'` — a CSS weight on the title span. No fetch/XHR/eval/
+    innerHTML/parseClause/applyChange/export/import added.
+  - POISON DECISION ✓ — NO new __sys.token()/watchdog coverage warranted. These are display labels +
+    a font weight, not new figures and not a new data path. The data-transfer logic (decode/validate/
+    apply, exportDataCode key-strip) was already reviewed + poison-aware (c4e3882 / 39df9d0 / e19e1ba)
+    and is UNTOUCHED here. Nothing new to thread poison into. Stated explicitly to Kaito.
+  - setBox SELECTOR SOUND ✓ — `span:not(.stepBadge)` targets ONLY the title span; the .stepBadge span
+    (JS-filled step number) is excluded → step number never weight-bolded, and (grep) stepBadge spans
+    carry NO data-i18n → the JS-set "STEP 1/2" badge can't be mistranslated. The dropped inline <b>this</b>
+    in the step titles is exactly what this fontWeight replaces (so data-i18n doesn't fragment the string).
+  - AUTO-MERGED JSON WELL-FORMED ✓ — extracted the IIFE arg + JSON.parse OK: 6 langs es/da/de/sv/nb
+    (1423 keys each) + hu (1463). All 8 new move-data keys present in ALL 6 locales (MISSING:0 for this
+    card). Owner-only/private slots NOT in the dict (it's UI strings).
+  - INVARIANTS ✓ — __sys count IDENTICAL parent 8898d72 vs HEAD (31==31) → no watchdog weakened/removed.
+    PUBCHK(×2)+PUB_B64(×3)+poison hash 4047293148 present. #hud-state empty (@1672), #__ownerKeySrc empty
+    (@1676). No SW/manifest change. No private-key marker; preflight PII/key scan CLEAR.
+  - GREEN ✓ — node tools/release/green.js → exit 0: parser 21/21, assistant 16/16, streak 4/4, sound 7/7,
+    reorder 7/7, transfer 27/27; preflight CLEAR (slots empty, 1 public key, PUBCHK, script tags balanced 4);
+    all published files (GUIDE/manifest/sw/team-chat) clean.
+  - Note: a pre-existing stash@{0} (WIP on 86277b2) sits in the repo — not mine, didn't touch it; working
+    tree clean. Flagging so it isn't lost/confused with the gate candidate.
+- Verdict: SAFE @ 684197e. Presentational i18n labels + a CSS weight; no new poison needed; AUTO-MERGED
+  block valid, slots empty, watchdogs intact, no key/PII leak.
+- Commits / SHAs reviewed: 684197e (index.html identical at HEAD db879c4). If index.html moves, I re-sign.
+- Still open: nothing security-side. Gate: my SAFE in; needs Mikoto MISSING:0 + Hugo GREEN + Osefe ship.
+  Sleep-mode: no auto-publish without Osefe's explicit go. Pre-existing stash@{0} noted for Kaito.
