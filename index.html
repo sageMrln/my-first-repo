@@ -667,7 +667,7 @@
 <!-- WHAT'S NEW — forced update popup shown once per build to returning users -->
 <div class="modal-back" id="updateBack">
   <div class="modal" role="dialog" aria-modal="true" style="max-width:480px">
-    <h3 id="updateTitle">✨ What's new</h3>
+    <h3 id="updateTitle">What's new</h3>
     <div class="mwarn" id="updateBody" style="text-align:left;max-height:56vh;overflow:auto"></div>
     <div class="modal-actions">
       <button class="mok" id="updateOk" style="width:100%">Got it</button>
@@ -836,7 +836,7 @@
       <span class="pill">AGE <b id="hdrAge">—</b></span>
       <span class="pill">WORK <b id="hdrEmployer">—</b></span>
       <span class="pill" id="hdrGradePill" title="Your overall life grade — tap Stats for the full breakdown">GRADE <b id="hdrGrade">—</b></span>
-      <span class="pill" id="streakPill" data-i18n-skip style="display:none" title="Days in a row you've used MRLN — keep it alive!">🔥 <b id="streakN">0</b></span>
+      <span class="pill" id="streakPill" data-i18n-skip style="display:none" title="Days in a row you've used MRLN">STREAK <b id="streakN">0</b></span>
     </div>
 
     <div class="hero" title="What's left after every bill and any debt payment, in a typical month — before you move money to savings.">
@@ -1614,9 +1614,9 @@
       </div>
     </div>
     <div class="card">
-      <h2>Latest update ✨</h2>
+      <h2>Latest update</h2>
       <div class="desc">See what changed in the version you're on right now.</div>
-      <button class="btn ghost" id="whatsNewBtn" style="margin-top:6px">✨ What’s new</button>
+      <button class="btn ghost" id="whatsNewBtn" style="margin-top:6px">What’s new</button>
     </div>
     <div class="card">
       <h2>Change Log <span class="tag now" id="logCount">0</span></h2>
@@ -1858,8 +1858,8 @@
     // green when you've logged today; amber loss-aversion nudge when you haven't yet
     pill.style.borderColor = today ? 'var(--lime)' : 'var(--amber)';
     pill.style.color = today ? 'var(--lime)' : 'var(--amber)';
-    pill.title = today ? (st.count+' '+t('day streak — keep it alive!'))
-                       : t('Log anything today to keep your streak alive 🔥');
+    pill.title = today ? (st.count+' '+t('day streak'))
+                       : t('Log anything today to keep your streak.');
   }
   // warm, localized, name-personalized greeting — once per day, on open
   function morningBriefing(){
@@ -1879,9 +1879,9 @@
       // __sys.token() poisons it to NaN on a tampered copy, so isFinite() drops the number then.
       var surplus = (typeof leftOver==='function' && MODEL && MODEL.income) ? leftOver(MODEL.income.avg) : NaN;
       var lines=[];
-      if(st.count>1) lines.push(tf('{n} days in a row — keep it going! 🔥', {n:st.count}));
-      if(isFinite(surplus) && surplus>0) lines.push(tf('on track to keep {amt} this month 🔥', {amt: fmtN(surplus)+' '+curInfo().sym}));
-      var body = lines.length ? lines.join(' · ') : t('Welcome back — log something today to start a streak 🔥');
+      if(st.count>1) lines.push(tf('{n} days in a row', {n:st.count}));
+      if(isFinite(surplus) && surplus>0) lines.push(tf('On track to keep {amt} this month', {amt: fmtN(surplus)+' '+curInfo().sym}));
+      var body = lines.length ? lines.join(' · ') : t('Welcome back — log something today to start a streak.');
       if(typeof toast==='function') toast(greet+' — '+body);
     }catch(_){}
   }
@@ -2530,7 +2530,7 @@
       if(+b.target>0){
         var pct=Math.max(0,Math.min(100, Math.round((+b.balance||0)/(+b.target)*100)));
         var yt=yearsToTarget(b);
-        var reach = pct>=100 ? t('Reached! 🎉')
+        var reach = pct>=100 ? t('Reached')
           : (yt===Infinity ? t('add a bit monthly to reach it')
           : tf('on track in about {n}', {n: sbYearsText(yt)}));
         tgtHtml = '<div style="margin-top:8px"><div class="meter" style="height:9px"><span style="display:block;height:100%;width:'+pct+'%;background:rgb('+rgb+')"></span></div>'+
@@ -6397,7 +6397,7 @@
         var avg=Number(data.incomeAvg)||0, exp=expTotal(), loan=Number(data.loan)||0, save=Number(data.save)||0;
         var trTot=data.transport.reduce(function(s,t){ return s+(Number(t.cost)||0)+(Number(t.insurance)||0); },0);
         var left=avg-exp-loan-trTot;
-        h='<h2>You’re all set 🎉</h2><p class="wsub">Here’s your starting picture. Everything stays editable — and only on your device.</p>'+
+        h='<h2>You’re all set.</h2><p class="wsub">Here’s your starting picture. Everything stays editable — and only on your device.</p>'+
           '<div class="wsum">'+
           '<div class="r"><span>Name</span><span class="v">'+esc(data.name||'—')+'</span></div>'+
           '<div class="r"><span>Monthly income</span><span class="v">'+fmt(avg)+'</span></div>'+
@@ -6613,7 +6613,7 @@
     if(document.getElementById('personalizeNag')) return;
     var bar=document.createElement('div'); bar.id='personalizeNag';
     bar.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9000;max-width:92%;background:linear-gradient(135deg,#10243a,#0a1828);border:1px solid var(--cyan,#0ce);border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center;font-family:Rajdhani,sans-serif';
-    bar.innerHTML='<span style="font-size:22px">✨</span><div style="flex:1;min-width:0"><b style="color:#eaffff;font-family:Orbitron,sans-serif;font-size:13px">Finish personalizing</b><div style="color:var(--txt-dim,#9bb);font-size:13px">Your dashboard works, but adding your income, expenses &amp; body stats makes every grade and simulator real.</div></div>'+
+    bar.innerHTML='<div style="flex:1;min-width:0"><b style="color:#eaffff;font-family:Orbitron,sans-serif;font-size:13px">Finish personalizing</b><div style="color:var(--txt-dim,#9bb);font-size:13px">Your dashboard works, but adding your income, expenses &amp; body stats makes every grade and simulator real.</div></div>'+
       '<button id="nagGo" style="background:var(--cyan,#0ce);color:#021019;border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-family:Orbitron,sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">Finish setup</button>'+
       '<button id="nagX" aria-label="Dismiss" style="background:transparent;color:var(--txt-dim,#9bb);border:0;font-size:20px;cursor:pointer;line-height:1">✕</button>';
     document.body.appendChild(bar);
@@ -6659,7 +6659,7 @@
       {sel:'#chatToggle', text:'<b>Assistant MRLN.</b> Type a change in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions” — or ask a question about any feature.'},
       {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'},
       {sel:'#langSel', text:'<b>Language & currency.</b> Switch these to whatever suits you. Your data always stays on your device.'},
-      {sel:'#tourBtn', text:'<b>All done! 🎉</b> Tap here any time to replay this tour.'}
+      {sel:'#tourBtn', text:'<b>All done.</b> Tap here any time to replay this tour.'}
     ];
     var i=0, active=false, ring=document.getElementById('tourRing'), tip=document.getElementById('tourTip');
     // reposition ONLY — moves the ring/tip to follow the element. Never scrolls,
@@ -6729,7 +6729,7 @@
     var back=document.getElementById('updateBack'), body=document.getElementById('updateBody'),
         title=document.getElementById('updateTitle'), ok=document.getElementById('updateOk');
     function build(){
-      if(title) title.textContent = t('✨ What’s new');
+      if(title) title.textContent = t('What’s new');
       if(body) body.innerHTML = '<p style="margin:0 0 10px">'+t(WHATS_NEW.intro)+'</p>'+
         '<ul style="margin:0;padding-left:20px;line-height:1.6">'+
         WHATS_NEW.items.map(function(s){ return '<li style="margin:5px 0">'+esc(t(s))+'</li>'; }).join('')+'</ul>'+
@@ -6972,11 +6972,11 @@
     var d=document.createElement('div'); d.id='bdayPop';
     d.style.cssText='position:fixed;inset:0;z-index:97000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(3,7,14,.86)';
     d.innerHTML='<div style="max-width:380px;text-align:center;border:1px solid var(--cyan);border-radius:18px;padding:30px 24px;background:linear-gradient(180deg,rgba(0,229,255,.12),var(--panel2));box-shadow:var(--glow)">'+
-      '<div style="font-size:52px;line-height:1">🎂🎉</div>'+
+      '<div style="font-size:52px;line-height:1">🎂</div>'+
       '<div style="font-family:\'Orbitron\';font-weight:800;font-size:23px;color:#eaffff;margin-top:10px">Happy Birthday'+(name?(', '+esc(name)):'')+'!</div>'+
       (age!=null?'<div style="font-family:\'Orbitron\';font-weight:700;font-size:16px;color:var(--lime);margin-top:10px">⬆ LEVEL UP — you\'re now '+age+'</div>':'<div style="font-size:15px;color:var(--lime);margin-top:10px;font-weight:700">⬆ LEVEL UP!</div>')+
       '<div style="font-size:14px;color:var(--txt);margin-top:12px">Another year stronger. Here\'s to smart money and big gains this year. 💪</div>'+
-      '<button class="btn" id="bdayClose" style="margin-top:18px;width:100%">🎉 Thanks!</button></div>';
+      '<button class="btn" id="bdayClose" style="margin-top:18px;width:100%">Thanks</button></div>';
     document.body.appendChild(d);
     function close(){ var x=document.getElementById('bdayPop'); if(x) x.remove(); }
     d.addEventListener('click',function(e){ if(e.target===d) close(); });
