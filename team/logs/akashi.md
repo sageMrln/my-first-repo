@@ -774,3 +774,49 @@ Entry format:
   path (can't move GB optically) — heavy data needs file-based/separate transfer. Storage vs transfer
   trade must be a deliberate decision.
 - Open: review Kaito's design + vendored helper + persistence/quota handling before it touches STATE.
+
+## [2026-06-29] — via Kaito (asleep, step 4) — REVIEW: Assistant v2 — 4 new your-numbers intents (`666d19f`)
+- Asked: step 4 — verify the tamper-poison is FULLY spread into 4 NEW answerData branches that read
+  MORE private numbers (income avg/low/high, savings total + per-box balance/target/pct, top-3 spend
+  categories, body weight). Every new figure must yield NaN on a tampered/bypassed copy (token()=NaN)
+  and NEVER surface a real number off a removed lock. Confirm box-NAME renders via textContent (no XSS)
+  + isn't a sensitive figure; no new net/exfil; regexes linear (no ReDoS); invariants intact. Fix DIRECTLY
+  if any hole. Run green.
+- Did / found (read full diff 5f17cdb..666d19f + every supporting fn on the tip, traced each branch with
+  T=NaN, ran the gate — not on faith):
+  - SCOPE: index.html only, +42. 4 new branches inside answerData (@4351-4414): where-money, income,
+    savings (total+box), weight. T=__sys.token() read ONCE @4348 and reused → 0 new __sys refs (count
+    unchanged). No sw.js/manifest/parser/applyChange/export edit. Grepped the region for fetch/XHR/eval/
+    new Function/innerHTML/insertAdjacentHTML/document.write/.src=/location.* → ZERO. Pure compute+string.
+  - POISON — token() @2012 returns 1 armed&!tripped else NaN; fmtN(NaN)=Math.round(NaN).toLocaleString="NaN".
+    Traced ALL 4 branches on a tampered copy (T=NaN):
+    1. WHERE-MONEY: x.v=groupTotal(g); groupTotal sums Math.round(itemMonthly) and itemMonthly returns
+       token()*(…) (@2046-2054) → NaN per item → groupTotal=NaN. DOUBLE-gated: the .filter(x.v>0) drops
+       every group (NaN>0=false) → returns the empty-state string; even if reached, money(x.v*T) → NaN. ✓
+    2. INCOME: money((avg|low|high||0)*T) → NaN. !inc guard reads RAW inc only to DECIDE whether to answer;
+       all shown figures *T-gated. ✓
+    3. SAVINGS: per-box bal=(+balance||0)*T → NaN; tgt is RAW but DISPLAYED as money(tgt*T) → NaN (tgt>0
+       guard only PICKS which sentence, leaks nothing); pct=Math.round(bal/tgt*100)=Math.round(NaN)=NaN;
+       total=reduce(balance)*T → NaN. Every savings figure poisoned. ✓
+    4. WEIGHT: Math.round(w*T*10)/10 → NaN. !w guard reads RAW w only to decide whether to answer. ✓
+    CONCLUSION: NO new branch can surface a real figure when the lock is removed — every one yields NaN.
+    No DIRECT fix needed; Kaito's gating is correct + complete on all 4.
+  - BOX NAME SAFE ✓: {name:hitBox.name} is a user-chosen LABEL (e.g. "Holiday"), not a private figure;
+    flows tf() (plain split/join → String) → showAnswer → body.textContent=textAns (@4473), NOT innerHTML
+    → even an HTML/script-laden name renders as literal text. No XSS. Shown back to the user on their OWN
+    device, never networked.
+  - ReDoS ✓: new regexes are flat literal-word alternations with \b anchors + single-char optionals
+    (how.?s/what.?s) + one `my \w+ (box|pot|goal)`. No nested/overlapping quantifiers → linear. Input is a
+    short user question; .test(s) runs once per branch.
+  - INVARIANTS ✓: __sys count IDENTICAL parent 5f17cdb vs tip (35==35) → no watchdog weakened/removed.
+    PUBCHK(4047293148) present, PUB_B64(×3) present, #hud-state empty (@1672), #__ownerKeySrc empty (@1676).
+    No SW/manifest change. New t()/tf() strings (4 branch templates + empty-states) → Mikoto for MISSING:0.
+  - Ran node tools/release/green.js → GREEN exit 0 (27 release-tests passed; preflight CLEAR — slots empty,
+    no private key, 1 public key, no PII, PUBCHK intact, 4 scripts balanced; GUIDE/manifest/sw/team-chat clean).
+- Verdict: SAFE @ 666d19f. All 4 new intents fully poison-gated (NaN on tamper, never a real figure); box
+  name escaped via textContent + non-sensitive; no net/exfil/ReDoS; watchdogs intact. No DIRECT fix required.
+- Commits / SHAs reviewed: 666d19f (HEAD bb0c96d = Arthur log + TEAM-CHAT only; index.html byte-identical →
+  SAFE holds on current artifact). If index.html moves, I re-sign.
+- Still open: Arthur POLISH (2 EN copy tweaks for savings-total + named-box, no new keys) routes to Kaito →
+  will MOVE the tip and REOPEN my SAFE; I re-verify the new tip (copy-only, confirm no figure ungated). New
+  strings await Mikoto MISSING:0; Hugo GREEN. Gate not opened. Sleep-mode: no auto-publish w/o Osefe's go.
