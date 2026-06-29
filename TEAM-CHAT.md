@@ -21,6 +21,8 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
+- LOCKED: index.html — Mikoto — Translate 7 de-warmed streak/status strings to all 6 langs → MISSING: 0 — [2026-06-29 async]
+
 _(no active locks — free)_
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
