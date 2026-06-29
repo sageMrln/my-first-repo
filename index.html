@@ -4333,18 +4333,68 @@
     }
     return '';
   }
+  /* ---------- Assistant MRLN — answers computed from the USER'S OWN numbers ----------
+     Confined-domain "AI": every figure is derived from leftOver()/GRAND (already gated by
+     __sys.token()) or multiplied by __sys.token() directly, so a tampered copy yields NaN
+     and the assistant can never read real numbers off a bypassed lock. Fully offline. */
+  function _amtFrom(s){
+    var m = String(s).replace(/[,\s]/g,'').match(/(\d+(?:\.\d+)?)(k)?/i);
+    if(!m) return NaN; var n = parseFloat(m[1]); if(m[2]) n *= 1000; return n;
+  }
+  function answerData(text){
+    // guard: in a non-browser context (test sandbox) these globals are absent → fall through
+    if(typeof __sys==='undefined' || typeof MODEL==='undefined' || typeof leftOver!=='function' || typeof GRAND==='undefined') return null;
+    var s=String(text).toLowerCase();
+    var T=__sys.token(), sym=curInfo().sym;
+    var inc=(MODEL&&MODEL.income)?MODEL.income.avg:0, left=leftOver(inc);   // left already × token()
+    function money(n){ return fmtN(n)+' '+sym; }
+    // spending — by category or total
+    if(/\b(spend|spending|expenses?|costs?|bills?|paying)\b/.test(s)){
+      var hitCat=null;
+      (MODEL.groups||[]).forEach(function(g){
+        var nm=String(g.name||'').toLowerCase(), tn=String((typeof t==='function'?t(g.name):g.name)||'').toLowerCase();
+        if((nm && s.indexOf(nm)>=0) || (tn && s.indexOf(tn)>=0)) hitCat=g;
+      });
+      if(hitCat) return tf('You spend about {amt} a month on {cat}.', {amt:money(groupTotal(hitCat)*T), cat:(typeof t==='function'?t(hitCat.name):hitCat.name)});
+      return tf('Your total monthly spending is about {amt}.', {amt:money(GRAND*T)});
+    }
+    // leftover / what do I keep
+    if(/\b(left ?over|keep|surplus|net|what.?s left)\b/.test(s)){
+      if(!inc) return t('I can’t work that out without your income — set it in Setup, or tell me e.g. “income is now 25000”.');
+      return tf('You keep about {amt} in a typical month, after every bill and any loan.', {amt:money(left)});
+    }
+    // affordability
+    if(/\b(afford|can i buy|enough for)\b/.test(s)){
+      var a=_amtFrom(s);
+      if(!isFinite(a)) return t('Tell me the price and I’ll check, e.g. “can I afford 4000?”.');
+      if(!inc) return t('I can’t check that without your income — set it in Setup first.');
+      if(a <= left*T) return tf('Yes — {amt} fits within your typical {left}/month leftover.', {amt:money(a), left:money(left)});
+      return tf('That’s tight — {amt} is more than your {left}/month leftover, so it would come out of savings.', {amt:money(a), left:money(left)});
+    }
+    // save-time
+    if(/\b(how long|when will|time to)\b/.test(s) && /\b(save|saving|reach)\b/.test(s)){
+      var target=_amtFrom(s);
+      var rate=((MODEL.savingsMatch||0)*T) || left;
+      if(!isFinite(target) || target<=0) return t('Tell me the goal amount, e.g. “how long to save 50000?”.');
+      if(!isFinite(rate) || rate<=0) return t('Set a monthly saving first, e.g. “save 2000 per month”, and I’ll tell you how long.');
+      return tf('At {rate}/month you’d reach {amt} in about {n} month(s).', {rate:money(rate), amt:money(target), n:Math.ceil(target/rate)});
+    }
+    return null;   // not a numbers question → let feature Q&A try, then the out-of-scope fallback
+  }
   var _Q_WORDS = /^\s*(?:how|what|what's|whats|why|where|which|who|can|could|would|should|does|do|is|are|tell me|explain|help|hvordan|hvad|hvorfor|hvor|kan|forklar|hjælp|wie|was|warum|wo|erklär|erkläre|hilfe|cómo|qué|por qué|dónde|ayuda|explica|hur|vad|varför|var|förklara|hjälp|hva|hvorfor|forklar|hjelp|hogyan|mi|miért|hol|segíts)\b/i;
   function answerQuestion(text){
     var s = String(text).toLowerCase().trim();
     var isQ = /\?/.test(text) || _Q_WORDS.test(text);
     if(!isQ) return null;
+    var d = answerData(text); if(d) return d;          // computed from the user's OWN numbers (poison-gated)
     var best=null, bestScore=0;
     MRLN_HELP.forEach(function(h){
       var sc=0; h.keys.forEach(function(k){ if(s.indexOf(k)>=0) sc++; });
       if(sc>bestScore){ bestScore=sc; best=h; }
     });
     if(best && bestScore>0) return mrlnAnswer(best.id);
-    return t('I can explain any part of MRLN — try “how does Savings work?”, “what is Cash Flow?”, or “how do I back up my data?”. Ask about any tab: Income, Expenses, Loan, Cash Flow, Savings, Checklist, Subscriptions, Gym Plan, Food Log, Calendar, Stats, Notebook or Connect.');
+    // out-of-scope: confined-domain assistant admits its boundary instead of guessing
+    return t('I am unable to answer that at the moment, please look it up on your browser then return.');
   }
 
   var aiProposal = null;
