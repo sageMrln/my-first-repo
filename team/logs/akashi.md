@@ -490,3 +490,54 @@ Entry format:
 - Noted: "Move my data" Phase 1 redesign landed (c4e3882, index.html) — touches export/import,
   needs my SAFE review before any gate. NEXT.
 - Open: review c4e3882 data-transfer diff for leak/key/injection + export-strip integrity.
+## [2026-06-29] — via Kaito — REVIEW: Phase 1 "Move my data" data-transfer redesign (`c4e3882`)
+- Asked: security-review the Phase 1 redesign — one situation-aware "Move my data" card
+  (Bring-in clipboard hero + Copy-out + decode→validate→preview→confirm import). Verify my
+  4 gating constraints (on-device / no key in transfer / validate+cap+escape+confirm /
+  clipboard fails-safe), watchdogs intact, master-fallback still skips the key. Run green.
+- Did / found (read the full diff + all load-bearing fns on the tip, ran the gate — not on faith):
+  - SCOPE: diff = index.html only (+132/-28). UI rework of the Connect "Move my data" card +
+    new fns: decodeDataCode, importSummary, setupMoveSituation, bringInFromClipboard,
+    copyOutData; doImport now takes (code,report) and decode→preview→confirm→apply.
+  - CONSTRAINT 1 — ON-DEVICE ✓: grepped the `+` lines for fetch/XHR/eval/new Function/
+    location.href|search|hash=/.src= → ZERO. No server/account/cloud, no data in any URL
+    path/query. The only clipboard WRITE is exportDataCode() output (the user's own data,
+    user-initiated); transfer stays device↔device.
+  - CONSTRAINT 2 — KEY NEVER TRAVELS ✓: exportDataCode (@5230-5233) is BYTE-IDENTICAL parent
+    (aadea11) vs tip — explicit allowlist {v,cfg,workouts,calendar,log,body,prs,notes,foodLog,
+    tax,savingsBoxes,prefs,reminders,usage,bdayYear,missionsDone}; NO ownerKey/signingKey/
+    #__ownerKeySrc field. applyImportedData (@5237) reads only d.* fields, never reads/writes
+    #__ownerKeySrc. importMasterHTML (@5290) reads #hud-state ONLY, never #__ownerKeySrc →
+    master-file fallback still imports data-but-not-key. Confirmed by grep: no key field in
+    the export/apply data object.
+  - CONSTRAINT 3 — VALIDATE + CAP + ESCAPE + CONFIRM ✓: decodeDataCode (@5262) trims, strips
+    MRLNDATA-, **3,000,000-char size cap** BEFORE atob (the cap I asked for), then JSON.parse,
+    then schema check `!d||typeof d!=='object'||!d.cfg||!d.cfg.groups` → throws "isn't MRLN
+    data". applyImportedData re-checks cfg.groups (defense in depth). doImport (@5348) decodes →
+    importSummary → uiConfirm preview → ONLY applies on confirm. XSS: importSummary builds the
+    preview from static tf() strings + NUMERIC counts only (.length / Object.keys().length) —
+    no user text (note/item names) ever reaches the {sum} interpolation. innerHTML sinks
+    (tip/biMsg/coMsg @5328/5364/5383) receive ONLY static tf() strings; every error display
+    uses esc(e.message). Raw clipboard/file text is used only via indexOf/slice → decode
+    (base64+JSON), never rendered. No injection path.
+  - CONSTRAINT 4 — CLIPBOARD FAILS-SAFE ✓: bringInFromClipboard (@5366) guards
+    `!(navigator.clipboard&&readText)` → friendly fallback to paste box (covers file:// /
+    insecure context, iOS); .then sniffs for MRLNDATA- (no payload → friendly "copy on other
+    device first"); .catch (Don't Allow) → friendly "paste in the box instead" + reveals it.
+    readText result goes ONLY to doImport; never written anywhere, never networked. No silent
+    auto-read (no readText on load) — only on the explicit button tap. Leaks nowhere.
+  - WATCHDOGS / INVARIANTS ✓: __sys count IDENTICAL parent vs tip (23==23) → none weakened/
+    removed. PUBCHK 4047293148 intact (@4644/4651), #__ownerKeySrc empty (@1633), #hud-state
+    empty (@1629). No SW/manifest change. licensing poison untouched (diff doesn't touch it).
+  - TIP NOTE: review target c4e3882; HEAD moved to b4cdc9f (36e9d95 team roster + b4cdc9f
+    Hugo tools/ lock). Verified index.html is **byte-identical c4e3882..HEAD** → my SAFE holds
+    on the current tip; published artifact unchanged.
+  - Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, assistant 16/16, streak 4/4,
+    sound 7/7, reorder 7/7, preflight CLEAR — slots empty/PUBCHK/1 public key, all published
+    files clean).
+- Verdict: SAFE @ c4e3882 (and current tip b4cdc9f — index.html identical). All 4 of my gating
+  constraints met; key never travels; validate+cap+escape+confirm sound; clipboard fails-safe;
+  watchdogs intact. New user strings (tf()/t()) await Mikoto for MISSING:0.
+- Commits / SHAs reviewed: c4e3882 (index.html identical at tip b4cdc9f). If index.html moves, I re-sign.
+- Still open: nothing security-side. New i18n strings → Mikoto (MISSING). Gate not opened.
+  Sleep-mode: no auto-publish — needs Osefe's explicit go.
