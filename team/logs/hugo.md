@@ -253,3 +253,15 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Commits / SHAs: 2d35a61 (guide sync + PDF rebuild).
 
 - Still open / next: Awaiting Akashi re-SAFE (guide + PDF published, scope extended), Mikoto confirm MISSING:0 on `2d35a61` (already verified, no new strings, just guide doc), then Kaito/Osefe for ship. Manual browser test of all 4 new your-numbers Q&A types by Kaito recommended post-ship.
+
+## [2026-06-29] — via Kaito (asleep dispatch) — Wire assistant_silly_test into green.js
+
+- Asked: Mikoto built `tools/test/assistant_silly_test.js` (41 cases — silly/misspelled affordability + food questions, including the "20 kr gum" regression). It currently passes 41/41 but is **NOT wired into green.js**, so this bug class isn't gated. Wire it in as a section in `tools/release/green.js` (same pattern as other suites — a `section()` + `run([...])` entry; place it next to the existing assistant suite). Run `node tools/release/green.js` → confirm GREEN exit 0 (7 suites now, 41+92=133 total). Run `node tools/i18n/sync.js` → MISSING: 0. Append log entry + post status to TEAM-CHAT + commit + push.
+
+- Did / found / thought: Pulled branch, read memory + chat (gate gap flagged in STATE). Reviewed assistant_silly_test.js (41 test cases: affordability misspells like "can i aford a 100 kr book", typos like "wats my salary", the "20 kr gum → 20,000 kr" regression that shipped a fix, food/weight questions, command hijack guards — extraction pattern same as sound/transfer tests, mocks runtime globals for `answerData` computation). Added section 7 to green.js after transfer_test (line 62-64): `section('assistant silly-question test — tools/test/assistant_silly_test.js'); run(['tools/test/assistant_silly_test.js'], 'assistant silly suite');`. Ran `node tools/release/green.js`: **GREEN exit 0** — all 7 suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, transfer 27/27 ✓, **silly 41/41** ✓ = **133 total tests**, preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 scripts balanced), leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean). Ran `node tools/i18n/sync.js`: **MISSING: 0** (592/592 keys, 7 languages — test-infra only, no UI strings). Staged green.js, committed `7dfefad`, pushed to branch. Appended status to TEAM-CHAT.md (1 line: gate gap closed, 7 suites, 133 tests, all GREEN), committed `7e3eecb`, pushed.
+
+- Decision / result: `assistant_silly_test.js` (41/41) is now wired into green.js release gate as suite 7. The "20 kr gum" bug class and all typo/misspell affordability regressions can no longer drift undetected — they're part of the committed, gated test suite. Green.js now runs **7 suites, 133 tests total** and gates all three test-critical behaviors (parser accuracy, assistant routing, test coverage).
+
+- Commits / SHAs: `7dfefad` (green.js wiring), `7e3eecb` (TEAM-CHAT status + this log).
+
+- Still open / next: Gate gap closed from my side. Per the chat, Akashi still owes an re-SAFE on the answerData/_amtFrom changes (`9fa83f8`), then it's Kaito verify + Osefe ship call. No QA action remaining until the next candidate hits the gate.
