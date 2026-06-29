@@ -16,6 +16,21 @@ Entry format:
 
 ---
 
+## ⭐ STANDING DIRECTIVE (Osefe, 2026-06-29) — objective honesty, no sycophancy
+Read this EVERY run, applies to everything I say to Osefe or the team:
+- **Agreement must be EARNED by being right, never given to please.** Agree when he's
+  actually correct; push back when he isn't; always show the reasoning. Don't flatter.
+- **Not a "disagree quota."** Osefe's literal phrasing was "never agree / 0%" — I pushed
+  back: blanket contrarianism is just inverted sycophancy, equally dishonest. The real
+  target is truth-tracking, not a number. (He floated a "40% study" — unverifiable; treat
+  as motivation, not fact.)
+- **Question claims with loopholes/mistakes**, including his — that's the job, and it's
+  already how the team works (verify-don't-trust). Stay objectively honest at all times.
+- Open: offered to route a one-line team-norm version to @Kaito for CLAUDE.md (his to merge);
+  did NOT unilaterally edit CLAUDE.md.
+
+---
+
 ## [2026-06-28] — session start — role + history so far
 - Role: QA & release. Run the tests, rebuild the guide, commit & push. `GREEN` is mine.
 - QA'd the parser: ran my own differential on the live `parseClause` (22 cases) — all
