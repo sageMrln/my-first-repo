@@ -236,18 +236,18 @@
   .exp-body tr:last-child td{padding-bottom:14px}
   .exp-body .sub-detail{color:var(--txt-dim);font-size:12px}
   /* Arthur E — accordion row stagger: rows materialise from the HUD when a group opens */
-  .exp-group.open .exp-body tr{animation:rowIn .3s ease both}
+  .exp-group.just-opened .exp-body tr{animation:rowIn .3s ease both}
   @keyframes rowIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-  .exp-group.open .exp-body tr:nth-child(1){animation-delay:0ms}
-  .exp-group.open .exp-body tr:nth-child(2){animation-delay:25ms}
-  .exp-group.open .exp-body tr:nth-child(3){animation-delay:50ms}
-  .exp-group.open .exp-body tr:nth-child(4){animation-delay:75ms}
-  .exp-group.open .exp-body tr:nth-child(5){animation-delay:100ms}
-  .exp-group.open .exp-body tr:nth-child(6){animation-delay:125ms}
-  .exp-group.open .exp-body tr:nth-child(7){animation-delay:150ms}
-  .exp-group.open .exp-body tr:nth-child(8){animation-delay:175ms}
-  .exp-group.open .exp-body tr:nth-child(9){animation-delay:200ms}
-  .exp-group.open .exp-body tr:nth-child(n+10){animation-delay:225ms}
+  .exp-group.just-opened .exp-body tr:nth-child(1){animation-delay:0ms}
+  .exp-group.just-opened .exp-body tr:nth-child(2){animation-delay:25ms}
+  .exp-group.just-opened .exp-body tr:nth-child(3){animation-delay:50ms}
+  .exp-group.just-opened .exp-body tr:nth-child(4){animation-delay:75ms}
+  .exp-group.just-opened .exp-body tr:nth-child(5){animation-delay:100ms}
+  .exp-group.just-opened .exp-body tr:nth-child(6){animation-delay:125ms}
+  .exp-group.just-opened .exp-body tr:nth-child(7){animation-delay:150ms}
+  .exp-group.just-opened .exp-body tr:nth-child(8){animation-delay:175ms}
+  .exp-group.just-opened .exp-body tr:nth-child(9){animation-delay:200ms}
+  .exp-group.just-opened .exp-body tr:nth-child(n+10){animation-delay:225ms}
 
   .scen-btn{font-family:'Rajdhani';font-weight:700;font-size:13px;letter-spacing:.04em;border:1px solid var(--line);background:var(--panel);color:var(--txt-dim);padding:8px 14px;border-radius:10px;cursor:pointer;transition:all .18s ease;text-transform:uppercase}
   .scen-btn:hover{color:var(--txt);border-color:var(--cyan-dim)}
@@ -2239,7 +2239,13 @@
       h.addEventListener('click', function(){
         var grp=h.closest('.exp-group'); var opening=!grp.classList.contains('open');
         grp.classList.toggle('open');
-        if(opening && typeof MRLN_SFX!=='undefined') MRLN_SFX.panel();   // distinct "unfold" sound on open
+        if(opening){
+          // Arthur E — stagger only on the OPEN gesture (transient class), so an
+          // innerHTML rebuild from an unrelated number change can't re-fire it.
+          grp.classList.add('just-opened');
+          setTimeout(function(){ grp.classList.remove('just-opened'); }, 600);
+          if(typeof MRLN_SFX!=='undefined') MRLN_SFX.panel();   // distinct "unfold" sound on open
+        }
       });
     });
   }
