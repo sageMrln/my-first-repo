@@ -1561,6 +1561,16 @@
           </details>
         </div>
       </div>
+      <div id="movePhotos" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
+        <div class="note" data-i18n="PHOTOS MOVE SEPARATELY" style="font-size:11px;letter-spacing:.05em;color:var(--txt-dim);text-transform:uppercase">Photos move separately</div>
+        <div class="desc" data-i18n="Your food photos can be large, so they travel as their own file — not in the quick copy above. Save them here, then load them on your other device." style="font-size:12px;margin-top:6px">Your food photos can be large, so they travel as their own file — not in the quick copy above. Save them here, then load them on your other device.</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn ghost" id="photoExportBtn" data-i18n="📤 Export my photos" style="flex:1;min-width:150px">📤 Export my photos</button>
+          <label class="btn ghost" style="flex:1;min-width:150px;text-align:center;cursor:pointer;margin:0"><span data-i18n="📥 Import photos">📥 Import photos</span><input type="file" id="photoImportFile" accept=".json,application/json" style="display:none"></label>
+        </div>
+        <div id="photoMoveMsg" class="note" style="display:none;margin-top:10px"></div>
+        <div id="persistWarn" class="note" data-i18n="This browser may clear stored photos when space runs low. Keep an exported photo file as backup." style="display:none;margin-top:10px;color:var(--amber)">This browser may clear stored photos when space runs low. Keep an exported photo file as backup.</div>
+      </div>
       <div id="deviceTip" style="display:none;margin-top:14px;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--txt)"></div>
     </div>
 
@@ -6438,6 +6448,85 @@
   })();
   function renderFoodLog(){ if(FOODLOG) FOODLOG.render(); }
 
+  /* ===================== PHOTO MOVE (food photos travel as their own file) =====================
+     Photos live in IndexedDB and are excluded from the quick QR/clipboard move (too big). This is
+     the separate, user-initiated file path Osefe chose. Export = the user's own images keyed by id;
+     import is fail-CLOSED (validate→cap→re-encode the WHOLE set, or nothing) and EXIF-stripped by
+     routing every byte back through the same canvas re-encode the camera capture uses. */
+  var PHOTOMOVE = (function(){
+    var PER_MAX = 2200000;        // ~1.6MB image as a base64 data-URL string (chars)
+    var TOTAL_MAX = 120000000;    // ~90MB of images total
+    var COUNT_MAX = 5000;         // sane entry ceiling
+    var RX = /^data:image\/(jpeg|png|webp);base64,/;
+    function msg(text, ok){ var m=document.getElementById('photoMoveMsg'); if(!m) return; m.style.display='block'; m.style.color= ok?'var(--lime)':'var(--amber)'; m.innerHTML=text; }
+    // data URL → canvas re-encode: validates it's a REAL decodable image, strips EXIF/GPS, bounds size.
+    function reencode(url, cb){
+      try{
+        var img=new Image();
+        img.onload=function(){
+          var max=720,w=img.width,h=img.height;
+          if(!w||!h){ cb(null); return; }
+          if(w>h && w>max){ h=Math.round(h*max/w); w=max; } else if(h>=w && h>max){ w=Math.round(w*max/h); h=max; }
+          try{ var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); cb(cv.toDataURL('image/jpeg',0.6)); }
+          catch(_){ cb(null); }
+        };
+        img.onerror=function(){ cb(null); };
+        img.src=url;
+      }catch(_){ cb(null); }
+    }
+    function exportPhotos(){
+      if(!MEDIA.supported()){ msg(tf('This browser can’t store photos separately.'),false); return; }
+      MEDIA.all().then(function(map){
+        var ids=Object.keys(map||{});
+        if(!ids.length){ msg(tf('No photos to export yet.'),false); return; }
+        dl('mrln-photos.json', JSON.stringify({ v:1, photos:map }), 'application/json');
+        msg(tf('✓ Saved <b>{n}</b> photo(s) to a file. Load it on your other device.',{n:ids.length}), true);
+      }).catch(function(){ msg(tf('Could not read your photos.'),false); });
+    }
+    function importPhotos(text){
+      if(!MEDIA.supported()){ msg(tf('This browser can’t store photos separately.'),false); return; }
+      if(typeof text!=='string' || text.length > TOTAL_MAX + 5000000){ msg(tf('That photo file is too large or unreadable.'),false); return; }
+      var obj; try{ obj=JSON.parse(text); }catch(_){ msg(tf('That isn’t a MRLN photo file.'),false); return; }
+      if(!obj || obj.v!==1 || !obj.photos || typeof obj.photos!=='object'){ msg(tf('That isn’t a MRLN photo file.'),false); return; }
+      var ids=Object.keys(obj.photos);
+      if(!ids.length){ msg(tf('That photo file is empty.'),false); return; }
+      if(ids.length > COUNT_MAX){ msg(tf('That photo file has too many items.'),false); return; }
+      // fail-CLOSED validation pass — reject the WHOLE file if any item is off
+      var total=0, i, url;
+      for(i=0;i<ids.length;i++){
+        url=obj.photos[ids[i]];
+        if(typeof url!=='string' || !RX.test(url) || url.length > PER_MAX){ msg(tf('That photo file has an invalid image — nothing was imported.'),false); return; }
+        total+=url.length; if(total > TOTAL_MAX){ msg(tf('That photo file is too large — nothing was imported.'),false); return; }
+      }
+      // only photos whose id matches an existing food entry are kept (orphans ignored, not an error)
+      var known={}; (STATE.foodLog||[]).forEach(function(e){ if(e&&e.id) known[e.id]=e; });
+      var keep=ids.filter(function(id){ return known[id]; });
+      if(!keep.length){ msg(tf('None of those photos match meals on this device. Bring your data over first, then import photos.'),false); return; }
+      msg(tf('Loading {n} photo(s)…',{n:keep.length}), true);
+      // re-encode ALL first (fail-closed): if any can't decode as an image, write nothing
+      var done=0, out={}, failed=false;
+      keep.forEach(function(id){
+        reencode(obj.photos[id], function(enc){
+          if(failed) return;
+          if(!enc){ failed=true; msg(tf('A photo couldn’t be read as an image — nothing was imported.'),false); return; }
+          out[id]=enc; done++;
+          if(done===keep.length){
+            // all decoded → commit to IDB, then flag + hydrate in memory
+            Promise.all(keep.map(function(id){ return MEDIA.put(id, out[id]).then(function(){ known[id].hasPhoto=true; known[id].photo=out[id]; }); }))
+              .then(function(){ autosave(); if(typeof renderFoodLog==='function') renderFoodLog(); msg(tf('✓ Imported <b>{n}</b> photo(s).',{n:keep.length}), true); })
+              .catch(function(){ _warnStorageFull(); msg(tf('Storage filled up while importing — some photos may be missing.'),false); });
+          }
+        });
+      });
+    }
+    function wire(){
+      var ex=document.getElementById('photoExportBtn'); if(ex) ex.addEventListener('click', exportPhotos);
+      var imp=document.getElementById('photoImportFile');
+      if(imp) imp.addEventListener('change', function(){ var f=imp.files&&imp.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=function(){ importPhotos(String(rd.result||'')); imp.value=''; }; rd.onerror=function(){ msg(tf('Could not read that file.'),false); }; rd.readAsText(f); });
+    }
+    return { wire:wire };
+  })();
+
   /* ===================== NOTEBOOK (offline notes, iPhone-Notes style) ===================== */
   var NOTEBOOK = (function(){
     var curId=null, q='';
@@ -7302,6 +7391,7 @@
   renderNotebook();
   renderFoodLog();
   initFoodMedia();    // migrate legacy inline food photos → IndexedDB + hydrate already-migrated ones
+  PHOTOMOVE.wire();   // wire the separate "Export / Import my photos" file path
   renderTaxHelper();
   initLocale();       // language / currency / country — apply saved prefs + wire pickers
   startI18nObserver();   // auto-translate any dynamic content rendered from here on
@@ -7363,7 +7453,9 @@
   /* ===================== PWA: persistent storage + offline + install ===================== */
   (function initPWA(){
     // 1) ask the browser to keep our localStorage (stops iOS/Safari 7-day eviction once granted)
-    try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ if(!p) navigator.storage.persist().catch(function(){}); }).catch(function(){}); } }catch(_){}
+    // Ask the browser to keep our storage; if persistence is DENIED, surface a state so the user
+    // knows photos could be evicted under disk pressure and to keep an exported photo file (R5).
+    try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ return p ? true : navigator.storage.persist(); }).then(function(granted){ if(granted===false){ var w=document.getElementById('persistWarn'); if(w) w.style.display='block'; } }).catch(function(){}); } }catch(_){}
     // 2) register the offline service worker — secure contexts only (https or localhost; file:// has no SW)
     try{ var sec=(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'); if('serviceWorker' in navigator && sec){ navigator.serviceWorker.register('sw.js').catch(function(){}); } }catch(_){}
     // 2b) bake the current File ID (#F-XXXX) into the manifest start_url, so an INSTALLED app
