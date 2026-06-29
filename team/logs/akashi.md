@@ -463,3 +463,18 @@ Entry format:
   link/inputs all preserved via the re-enable list; pure CSS, zero money/key/watchdog/network touch.
 - Commits / SHAs reviewed: a674002 (tip). If tip moves index.html, I re-sign.
 - Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
+
+## [2026-06-29] — direct (Osefe) — brainstorm: browser→app data transfer
+- Asked: brainstorm making data transfer browser→app dead-simple (9-yr-old), Osefe to talk to team 1:1.
+- Did: grounded in real code (exportDataCode/MRLNDATA base64 @5209, importDataCode @5239,
+  importMasterHTML/#hud-state @5249, QR write-only @5666, same-origin install). Posted ranked ideas:
+  (1) same-origin install = ZERO transfer (data already there, just make it obvious) — best+safest;
+  (2) QR camera handoff incl. rolling-QR for big payloads — cross-device wow, needs in-app reader;
+  (3) one "Move my data" button + hide the base64 blob + preview-before-import;
+  (4) OS share-sheet/AirDrop handoff.
+- Security guardrails I will hold: STAY ON-DEVICE (no server/account/cloud-sync default — hard NO
+  unless opt-in E2E); never put data in URL path/query (fragment/file/QR/P2P only); data code/file
+  must NEVER carry the private signing key (current code correct — preserve); import must validate
+  schema/version + cap size + escaped render + confirm.
+- Verdict/next: pick = ship #1+#3 now (UX, zero new risk), build #2 as the wow. Offered deeper
+  threat-model on the QR reader. No code touched (brainstorm only); nothing at the gate.
