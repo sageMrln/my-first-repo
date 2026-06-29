@@ -855,3 +855,58 @@ Entry format:
 - Commits / SHAs reviewed: 14ba394 (index.html identical at HEAD 53b7dd0). If index.html moves, I re-sign.
 - Still open: nothing security-side. Gate (steps 7–11) now aligned: Akashi SAFE · Mikoto MISSING:0 ·
   Hugo GREEN @ 14ba394 — awaiting Osefe ship. Sleep-mode: no auto-publish without Osefe's explicit go.
+
+## [2026-06-29] — via Kaito (asleep) — RETROACTIVE RE-SAFE: "20 kr"→20,000 affordability fix (`9fa83f8`, LIVE @ c5599c0)
+- Asked: retroactive re-SAFE of the kr-bug fix that landed AFTER my SAFE @ 14ba394 and shipped into the v2
+  gh-pages deploy (c5599c0, sw v6) WITHOUT my re-sign — Kaito missed the tip moved. Already LIVE; if I find a
+  hole, fix + re-ship now. Review delta 14ba394..HEAD index.html (= only 9fa83f8): _amtFrom regex rewrite,
+  _aiNorm typo normaliser, answerData intent-regex widenings, answerQuestion uses _aiNorm.
+- Did / found (read full diff + traced + adversarial-tested + ran both suites — not on faith):
+  - SCOPE: index.html delta = ONLY 9fa83f8 (+39/-9). HEAD index.html BYTE-IDENTICAL to 9fa83f8 AND to the
+    LIVE deploy c5599c0 (git diff --stat empty both ways) → what I cleared == what is live. sw.js v5→v6 is a
+    correct cache-bust so clients fetch the new index.html. No manifest/parser/applyChange/export edit.
+  - 1. _amtFrom ReDoS-SAFE ✓: new re /(\d+(?:\.\d+)?)\s*(k)?(?![a-z])/gi with vals[] max-pick. No nested/
+    overlapping quantifiers (\d+, \s*, (k)? are independent atoms; lookahead is zero-width) → LINEAR. Timed
+    adversarial inputs to 200k chars (all-digits, "9k"×2000, all-spaces, "1 "×100k, "9 k "×50k) → every case
+    <15ms, no blowup. parseFloat-ONLY; output is a Number used in arithmetic, never eval'd/rendered as code.
+    BUG FIXED: "can i afford a 20 kr gum" → 20 (was 20,000 — the 'k' of "kr" was read as ×1000). "2k"→2000,
+    "2k phone"→2000, "20 kg"→20, "199 kr"→199 all correct.
+  - 1b. FUNCTIONAL (non-security) REGRESSION flagged to Kaito: the NO-SPACE unit form "20kr"→2 and "199kr
+    thing"→19 (the negative-lookahead makes the engine retry from a shifted start, dropping a digit). NOT a
+    security issue — it's the user's OWN typed price (never a private figure), and it UNDER-reports, leaking
+    nothing. Spaced form "20 kr"→20 is correct. Routed to Kaito as a parser-accuracy fix (e.g. allow the unit
+    to consume the trailing letters instead of failing the optional k). Does NOT gate SAFE.
+  - 2. POISON-GATING INTACT ✓: the diff changes ONLY regexes (which branch fires) + prose strings. Grepped the
+    +/- lines for money(/*T/*__sys/leftOver/GRAND/groupTotal → ZERO figure-expression lines changed. Every
+    shown/compared figure (left=leftOver(inc)=token()*inc−GRAND−loanAmt(), GRAND*T, groupTotal*T, income*T,
+    savings*T, weight*T) is BYTE-IDENTICAL to the v2 tip I traced @ 14ba394 / 666d19f — all yield NaN on a
+    tampered copy (token()=NaN → fmtN(NaN)="NaN"). The widened intent regexes (what costs me the most / how
+    much…left / \bafford / can i buy|get|have / how much do i way / how fat am i) only change WHICH branch
+    matches; the figures inside each branch stay token-gated. The parsed _amtFrom price is the user's own typed
+    number, not private. No branch can surface a real figure off a removed lock.
+  - 3. _aiNorm SAFE ✓: normalises the QUESTION text only (lowercase + a fixed list of \b-bounded global
+    replaces typo→canonical). Operates on `text` arg only — never reads/writes STATE/MODEL/storage/DOM, can't
+    inject (output is a String fed to .test()/_amtFrom, never to a DOM sink or eval). Word-bounded so it can't
+    touch amounts/category names. ReDoS-safe: each pattern is \b(?:alt|alt)\b — no nested quantifiers; timed
+    200k–350k-char adversarial inputs → ≤12ms. answerQuestion now gates isQ on _aiNorm(text) (canonical words)
+    — same routing semantics, still returns null for non-questions → command path UNCHANGED (consistent w/ my
+    0d03dbb routing review).
+  - 4. RENDER still escaped ✓: answer path unchanged → showAnswer → body.textContent (not innerHTML). No
+    net/exfil added (grep for fetch/XHR/eval/new Function/innerHTML/.src=/location.*=/localStorage/export* in
+    the + lines → NONE).
+  - INVARIANTS ✓: __sys count IDENTICAL 14ba394 vs HEAD (26==26) → no watchdog weakened/removed. #__ownerKeySrc
+    empty (@1676), #hud-state empty (@1672) — and EMPTY in the LIVE c5599c0 artifact too. PUBCHK/4047293148
+    (×2) + PUB_B64 (×3) present. No SW/manifest leak (sw.js delta = version bump only).
+  - Ran node tools/test/assistant_silly_test.js → 41/41. node tools/release/green.js → GREEN exit 0 (parser
+    21/21 + suites; preflight CLEAR — slots empty, 1 public key, no PII, PUBCHK intact, 4 scripts; GUIDE/
+    manifest/sw/team-chat clean).
+- Verdict: SAFE @ 33c9ae2 (index.html identical at fix 9fa83f8 and at LIVE c5599c0). ReDoS-safe parser,
+  poison-gating fully intact (no figure expr changed), _aiNorm bounded/non-injecting, watchdogs intact, no
+  leak/exfil. Retroactive clear of the already-live fix is valid — no hole. No DIRECT security fix required.
+- Process note (honest): this SHIPPED LIVE without my re-SAFE — the gate's freeze-the-tip rule was bypassed.
+  Outcome is clean here, but Kaito should treat sleep-mode ships as still needing all three sign-offs on the
+  CURRENT tip BEFORE deploy, never after. Logged so it's not normalised.
+- Commits / SHAs reviewed: 9fa83f8 (index.html identical at HEAD 33c9ae2 and LIVE c5599c0). If index.html
+  moves, I re-sign.
+- Still open: the "20kr" no-space parser-accuracy regression → Kaito (functional, non-gating). Sleep-mode:
+  no auto-publish without Osefe's explicit go — this one already shipped, flagged above.
