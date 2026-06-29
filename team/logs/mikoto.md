@@ -312,3 +312,28 @@ Entry format:
 - Poison-safety preserved: parsed price is user-typed; compared/shown `left` still = leftOver()×__sys.token() (NaN on tampered copy). Routed @Akashi for re-SAFE (answerData + _amtFrom changed), @Hugo to wire the new suite into green.js, @Kaito to verify/own.
 - Commits / SHAs: 96020d8 (lock) → this push (fix + test). Lock released.
 - Still open / next: @Akashi re-SAFE, @Hugo wire suite into green.js, @Kaito verify, then gate + Osefe ship. Note: there's no real calorie DATABASE — food questions route to the Food Log feature explanation, not a "calories in X" lookup (logged as a possible future intent, not built).
+
+## [2026-06-29] — SESSION RECAP (Osefe asked: "log every single thing") — full accounting of THIS session
+Three pieces of work this session (other "Mikoto" commits in the log — "translate 10 your-numbers", "translate 13 assistant" — were PARALLEL/dispatched Mikoto sessions, NOT me; noting for identity integrity):
+
+**1. Move-my-data Phase 1 i18n — 25 strings × 6 langs.**
+- Translated the new Move-my-data flow strings (STEP {n}, 3 situational 👉 banners, import preview counts, "📥 Bring this in?"/"Bring it in", success "✓ Done…", clipboard/paste/copy error messages) to es/da/de/sv/nb/hu.
+- Trap: AUTO-MERGED block is one ~750KB minified-JSON line; merged via Python (json load → add keys → dump ensure_ascii=False). Curly quotes “”’ in keys pulled from source, not inferred.
+- Git collision: a parallel session moved the tip; resolved by `git reset --hard origin` then re-merging on the live tip. MISSING:0 (559 keys).
+- Commit: 39df9d0. (Earlier attempt cdbe10c rebased away in the collision.)
+
+**2. Move-my-data card "stuck in English" BUGFIX.**
+- Osefe reported the card stayed English on language switch. Diagnosed: the static button/heading labels had NO data-i18n attr AND no dict key, so the runtime text-node walker had nothing to look up. sync.js only scans t()/tf()+data-i18n+WHATS_NEW, never raw text nodes → it reported MISSING:0 and never flagged them (my earlier MISSING:0 was real but blind to these).
+- Fix: wired 9 discrete controls with data-i18n (so sync.js now TRACKS them → regression-proof); added 5 prose descriptions (prose-handler keys) + textarea placeholder to dict. 15 keys × 6 langs = 90. Button labels kept consistent with banner copy. 2 step-heading spans dropped inline <b> (data-i18n→textContent; flagged Arthur, who later SHIP'd accepting the bold-loss).
+- Verified with a Node simulation of applyLang's 3 paths: all 15 strings resolve in 6 langs. green.js GREEN, MISSING:0.
+- Commits: 9c7d36f (lock) → 0192136 (fix) → 81bc29b (release+log). Team pipeline then ran: Arthur SHIP d96c60d, Hugo GREEN b431337, Akashi SAFE a7cb19d → SHIPPED to gh-pages 6f28ef4. A parallel session added a SW cache-bust (61c38d2) because stale service-worker cache kept showing English on the live site after my fix.
+
+**3. Assistant MRLN — misspell tolerance + "20 kr → 20,000" affordability bug.**
+- Osefe screenshot: "can i afford a 20 kr gum?" → bot said 20,000 kr. Cause: _amtFrom stripped spaces then matched (k)? → the k of "kr" (kroner) read as ×1000.
+- Built tools/test/assistant_silly_test.js (41 silly/misspelled finance+food cases, MOCKS runtime globals so answerData computes). Baseline 23/41 FAILED.
+- Fixes (engine logic only, NO new strings → MISSING:0 untouched): (a) _amtFrom rewrite — k=×1000 only as real suffix (2k/5k), never kr/kg/km; pick max figure (ignores text-speak "2"="to"); ReDoS-safe. (b) _aiNorm word-bounded typo normaliser on the question only. (c) widened regexes: affordable, "what costs me the most", "how much…left", weight way/fat.
+- Result 41/41; assistant_test still 16/16 (commands NOT hijacked); green.js GREEN; preflight CLEAR. Poison-gating preserved (price is user-typed; shown `left` still = leftOver()×token()).
+- Commits: 96020d8 (lock) → 9fa83f8 (fix + test). Routed @Akashi re-SAFE (answerData/_amtFrom changed), @Hugo wire suite into green.js, @Kaito verify/own.
+
+Git housekeeping noted: my Move-my-data line and the Assistant v1/v2 line diverged on origin; origin was a strict superset (had both), so I fast-forwarded to origin tip before the assistant work.
+Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gate + Osefe ship. No new translations outstanding (MISSING:0 throughout).
