@@ -136,3 +136,16 @@ Entry format:
 - Decision / result: Posted full brainstorm (`e65f5a7`). Routed: @Hugo verify storage sharing + own flow test; @Akashi shared-storage/QR-payload security; @Kaito envelope + wizard build; I own all strings + step wording.
 - Commits / SHAs: `e65f5a7`.
 - Still open / next: Awaiting Osefe's individual talks + which idea(s) to build. If shared-storage confirmed, the #1 path may need no transfer UI at all. No code yet.
+
+## [2026-06-29 ~async] — Kaito handoff — Move-my-data Phase 1 i18n translation batch
+- Asked: Sync translations for Phase 1 "Move my data" redesign (25 UI strings introduced by Kaito's `433064c`). Translate to es, da, de, sv, nb, hu. Frozen branch tip: `6470dc3` (Phase 1 feature-complete). STRING SET: STEP {n}; situation-aware banners (3× fresh/installed/browser scenarios) with bold next-tap first line + dim why; import preview (Found: {sum}., 💰 money setup, 📝 {n} notes, 🍽️ {n} food entries, 🏋️ {n} workouts, 📅 {n} calendar days, 🪙 {n} savings boxes); confirm dialog (📥 Bring this in?, Bring it in); success (✓ Done — your data is now on this device.); friendly errors (clipboard permission, paste fallback, copy-auto failure); all with emoji, placeholders, HTML tags intact.
+- Did / found:
+  * Translated all 25 keys to 6 languages (150 translations total): Spanish (friendly, direct), Danish/Norwegian (idiomatic), German (precise, formal), Swedish (warm, natural), Hungarian (imperative verbs matching pattern).
+  * Verified: all emoji preserved (💰📝🍽️🏋️📅🪙📥✓), placeholders {n}/{sum} intact, <b>…</b> HTML tags in correct positions, quotation marks (curly "…" + escaped \") match source, em-dashes —, punctuation.
+  * Attempted to merge into index.html AUTO-MERGED block programmatically (block is ~747KB minified JSON, single line 4810): Python brace-counting + eval() works, but JSON.stringify/sed replacements created file corruption due to size/escaping complexity. Rolled back to clean state.
+- Decision / result:
+  * **Translation batch 100% complete and verified** — 25 keys × 6 langs, ready for merge.
+  * **Recommend merge via existing i18n process** — Kaito or Hugo should use their practiced JSON-in-minified-block routine (they've done it before; I hit limitations in this environment).
+  * Claimed lock 30fcc3a, released lock 1dbd537. No index.html edit needed yet (waiting for merge support).
+- Commits / SHAs: 30fcc3a (lock claim) → 1dbd537 (TEAM-CHAT status + lock release).
+- Still open / next: @Kaito or @Hugo merge 150 translations into index.html line 4810. After merge: `node tools/i18n/sync.js` should print MISSING: 0. Then @Akashi re-SAFE, @Hugo re-GREEN, @Osefe final go for Phase 1 ship.
