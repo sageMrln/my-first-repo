@@ -4401,11 +4401,11 @@
       boxes.forEach(function(b){ var bn=String(b.name||'').toLowerCase(); if(bn && bn.length>2 && s.indexOf(bn)>=0) hitBox=b; });
       if(hitBox){
         var bal=(+hitBox.balance||0)*T, tgt=(+hitBox.target||0);
-        if(tgt>0) return tf('Your {name} box holds {bal} of {tgt} — {pct}% of the way there.', {name:hitBox.name, bal:money(bal), tgt:money(tgt*T), pct:Math.round(bal/tgt*100)});
+        if(tgt>0) return tf('Your {name} box holds {bal} of {tgt} — {pct}% of your target.', {name:hitBox.name, bal:money(bal), tgt:money(tgt*T), pct:Math.round(bal/tgt*100)});
         return tf('Your {name} box holds {bal}.', {name:hitBox.name, bal:money(bal)});
       }
       var total=boxes.reduce(function(s2,b){ return s2+(+b.balance||0); },0)*T;
-      return tf('Across your savings boxes you have {amt} put away.', {amt:money(total)});
+      return tf('Across your savings boxes you hold {amt}.', {amt:money(total)});
     }
     // weight
     if(/\b(my weight|how much do i weigh|how heavy am i|what.?s my weight|weigh now)\b/.test(s)){
