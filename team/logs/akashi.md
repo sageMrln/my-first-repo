@@ -678,3 +678,51 @@ Entry format:
 - Commits / SHAs reviewed: 684197e (index.html identical at HEAD db879c4). If index.html moves, I re-sign.
 - Still open: nothing security-side. Gate: my SAFE in; needs Mikoto MISSING:0 + Hugo GREEN + Osefe ship.
   Sleep-mode: no auto-publish without Osefe's explicit go. Pre-existing stash@{0} noted for Kaito.
+
+## [2026-06-29] — via Kaito (asleep, step 4) — REVIEW: Assistant MRLN your-numbers Q&A — answerData (`fe7dc58`)
+- Asked: step 4 — verify the tamper-poison is FULLY spread into the new answerData() feature that
+  reads the user's PRIVATE numbers (total/by-category spend, leftover, affordability, save-time).
+  Confirm EVERY numeric branch yields NaN on a tampered/bypassed copy (token()=NaN) and can NEVER
+  surface a real figure off a removed lock. Confirm no new net/exfil, _amtFrom regex not ReDoS/
+  injectable, answer render is escaped. Watchdogs/slots intact. Run green.
+- Did / found (read the full diff + every load-bearing fn on the tip, traced each branch, ran the gate — not on faith):
+  - SCOPE: index.html only, +51/-1. New: _amtFrom (@4339), answerData (@4344-4383), one wire line in
+    answerQuestion (@4389: `var d=answerData(text); if(d) return d;` BEFORE the feature-Q&A + fallback),
+    and the out-of-scope fallback string change (@4397). No sw.js/manifest/parser/applyChange/export edit.
+  - POISON — token() (@2012) returns 1 armed&!tripped else NaN; NaN propagates through all arithmetic and
+    isFinite(NaN)=false. Traced EVERY numeric branch on a tampered copy (T=NaN):
+    1. by-category spend: `groupTotal(hitCat)*T` — groupTotal sums Math.round(itemMonthly) and itemMonthly
+       multiplies by token (@2046/2054) → NaN; ×T → NaN. Total: `GRAND*T` — GRAND already token-gated
+       (@2058) → NaN. Both poisoned. ✓
+    2. leftover: `money(left)`, left=leftOver(inc)=token()*inc−GRAND−loanAmt() (@2062) → NaN. (`!inc` guard
+       uses RAW inc only to decide WHETHER to answer; figure shown is `left`, gated.) ✓
+    3. affordability: compare `a <= left*T` → NaN → false → falls to else, shows money(a)=user's typed
+       price (not private) + money(left)=NaN. No real leftover surfaced either branch. ✓
+    4. save-time: `rate=((MODEL.savingsMatch||0)*T)||left` — savingsMatch is RAW but ×T=NaN, NaN is falsy →
+       falls back to left=NaN → rate=NaN → `!isFinite(rate)` true → returns the non-figure "set a saving
+       first" string. target/amt shown are user-typed, not private. ✓
+    money()→fmtN(n)=Math.round(n).toLocaleString → Math.round(NaN)=NaN → renders literally "NaN" (visibly
+    poisoned, never a real number). CONCLUSION: NO branch can leak a real figure when the lock is removed.
+    No DIRECT fix needed — Kaito's gating is correct and complete. The +3 __sys refs (23→26) are exactly
+    answerData's comment+guard+`var T=__sys.token()`; no pre-existing watchdog touched.
+  - NO NET/EXFIL ✓: answerData is pure computation + string building. Grepped the diff for fetch/XHR/eval/
+    new Function/innerHTML/.src=/location.*=/localStorage/exportBlank/exportHTML → ZERO. No STATE write, no
+    storage, no network.
+  - _amtFrom REGEX SAFE ✓: `/(\d+(?:\.\d+)?)(k)?/i` — linear, no nested/overlapping quantifiers → no ReDoS;
+    `.replace(/[,\s]/g,'')` linear. Input is a short user question. Branch regexes are simple alternations,
+    linear. parseFloat only; output is a Number used in arithmetic, never eval'd/rendered as code.
+  - RENDER ESCAPED ✓: answer flows answerQuestion→showAnswer→`body.textContent=textAns` (@4439) — textContent,
+    NOT innerHTML. No DOM injection regardless of content. Answer path applies nothing (clears aiProposal).
+  - WIRING ✓: answerData only runs when isQ already true (@4387-4389) and returns BEFORE the command path —
+    a numbers-question can't misroute into a money mutation (consistent w/ my 0d03dbb routing review).
+  - INVARIANTS ✓: #__ownerKeySrc empty (@1676), #hud-state empty (@1672), PUBCHK(4047293148)+PUB_B64(×3)+
+    trip/pubChk watchdogs (@4766-4774) + export-trip (@4460) all intact. No SW/manifest change. New t()/tf()
+    strings → Mikoto for MISSING:0.
+  - Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, assistant 16/16, streak 4/4, sound 7/7,
+    reorder 7/7, transfer 27/27 = 92/92; preflight CLEAR — slots empty, 1 public key, PUBCHK, 4 scripts).
+- Verdict: SAFE @ fe7dc58. Assistant fully poison-gated; no leak/exfil/ReDoS/injection; watchdogs intact.
+  No DIRECT security fix was required (gating already correct + complete).
+- Commits / SHAs reviewed: fe7dc58 (tip). If index.html moves, I re-sign.
+- Still open: Arthur's POLISH (P1 `{n} month(s)` split, P2 "That's tight"→"No —") routes to Kaito → will
+  MOVE the tip and REOPEN my SAFE; I re-verify the new tip (copy-only, but I confirm no figure ungated).
+  New strings await Mikoto MISSING:0; Hugo GREEN. Gate not opened. Sleep-mode: no auto-publish w/o Osefe's go.
