@@ -4348,6 +4348,12 @@
     var T=__sys.token(), sym=curInfo().sym;
     var inc=(MODEL&&MODEL.income)?MODEL.income.avg:0, left=leftOver(inc);   // left already × token()
     function money(n){ return fmtN(n)+' '+sym; }
+    // where the money goes — biggest categories (checked before generic spending)
+    if(/\b(where (does|do).*(money|i spend)|biggest (cost|expense|spend)|most expensive|what costs the most|where.*money go)\b/.test(s)){
+      var gs=(MODEL.groups||[]).map(function(g){ return {n:(typeof t==='function'?t(g.name):g.name), v:groupTotal(g)}; }).filter(function(x){return x.v>0;}).sort(function(a,b){return b.v-a.v;});
+      if(!gs.length) return t('You haven’t added any expenses yet — add some in the Expenses tab and I’ll show where your money goes.');
+      return tf('Your biggest monthly costs: {list}.', {list:gs.slice(0,3).map(function(x){ return x.n+' '+money(x.v*T); }).join(' · ')});
+    }
     // spending — by category or total
     if(/\b(spend|spending|expenses?|costs?|bills?|paying)\b/.test(s)){
       var hitCat=null;
@@ -4380,6 +4386,32 @@
       var n=Math.ceil(target/rate);
       return n===1 ? tf('At {rate}/month you would reach {amt} in about 1 month.', {rate:money(rate), amt:money(target)})
                    : tf('At {rate}/month you would reach {amt} in about {n} months.', {rate:money(rate), amt:money(target), n:n});
+    }
+    // income (possessive context, so it doesn't catch "how does income work")
+    if(/\b(my income|my salary|my wage|my pay|how much do i (make|earn)|what.?s my (income|salary|pay|wage)|my take.?home)\b/.test(s)){
+      if(!inc) return t('I don’t have your income yet — set it in Setup, or tell me e.g. “income is now 25000”.');
+      var I=MODEL.income||{};
+      return tf('Your typical monthly income is {avg} — low month {low}, good month {high}.', {avg:money((I.avg||0)*T), low:money((I.low||0)*T), high:money((I.high||0)*T)});
+    }
+    // savings — total, or a specific box by name
+    if(/\b(my savings|how much.*(saved|savings)|saved so far|in my (savings|pot|box|boxes)|nest egg|put away|savings balance|how.?s my (goal|savings|box)|my \w+ (box|pot|goal))\b/.test(s)){
+      var boxes=(typeof sbList==='function')?sbList():((STATE&&STATE.savingsBoxes)||[]);
+      if(!boxes.length) return t('You haven’t opened any savings boxes yet — make one in the Savings tab for a goal.');
+      var hitBox=null;
+      boxes.forEach(function(b){ var bn=String(b.name||'').toLowerCase(); if(bn && bn.length>2 && s.indexOf(bn)>=0) hitBox=b; });
+      if(hitBox){
+        var bal=(+hitBox.balance||0)*T, tgt=(+hitBox.target||0);
+        if(tgt>0) return tf('Your {name} box holds {bal} of {tgt} — {pct}% of the way there.', {name:hitBox.name, bal:money(bal), tgt:money(tgt*T), pct:Math.round(bal/tgt*100)});
+        return tf('Your {name} box holds {bal}.', {name:hitBox.name, bal:money(bal)});
+      }
+      var total=boxes.reduce(function(s2,b){ return s2+(+b.balance||0); },0)*T;
+      return tf('Across your savings boxes you have {amt} put away.', {amt:money(total)});
+    }
+    // weight
+    if(/\b(my weight|how much do i weigh|how heavy am i|what.?s my weight|weigh now)\b/.test(s)){
+      var w=(STATE&&STATE.body&&+STATE.body.weight)||0;
+      if(!w) return t('I don’t have a weight for you yet — add it in the Body/Gym tab or connect a scale.');
+      return tf('Your last recorded weight is {w} kg.', {w:Math.round(w*T*10)/10});
     }
     return null;   // not a numbers question → let feature Q&A try, then the out-of-scope fallback
   }
