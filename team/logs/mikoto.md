@@ -337,3 +337,35 @@ Three pieces of work this session (other "Mikoto" commits in the log — "transl
 
 Git housekeeping noted: my Move-my-data line and the Assistant v1/v2 line diverged on origin; origin was a strict superset (had both), so I fast-forwarded to origin tip before the assistant work.
 Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gate + Osefe ship. No new translations outstanding (MISSING:0 throughout).
+
+## [2026-06-29 ~async] — Kaito dispatch (asleep) — Translate 24 photo storage feature strings to all 6 langs → MISSING: 0
+
+- Asked: Kaito's new IndexedDB photo storage + file export/import feature added 24 new user-facing English strings. Translate to es, da, de, sv, nb, hu → MISSING: 0. Strings include: Move-data card photo block (PHOTOS MOVE SEPARATELY header, explainer, Export/Import buttons, persistence warning), SEND-box additions (3 notes about photo handling), and 15 PHOTOMOVE status messages (save success, import results, error states, loading spinner). Preserve all placeholders {n}, emoji 📤 📥 📋 ✓ …, HTML tags <b>…</b>, em-dashes —, curly quotes "" and apostrophes exactly. Tone: factual, serious, no hype (per Osefe's product-voice directive).
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 24 (exact keys from need_translate.json).
+  * Identified all 24 keys: 5 from Move-data photo block (PHOTOS MOVE SEPARATELY, explainer, Export button, Import button, storage warning), 3 from SEND-box (data copy note, photo-copy note, photos-separate note), 15 status/result strings (saved {n}, imported {n}, errors on invalid/empty/large files, loading spinner, etc.).
+  * Translated all 24 × 6 langs = 144 translations:
+    - Spanish: natural imperative verbs (Exportar/Importar), error messages clear (archivo no válido, ninguno importado).
+    - Danish/Norwegian: idiomatic (eksporter/importér, ingen fotos endnu), direct status phrasing.
+    - German: precise infinitives + formal tone (exportieren/importieren, Fotodatei ist…).
+    - Swedish: warm, natural phrasing (exportera/importera, filen är för stor).
+    - Hungarian: imperative verbs matching pattern (exportálása/importálása), clear error states (túl nagy, érvénytelen).
+  * Merged all 144 translations into AUTO-MERGED block: wrote Node script to parse the minified ~748KB JSON block using brace-counting (not regex — avoids corruption), merged 24 new keys × 6 langs cleanly, re-serialized minified, and wrote back.
+  * Challenge: 4 keys use Unicode curly apostrophes (U+2019) in contractions (can't/isn't/couldn't/aren't), and 2 more use curly quotation marks ("📤 Export my photos"); initial merge used straight quotes, causing 4 MISSING. Rebuilt those 4 with exact U+2019 apostrophes by reading directly from need_translate.json keys.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (616 keys fully translated across all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (parser 21/21, preflight CLEAR, all published files leak-clean, full suite 7 tests 135 assertions passing).
+  * Committed index.html (c9334c6) with full description of the 24 strings and translation approach.
+  * Pushed to origin (claude/vibrant-pasteur-ie24ab).
+- Key translation decisions:
+  * Placeholders {n} preserved exactly in all languages (count in photo(s), loading spinner, etc.).
+  * Functional emoji 📤 📥 📋 ✓ preserved in all translations and button labels (these aid comprehension, not hype).
+  * Em-dashes — preserved to match source rhythm (serious tone, not truncated).
+  * Curly quotes "" and apostrophes U+2019 extracted byte-for-byte from source keys (no inference; exact copy from need_translate.json).
+  * HTML tags <b>…</b> preserved in exact positions (✓ Saved <b>{n}</b> photo(s), etc.).
+  * Tone: factual, direct, no encouragement or hype (matching Osefe's product-voice directive for MRLN).
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 24 photo-storage strings translated to 6 locales in factual, serious tone. Every placeholder, emoji, character preserved exactly. GREEN gate confirmed.
+  * Lesson: Unicode apostrophes (U+2019 vs U+0027) and quotes (U+201C/U+201D vs U+0022) matter critically in i18n key matching. need_translate.json is the authoritative source; keys must be extracted/copied directly, never inferred from a string literal (which often loses the exact bytes).
+- Commits / SHAs: i18n merge c9334c6.
+- Still open / next: @Kaito routes to @Akashi re-SAFE + @Hugo re-GREEN if tip moved, then @Osefe final go. This completes i18n for the IndexedDB photo storage feature; the feature now ships fully translated in all 7 languages.
+
