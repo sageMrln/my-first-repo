@@ -383,3 +383,39 @@ Entry format:
 - Commits / SHAs reviewed: c7c5810 (tip). If tip moves index.html, I re-sign.
 - Still open: nothing security-side. Gate not opened; 1 new i18n string → Mikoto (MISSING),
   Hugo GREEN/guide. Sleep-mode: no auto-publish — needs Osefe's explicit go.
+
+## [2026-06-29] — via Kaito — REVIEW: slider drag SFX (`ea94ab2`)
+- Asked: perf-focused security review of MRLN_SFX.slide(frac) + one delegated `input`
+  listener firing on every `input[type=range]` (6 sims). Key worry: `input` fires very
+  rapidly during a drag — confirm bounded, no money touch, no leak/injection. Run
+  sound_test + green.
+- Did / found (read engine + listener + both parent/tip on the tip, ran suites — not on faith):
+  - SCOPE: index.html +15, sound_test.js +12/-3, TEAM-CHAT 1 line. No sw.js/manifest/
+    parser/applyChange/export edits. Grepped the diff for fetch/innerHTML/eval/XHR/new
+    Function/document.write/.src=/__sys/PUBCHK/PUB_B64/ownerKeySrc/hud-state/exportBlank/
+    applyChange/parseClause/STATE. → ZERO hits.
+  - RAPID-DRAG BOUNDED ✓: slide() (@1872-1874) routes through the SAME guarded play(fn,42)
+    → note(). Global throttle is shared `last` on the audio clock (play @1851-1857, line
+    1854 `t-last < (gap||GAP)`), and note() early-returns at voices>=CAP (CAP=14 @1834). A
+    drag firing input every pointermove collapses to ≤1 blip per 42ms window AND can't exceed
+    14 live voices. o.stop() always scheduled + onended disconnect/decrement → no node leak.
+    sound_test "throttle bounds node creation (<60)" still passes.
+  - LISTENER CHEAP ✓ (@6958-6965): per event = parseFloat(min/max/value) + one subtraction +
+    one division + clamp. No allocation per event, no array build (sc[] lives in the engine
+    closure, not the listener). Range-only guard (el.type!=='range') → keystrokes/text/number
+    inputs never fire (stays silent); mx>mn guard avoids NaN/div-by-zero. PASSIVE observer:
+    no preventDefault/stopPropagation/return false, reads el.value only.
+  - NO MONEY LOGIC ✓: listener READS el.value for a fraction; never writes a slider value,
+    never recomputes finance. The simulators' OWN input handlers are untouched (separate
+    listeners; this is an added capture-phase observer). parser 21/21 unchanged.
+  - NO LEAK / INJECTION ✓: no fetch/XHR/eval/innerHTML, output-only (synth tone). No new STATE
+    field. No new i18n string (MISSING:0 holds). #__ownerKeySrc empty (@1601), #hud-state empty
+    (@1597), PUB_B64+PUBCHK present, __sys count IDENTICAL parent vs tip (23==23) → no watchdog
+    weakened/removed.
+  - Ran node tools/test/sound_test.js → 7/7 (incl. "slide pitch rises with value 0<.25<.5<1").
+    node tools/release/green.js → GREEN exit 0 (parser 21/21, assistant 16/16, streak 4/4,
+    sound 7/7, reorder 7/7, preflight CLEAR, all published files clean).
+- Verdict: SAFE. Pure-synth output layer; rapid drag bounded by the shared throttle+voice cap;
+  zero money/key/network/injection/leak surface; watchdogs intact.
+- Commits / SHAs reviewed: ea94ab2 (tip). If tip moves index.html, I re-sign.
+- Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
