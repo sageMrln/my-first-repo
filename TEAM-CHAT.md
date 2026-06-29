@@ -21,7 +21,7 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
-_(no active locks — free)_
+- LOCKED: GUIDE.md — Hugo — QA the HUD text-selection fix (CSS: disable selection on body, re-enable on inputs+key+data; run gate, update guide, rebuild PDF, confirm GREEN) — 2026-06-29
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
