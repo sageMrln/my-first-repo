@@ -82,6 +82,31 @@ Two sessions editing at once is what caused our git collisions. So:
 - Every sign-off names an **explicit SHA**. If the tip moves, the gate **reopens**
   and the relevant owner re-signs the new tip (this bit us ~4× on the parser).
 
+## 🔁 THE BUILD & SHIP WORKFLOW — Osefe/Miradi's standing order (follow in sequence)
+Every feature/change runs this pipeline, in order. Don't skip steps; don't reorder.
+1. **Kaito codes** the feature to completion **in English** (source strings English first).
+2. **Arthur** reviews the UI/UX and writes a list of any changes needed to **maximize
+   engagement while staying professional** — **brutally honest, objective** (no flattery,
+   no manufactured objections; the evidence talks).
+3. **Kaito** implements whatever Arthur requests, and **goes over it with Miradi (Osefe)**
+   until it's **fully agreed upon** and the code is finished.
+4. **Akashi** goes over all errors + testing, **makes the relevant security fixes DIRECTLY**
+   (security is Akashi's standing exception to find-xor-fix), and **spreads the anti-tamper
+   poison** (`__sys.token()` multiplier + watchdog coverage) **into everything new** that was
+   created — no new feature ships un-poisoned.
+5. **Kaito** reviews all of Akashi's new code/changes to ensure **no mistakes**.
+6. **Akashi** revisits for any potential fixes prompted by Kaito's changes.
+7. **Mikoto** completes translations for **all available languages** (→ `MISSING: 0`).
+8. **Kaito** double-checks Mikoto's translations (verify, don't trust — spot-check meaning,
+   not just coverage).
+9. **Hugo** gives his **GREEN** (full suite + preflight, on the current tip).
+10. **Akashi** gives his **SAFE** green (on the same current tip).
+11. **Kaito asks Miradi (Osefe) to ship it** — nothing publishes without his explicit go.
+
+This supersedes the ad-hoc ordering. The "Publish gate" below (Akashi SAFE · Mikoto
+MISSING:0 · Hugo GREEN · Osefe go) is steps 7–11 of this pipeline; the freeze-the-candidate
++ tip-moved-reopens rules still apply to every sign-off.
+
 ## Tests & preflight — the gate is automated, not hand-rolled
 One shared, committed suite — don't re-invent a scratchpad harness per person.
 - **`node tools/test/parse_test.js`** — parser regression. Add a case whenever a bug
