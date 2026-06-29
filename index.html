@@ -1476,28 +1476,49 @@
       <div id="teamRoomFeed" style="display:none;margin-top:10px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
     </div>
     <div class="card">
-      <h2>🔒 Backup &amp; restore</h2>
-      <div class="desc">Move your data between your own devices. It stays <b>private to your devices</b> — never uploaded.</div>
+      <h2>📦 Move my data</h2>
+      <div class="desc">New phone, or just installed the app? Bring everything across — it stays <b>private to your devices</b> and is <b>never</b> uploaded.</div>
+      <div id="moveTip" style="display:none;margin-top:8px;background:#08121f;border:1px solid var(--cyan);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--txt);line-height:1.5"></div>
       <div id="deviceTip" style="display:none;margin-top:6px;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--txt)"></div>
-      <h2 style="font-size:14px;margin-top:14px">Back up / copy out</h2>
-      <div class="desc" style="font-size:12.5px">Make a private code of everything on this device, then paste it on another device.</div>
-      <button class="btn ghost" id="dataExportBtn" style="margin-top:8px">Make my data code</button>
-      <div id="dataExportWrap" style="display:none;margin-top:10px">
-        <div id="dataCode" style="background:#06101c;border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:11px;padding:11px;word-break:break-all;line-height:1.45;max-height:120px;overflow:auto;cursor:pointer;user-select:text"></div>
-        <div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" id="dataCopy" style="flex:1">Copy code</button><button class="btn ghost" id="dataDownload" style="flex:1">Download as file</button></div>
+
+      <div id="moveSteps" style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+        <!-- GET: bring data ONTO this device (the hero when freshly installed) -->
+        <div id="moveGet" style="border:1px solid var(--line);border-radius:12px;padding:13px">
+          <h2 style="font-size:14px;margin:0">📥 Bring my data onto <b>this</b> device</h2>
+          <div class="desc" style="font-size:12.5px;margin-top:4px">Already tapped <b>“Copy my data”</b> on your other phone or browser? Tap below — we’ll find it and bring everything in.</div>
+          <button class="btn" id="bringInBtn" style="width:100%;margin-top:10px;font-size:16px;padding:13px">📋 Bring in my data</button>
+          <div id="bringInMsg" class="note" style="display:none;margin-top:10px"></div>
+          <details id="getMore" style="margin-top:10px">
+            <summary style="cursor:pointer;color:var(--cyan);font-size:12.5px">Can’t paste? Do it by hand</summary>
+            <div class="desc" style="font-size:12px;margin-top:8px">Paste the data you copied, or pick the file you saved. This <b>replaces</b> what’s on this device.</div>
+            <textarea id="dataImportText" placeholder="Paste your data here" style="width:100%;min-height:64px;margin-top:8px"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+              <button class="btn" id="dataImportBtn" style="flex:1">Import &amp; load</button>
+              <label class="btn ghost" style="flex:1;text-align:center;cursor:pointer;margin:0">Pick a file<input type="file" id="dataImportFile" accept=".txt,.json" style="display:none"></label>
+            </div>
+            <div id="dataMsg" class="note" style="display:none;margin-top:10px"></div>
+            <div class="desc" style="font-size:12px;margin-top:12px">Or load a whole saved <b>master / exported file</b> (.html) — income, expenses, notes, calendar, food log and the Klarna tab. Your private minting key is <b>never</b> imported.</div>
+            <label class="btn ghost" style="display:block;margin-top:8px;cursor:pointer;text-align:center">📦 Import my master file (.html)<input type="file" id="impMaster" accept=".html,.htm,.txt" style="display:none"></label>
+            <div id="impMasterMsg" class="note" style="display:none;margin-top:10px"></div>
+          </details>
+        </div>
+
+        <!-- SEND: copy data OFF this device -->
+        <div id="moveSend" style="border:1px solid var(--line);border-radius:12px;padding:13px">
+          <h2 style="font-size:14px;margin:0">📤 Copy my data <b>off</b> this device</h2>
+          <div class="desc" style="font-size:12.5px;margin-top:4px">Tap to copy everything. Then open MRLN on your other device and tap <b>“Bring in my data”</b>.</div>
+          <button class="btn ghost" id="copyOutBtn" style="width:100%;margin-top:10px;font-size:15px;padding:12px">📋 Copy my data</button>
+          <div id="copyOutMsg" class="note" style="display:none;margin-top:10px"></div>
+          <details id="sendMore" style="margin-top:10px">
+            <summary style="cursor:pointer;color:var(--cyan);font-size:12.5px">Other ways to send (file, code)</summary>
+            <button class="btn ghost" id="dataExportBtn" style="margin-top:10px">Show my data code</button>
+            <div id="dataExportWrap" style="display:none;margin-top:10px">
+              <div id="dataCode" style="background:#06101c;border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:11px;padding:11px;word-break:break-all;line-height:1.45;max-height:120px;overflow:auto;cursor:pointer;user-select:text"></div>
+              <div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" id="dataCopy" style="flex:1">Copy code</button><button class="btn ghost" id="dataDownload" style="flex:1">Download as file</button></div>
+            </div>
+          </details>
+        </div>
       </div>
-      <h2 style="font-size:14px;margin-top:18px">Import (load onto this device)</h2>
-      <div class="desc" style="font-size:12.5px">Paste a data code (or pick a downloaded data file). This <b>replaces</b> what's on this device.</div>
-      <textarea id="dataImportText" placeholder="Paste your MRLNDATA- code here" style="width:100%;min-height:64px;margin-top:8px"></textarea>
-      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-        <button class="btn" id="dataImportBtn" style="flex:1">Import &amp; load</button>
-        <label class="btn ghost" style="flex:1;text-align:center;cursor:pointer;margin:0">Pick a file<input type="file" id="dataImportFile" accept=".txt,.json" style="display:none"></label>
-      </div>
-      <div id="dataMsg" class="note" style="display:none;margin-top:10px"></div>
-      <h2 style="font-size:14px;margin-top:18px">Bring my whole master across</h2>
-      <div class="desc" style="font-size:12.5px">Pick your saved <b>master / exported file</b> (.html) to load <b>everything</b> onto this device — income, expenses, notes, calendar, food log, and the Klarna Float tab. Your private minting key is <b>never</b> imported. Great for moving your master onto the installed app so it auto-updates.</div>
-      <label class="btn" style="display:block;margin-top:8px;cursor:pointer;text-align:center">📦 Import my master file (.html)<input type="file" id="impMaster" accept=".html,.htm,.txt" style="display:none"></label>
-      <div id="impMasterMsg" class="note" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -5236,12 +5257,32 @@
     if(typeof renderUsage==='function') renderUsage();
     autosave();
   }
-  function importDataCode(code){
+  // Decode a MRLNDATA code → the data object (validates it's really ours), WITHOUT
+  // applying it — lets us preview "what's inside" before the user confirms.
+  function decodeDataCode(code){
     code=String(code||'').trim().replace(/\s+/g,'');
-    if(code.indexOf('MRLNDATA-')===0) code=code.slice(9);
+    var i=code.indexOf('MRLNDATA-'); if(i>=0) code=code.slice(i+9);
+    code=code.replace(/\s+/g,'');
     if(!code) throw new Error('Empty code');
+    if(code.length>3000000) throw new Error('That code is too big to be MRLN data');   // size cap (Akashi)
     var json = decodeURIComponent(escape(atob(code)));
-    applyImportedData(JSON.parse(json));
+    var d = JSON.parse(json);
+    if(!d || typeof d!=='object' || !d.cfg || !d.cfg.groups) throw new Error('That isn’t MRLN data');
+    return d;
+  }
+  function importDataCode(code){ applyImportedData(decodeDataCode(code)); }
+  // Plain-words summary of what an import will bring in (no jargon, kid-readable).
+  function importSummary(d){
+    if(!d) return '';
+    var b=[];
+    if(d.cfg && d.cfg.groups) b.push(tf('💰 money setup'));
+    var n;
+    if((n=(d.notes||[]).length)) b.push(tf('📝 {n} notes',{n:n}));
+    if((n=(d.foodLog||[]).length)) b.push(tf('🍽️ {n} food entries',{n:n}));
+    if((n=(d.workouts||[]).length)) b.push(tf('🏋️ {n} workouts',{n:n}));
+    if((n=d.calendar?Object.keys(d.calendar).length:0)) b.push(tf('📅 {n} calendar days',{n:n}));
+    if((n=(d.savingsBoxes||[]).length)) b.push(tf('🪙 {n} savings boxes',{n:n}));
+    return b.join(' · ');
   }
   // Load EVERYTHING from a saved master / exported .html file (one tap, no giant
   // paste). Reads only the embedded data state — the private minting key (a separate
@@ -5265,7 +5306,29 @@
   function revealKlarnaIfEnabled(){ if(STATE && STATE.showKlarna){ var klt=document.querySelector('#tabs .tab[data-p="klarna"]'); if(klt) klt.style.display=''; if(window.__styleTabs) window.__styleTabs(); } }
   (function initDataIO(){
     var open=document.getElementById('dataBtn');   // savebar "Backup / Import" → Connect tab
-    function gotoConnect(){ if(typeof renderDeviceTip==='function') renderDeviceTip(); var t=document.querySelector('#tabs .tab[data-p="connect"]'); if(t) t.click(); }
+    // Situation-aware: show the right step first + a one-line banner. Freshly-installed
+    // app (standalone) with little/no data → lead with "Bring in my data". A browser with
+    // real data → lead with "Copy my data off". Mobile ALWAYS needs an explicit move
+    // (iOS and Android both reset — storage doesn't carry over), so we never say "already set".
+    function setupMoveSituation(){
+      var get=document.getElementById('moveGet'), send=document.getElementById('moveSend'), tip=document.getElementById('moveTip');
+      if(!get||!send) return;
+      var standalone=false; try{ standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true; }catch(_){ }
+      var empty = !!(STATE && (STATE.fresh || STATE.demo));
+      var getFirst = standalone;            // in the installed app → you're most likely here to RECEIVE
+      get.style.order = getFirst ? '0' : '1';
+      send.style.order = getFirst ? '1' : '0';
+      get.style.borderColor  = getFirst ? 'var(--cyan)' : 'var(--line)';
+      send.style.borderColor = getFirst ? 'var(--line)' : 'var(--cyan)';
+      if(tip){
+        var msg='';
+        if(standalone && empty) msg=tf('👋 Looks like a fresh install. Your data doesn’t come over on its own — open MRLN in your <b>browser</b>, tap “Copy my data”, then come back here and tap “📋 Bring in my data”.');
+        else if(standalone) msg=tf('You’re in the installed app. To pull data from another device, copy it there first, then tap “📋 Bring in my data”.');
+        else msg=tf('You’re in the browser. Installing the app? It starts empty — tap “📋 Copy my data”, open the installed app, then tap “Bring in my data” there.');
+        tip.innerHTML=msg; tip.style.display='block';
+      }
+    }
+    function gotoConnect(){ if(typeof renderDeviceTip==='function') renderDeviceTip(); setupMoveSituation(); var t=document.querySelector('#tabs .tab[data-p="connect"]'); if(t) t.click(); }
     if(open) open.addEventListener('click', gotoConnect);
     function msg(t,ok){ var m=document.getElementById('dataMsg'); if(m){ m.style.display='block'; m.textContent=t; m.style.color= ok?'var(--lime)':'var(--amber)'; } }
     var ex=document.getElementById('dataExportBtn');
@@ -5281,13 +5344,52 @@
     });
     var dl=document.getElementById('dataDownload');
     if(dl) dl.addEventListener('click', function(){ var t=document.getElementById('dataCode').textContent||''; var blob=new Blob([t],{type:'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='mrln-data.txt'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(url);},1500); });
-    function doImport(code){
-      uiConfirm({ title:tf('⇄ Import data?'), message:tf('This replaces the data on <b>this device</b> with the imported data. Your access key is not affected.'), confirmText:tf('Import'), danger:false }, function(){
-        try{ importDataCode(code); msg(tf('✓ Imported — your data is now on this device.'),true); }catch(e){ msg('✗ '+e.message+'. '+tf('Make sure you pasted the whole code.'),false); }
+    function doImport(code, report){
+      var rep = report || msg;
+      var d;
+      try{ d = decodeDataCode(code); }
+      catch(e){ rep('✗ '+esc(e.message)+'. '+tf('On your other device, tap “Copy my data” and copy the whole thing.'),false); return; }
+      var sum = importSummary(d);
+      uiConfirm({ title:tf('📥 Bring this in?'),
+        message:(sum?tf('Found: {sum}.',{sum:sum})+'<br>':'')+tf('This puts that data on <b>this device</b> (replacing what’s here now). Your access key isn’t affected.'),
+        confirmText:tf('Bring it in'), danger:false }, function(){
+        try{ applyImportedData(d); if(window.MRLN_SFX&&MRLN_SFX.success) MRLN_SFX.success(); rep(tf('✓ Done — your data is now on this device.'),true); }
+        catch(e){ rep('✗ '+esc(e.message),false); }
       });
     }
     var imp=document.getElementById('dataImportBtn');
-    if(imp) imp.addEventListener('click', function(){ var t=document.getElementById('dataImportText').value; if(!t.trim()){ msg(tf('Paste a code first (or pick a file).'),false); return; } doImport(t); });
+    if(imp) imp.addEventListener('click', function(){ var t=document.getElementById('dataImportText').value; if(!t.trim()){ msg(tf('Paste your data first (or pick a file).'),false); return; } doImport(t); });
+
+    /* ---- HERO: "📋 Bring in my data" — deliberate clipboard read (iOS-safe) ---- */
+    function biMsg(t,ok){ var m=document.getElementById('bringInMsg'); if(m){ m.style.display='block'; m.innerHTML=t; m.style.color= ok?'var(--lime)':'var(--amber)'; } }
+    function revealPasteBox(){ var g=document.getElementById('getMore'); if(g){ g.open=true; } var ta=document.getElementById('dataImportText'); if(ta){ try{ ta.focus(); }catch(_){ } } }
+    function bringInFromClipboard(){
+      if(!(navigator.clipboard&&navigator.clipboard.readText)){
+        biMsg(tf('Your browser won’t let me read the clipboard here — paste your data in the box below, then tap Import.'),false); revealPasteBox(); return;
+      }
+      biMsg(tf('Looking for your data…'),true);
+      navigator.clipboard.readText().then(function(txt){
+        txt=String(txt||''); var i=txt.indexOf('MRLNDATA-');
+        if(i<0){ biMsg(tf('I don’t see your MRLN data on the clipboard yet. On your <b>other</b> device tap “📋 Copy my data” first, then come back and tap this again.'),false); revealPasteBox(); return; }
+        doImport(txt.slice(i), biMsg);
+      }).catch(function(){
+        biMsg(tf('Couldn’t read the clipboard (you may have tapped “Don’t Allow”). Paste your data in the box below instead.'),false); revealPasteBox();
+      });
+    }
+    var biBtn=document.getElementById('bringInBtn');
+    if(biBtn) biBtn.addEventListener('click', bringInFromClipboard);
+
+    /* ---- "📋 Copy my data" — one-tap copy of everything (jargon hidden) ---- */
+    function coMsg(t,ok){ var m=document.getElementById('copyOutMsg'); if(m){ m.style.display='block'; m.innerHTML=t; m.style.color= ok?'var(--lime)':'var(--amber)'; } }
+    function copyOutData(){
+      var code; try{ code=exportDataCode(); }catch(e){ coMsg('✗ '+esc(e.message),false); return; }
+      var dc=document.getElementById('dataCode'); if(dc) dc.textContent=code;   // ready under "Other ways to send"
+      var done=function(){ coMsg(tf('✓ Copied! Now open MRLN on your other device and tap “📋 Bring in my data”.'),true); if(window.MRLN_SFX&&MRLN_SFX.success) MRLN_SFX.success(); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(code).then(done).catch(fb); } else fb();
+      function fb(){ var ok=false; try{ var ta=document.createElement('textarea'); ta.value=code; ta.style.position='fixed'; ta.style.top='-1000px'; document.body.appendChild(ta); ta.select(); ok=document.execCommand('copy'); document.body.removeChild(ta); }catch(_){ } if(ok){ done(); return; } var sm=document.getElementById('sendMore'); if(sm) sm.open=true; var w=document.getElementById('dataExportWrap'); if(w) w.style.display='block'; coMsg(tf('Couldn’t copy automatically — your code is shown under “Other ways to send” below; long-press it to copy, or download it as a file.'),false); }
+    }
+    var coBtn=document.getElementById('copyOutBtn');
+    if(coBtn) coBtn.addEventListener('click', copyOutData);
     var f=document.getElementById('dataImportFile');
     if(f) f.addEventListener('change', function(){ var file=f.files&&f.files[0]; if(!file) return; var rd=new FileReader(); rd.onload=function(){ doImport(String(rd.result||'')); }; rd.readAsText(file); });
     // one-tap "import my whole master file" (.html) → loads everything, no minting key
@@ -5348,6 +5450,8 @@
     var qk=document.getElementById('qrKey'); if(qk) qk.addEventListener('click', function(){ var k=null; try{ k=localStorage.getItem('mrln_access_key'); }catch(_){ } if(!k){ document.getElementById('qrWrap').style.display='flex'; document.getElementById('qrCaption').innerHTML='No access key stored on this device.'; document.getElementById('qrCanvas').width=0; return; } showQR(k,'Scan to copy your <b>access key</b> to another phone, then paste it on the unlock screen.'); });
     var ql=document.getElementById('qrLink'); if(ql) ql.addEventListener('click', function(){ var u=location.origin+location.pathname+(STATE.fid?('#'+STATE.fid):''); showQR(u,'Scan to open your dashboard link'+(STATE.fid?' (File ID '+esc(STATE.fid)+')':'')+'.'); });
     var qd=document.getElementById('qrData'); if(qd) qd.addEventListener('click', function(){ var code=exportDataCode(); showQR(code, 'Scan to copy your <b>full data</b> to another device, then paste into Import. (Only works if it fits — large data with photos may not.)'); });
+    try{ setupMoveSituation(); }catch(_){ }   // set the right step/banner on first paint too
+    var connectTab=document.querySelector('#tabs .tab[data-p="connect"]'); if(connectTab) connectTab.addEventListener('click', function(){ try{ setupMoveSituation(); if(typeof renderDeviceTip==='function') renderDeviceTip(); }catch(_){ } });
   })();
   function resetAll(){
     uiConfirm({ title:'⚠️ Start completely fresh?',
