@@ -4339,9 +4339,10 @@
      and the assistant can never read real numbers off a bypassed lock. Fully offline. */
   function _amtFrom(s){
     s = String(s).toLowerCase().replace(/,/g,'');                       // drop thousands separators; KEEP spaces (so "20 kr" stays "20 kr")
-    // every number with an OPTIONAL 'k' thousands suffix — but 'k' counts as ×1000 ONLY when
-    // it's a real magnitude marker (2k, 5k), never the start of a unit like kr/kg/km ("20 kr" = 20).
-    var re = /(\d+(?:\.\d+)?)\s*(k)?(?![a-z])/gi, m, vals = [];
+    // every number with an OPTIONAL 'k' thousands suffix — 'k' counts as ×1000 ONLY when it's
+    // attached to the digits AND not the start of a unit (kr/kg/km). So "2k"→2000, "5k"→5000,
+    // but "20kr"→20, "20 kr"→20, "199kr"→199, "20 kg"→20 (the k belongs to the unit, not magnitude).
+    var re = /(\d+(?:\.\d+)?)(k(?![a-z]))?/gi, m, vals = [];
     while((m = re.exec(s))){ var n = parseFloat(m[1]); if(!isFinite(n)) continue; if(m[2]) n *= 1000; vals.push(n); }
     if(!vals.length) return NaN;
     return Math.max.apply(null, vals);                                  // the price/goal asked about is the largest figure (ignores stray "2"="to" text-speak)
