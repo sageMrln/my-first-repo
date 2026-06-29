@@ -1076,3 +1076,46 @@ Entry format:
 - Still open: (gate steps 7–11) my SAFE in @ 81fd473 — needs Mikoto MISSING:0 (new move-photos + warning
   strings), Hugo GREEN (wire photo_store_test into green.js + re-baseline transfer_test) on this tip, Osefe
   ship. Sleep-mode: no auto-publish without Osefe's explicit go.
+
+## [2026-06-29] — via Kaito (asleep, step 10) — RE-SAFE: photo-storage final tip — Arthur copy + Mikoto i18n + Hugo QA (`a5baaf8`)
+- Asked: re-SAFE on the final IndexedDB photo-storage tip. Prior SAFE was real-code @ 81fd473 (R1–R10 met,
+  photo_store_test 17/17, GREEN). Tip moved to a5baaf8 via 3 NON-code-logic changes — re-sign per
+  freeze-the-tip. DELTA review: confirm no new leak/regression + FULL published set clean.
+- Did / found (read full delta 81fd473..a5baaf8, diffed load-bearing fns BY NAME, validated dict JSON,
+  scanned PDF binary, ran the gate — not on faith):
+  - SCOPE: index.html 4 hunks only (@1548 SEND desc reword + "photos aren't in this copy" sender note;
+    @1563 movePhotos explainer reword; @5062 the 1-line AUTO-MERGED dict regen = Mikoto; @5667 copyOutData
+    toast appends a static photo-separate note gated on (STATE.foodLog||[]).some(e=>e.hasPhoto||e.photo)).
+    Plus GUIDE.md §9 note, MRLN-Guide.pdf rebuild, green.js (wire photo_store_test as suite 8 + renumber),
+    transfer_test.js (pic→photo+hasPhoto fixture + assert export STRIPS photo bytes/KEEPS metadata), logs/chat.
+  - R1–R10 HOLD — code they cover is BYTE-IDENTICAL 81fd473 vs a5baaf8: diffed exportBlank, exportDataCode,
+    _saveReplacer, initFoodMedia, applyImportedData, decodeDataCode, resizePhoto by name → ALL IDENTICAL.
+    No load-bearing fn changed; the 4 hunks are copy + dict only. exportBlank still zeroes foodLog +
+    reconstructs hud-state (photo/hasPhoto can't reach a customer file).
+  - TOAST .some() GUARD ✓ — pure read: .some() iterates in-memory STATE.foodLog (||[] fallback), callback
+    returns a boolean, no assignment/side-effect, no STATE write. Result only decides whether a STATIC tf()
+    note string is APPENDED to coMsg text — never a photo byte/id/user-text interpolated → no XSS, no leak.
+    copyOutData still routes through exportDataCode() (key-strip allowlist, byte-identical) → key never travels.
+  - i18n DICT ✓ — AUTO-MERGED line JSON.parse OK; 6 langs es/da/de/sv/nb (1476 keys) + hu (1516);
+    4 new photo strings present in ALL 6 langs; placeholders ({n}) intact (zero key/val mismatch). Leak scan
+    of every dict value: KEY/PII(miradi|osefe@|aarhus)/long-base64 → NONE. The only MONEY-regex hits are the
+    PRE-EXISTING tax-rate example keys "...rate (e.g. 0.25/0.08)" (rate hints, no currency, existed @81fd473)
+    — not owner figures, not new. `node tools/i18n/sync.js` → MISSING:0 (616/616) authoritative.
+  - HUGO QA STRENGTHENS, doesn't weaken ✓ — green.js now RUNS photo_store_test (suite 8) [closes my non-gating
+    note #1]; PUBLISHED_TEXT/KEY/PII scan unchanged. transfer_test fixture now uses the REAL stripped key
+    (photo+hasPhoto, fixing the vacuous-pass I flagged) and asserts export STRIPS photo bytes but KEEPS
+    metadata — a stronger guard. GUIDE §9 note is plain English, no figures/PII/keys.
+  - INVARIANTS ✓ — __sys count IDENTICAL 81fd473 vs a5baaf8 (35==35) → no watchdog weakened/removed.
+    PUBCHK(4047293148 ×1)+PUB_B64(×3) intact. #__ownerKeySrc empty (@1687), #hud-state empty (@1683). sw.js
+    UNTOUCHED this delta, still v7. No new network/exfil surface.
+  - FULL PUBLISHED SET CLEAN ✓ — preflight CLEAR (slots empty, 1 public key, no PII, PUBCHK, 4 scripts);
+    GUIDE.md/manifest.webmanifest/sw.js/team-chat.html clean; MRLN-Guide.pdf binary independently
+    text-extracted+scanned (Flate streams) → KEY/PII/CPR/big-money NONE.
+  - Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, photo_store 17/17 now in-gate, transfer
+    re-baselined, all suites; preflight CLEAR; every published file clean). node tools/i18n/sync.js → MISSING:0.
+- Verdict: SAFE @ a5baaf8. Delta is copy + i18n + test/docs only; R1–R10 hold (load-bearing code byte-identical);
+  toast guard is a non-mutating read of static note; key never travels; dict valid + leak-clean + placeholders
+  intact; watchdogs intact (__sys 35==35); full published set (incl. PDF) leak-clean.
+- Commits / SHAs reviewed: a5baaf8 (tip). If index.html or any published file moves, I re-sign.
+- Still open: gate (steps 7–11) now aligned @ a5baaf8 — Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN —
+  awaiting Osefe's explicit ship. Sleep-mode: no auto-publish without his go.
