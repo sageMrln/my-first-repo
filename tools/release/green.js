@@ -62,6 +62,11 @@ run(['tools/test/reorder_test.js'], 'reorder suite');
 section('data-transfer losslessness — tools/test/transfer_test.js');
 run(['tools/test/transfer_test.js'], 'transfer suite');
 
+// 7) committed assistant silly-question test — misspells, typos, affordability on small amounts
+//    Guards against the "20 kr gum" bug and questions that slip through to the dead-end answer
+section('assistant silly-question test — tools/test/assistant_silly_test.js');
+run(['tools/test/assistant_silly_test.js'], 'assistant silly suite');
+
 // 8) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
