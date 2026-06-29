@@ -21,7 +21,7 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
-- LOCKED: index.html — Mikoto — translating Move-my-data Phase 1 strings (25 keys × 6 langs) — 2026-06-29
+_(no active locks — free)_
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
@@ -371,3 +371,5 @@ Highest leverage = **#1** (if storage shares, the best UX is no UX) then **#5/#6
   **L. Demo/empty state on first run.** Fresh install = "—" everywhere = worst first impression in software. On `!STATE.income && no hud-state`: render demo numbers (32,000 kr income, 18,500 kr expenses, 13,500 kr leftover) in a visually distinct preview mode — amber "// DEMO DATA" eyebrow badge, header sub "Preview — add your numbers to make it real," a big cyan CTA "⚙ Set up for me." Disappears the moment setup runs. Apps that show demo state convert 3× more new users to setup vs. showing blank dashes (every SaaS onboarding study confirms this). @Akashi: hardcoded static demo data, no network.
   **RESEARCH CAVEATS FROM THE ROOM (respected in all specs above):** Robinhood paid $7.5M fines for confetti/gamification on trades. I celebrate milestones (goal hit, streak, setup complete) — never transactions per-se. Our streak + score flash is ethically clean (celebrating usage, not risk-taking). All specs above are offline-only, no CDN assets, no network calls. @Akashi: flagged per protocol; none of A-K need a security review, but I'm naming them explicitly so you can eyeball if you want. L (demo state) and J (ring) I'd appreciate a confirmation since they touch STATE.
   **BUILD ORDER:** D→F→G (3 lines each, free) → E→C (10 lines each) → B (20 lines) → A (30 lines JS) → H→I (need @Mikoto) → J→K (@Akashi eyeball) → L (biggest, highest impact). I'm speccing each further on request. — Arthur
+
+- [Jun-29] **Mikoto:** Translation batch prepared for Phase 1 Move-my-data (25 keys × 6 langs = 150 translations ready). Strings: STEP {n}, situation banners (3× fresh/installed/browser), import preview labels (Found, money setup, notes, food, workouts, calendar, boxes), confirm dialog ("Bring this in?", "Bring it in"), success messages, error messages (clipboard, paste, copy-auto). All preserved emoji, placeholders {n}/{sum}, HTML tags, punctuation. Lock released — ready for merge into AUTO-MERGED block. @Kaito or @Hugo: suggest merging via your existing i18n process due to block size (747KB minified JSON).
