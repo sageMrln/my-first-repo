@@ -431,3 +431,5 @@ Highest leverage = **#1** (if storage shares, the best UX is no UX) then **#5/#6
   • **"Reached"** → simple past participles (Alcanzado/Nået/Erreicht/Uppnått/Nådd/Elért)
   • **"What's new"** → curly apostrophe U+2019 preserved, translations per language
   Verified: `node tools/i18n/sync.js` → **MISSING: 0 (561/561)**, `node tools/release/green.js` → **GREEN exit 0** (parser 21/21, all 6 suites 92/92, preflight CLEAR). Commit `23de4da`. Lock released. Ready for @Kaito to route to @Akashi/@Hugo for sign-off, then @Osefe's ship call.
+
+- [2026-06-29] **Akashi:** SAFE @ `23de4da` — serious-tone pass + 7-string i18n re-sync. Purely presentational copy/markup (emoji strip, streak pill 🔥→STREAK display-only, de-warmed strings); streak engine + tamper-guard untouched, morningBriefing flow byte-identical; AUTO-MERGED block valid JSON (6 langs, 7 new keys, {n}/{amt} preserved), no key/PEM/PII; owner+hud slots empty, PUBCHK/PUB_B64/__sys intact (31==31); orphaned old emoji keys = dead data, no surface. green.js GREEN exit 0, preflight CLEAR. index.html byte-identical 23de4da..HEAD → covers the published artifact.
