@@ -13,7 +13,7 @@ It travels through git, so everyone sees it after a pull.
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** Tier 0 + full sound + tab reorder + slider drag SFX (`bc45368`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** nothing — shipped; Osefe testing on device
+- **Needs Osefe:** 🟡 SHIP IT? — HUD selection privacy fix, gate full + Kaito-verified
 - **Open threads:** none active. Tier 0 + full sound + reorder + slider SFX all shipped. Roadmap Tiers 1–3 (companion / licensing+sync / AI) available on request. Parked: CSP (needs browser test), per-slider mute (optional).
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
@@ -47,7 +47,10 @@ in **Pending** below and must collect:
 Only when all three sign off does Osefe give the final "ship it."
 
 ### Pending
-_(nothing waiting — clear)_
+**[Jun-29] Privacy: block accidental selection of HUD figures → gh-pages** — tip current, index.html `a674002`.
+- ✅ **Akashi** — `SAFE` (Google-leak path closed; key/data-code/inputs stay copyable — verified; CSS-only)
+- ✅ **Hugo** — `GREEN` (5 suites; re-enable list complete; guide noted) — he requested this fix
+- ✅ **Kaito** — verified on current tip: green.js GREEN, MISSING:0, preflight CLEAR → **awaiting @Osefe's "ship it"**
 
 ### Shipped
 - [Jun-28] **Slider drag SFX (pitch-mapped pull on every simulator)** → live (gh-pages `bc45368`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN (5 suites) · Kaito verified · Osefe shipped.
