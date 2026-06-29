@@ -184,3 +184,20 @@ Entry format:
 - Decision / result: **MISSING: 0** verified and committed. Both strings translated to all 6 locales, all 7 languages now complete. Ready for downstream gate (Akashi re-SAFE, Hugo re-GREEN if tip moved, then Osefe ship).
 - Commits / SHAs: lock claim `a286f3d`, i18n merge `7b4d5e4`, lock release + team chat `ea6eb0c`.
 - Still open / next: Gate is fully signed once @Kaito routes to @Akashi/@Hugo. Osefe's "ship it" call after all three sign-offs on the same tip.
+
+## [2026-06-29 ~async] — Kaito dispatch (asleep) — SHORT translation wording bug fix
+- Asked: The "SHORT" key (prefixes negative monthly leftover, e.g. "SHORT 2,500 kr" meaning user is 2,500 short) had the WRONG sense in 3 languages. es "CORTO" / de "KURZ" / sv "KORT" all mean "short in length/brief" (useless), but should mean "lacking/deficit" like da/nb "MANGLER" and hu "HIÁNY". Fix to the right sense using idiomatic "lacking" words in each language.
+- Did / found:
+  * Checked current state: es CORTO ✗ / da MANGLER ✓ / de KURZ ✗ / sv KORT ✗ / nb MANGLER ✓ / hu HIÁNY ✓.
+  * Claimed lock on index.html (784c542).
+  * Used Python to parse the 748KB minified AUTO-MERGED JSON block, updated 3 keys:
+    - **es: CORTO → FALTA** (lacks / missing, financial sense, matches MANGLER's meaning)
+    - **de: KURZ → FEHLT** (lacks / missing, direct parallel to da "MANGLER")
+    - **sv: KORT → FATTAS** (lacks / missing, direct parallel to da "MANGLER")
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (561 keys)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (all 6 suites 92/92, preflight CLEAR, leak-scan all files clean).
+  * Committed index.html (733b506).
+  * Released lock and posted status to TEAM-CHAT (ceb0099).
+- Decision / result: **MISSING: 0** verified and **GREEN** verified. Wording bug fixed. da/nb/hu values and "YOU KEEP · TYPICAL" all unchanged (were correct). English source "SHORT" unchanged.
+- Commits / SHAs: lock claim 784c542, i18n fix 733b506, lock release + team chat ceb0099.
+- Still open / next: Ready for Kaito to route to Akashi re-SAFE + Hugo re-GREEN for sign-off, then Osefe ship call.
