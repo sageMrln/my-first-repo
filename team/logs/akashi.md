@@ -568,3 +568,42 @@ Entry format:
 - Re-signed SAFE on e19e1ba. Scoped my SAFE to the PUBLISHED ARTIFACT, not every commit — chat/log commits
   don't reopen it; only a published-file change does (stops the re-sign treadmill from chat churn).
 - Gate now aligned: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN → awaiting Osefe ship.
+
+## [2026-06-29] — via Kaito (asleep) — REVIEW: Arthur Tier 1 motion polish (`2a1291b`)
+- Asked: SAFE review of CSS/JS-only motion polish (5 items: B directional panel slide via
+  tab-click handler computing a direction class from the tab's live index; D :active scale;
+  E accordion nth-child row stagger; F :focus-visible glow; G body::before opacity heartbeat).
+  Confirm no new net/data surface, JS only adds/removes presentational classes, body::before
+  decorative, no leak/watchdog touch. Re-run green.js myself.
+- Did / found (read FULL diff + verified load-bearing lines on the tip, ran the gate — not on faith):
+  - SCOPE: index.html only, +34/-5. CSS hunks (gridPulse @66-67, focus-glow+tab:active @123-124,
+    panel display refactor + slideFromR/L @143-150, exp row stagger nth-child @238-250,
+    scen-btn/btn :active @252/283) + ONE JS hunk: tab-switch handler @2049-2068.
+  - 1. NO NET/DATA SURFACE ✓: grepped the `+` lines for fetch/XHR/eval/new Function/document.write/
+    .src=/location.*=/innerHTML/outerHTML/insertAdjacentHTML/__sys/PUBCHK/PUB_B64/ownerKeySrc/
+    hud-state/exportBlank/exportHTML/importData/applyChange/parseClause/MODEL./STATE. → ZERO hits.
+    Pure CSS + classList add/remove + a slice/indexOf on the live tab NodeList.
+  - 2. TAB JS PRESENTATIONAL ONLY ✓: handler still routes the panel via
+    getElementById(t.getAttribute('data-p')) @2063 — UNCHANGED, keyed off data-p not DOM position
+    (consistent w/ the reorder review c7c5810). Added logic only: computes `dir` (from-left/right)
+    from live indexOf vs a `prevTabIdx` closure var (NOT STATE), and add/removes show/from-left/
+    from-right/active classes. Does NOT change which panel/data renders, touch STATE/money/poison/
+    watchdogs. prevTabIdx is a local var, never serialized, never exported.
+  - PANEL REFACTOR SAFE ✓: was `.panel{display:none;animation}` + `.panel.show{display:block}`;
+    now `.panel{display:none}` + `.panel.show{display:block;animation}`. Visibility semantics
+    IDENTICAL — a panel is visible iff it has .show, exactly as before. No panel can surface
+    without the class; nothing hidden gets revealed.
+  - 3. body::before DECORATIVE ✓: gridPulse only animates opacity .72→1/6s on the fixed grid
+    overlay (pointer-events:none, z-index:0). It's a background; can't affect layout-trust, can't
+    hide/cover a security-relevant element (.wrap is z-index:1 above it), reads/writes no data.
+  - 4. NO LEAK / INVARIANTS ✓: #hud-state empty (@1656), #__ownerKeySrc empty (@1660), PUB_B64 +
+    PUBCHK(4047293148) intact, __sys count IDENTICAL parent 9d63c10 vs tip (23==23) → no watchdog
+    weakened/removed. exp-group.open is a PRE-EXISTING toggled class (@230/232) — new CSS only
+    decorates it, adds no behavior. No new i18n string (MISSING:0 holds). No SW/manifest change.
+  - Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, assistant 16/16, streak 4/4,
+    sound 7/7, reorder 7/7, transfer 27/27, preflight CLEAR — slots empty/PUBCHK/1 public key/
+    script tags balanced 4, all published files clean).
+- Verdict: SAFE @ 2a1291b. Pure presentational motion layer; zero money/key/network/injection/leak
+  surface; tab routing + panel visibility semantics unchanged; watchdogs intact.
+- Commits / SHAs reviewed: 2a1291b (tip). If index.html moves, I re-sign.
+- Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
