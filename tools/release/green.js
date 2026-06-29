@@ -57,11 +57,16 @@ run(['tools/test/sound_test.js'], 'sound suite');
 section('tab reorder engine — tools/test/reorder_test.js');
 run(['tools/test/reorder_test.js'], 'reorder suite');
 
-// 6) deep pre-publish guard on the app itself
+// 6) committed data-transfer round-trip test — export → decode → deep-diff for losslessness
+//    Phase 1: guards exportDataCode/decodeDataCode/applyImportedData field lists don't drift
+section('data-transfer losslessness — tools/test/transfer_test.js');
+run(['tools/test/transfer_test.js'], 'transfer suite');
+
+// 8) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
 
-// 7) leak scan across every OTHER published text file (the "whole surface" rule)
+// 9) leak scan across every OTHER published text file (the "whole surface" rule)
 //    Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
 //    by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
 const PUBLISHED_TEXT = ['GUIDE.md', 'manifest.webmanifest', 'sw.js', 'team-chat.html'];
