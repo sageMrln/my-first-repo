@@ -207,11 +207,11 @@ Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask que
 
 Three mechanics keep you coming back:
 
-**🔥 Streak Counter** — Track consecutive days you've logged income or expenses. The header shows a flame 🔥 pill with your count — green when you logged something today, amber when it's been a day or two. Breaking a streak resets you to 1, so dailies become a ritual. It's the oldest retention mechanic in apps like Duolingo and Habitica — and it works.
+**Streak Counter** — Track consecutive days you've logged income or expenses. The header shows a `STREAK N` pill with your count — green when you logged something today, amber when it's been a day or two. Breaking a streak resets you to 1, so dailies become a ritual. It's the oldest retention mechanic in apps like Duolingo and Habitica — and it works.
 
-**☀️ Morning Briefing** — Once per day on app load, you see a time-aware greeting by name. *"Good morning, Ingrid 👋 — 7 days in a row — keep it going! 🔥 · on track to keep €2,140 this month 🔥"* The greeting changes by time of day (Good morning/afternoon/evening); combines your streak count and your **monthly surplus** (the amount you're on track to have left over after expenses and loan payments). **Offline-only, local-only** — never leaves your device. It's your app saying *"I see what you're doing, and I'm proud of you"* once a day.
+**☀️ Morning Briefing** — Once per day on app load, you see a time-aware greeting by name. *"Good morning, Ingrid 👋 — 7 days in a row · on track to keep €2,140 this month"* The greeting changes by time of day (Good morning/afternoon/evening); combines your streak count and your **monthly surplus** (the amount you're on track to have left over after expenses and loan payments). **Offline-only, local-only** — never leaves your device. A daily reminder of your progress without hype.
 
-**✨ Apply Feedback** — When you apply a command or confirm an edit, a 2-second toast pops up: *"nice! 7-second parse"* or *"saved ✓"*. It's a tiny score (how fast you wrote it) and an emoji, giving instant proof that the app heard you and the numbers updated. Keeps your hands engaged and the app *feeling alive*.
+**Apply Feedback** — When you apply a command or confirm an edit, a 2-second toast pops up: *"nice! 7-second parse"* or *"saved ✓"*. It's a tiny score (how fast you wrote it) and a checkmark, giving instant proof that the app heard you and the numbers updated.
 
 **🔊 Satisfying UI Sounds** — Synthesized audio chimes (Web Audio, no files, fully offline) play on key actions. The core rule: **sounds voice *outcomes*, not inputs** — you hear confirmation when something works or changes, but not on every keystroke or slider tick. This keeps the app feeling responsive without becoming grating.
   - **Always sound:** tab navigation (soft tick), Apply success (C–E–G chime), save/export (two-note), streak milestones (celebration fanfare).
