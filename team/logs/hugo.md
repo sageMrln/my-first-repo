@@ -237,3 +237,19 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Commits / SHAs: 39296c5 (guide sync + PDF rebuild, ready for gate).
 
 - Still open / next: Awaiting Akashi re-SAFE (guide + PDF are published, so covered by the scope-extension rule), Mikoto confirm MISSING:0 on `39296c5` (already verified), and Kaito/Osefe for ship. Manual browser test of data-Q&A by Kaito recommended post-ship.
+
+## [2026-06-29] — via Kaito (asleep dispatch) — Assistant MRLN v2 final GREEN @ 2d35a61
+
+- Asked: Step 9 GREEN on final tip `14ba394` (Assistant v2: 4 more your-numbers intents — income, savings total+per-box, where-money-goes by category, weight; all poison-gated + Arthur's copy fixes + Mikoto's 10 strings × 6 langs i18n). Run `node tools/release/green.js` → expect exit 0 (6 suites 92 tests, preflight CLEAR, published files leak-clean) and `node tools/i18n/sync.js` → MISSING: 0. GUIDE judgment: v2 gained 4 new answer types; does §10 need a small update listing them? Your call — if yes, update + rebuild PDF; if existing wording covers "your numbers" generically, no rebuild needed.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip 14ba394, past a couple of log-only commits). Read memory + chat (Akashi SAFE @ `666d19f`, Mikoto MISSING:0 @ `14ba394`).
+  * Ran `node tools/release/green.js`: **GREEN exit 0** — all 6 suites passed (parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, transfer 27/27 ✓ = **92 total**), preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced), leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean).
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (592/592 keys, 7 languages).
+  * **GUIDE analysis:** Section 10 "Assistant MRLN" currently says *"You can also ask about your own numbers — 'how much do I spend a month?', 'can I afford 5000?', 'how long to save 50000?' — and it computes the answer directly from your data (income, expenses, savings target)."* This is generic ("your numbers") but doesn't list the 4 new, user-facing question types shipped in v2: (1) **Where does my money go** (category breakdown), (2) **My income** (typical/low/high), (3) **My savings** (total + per-box balance/target/progress), (4) **My weight**. These are concrete capabilities worth highlighting to users. Updated §10 to list all 5 question families (income, spending by category, savings, weight, affordability/savings-time) with natural-language examples. Rebuilt MRLN-Guide.pdf (476 KB). Re-ran green.js: still **GREEN exit 0**, all files clean, MISSING: 0.
+
+- Decision / result: `14ba394` + guide sync @ `2d35a61` is **GREEN**. All 6 suites 92 tests pass, MISSING: 0, preflight CLEAR, published files leak-clean. Guide now explicitly documents the 4 new your-numbers question types with user-facing examples. Tip has moved from `14ba394` (Mikoto's i18n) to `2d35a61` (guide + PDF) — Akashi and Mikoto should re-verify on the new tip per freeze-the-candidate rule.
+
+- Commits / SHAs: 2d35a61 (guide sync + PDF rebuild).
+
+- Still open / next: Awaiting Akashi re-SAFE (guide + PDF published, scope extended), Mikoto confirm MISSING:0 on `2d35a61` (already verified, no new strings, just guide doc), then Kaito/Osefe for ship. Manual browser test of all 4 new your-numbers Q&A types by Kaito recommended post-ship.
