@@ -32,6 +32,18 @@ warm or hyped**. This applies to every UI string, label, toast, and design Claud
 - When adding/changing UI, default to the serious register; if unsure whether an emoji or
   phrase is too warm, leave it out.
 
+## 💸 Cost defaults — free-to-operate, never auto-adopt a paid path (Osefe's standing rule)
+The app must cost **nothing to run** — no per-query fees, no server bills, no paid third-party
+calls in the default/offline experience (it stays the "FREE · OFFLINE" assistant).
+- When choosing between a free / no-recurring-cost option and one that **incurs money**, ALWAYS
+  default to the free one and just proceed. **Do NOT ask Osefe to choose when cost is the only
+  differentiator** — take the free path and note it.
+- A size/MB or build-effort cost is NOT a money cost — those are fine to weigh on their merits.
+- Paid/online capabilities (e.g. an LLM API call) are allowed ONLY as an explicit, **opt-in,
+  paid-TIER** feature the user switches on — never the default, never adopted without Osefe's
+  explicit go. (Charging users a subscription/key IS the business; incurring running costs to
+  operate the app is not.)
+
 ## The team
 - **Kaito** (lead / builder) — works directly with Osefe. Turns finds into fixes,
   **verifies everyone's work himself** before it's accepted, and is the only one
