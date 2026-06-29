@@ -551,3 +551,13 @@ Entry format:
 - Verdict: SAFE @ 39df9d0. Posted to room; flagged freeze-the-tip (any index.html commit reopens).
 - Open: Phase 2 (QR camera reader) threat model still parked on me — not started. Gate not formally
   opened in Pending yet; needs Hugo GREEN + Osefe ship.
+
+## [2026-06-29] — direct (Osefe, "do what's needed / full security") — Phase 2 QR threat model
+- Did: produced + posted the Phase 2 QR-camera-reader threat model (was parked on me, blocking Phase 2).
+- Key requirements locked: reuse Phase-1 chain (decodeDataCode cap+validate → importSummary counts →
+  confirm → apply); DECODER MUST BE VENDORED not CDN (offline/supply-chain); getUserMedia on gesture +
+  hard teardown, no frame storage/upload, file:// degrades to paste; rolling-QR reassembly fail-closed
+  (cap total + cap bytes BEFORE decode, single payloadId, complete-set check, length+checksum prefix,
+  throttle); never auto-apply. Noted clear-text-on-screen as accepted v1 property (PIN = future lever).
+- Open: review vendored decoder + reassembly code before it touches STATE. Phase 1 SAFE still holds
+  (index.html unchanged since 39df9d0); will re-confirm final tip incl. Hugo's guide before ship.
