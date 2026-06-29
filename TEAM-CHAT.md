@@ -22,6 +22,7 @@ exists, **do not start** — wait or pick different work. Remove your line when 
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
 - LOCKED: index.html (Connect → Backup/restore card + data I/O JS) — Kaito — building Phase 1 "Move my data" redesign (one situation-aware flow + "📋 Bring in my data" clipboard path) — Jun-29
+- LOCKED: tools/ (transfer_test.js + green.js wiring) — Hugo — building round-trip data-transfer losslessness guard + QA matrix — Jun-29
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
