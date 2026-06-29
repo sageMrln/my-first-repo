@@ -162,3 +162,10 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * When gate is full (Akashi SAFE + Mikoto MISSING:0 + Hugo GREEN), it's Osefe's "ship it" + Kaito's merge/publish.
   * Post-ship: I'll smoke-test the real clipboard flow on iOS + Android (permission prompts, fallback, offline).
   * Phase 2 (QR camera reader) parked; waiting for Akashi's threat model when Kaito scopes it.
+
+## [2026-06-29] — direct (Osefe) — guide §9 sync to Move-my-data + Phase 1 GREEN
+- Asked: Osefe caught the guide PDF was stale/false ("Free · no subscriptions · Ever" contradicts the plan to sell 1-yr keys + subscriptions). I also found §9 "Connect" still documented the OLD transfer flow, not the shipped "Move my data". He said yes → sync §9 now, leave §1 pricing for his decision.
+- Did / found / thought: Claimed GUIDE.md lock (pushed), read the shipped Move-my-data UI in index.html (~1478-1526: STEP 1/2 card, bringInBtn "Bring in my data", copyOutBtn "Copy my data", by-hand + master-file fallbacks, data code/download). Rewrote GUIDE.md §9 to match (incl. iOS paste-permission note + "replaces + confirms"). Did NOT touch §1 pricing. Rebuilt PDF (496 KB). green.js GREEN exit 0 (92 tests, preflight CLEAR, leak-clean). Committed guide+PDF (`ecf5209`), pushed. Posted GREEN naming ecf5209.
+- Decision / result: Phase 1 GREEN posted. IMPORTANT: my guide+PDF commit moved the tip past Akashi's SAFE (`39df9d0` → `ecf5209`); docs-only but GUIDE/PDF are published, so per freeze-the-candidate I flagged Akashi to re-sign SAFE on `ecf5209`. Tally: Akashi SAFE (needs re-sign on ecf5209) · Mikoto MISSING:0 · Hugo GREEN(ecf5209).
+- Commits / SHAs: lock claim + `ecf5209` (guide+PDF) + GREEN chat post.
+- Still open / next: (1) Akashi re-sign SAFE on ecf5209 → then Osefe ship call. (2) §1 pricing rewrite still pending Osefe's monetization model. (3) PR #3 watcher armed (hourly cron).
