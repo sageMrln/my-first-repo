@@ -237,3 +237,31 @@ Entry format:
 - Decision / result: Bug fixed at the source (wiring), not just patched. Lock claimed (9c7d36f) then released.
 - Commits / SHAs: 9c7d36f (lock claim) → i18n wiring fix commit (this push).
 - Still open / next: @Akashi re-SAFE (markup changed), @Hugo GREEN, then Osefe ships. Consider adding a text-node leak scan (leakcheck.js) into green.js so this class is caught by the gate, not by a user report.
+
+## [2026-06-29] — Kaito dispatch (asleep) — Translate 13 assistant your-numbers Q&A strings to all 6 langs → MISSING: 0
+- Asked: 13 new assistant MRLN "your-numbers" Q&A strings (the engine's computed answers about user's own money). Translate to es, da, de, sv, nb, hu → MISSING: 0. Strings are factual, serious tone (no emoji, no hype). Preserve placeholders {amt}/{cat}/{left}/{rate}/{n} exactly, plus leading "Yes —"/"No —", em-dashes, punctuation.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 13 (exact keys from need_translate.json).
+  * Translated all 13 strings to 6 languages (78 translations) with serious, factual tone matching the assistant's money-answer voice:
+    - "You spend about {amt} a month on {cat}." → es "Gastas unos {amt}..." / da "Du bruger omkring..." / de "Du gibst etwa..." / sv "Du spenderar..." / nb "Du bruker..." / hu "Körülbelül {amt}-t költesz..."
+    - "Your total monthly spending is about {amt}." → similar per-language pattern
+    - "I can't work that out without your income — set it in Setup, or tell me e.g. "income is now 25000"." → curly quotes preserved, em-dash preserved, natural per-language phrasing
+    - "You keep about {amt} in a typical month, after every bill and any loan." → {amt} preserved, natural flow per language
+    - "Tell me the price and I'll check, e.g. "can I afford 4000?"." → curly apostrophe (U+2019) preserved, example number preserved
+    - "I can't check that without your income — set it in Setup first." → em-dash, natural phrasing
+    - "Yes — {amt} fits within your typical {left}/month leftover." → "Yes —" prefix preserved, both placeholders intact
+    - "No — {amt} is more than your typical {left}/month leftover, so part of it would come from savings." → "No —" prefix, both placeholders, natural length per language
+    - "Tell me the goal amount, e.g. "how long to save 50000?"." → curly quotes, example number preserved
+    - "Set a monthly saving first, e.g. "save 2000 per month", and I'll tell you how long." → curly quotes, example preserved, curly apostrophe (U+2019)
+    - "At {rate}/month you would reach {amt} in about 1 month." (singular) → both placeholders, singular form
+    - "At {rate}/month you would reach {amt} in about {n} months." (plural) → both placeholders, {n} preserved for plural
+    - "I am unable to answer that at the moment, please look it up on your browser then return." → factual, no hype
+  * Merged all 78 translations into AUTO-MERGED block using exact sync.js segment boundaries (found opening '})(', closing ');' with rfind to ensure IIFE is properly closed). Key challenge: need_translate.json keys use curly apostrophes (U+2019) for contractions ("can't" = U+2019, not U+0027), which are the EXACT source keys — had to match these precisely or sync.js wouldn't find them. First 8 keys were already in index.html from a prior merge; reconstructed final 13-key by-lang dict by merging existing 8 + new 5 with curly apostrophes.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0** (582 keys fully translated across all 7 languages).
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 27/27 = 92/92 total; preflight CLEAR; all published files leak-clean).
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 13 assistant your-numbers strings translated to 6 locales in serious, factual tone. Every placeholder preserved exactly. GREEN gate confirmed.
+  * Lesson: Unicode quote/apostrophe characters (U+2019 curly vs U+0027 straight) are CRITICAL in key matching. The need_translate.json keys are the authoritative source; must match them byte-for-byte. This tripped the merge multiple times before I realized the curly apostrophes in source were the real keys, not typos.
+- Commits / SHAs: lock claim f5fff0f, i18n merge 767017f, lock release + team chat 17e29db.
+- Still open / next: @Kaito routes to @Akashi re-SAFE (no code changed, pure i18n) + @Hugo re-GREEN (if tip moved), then @Osefe ship call. This completes step 7 of the new BUILD & SHIP WORKFLOW (Kaito code → Arthur review → Kaito polish → Akashi security + poison → Kaito verify → Mikoto translate → Hugo GREEN → Akashi SAFE → Osefe ship).
+
