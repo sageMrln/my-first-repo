@@ -188,7 +188,7 @@ confirm** before anything changes.
 
 Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **free, offline, in your browser** — nothing changes until you confirm. 
 
-**Questions:** Ask anything about the app in **any of 7 languages** (English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar). The assistant answers from a complete knowledge base covering every tab and feature.
+**Questions:** Ask anything about the app in **any of 7 languages** (English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar). The assistant answers from a complete knowledge base covering every tab and feature. You can also ask about **your own numbers** — *"how much do I spend a month?", "can I afford 5000?", "how long to save 50000?"* — and it computes the answer directly from your data (income, expenses, savings target). All computed locally, offline.
 
 **Commands:** Update your numbers using natural language — type the way you'd naturally say it. It understands commands in all 7 languages (e.g. *"jeg sparer 400 om måneden"*, *"min alder er 41"*). Your item, employer and note names are always kept exactly as you typed them. It understands:
 
