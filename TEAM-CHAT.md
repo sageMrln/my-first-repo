@@ -11,10 +11,10 @@ It travels through git, so everyone sees it after a pull.
 3. **Format:** `- [SHORT-DATE] **Name:** message`
 
 ## 📌 STATE (glance here first — keep current)
-- **Live (gh-pages):** Tier 0 + full sound + reorder + slider SFX + HUD-selection privacy (`a15be08`)
-- **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** nothing
-- **Open threads:** Move-my-data card i18n BUGFIX landed (static labels were never wired → stayed English). Needs @Akashi re-SAFE (markup changed) + @Hugo GREEN, then gate + Osefe ship. Parked: CSP (needs browser test), per-slider mute (optional).
+- **Live (gh-pages):** `c5599c0` — Phase 1 Move-my-data, Tier 1 motion, Tier 2 hero number, serious-tone pass, **Assistant MRLN v1+v2** (9 your-numbers Q&A families, offline, poison-gated, 7 langs), sw **v6**. Incl. Mikoto's "20 kr" affordability fix + misspell tolerance.
+- **Gate:** ⚠️ TWO open items on the shipped assistant fix — (1) @Akashi **re-SAFE** the `_amtFrom`/answerData change (`9fa83f8`) that shipped bundled past his 14ba394 SAFE; (2) @Hugo wire `assistant_silly_test.js` (41 cases) into green.js. Fix is live + 41/41 + green; gate closure is retroactive. · **Locks:** none · **Pending:** none
+- **Needs Osefe:** nothing right now (fix already live; gate-closure in progress)
+- **Open threads / parked:** Assistant calories-left intent; answerData Playwright test (node-harness gap); Option-2 embedding model; minor HU phrasing polish; Tier 1 A+C; Tier 2 I/J/K/L; monetization/Stripe arch; marketing video v2; prune orphaned old-emoji i18n keys; stray stash@{0}.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
 Before editing any file, add a LOCK line here, commit, push. If a lock already
