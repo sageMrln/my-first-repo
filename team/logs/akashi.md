@@ -726,3 +726,41 @@ Entry format:
 - Still open: Arthur's POLISH (P1 `{n} month(s)` split, P2 "That's tight"→"No —") routes to Kaito → will
   MOVE the tip and REOPEN my SAFE; I re-verify the new tip (copy-only, but I confirm no figure ungated).
   New strings await Mikoto MISSING:0; Hugo GREEN. Gate not opened. Sleep-mode: no auto-publish w/o Osefe's go.
+
+## [2026-06-29] — via Kaito (asleep, step 10) — RE-SAFE: Assistant v1 final tip — Arthur copy + Mikoto i18n (`767017f`)
+- Asked: re-SAFE on the final Assistant MRLN v1 tip. Prior SAFE was answerData @ fe7dc58 (all 5 branches
+  traced, fully poison-gated). Delta since: (1) 5fcb562 Kaito folds Arthur P1/P2 copy — affordability
+  else reworded "No — … part of it would come from savings"; save-time split singular "1 month" / plural
+  "{n} months". (2) 767017f Mikoto merges 13 assistant strings × 6 langs. Confirm copy rewrite leaves NO
+  figure ungated; i18n merge well-formed; invariants intact; green.
+- Did / found (read full delta fe7dc58..767017f, traced branches on tip, validated JSON, ran gate — not on faith):
+  - SCOPE: index.html only. 5fcb562 = +5/-3 PURE COPY (two tf() string args reworded; save-time split into
+    n===1?singular:plural). 767017f = 1-line AUTO-MERGED dict regen. index.html BYTE-IDENTICAL 767017f..HEAD
+    (ff9f160) — chat/lock commits since don't move the published artifact.
+  - GATING UNCHANGED: answerData @4344-4385 byte-identical to fe7dc58 EXCEPT the two reworded strings.
+    left=leftOver(inc) (@4349) still = token()*inc-GRAND-loanAmt() (@2062) -> NaN on tamper. money(n)=fmtN(n)+sym
+    -> fmtN(NaN)->"NaN". Re-traced the two rewritten branches with T=NaN:
+    * AFFORDABILITY else (@4372): guard a<=left*T -> a(finite) <= NaN -> false -> else. Shows money(a)=user-typed
+      price (not private) + money(left)=NaN. New "No -" wording surfaces NO real figure -- left still gated.
+    * SAVE-TIME (@4381/4382): rate=((savingsMatch||0)*T)||left -> savingsMatch*T=NaN (falsy) -> falls to left=NaN
+      -> rate=NaN -> guard !isFinite(rate) true -> returns non-figure "set a saving first" string; figure lines
+      NEVER reached on tamper. Even if reached: rate=NaN->"NaN", target=user-typed, n=ceil(target/NaN)=NaN.
+    A bypassed copy (token()=NaN) surfaces NaN in every branch, never a real figure. Kaito's gating correct
+    + complete; no DIRECT security fix needed (copy-only delta).
+  - I18N MERGE WELL-FORMED: extracted line 4927 AUTO-MERGED IIFE arg, JSON.parse OK. 6 langs
+    es/da/de/sv/nb (1436 keys each) + hu (1476). All 12 source assistant strings (the 13th = old "That's
+    tight" was REPLACED, correctly absent) present in ALL 6 langs; placeholders {amt}{cat}{left}{rate}{n}
+    intact in every locale (verified set-equality per key). Stale keys ("That's tight...", "{n} month(s)")
+    confirmed GONE. No PII / private key / private figure / owner identity in the merged block (scanned
+    PEM/SPKI/osefe|miradi/aarhus/\d{4,}[.,]\d{2} -> all none).
+  - INVARIANTS: __sys count IDENTICAL parent fe7dc58 vs tip (26==26) -> no watchdog weakened/removed.
+    #hud-state empty (@1672), #__ownerKeySrc empty (@1676), PUB_B64(@4579,x3)+PUBCHK(4047293148 @4765)+
+    trip/pubChk watchdogs intact. No SW/manifest change.
+  - Ran node tools/release/green.js -> GREEN exit 0 (parser 21/21, assistant 16/16, streak 4/4, sound 7/7,
+    reorder 7/7, transfer 27/27 = 92/92; preflight CLEAR — slots empty, 1 public key, no PII, PUBCHK, 4 scripts;
+    GUIDE/manifest/sw/team-chat clean).
+- Verdict: SAFE @ 767017f (index.html identical at HEAD ff9f160). Copy rewrite leaves no figure ungated;
+  every branch yields NaN on a tampered copy; i18n merge valid + placeholders intact + no leak; watchdogs intact.
+- Commits / SHAs reviewed: 767017f (index.html identical at HEAD ff9f160). If index.html moves, I re-sign.
+- Still open: nothing security-side. Gate (steps 7-11): my SAFE in; needs Mikoto MISSING:0 + Hugo GREEN + Osefe
+  ship. Sleep-mode: no auto-publish without Osefe's explicit go.
