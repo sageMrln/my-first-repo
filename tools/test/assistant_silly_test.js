@@ -69,6 +69,8 @@ ask('cn i afford a 2k tv?', ['2,000']);                             // 2k = 2000
 ask('am i able to afford a 300 kr jacket?', ['300']);
 ask('do i have enough for a 80 kr lunch?', ['80'], ['80,000']);
 ask('is a 12 kr coffee affordable?', ['12'], ['12,000']);
+ask('can i afford a 20kr gum?', ['20 kr'], ['20,000']);             // no-space unit: 20kr → 20, not 20,000 and not 2
+ask('can i afford a 199kr shirt?', ['199'], ['19,900']);           // no-space unit: 199kr → 199, not 19
 
 console.log('\n— SPENDING / WHERE MONEY GOES (misspells) —');
 ask('where duz my money go?', ['biggest', 'housing']);              // duz → does
