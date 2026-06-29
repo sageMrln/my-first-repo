@@ -910,3 +910,40 @@ Entry format:
   moves, I re-sign.
 - Still open: the "20kr" no-space parser-accuracy regression → Kaito (functional, non-gating). Sleep-mode:
   no auto-publish without Osefe's explicit go — this one already shipped, flagged above.
+
+## [2026-06-29] — via Kaito (asleep) — SAFE: _amtFrom no-space unit fix (`e4e5563`) [my own find]
+- Asked: SAFE the fix for the no-space regression I flagged (33c9ae2 entry): "20kr"→2, "199kr"→19
+  dropped a digit. Kaito's fix @ e4e5563. Verify ReDoS-safe + parser-correct + poison-gating
+  unchanged + invariants intact. Run green.js + assistant_silly_test.
+- Did / found (read full diff 33c9ae2..e4e5563, ran the regex + ReDoS timing + both suites — not on faith):
+  - SCOPE: index.html ONLY change = ONE regex line + its comment (@4342-4345). re was
+    `/(\d+(?:\.\d+)?)\s*(k)?(?![a-z])/gi` → now `/(\d+(?:\.\d+)?)(k(?![a-z]))?/gi`: 'k'=×1000
+    only when ATTACHED to the digits AND not followed by a letter. The while/parseFloat/`if(m[2])
+    n*=1000`/Math.max line is BYTE-IDENTICAL — no figure expression touched. No sw/manifest/parser/
+    applyChange/export edit.
+  - GROUP INDEX OK ✓: the magnitude marker is still capture group 2 — `(k(?![a-z]))?` is group 2
+    (inner is a zero-width lookahead, not a capture), so `if(m[2])` still correctly gates ×1000.
+    Confirmed by tests: 2k→2000 (m[2] fired), 20kr→20 (didn't).
+  - PARSER CORRECT ✓ (my own 14-case run, parseFloat-only): 2k→2000, 2k phone→2000, 5k→5000,
+    20kr→20, 199kr→199 (the two FIXED no-space forms), 20 kr→20, 20 kg→20, 20km→20, 1.5k→1500,
+    "can i afford a 20 kr gum"→20, "199kr thing"→199, "20kr or 30kr"→30, save 2000→2000, 100→100.
+    All pass. Output is a Number used in arithmetic, never eval'd/rendered as code.
+  - ReDoS-SAFE ✓: \d+, (?:\.\d+)?, (k(?![a-z]))? are independent atoms; lookahead is zero-width →
+    no nested/overlapping quantifiers → LINEAR. Timed adversarial to 200k chars (all-digits, 9k×2000,
+    all-spaces, 9kr×50000, 9a×100000) → every case ≤10ms, no blowup.
+  - POISON-GATING UNCHANGED ✓: the diff changes ONLY which digits are parsed from the USER's own
+    typed price (never a private figure). Every SHOWN/COMPARED figure (left=leftOver(inc)=token()*inc-
+    GRAND-loanAmt(), GRAND*T, groupTotal*T, income*T, savings*T, weight*T) is untouched — all still
+    yield NaN on a tampered copy (token()=NaN → fmtN(NaN)="NaN"). The parsed _amtFrom value is the
+    user's own number, not private. No branch can surface a real figure off a removed lock.
+  - INVARIANTS ✓: __sys count IDENTICAL parent 33c9ae2 vs tip (26==26) → no watchdog weakened/removed.
+    PUBCHK(4047293148) + PUB_B64(×3) present, #__ownerKeySrc empty (@1676), #hud-state empty (@1672).
+    No SW/manifest change. No new i18n string (regex+comment only → MISSING:0 holds).
+  - Ran node tools/test/assistant_silly_test.js → 43/43 (incl. the 2 new no-space regression cases).
+    node tools/release/green.js → GREEN exit 0 (7 suites; preflight CLEAR — slots empty, 1 public key,
+    no PII, PUBCHK intact, 4 scripts balanced; GUIDE/manifest/sw/team-chat clean).
+- Verdict: SAFE @ e4e5563. Pure regex-correctness fix; ReDoS-safe linear; poison-gating fully intact
+  (no figure expr changed); watchdogs intact; no leak/exfil; the no-space regression I flagged is closed.
+  No DIRECT security fix required.
+- Commits / SHAs reviewed: e4e5563 (tip). If index.html moves, I re-sign.
+- Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish without Osefe's go.
