@@ -947,3 +947,60 @@ Entry format:
   No DIRECT security fix required.
 - Commits / SHAs reviewed: e4e5563 (tip). If index.html moves, I re-sign.
 - Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish without Osefe's go.
+
+## [2026-06-29] — direct (Osefe / via Kaito build) — DESIGN PRE-REVIEW: IndexedDB photos-only migration (no code wired yet)
+- Asked: the design pre-review I explicitly demanded BEFORE the IDB migration touches STATE.
+  Osefe chose Option 1 (photos excluded from quick-move; moved via a separate file export).
+  Review architecture + security; answer my 4 security questions A–D; hard requirements for Kaito.
+- Read (not guessed): autosave @1828 (confirmed `catch(_){ }` — SWALLOWS QuotaExceededError SILENTLY),
+  exportHTML @4555-4567 (serializes full STATE incl. in-memory foodLog[].photo into #hud-state — owner
+  master), exportBlank @4570-4607 (zeroes STATE.foodLog=[] @4579 + RECONSTRUCTS hud-state as
+  {__fresh,fid,prefs} @4584 — not a STATE dump → hasPhoto/photo CANNOT reach a blank/customer file),
+  loadState @1790 (TEMPLATE_MODE foodLog=[] → nothing hydrates), exportDataCode @5419 (allowlist,
+  currently includes full foodLog WITH photo), persist @7323 (fires persist() but IGNORES result —
+  `.catch(()=>{})` only), food render/add/del @6293/6335/6344/6347, resizePhoto @6288 (app's OWN
+  capture re-encodes via canvas max 720px JPEG q0.6 → trusted path always data:image/jpeg + bounded;
+  the directive's "1–4MB" is the pre-resize guess, real stored photos are ~tens–low-hundreds KB),
+  poison @6264 (FT=__sys.token() gates calorie/macro FIGURES, never photo bytes), transfer_test @180
+  (asserts foodLog incl. pic byte-identical — breaks under strip-on-export, Hugo's file).
+- Also read the helper Kaito already inlined: MEDIA @1786-1809 (raw IndexedDB, DB 'mrln-media' store
+  'photos' v1, put/get/del/keys/all + supported()). put() correctly propagates rejection (no .catch)
+  so quota surfaces; read paths swallow to safe defaults (good for graceful hydrate). all() zips
+  getAllKeys()+getAll() by index — spec guarantees both ascending key order, so correct. Clean,
+  vendored, no CDN, no network → meets my constraint #1.
+- ANSWERS:
+  A. NO leak via the exported file. exportBlank zeroes foodLog + reconstructs hud-state (never dumps
+     STATE) → photo/hasPhoto can't ride along; IDB is per-origin and never serialized into HTML;
+     preflight scans index.html only and IDB isn't in the file. The ONE residual worry I RAISE:
+     a blank/preview rendered on the OWNER's own browser hydrates from the OWNER's IDB (same origin)
+     → owner photos could appear ON SCREEN during a local preview. Not a FILE leak, but the
+     hydrate/preview path must be TEMPLATE_MODE-gated (skip MEDIA.get when TEMPLATE_MODE) so an
+     owner-side blank/preview shows no real photos. REQUIRED.
+  B. Confirmed — photos need NO poison. They're user images, not owner figures; a NaN-gated data URL
+     is just a broken image. The calorie/macro figures stay token-gated @6264 (unchanged). Moving
+     bytes to IDB touches no watchdog/figure-gate. __sys count must stay identical parent vs tip.
+  C. Import chain REQUIRED: (1) JSON.parse under a byte cap BEFORE parse; (2) per-image regex
+     `^data:image\/(jpeg|png|webp);base64,` + (3) per-image byte cap (~1.5MB) + (4) total cap
+     (~50–100MB) + (5) cap entry COUNT; reject the whole import if any item fails (fail-closed,
+     all-or-nothing). For v1 a prefix+size cap is ENOUGH — full decode-verify (load into Image to
+     confirm it really decodes) is BETTER and cheap (the app already does it in resizePhoto); I
+     RECOMMEND routing imported images through the SAME resizePhoto/canvas re-encode so every stored
+     byte is app-normalized (strips EXIF/GPS, kills any non-image payload, bounds size). That closes
+     a stored-XSS-in-data-URL / oversized / metadata-leak class in one move. Only put+set hasPhoto on
+     entries whose id matches an existing foodLog entry; ignore orphans.
+  D. Photos-only over all-STATE: AGREED, correct call (text fits localStorage for years; photos are
+     the sole driver — moving all STATE is risk without benefit). Two hazards I REQUIRE handled:
+     (i) crash/quota BETWEEN MEDIA.put and autosave during the one-time migration — design already
+     orders put→(resolve)→hasPhoto+autosave-strip, so a failure leaves the inline photo intact (no
+     loss). MUST be idempotent + MUST NOT strip on put-failure. Good. (ii) async-hydration gap: a
+     photo is absent until MEDIA.get resolves → render must tolerate a missing photo (it already does
+     — `e.photo?...:''`) and re-render after hydrate. Acceptable. ALSO: exportHTML bakes in-memory
+     photos into the owner master (zero-loss, intended) — note the master file grows with photos;
+     that's the owner's private file, fine.
+- VERDICT: DESIGN-SAFE with hard requirements (see TEAM-CHAT post R1–R10). The model is sound; the
+  blanks/preview path must be TEMPLATE_MODE-gated against owner IDB (A), and the import path must
+  validate→cap→normalize fail-closed (C). No watchdog/figure-gate is weakened by moving image bytes.
+- Did NOT edit index.html (Kaito owns it; design review only). Posted verdict + R1–R10 to TEAM-CHAT.
+- Open: review the ACTUAL wired migration + autosave-strip + hydrate + import code on a real tip
+  before any gate; confirm __sys count unchanged, exportBlank still reconstructs (not dumps), green.js
+  GREEN, transfer_test re-baselined by Hugo. Sleep-mode: no auto-publish without Osefe's go.
