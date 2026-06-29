@@ -1478,17 +1478,16 @@
     <div class="card">
       <h2>📦 Move my data</h2>
       <div class="desc">New phone, or just installed the app? Bring everything across — it stays <b>private to your devices</b> and is <b>never</b> uploaded.</div>
-      <div id="moveTip" style="display:none;margin-top:8px;background:#08121f;border:1px solid var(--cyan);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--txt);line-height:1.5"></div>
-      <div id="deviceTip" style="display:none;margin-top:6px;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--txt)"></div>
+      <div id="moveTip" style="display:none;margin-top:8px;background:#08121f;border:1px solid var(--cyan);border-radius:10px;padding:11px 13px;font-size:13px;color:var(--txt);line-height:1.5"></div>
 
-      <div id="moveSteps" style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+      <div id="moveSteps" style="display:flex;flex-direction:column;gap:16px;margin-top:16px">
         <!-- GET: bring data ONTO this device (the hero when freshly installed) -->
-        <div id="moveGet" style="border:1px solid var(--line);border-radius:12px;padding:13px">
-          <h2 style="font-size:14px;margin:0">📥 Bring my data onto <b>this</b> device</h2>
-          <div class="desc" style="font-size:12.5px;margin-top:4px">Already tapped <b>“Copy my data”</b> on your other phone or browser? Tap below — we’ll find it and bring everything in.</div>
-          <button class="btn" id="bringInBtn" style="width:100%;margin-top:10px;font-size:16px;padding:13px">📋 Bring in my data</button>
+        <div id="moveGet" style="border:1px solid var(--line);border-radius:12px;padding:16px">
+          <h2 style="font-size:14px;margin:0;display:flex;align-items:center;gap:8px"><span class="stepBadge" id="getStep" style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;padding:2px 7px;border-radius:6px;white-space:nowrap"></span><span>📥 Bring my data onto <b>this</b> device</span></h2>
+          <div class="desc" style="font-size:12.5px;margin-top:8px">Already tapped <b>“Copy my data”</b> on your other phone or browser? Tap below — we’ll find it and bring everything in.</div>
+          <button class="btn" id="bringInBtn" style="width:100%;margin-top:12px;font-size:16px;padding:13px">📋 Bring in my data</button>
           <div id="bringInMsg" class="note" style="display:none;margin-top:10px"></div>
-          <details id="getMore" style="margin-top:10px">
+          <details id="getMore" style="margin-top:12px">
             <summary style="cursor:pointer;color:var(--cyan);font-size:12.5px">Can’t paste? Do it by hand</summary>
             <div class="desc" style="font-size:12px;margin-top:8px">Paste the data you copied, or pick the file you saved. This <b>replaces</b> what’s on this device.</div>
             <textarea id="dataImportText" placeholder="Paste your data here" style="width:100%;min-height:64px;margin-top:8px"></textarea>
@@ -1497,19 +1496,22 @@
               <label class="btn ghost" style="flex:1;text-align:center;cursor:pointer;margin:0">Pick a file<input type="file" id="dataImportFile" accept=".txt,.json" style="display:none"></label>
             </div>
             <div id="dataMsg" class="note" style="display:none;margin-top:10px"></div>
-            <div class="desc" style="font-size:12px;margin-top:12px">Or load a whole saved <b>master / exported file</b> (.html) — income, expenses, notes, calendar, food log and the Klarna tab. Your private minting key is <b>never</b> imported.</div>
-            <label class="btn ghost" style="display:block;margin-top:8px;cursor:pointer;text-align:center">📦 Import my master file (.html)<input type="file" id="impMaster" accept=".html,.htm,.txt" style="display:none"></label>
-            <div id="impMasterMsg" class="note" style="display:none;margin-top:10px"></div>
+            <div style="border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
+              <div class="note" style="font-size:11px;letter-spacing:.05em;color:var(--txt-dim);text-transform:uppercase">Moving a whole saved file</div>
+              <div class="desc" style="font-size:12px;margin-top:6px">Got a saved <b>master / exported file</b> (.html)? Load <b>everything</b> from it — income, expenses, notes, calendar, food log and the Klarna tab. Your private minting key is <b>never</b> imported.</div>
+              <label class="btn ghost" style="display:block;margin-top:8px;cursor:pointer;text-align:center">📦 Import my master file (.html)<input type="file" id="impMaster" accept=".html,.htm,.txt" style="display:none"></label>
+              <div id="impMasterMsg" class="note" style="display:none;margin-top:10px"></div>
+            </div>
           </details>
         </div>
 
         <!-- SEND: copy data OFF this device -->
-        <div id="moveSend" style="border:1px solid var(--line);border-radius:12px;padding:13px">
-          <h2 style="font-size:14px;margin:0">📤 Copy my data <b>off</b> this device</h2>
-          <div class="desc" style="font-size:12.5px;margin-top:4px">Tap to copy everything. Then open MRLN on your other device and tap <b>“Bring in my data”</b>.</div>
-          <button class="btn ghost" id="copyOutBtn" style="width:100%;margin-top:10px;font-size:15px;padding:12px">📋 Copy my data</button>
+        <div id="moveSend" style="border:1px solid var(--line);border-radius:12px;padding:16px">
+          <h2 style="font-size:14px;margin:0;display:flex;align-items:center;gap:8px"><span class="stepBadge" id="sendStep" style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;padding:2px 7px;border-radius:6px;white-space:nowrap"></span><span>📤 Copy my data <b>off</b> this device</span></h2>
+          <div class="desc" style="font-size:12.5px;margin-top:8px">Tap to copy everything. Then open MRLN on your other device and tap <b>“Bring in my data”</b>.</div>
+          <button class="btn ghost" id="copyOutBtn" style="width:100%;margin-top:12px;font-size:15px;padding:12px">📋 Copy my data</button>
           <div id="copyOutMsg" class="note" style="display:none;margin-top:10px"></div>
-          <details id="sendMore" style="margin-top:10px">
+          <details id="sendMore" style="margin-top:12px">
             <summary style="cursor:pointer;color:var(--cyan);font-size:12.5px">Other ways to send (file, code)</summary>
             <button class="btn ghost" id="dataExportBtn" style="margin-top:10px">Show my data code</button>
             <div id="dataExportWrap" style="display:none;margin-top:10px">
@@ -1519,6 +1521,7 @@
           </details>
         </div>
       </div>
+      <div id="deviceTip" style="display:none;margin-top:14px;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--txt)"></div>
     </div>
 
     <div class="card">
@@ -5316,16 +5319,27 @@
       var standalone=false; try{ standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true; }catch(_){ }
       var empty = !!(STATE && (STATE.fresh || STATE.demo));
       var getFirst = standalone;            // in the installed app → you're most likely here to RECEIVE
-      get.style.order = getFirst ? '0' : '1';
-      send.style.order = getFirst ? '1' : '0';
-      get.style.borderColor  = getFirst ? 'var(--cyan)' : 'var(--line)';
-      send.style.borderColor = getFirst ? 'var(--line)' : 'var(--cyan)';
+      var first=getFirst?get:send, second=getFirst?send:get;
+      // 1+2 — order the steps and make the active (first) box visibly win; demote the other
+      first.style.order='0'; second.style.order='1';
+      function setBox(el,active){
+        el.style.background = active ? 'var(--panel2)' : 'transparent';
+        el.style.borderColor = active ? 'var(--cyan)' : 'var(--line)';
+        el.style.boxShadow = active ? 'var(--glow)' : 'none';
+        var h=el.querySelector('h2'); if(h) h.style.color = active ? '' : 'var(--txt-dim)';
+      }
+      setBox(first,true); setBox(second,false);
+      // numbered STEP badges so the order is unmistakable
+      function setBadge(id,n,active){ var b=document.getElementById(id); if(!b) return; b.textContent=tf('STEP {n}',{n:n}); b.style.border='1px solid '+(active?'var(--cyan)':'var(--line)'); b.style.color=active?'var(--cyan)':'var(--txt-dim)'; }
+      setBadge(getFirst?'getStep':'sendStep',1,true); setBadge(getFirst?'sendStep':'getStep',2,false);
+      // 3 — ONE banner; line 1 = the literal next tap (bold), line 2 = the why (dim)
       if(tip){
-        var msg='';
-        if(standalone && empty) msg=tf('👋 Looks like a fresh install. Your data doesn’t come over on its own — open MRLN in your <b>browser</b>, tap “Copy my data”, then come back here and tap “📋 Bring in my data”.');
-        else if(standalone) msg=tf('You’re in the installed app. To pull data from another device, copy it there first, then tap “📋 Bring in my data”.');
-        else msg=tf('You’re in the browser. Installing the app? It starts empty — tap “📋 Copy my data”, open the installed app, then tap “Bring in my data” there.');
-        tip.innerHTML=msg; tip.style.display='block';
+        var l1,l2;
+        if(standalone && empty){ l1=tf('👉 Tap “📋 Bring in my data” below.'); l2=tf('First, on your other phone or browser, open MRLN and tap “Copy my data.”'); }
+        else if(standalone){ l1=tf('👉 Tap “📋 Bring in my data” below.'); l2=tf('Copy your data on the other device first, then bring it in here.'); }
+        else { l1=tf('👉 Tap “📋 Copy my data” below.'); l2=tf('Then open the installed app and tap “Bring in my data.” It starts empty — your data won’t carry over on its own.'); }
+        tip.innerHTML='<b>'+l1+'</b><br><span style="font-size:12px;color:var(--txt-dim)">'+l2+'</span>';
+        tip.style.display='block';
       }
     }
     function gotoConnect(){ if(typeof renderDeviceTip==='function') renderDeviceTip(); setupMoveSituation(); var t=document.querySelector('#tabs .tab[data-p="connect"]'); if(t) t.click(); }
