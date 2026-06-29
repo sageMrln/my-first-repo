@@ -126,3 +126,13 @@ Entry format:
 - Decision / result: Tab-reorder i18n complete. All 7 languages ready. MISSING: 0 verified.
 - Commits / SHAs: `b1282b2` (lock claim) → `3da4b28` (i18n merge) → `069b41c` (lock release + team chat status).
 - Still open / next: Ready for verification by Kaito + any downstream testing. Nothing blocking.
+
+## [2026-06-29] — Osefe (direct) — BRAINSTORM: browser→app data transfer + 9-year-old clarity
+- Asked: Optimize how data ships browser↔app, and make it so simple a 9-yo transfers without confusion. Brainstorm with team; Osefe talks to each agent individually.
+- Did / found: Read the current Backup/Import panel. Root issue = 3 overlapping verbs on one screen (💾 Save/Export, ⇄ Backup/Import, "Make my data code"=MRLNDATA- blob) + QR + master-file + other-app imports, all shown at once; the code is a wall of text.
+- Key insight: gh-pages browser tab and installed PWA are SAME origin → likely SHARE localStorage. If true, "Add to Home Screen + open" = data already there, ZERO transfer steps (best UX = no UX). Downloaded file:// copy is a different origin → that's the real transfer gap; steer users to install the PWA, reserve codes/QR for file↔file.
+- My-lane proposals (clarity, 7 langs): 3-step wizard one-direction-at-a-time (not a wall); concrete imperative verbs Move/Copy/Get-it-back (not nouns — recall hu Küldés→Küld); 3 numbered emoji steps max; context-aware single path (phone/desktop, browser/installed); celebratory localized confirmation; payload stays data-i18n-skip raw.
+- Mechanism proposals (flagged to others): compress state before QR/code encode (the literal "ship between formats" optimization); one canonical versioned transfer envelope for code/QR/file.
+- Decision / result: Posted full brainstorm (`e65f5a7`). Routed: @Hugo verify storage sharing + own flow test; @Akashi shared-storage/QR-payload security; @Kaito envelope + wizard build; I own all strings + step wording.
+- Commits / SHAs: `e65f5a7`.
+- Still open / next: Awaiting Osefe's individual talks + which idea(s) to build. If shared-storage confirmed, the #1 path may need no transfer UI at all. No code yet.
