@@ -11,9 +11,9 @@ It travels through git, so everyone sees it after a pull.
 3. **Format:** `- [SHORT-DATE] **Name:** message`
 
 ## 📌 STATE (glance here first — keep current)
-- **Live (gh-pages):** Tier 0 (streak + briefing v2 + score flash + full sound design) (`cd30980`)
+- **Live (gh-pages):** Tier 0 + full sound + tab reorder + category-open sound (`4399af7`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** 🟡 SHIP IT? — tab reorder + category-open sound, gate full + Kaito-verified
+- **Needs Osefe:** nothing — shipped; Osefe testing on device
 - **Open threads:** Frontier brainstorm DONE (Akashi/Mikoto/Hugo posted) — Kaito synthesized a 4-tier roadmap; awaiting Osefe's pick. CSP still PARKED.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
@@ -47,13 +47,10 @@ in **Pending** below and must collect:
 Only when all three sign off does Osefe give the final "ship it."
 
 ### Pending
-**[Jun-28] Tab reorder + category-open sound → gh-pages** — tip current, index.html logic `c7c5810`.
-- ✅ **Akashi** — `SAFE` (reorder can't break nav or reveal master-only tab; order can't leak; sounds guarded)
-- ✅ **Mikoto** — `MISSING: 0` ("Position in the menu" ×7)
-- ✅ **Hugo** — `GREEN` (5 suites: parser/assistant/streak/sound/reorder, preflight CLEAR)
-- ✅ **Kaito** — verified on current tip: green.js GREEN, MISSING:0, preflight CLEAR → **awaiting @Osefe's "ship it"**
+_(nothing waiting — clear)_
 
 ### Shipped
+- [Jun-28] **Tab reorder (double-tap → number → ripple) + category-open sound** → live (gh-pages `4399af7`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN (5 suites) · Kaito verified · Osefe shipped.
 - [Jun-28] **Tier 0 — streak + morning briefing v2 + score flash + full sound design** → live (gh-pages `cd30980`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
 - [Jun-28] **Assistant MRLN** (rename + offline Q&A about every feature, 7 langs) → live (gh-pages `fc51fc1`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
 - [Jun-28] **7-language Quick Update parser + bank-name guards** → live (gh-pages `1ea5525`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
@@ -271,3 +268,4 @@ Only when all three sign off does Osefe give the final "ship it."
 - [Jun-28] **Mikoto:** Tab-reorder feature i18n complete. Translated "Position in the menu" (the tab-reorder control label in the double-tap popup) to all 6 non-English languages. Applied to 539 total keys across 7 languages. `MISSING: 0` ✓
 - [Jun-28] **Akashi:** Reviewed tab-reorder + category-open sound `c7c5810`. **SAFE.** Tab integrity holds — nav keys off `data-p`→`getElementById` (index.html:1993), reorder only re-appends existing nodes, so order can't change which panel a tab opens (reorder_test 7/7). **Hidden tabs can't be revealed:** reorder never touches `.style.display` — Klarna visibility stays gated on `STATE.showKlarna` alone, so a customer reordering can't surface a master-only tab. `STATE.tabOrder` is data-p strings only (no figures) and is dropped by construction from `exportBlank` (4363 reconstructs prefs as {lang,currency}) → can't reach a customer/blank file. `panel`/`ping` are pure synth into the same guarded engine — cap/throttle/master/suspend unchanged (sound 6/6). No injection (value/textContent only). Invariants intact: `#__ownerKeySrc`/`#hud-state` empty, PUB_B64+PUBCHK+`__sys` threading untouched (count 23==23). `green.js` GREEN exit 0. One new i18n string "Position in the menu" → @Mikoto. SAFE from my side; @Hugo for GREEN when gated. — Akashi
 - [Jun-28] **Hugo:** GREEN ✓ — Tab-reorder gate complete. Wired `tools/test/reorder_test.js` (7/7) into `tools/release/green.js`. Full suite: parse_test 21/21, assistant_test 16/16, streak_test 4/4, sound_test 6/6, reorder_test 7/7, preflight CLEAR, all published files clean. Updated GUIDE.md §11 (Daily Habits): documented tab reorder (double-tap tab, Position control, ripple-animated), category-open sound (unfold chime, outcomes-not-inputs). Rebuilt MRLN-Guide.pdf. Re-ran full gate post-rebuild: exit 0 GREEN. Lock released. Commit: `a370d31` (gate wiring + guide + PDF). All three sign-offs ready (Akashi SAFE, Mikoto MISSING:0, Hugo GREEN). Awaiting Osefe's final "ship it."
+- [Jun-28] **Kaito (lead):** 🚀 SHIPPED — Osefe gave the go. Tab reorder (double-tap → set number → ripple) + distinct category-open sound mirrored to gh-pages (`4399af7`), preflight CLEAR. Gate was full (Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN across 5 suites). Osefe testing on device. No open locks, gate clear.
