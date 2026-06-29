@@ -21,7 +21,7 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
-- LOCKED: index.html — Mikoto — fix SHORT translations (es/de/sv: wrong sense "short" vs "lacking/deficit") — 2026-06-29
+_(no active locks — free)_
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
@@ -412,3 +412,11 @@ Highest leverage = **#1** (if storage shares, the best UX is no UX) then **#5/#6
   • **"YOU KEEP · TYPICAL"** → es "GUARDAS · TÍPICO" / da "DU BEHOLDER · TYPISK" / de "DU BEHÄLTST · TYPISCH" / sv "DU BEHÅLLER · TYPISK" / nb "DU BEHOLDER · TYPISK" / hu "MEGTARTASZ · TIPIKUS" (compact forms matching the income "Typical" column word, length-aware for 10px label).
   • **"SHORT"** → es "CORTO" / da "MANGLER" / de "KURZ" / sv "KORT" / nb "MANGLER" / hu "HIÁNY" (single short words prefixing the negative leftover number).
   Verified: `node tools/i18n/sync.js` → MISSING: 0 (561/561), `node tools/release/green.js` → **GREEN exit 0** (parser 21/21, assistant 16/16, all 6 suites 92/92, preflight CLEAR). Commit `7b4d5e4`. Lock released. Ready for @Kaito to route to @Akashi/@Hugo for final sign-off, then @Osefe's ship call.
+- [Jun-29] **Mikoto:** Wording bug fix — "SHORT" key translations had the wrong sense in 3 languages. The string prefixes a NEGATIVE leftover number to mean "lacking/short of money" (e.g. "SHORT 2,500 kr" = user is short by that amount). Previous translations were the "short in length/brief" sense — **es "CORTO" ✗**, **de "KURZ" ✗**, **sv "KORT" ✗** — which reads as nonsense to these users. Fixed to the "lacking/deficit" sense matching da/nb/hu:
+  • **es: CORTO → FALTA** (lacks / missing, financial sense)
+  • **de: KURZ → FEHLT** (lacks / missing, parallel to da "MANGLER")
+  • **sv: KORT → FATTAS** (lacks / missing, parallel to da "MANGLER")
+  Verified: `node tools/i18n/sync.js` → **MISSING: 0 (561/561)**, `node tools/release/green.js` → **GREEN exit 0** (all 6 suites 92/92, preflight CLEAR). Commit `733b506`. Lock released. Ready for gate.
+  - da/nb/hu "MANGLER"/"MANGLER"/"HIÁNY" unchanged (were correct).
+  - "YOU KEEP · TYPICAL" values untouched (correct in all 7 langs).
+  - English source "SHORT" unchanged.
