@@ -1867,6 +1867,11 @@
       modal:   function(){ play(function(){ note(329.63,0,.14,'sine',.05); },400); },             // subtle open swell
       panel:   function(){ play(function(){ note(392,0,.07,'sine',.06); note(587.33,.055,.13,'sine',.06); },150); },  // category unfold (rising)
       ping:    function(){ play(function(){ note(1318.5,0,.05,'sine',.07); note(1567.98,.05,.16,'sine',.08); },150); }, // bright double-tap ping
+      // slider pull — pitch tracks the value (0..1) up a pentatonic scale, so dragging
+      // sounds like the numbers climbing. Short + low gain + throttled = satisfying, not noisy.
+      slide:   function(frac){ var sc=[392,440,523.25,587.33,659.25,783.99,880,1046.5,1174.66];
+                 var i=Math.max(0,Math.min(sc.length-1, Math.round((frac||0)*(sc.length-1))));
+                 play(function(){ note(sc[i],0,.045,'triangle',.045); }, 42); },
       unlock:  function(){ play(function(){ note(392,0,.1,'sine',.08); note(523.25,.08,.1,'sine',.09); note(659.25,.16,.1,'sine',.09); note(880,.24,.22,'sine',.10); }); }, // power-on
       streak:  function(){ play(function(){ note(659.25,0,.10,'sine',.10); note(783.99,.09,.10,'sine',.10); note(1046.5,.18,.24,'sine',.12); }); }, // celebration
       suspend: function(){ try{ if(ctx && ctx.state==='running') ctx.suspend(); }catch(_){} },
@@ -6947,6 +6952,16 @@
         if(el.matches('input[type=checkbox]')){ MRLN_SFX.toggle(); return; }
         if(el.matches('.danger, [data-del], [data-cancel], .sb-del')){ MRLN_SFX.remove(); return; }
         MRLN_SFX.tap();
+      }, true);
+      // satisfying slider pull — every draggable simulator (range input) plays a pitch
+      // that tracks its value, so the numbers feel like they move WITH the sound.
+      document.addEventListener('input', function(e){
+        if(!MRLN_SFX.isOn()) return;
+        var el=e.target; if(!el || el.type!=='range') return;
+        var mn=parseFloat(el.min)||0, mx=parseFloat(el.max);
+        if(!(mx>mn)) return;
+        var frac=(parseFloat(el.value)-mn)/(mx-mn);
+        MRLN_SFX.slide(Math.max(0, Math.min(1, frac)));
       }, true);
     }catch(_){}
   })();

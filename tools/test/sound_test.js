@@ -12,8 +12,8 @@ const b = src.indexOf('})();', a) + 5;
 if (a < 0 || b < 5) { console.error('could not locate MRLN_SFX'); process.exit(2); }
 
 // minimal Web Audio stub
-let clock = 0, nodesCreated = 0;
-const node = () => { nodesCreated++; return { type: '', detune: { value: 0 }, frequency: { value: 0 }, gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {}, value: 0 }, connect() {}, disconnect() {}, start() {}, stop() {}, set onended(f) {} }; };
+let clock = 0, nodesCreated = 0, lastFreq = 0;
+const node = () => { nodesCreated++; return { type: '', detune: { value: 0 }, frequency: { set value(v) { lastFreq = v; }, get value() { return lastFreq; } }, gain: { setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {}, value: 0 }, connect() {}, disconnect() {}, start() {}, stop() {}, set onended(f) {} }; };
 global.window = { AudioContext: function () { return { get currentTime() { return clock; }, state: 'running', createOscillator: node, createGain: node, destination: {}, resume() {}, suspend() {} }; }, matchMedia: () => ({ matches: false }) };
 global.Math.random = () => 0.5;
 eval(src.slice(a, b));
@@ -21,8 +21,14 @@ eval(src.slice(a, b));
 let pass = 0, fail = 0;
 function check(name, cond) { cond ? pass++ : fail++; console.log((cond ? '✓' : '✗ FAIL') + '  ' + name); }
 
-const methods = ['tap', 'tick', 'toggle', 'remove', 'coin', 'error', 'success', 'save', 'modal', 'unlock', 'streak', 'suspend', 'resume', 'setOn', 'isOn'];
+const methods = ['tap', 'tick', 'toggle', 'remove', 'coin', 'error', 'success', 'save', 'modal', 'unlock', 'streak', 'panel', 'ping', 'slide', 'suspend', 'resume', 'setOn', 'isOn'];
 check('all sound methods present', methods.every(m => typeof MRLN_SFX[m] === 'function'));
+
+// slider pull: pitch must rise monotonically with the value fraction (0 → 1)
+MRLN_SFX.setOn(true); Math.random = () => 0;   // kill detune jitter for a clean read
+function slideFreq(frac) { clock += 1; MRLN_SFX.slide(frac); return lastFreq; }
+const f0 = slideFreq(0), f25 = slideFreq(0.25), f50 = slideFreq(0.5), f100 = slideFreq(1);
+check('slide pitch rises with value (0<.25<.5<1)', f0 < f25 && f25 < f50 && f50 < f100);
 
 // burst at the same clock → throttle should keep node creation bounded (not 1 per call)
 nodesCreated = 0; let threw = false;
