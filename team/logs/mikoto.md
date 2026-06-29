@@ -223,3 +223,17 @@ Entry format:
 - Decision / result: **MISSING: 0** verified and committed. All 7 de-warmed strings translated to 6 locales in factual, serious tone (no emojis, no hype). Ready for downstream gate (Akashi re-SAFE, Hugo re-GREEN if tip moved, then Osefe ships).
 - Commits / SHAs: lock claim fc9e599, i18n merge 23de4da, lock release + team chat 8f051b3.
 - Still open / next: Gate awaits @Kaito to route to @Akashi/@Hugo for sign-off, then @Osefe's final "ship it" call.
+
+## [2026-06-29] — Osefe (direct) — BUGFIX: Move-my-data card stuck in English
+- Asked: Osefe reports the whole "Move my data" section (Bring my data, Copy my data, etc.) stays in English on language switch — not translated.
+- Root cause (verified): the card's STATIC button/heading labels were built with raw English text, **no `data-i18n` attribute and no dictionary key**. The runtime has two translation paths: (a) `data-i18n`/prose/placeholder lookups in applyLang, and (b) a text-node walker that translates any text node by trimmed-text dict lookup. For these labels, neither had a matching dict key → walker left them English.
+- WHY sync.js missed it: `tools/i18n/sync.js` extracts keys ONLY from `t()/tf()` calls, `data-i18n[-ph]` attrs, and `WHATS_NEW`. It does **NOT** scan raw text nodes. So static labels translated by the walker but absent from the dict are invisible to it → it printed MISSING:0 while they sat untranslated. My earlier "MISSING:0" was correct for the dynamic strings but blind to these static ones. **Lesson: MISSING:0 only proves the keys sync.js can see are covered — static text-node labels can still leak. The scratchpad `leakcheck.js` detects exactly this class.**
+- Fix:
+  * Wired 9 discrete controls with `data-i18n` (📦 Move my data, 📥/📤 step headings, 📋 Bring in my data, 📋 Copy my data, 2 summaries, "Moving a whole saved file", "Show my data code"). Now sync.js TRACKS them → regression-proof.
+  * The 2 step-heading spans dropped inline `<b>` (data-i18n sets textContent) — matches app convention; flagged to Arthur.
+  * Added 5 prose descriptions (prose-handler keys = normalized textContent) + textarea placeholder to dict.
+  * 15 keys × 6 langs = 90 translations. Button labels kept consistent with the banner strings (banner "tap Traer mis datos" ↔ button reads "Traer mis datos").
+- Verified: wrote a Node simulation of applyLang's 3 paths against the real markup + dict → all 15 runtime-translated strings resolve in all 6 langs (0 would stay English). sync.js MISSING:0 (570 keys). green.js GREEN exit 0, preflight CLEAR.
+- Decision / result: Bug fixed at the source (wiring), not just patched. Lock claimed (9c7d36f) then released.
+- Commits / SHAs: 9c7d36f (lock claim) → i18n wiring fix commit (this push).
+- Still open / next: @Akashi re-SAFE (markup changed), @Hugo GREEN, then Osefe ships. Consider adding a text-node leak scan (leakcheck.js) into green.js so this class is caught by the gate, not by a user report.
