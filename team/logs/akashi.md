@@ -1004,3 +1004,75 @@ Entry format:
 - Open: review the ACTUAL wired migration + autosave-strip + hydrate + import code on a real tip
   before any gate; confirm __sys count unchanged, exportBlank still reconstructs (not dumps), green.js
   GREEN, transfer_test re-baselined by Hugo. Sleep-mode: no auto-publish without Osefe's go.
+
+## [2026-06-29] — via Kaito (asleep, step 4+10) — REAL-CODE SAFE: IndexedDB photo storage wired (`81fd473`)
+- Asked: the real-code SAFE I promised on the ACTUAL wired migration+strip+hydrate+import code (Kaito's
+  build at 81fd473). Verify against my R1–R10 + standing invariants. Security = my find-xor-fix exception:
+  fix DIRECTLY if a hole, else route non-security to Kaito. Run green.js + photo_store_test.
+- Did / found (read FULL index.html diff e4e5563..81fd473 + every load-bearing fn on the tip, ran both
+  suites + ReDoS timing — not on faith):
+  - SCOPE: index.html (+~190) + sw.js (v6→v7 cache bump ONLY, verified — no leak/url/net) + TEAM-CHAT/lock.
+    New: MEDIA IIFE @1793 (vendored raw IDB, no CDN), _warnStorageFull/_saveReplacer @1863/1869, initFoodMedia
+    @1888, PHOTOMOVE IIFE @6455, movePhotos UI block @1561, exportDataCode foodLogLite strip @5495, FOODLOG
+    addEntry/del MEDIA wiring @6380/6427, persist-denial reveal @7458, boot calls initFoodMedia+PHOTOMOVE.wire
+    @7393. No parser/applyChange/finance-calc/manifest edit.
+  - R1 ✓ initFoodMedia gated `if(TEMPLATE_MODE || !MEDIA.supported()) return;` @1892 — no owner photo hydrates
+    on a blank/preview (owner-side IDB never read in TEMPLATE_MODE). Closes design-review residual A.
+  - R2 ✓ strip lives in _saveReplacer (serialization output): `if(k==='photo' && this && this.hasPhoto) return
+    undefined;` — drops photo from localStorage ONLY when confirmed in IDB; NEVER mutates STATE.foodLog[].photo.
+    Render @6418 (list thumb) + @6430 (openPic) read e.photo IN MEMORY → on-screen photo never blanked.
+  - R3 ✓ migration order = MEDIA.put → ONLY on resolve set hasPhoto+autosave (which strips). On put REJECT →
+    .catch keeps inline (zero-loss). Idempotent: inline&&!hasPhoto migrates; hasPhoto&&!photo hydrates;
+    hasPhoto&&!photo&&lost-bytes clears the stale flag. photo_store_test proves all 4 branches.
+  - R4 ✓ quota LOUD on BOTH paths: MEDIA.put reject → _warnStorageFull (addEntry @6380, migration .catch,
+    import .catch @6517) AND autosave catch now fires _warnStorageFull on QuotaExceededError/code22/1014 @1883
+    (the long-standing silent `catch(_){}` gap @1828 is CLOSED). _warnStorageFull = toast(t(...)) + red saveBadge,
+    once/session.
+  - R5 ✓ persist denial surfaced: initPWA @7458 chains persisted()→persist()→`if(granted===false)` reveals
+    #persistWarn (@1572, amber note). A finance app silently evicted no longer fails silent.
+  - R6 ✓ import fail-closed, verified in order: (1) text.length size-cap BEFORE JSON.parse @6488; (2) schema
+    v===1+photos-object @6490; (3) empty + COUNT_MAX(5000) @6492-6493; (4) per-image anchored linear regex
+    /^data:image\/(jpeg|png|webp);base64,/ + PER_MAX(~1.6MB) + running TOTAL_MAX(~90MB), reject WHOLE file if
+    any off @6494-6500; (5) orphan ids ignored (only matched-to-foodLog kept) @6502-6504; (6) canvas reencode()
+    of EVERY image (strips EXIF/GPS, validates real decodable image, kills non-image payload, re-bounds 720px
+    JPEG q0.6) fail-closed before any commit @6506-6512. RX is ReDoS-safe (anchored, single alternation, no
+    nested quantifier — timed 500k-char adversarial inputs <1ms). msg() innerHTML sink receives ONLY static
+    tf() strings with numeric {n} counts — no photo id/bytes/user-text ever interpolated → no XSS.
+  - R7 ✓ !MEDIA.supported() → photos kept inline in localStorage as today, no crash, no loss (photo_store_test
+    "unsupported: inline photo untouched"). Boot + addEntry + del all guard on supported().
+  - R8 ✓ del @6427 calls `if(MEDIA.supported()) MEDIA.del(id)` — no orphaned IDB bytes.
+  - R9 ✓ exportPhotos payload = strictly {v:1, photos:map} from MEDIA.all() (user's own images keyed by food id);
+    no MODEL/figure/#__ownerKeySrc/STATE financials ride along. User-initiated dl() download, on-device, no net.
+  - R10 ✓ HARD INVARIANTS: __sys count IDENTICAL parent e4e5563 vs tip 81fd473 (35==35, matches Kaito's measure)
+    → NO watchdog weakened/removed; the diff adds ZERO __sys/token/PUBCHK/PUB_B64/figure-gate line (grep empty).
+    PUBCHK 4047293148 + PUB_B64(×3) intact. #__ownerKeySrc empty (@1686), #hud-state empty (@1682). exportBlank
+    @4645 STILL zeroes STATE.foodLog=[] (@4654) + RECONSTRUCTS hud-state {__fresh,fid,prefs} (@4659) — photo/
+    hasPhoto CANNOT ride into a customer file (not a STATE dump). Food calorie/macro poison FT=__sys.token()
+    intact + unchanged (@6233/6312). CONFIRMED photos need NO poison (images, not owner figures — a NaN-gated
+    data URL is just a broken image). No new network/exfil: only `.src=` added is `img.src=url` (in-memory Image
+    load of an already-validated data: URL in reencode — not a network request); no fetch/XHR/eval/new Function.
+  - photo_store_test.js = REAL (not theater): extracts the LIVE _saveReplacer/initFoodMedia/exportDataCode from
+    index.html by brace-balancing (no copy drift), mocks MEDIA/STATE/autosave, asserts strip-only-when-hasPhoto,
+    migrate→strip, put-fail zero-loss, hydrate, lost-bytes flag-clear, unsupported degrade, quick-move excludes
+    photo bytes but keeps metadata. 17/17. Genuinely guards R2/R3/R4/R6(partial)/R7.
+  - Ran node tools/test/photo_store_test.js → 17/17. node tools/release/green.js → GREEN exit 0 (parser 21/21,
+    assistant 16/16, silly 43/43, transfer 27/27 + suites; preflight CLEAR — slots empty, 1 public key, no PII,
+    PUBCHK intact, 4 scripts balanced; GUIDE/manifest/sw/team-chat clean).
+- TWO NON-GATING NOTES (robustness, NOT security defects — routed to team, do NOT block SAFE):
+  1. transfer_test fixture (@66) uses food field `pic`, but the strip drops key `photo` → it passes VACUOUSLY
+     (doesn't actually exercise the new strip). → Hugo: re-baseline with a `photo` field so it guards the strip,
+     AND wire photo_store_test into green.js (currently I ran it standalone; green.js doesn't include it yet).
+  2. import commit (@6515): if quota hits MID-Promise.all(MEDIA.put), some puts land before _warnStorageFull
+     → partial write (user warned loudly "some photos may be missing"). The SECURITY-critical fail-closed parts
+     (validate+re-encode) ARE fully all-or-nothing BEFORE any byte is written; a quota-partial writes only
+     already-validated re-encoded user-owned images. Not a leak/key/integrity issue. Optional hardening: stage
+     to a temp set + atomic swap, or pre-check estimate() vs total. Routed to Kaito as non-gating.
+- VERDICT: SAFE @ 81fd473. All R1–R10 met on the real wired code; key never travels; import validate→cap→
+  re-encode fail-closed + ReDoS-safe; quota loud on both paths; persist denial surfaced; exportBlank still
+  reconstructs (photo/hasPhoto can't reach a customer file); __sys 35==35 + watchdogs intact; photos correctly
+  un-poisoned; no net/exfil. No DIRECT security fix required (build is correct).
+- Commits / SHAs reviewed: 81fd473 (tip). If index.html moves (incl. Hugo's transfer_test re-baseline if it
+  touches index.html — it won't, it's a tools/ file), I re-sign.
+- Still open: (gate steps 7–11) my SAFE in @ 81fd473 — needs Mikoto MISSING:0 (new move-photos + warning
+  strings), Hugo GREEN (wire photo_store_test into green.js + re-baseline transfer_test) on this tip, Osefe
+  ship. Sleep-mode: no auto-publish without Osefe's explicit go.
