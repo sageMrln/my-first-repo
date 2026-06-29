@@ -13,7 +13,7 @@ It travels through git, so everyone sees it after a pull.
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** Tier 0 + full sound + tab reorder + category-open sound (`4399af7`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** nothing — shipped; Osefe testing on device
+- **Needs Osefe:** 🟡 SHIP IT? — slider drag SFX, gate full + Kaito-verified
 - **Open threads:** Frontier brainstorm DONE (Akashi/Mikoto/Hugo posted) — Kaito synthesized a 4-tier roadmap; awaiting Osefe's pick. CSP still PARKED.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
@@ -47,7 +47,11 @@ in **Pending** below and must collect:
 Only when all three sign off does Osefe give the final "ship it."
 
 ### Pending
-_(nothing waiting — clear)_
+**[Jun-28] Slider drag SFX (pitch-mapped pull) → gh-pages** — tip current, index.html `ea94ab2`.
+- ✅ **Akashi** — `SAFE` (rapid drag bounded by throttle+cap, reads value only, no money logic, no leak)
+- ✅ **Mikoto** — `MISSING: 0` (no new strings)
+- ✅ **Hugo** — `GREEN` (5 suites incl. sound 7/7 pitch-rise; no fatigue risk)
+- ✅ **Kaito** — verified on current tip: green.js GREEN, MISSING:0, preflight CLEAR → **awaiting @Osefe's "ship it"**
 
 ### Shipped
 - [Jun-28] **Tab reorder (double-tap → number → ripple) + category-open sound** → live (gh-pages `4399af7`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN (5 suites) · Kaito verified · Osefe shipped.
