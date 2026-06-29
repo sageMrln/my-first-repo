@@ -478,3 +478,15 @@ Entry format:
   schema/version + cap size + escaped render + confirm.
 - Verdict/next: pick = ship #1+#3 now (UX, zero new risk), build #2 as the wow. Offered deeper
   threat-model on the QR reader. No code touched (brainstorm only); nothing at the gate.
+
+## [2026-06-29] — direct (Osefe) — created Arthur (UI/UX design agent)
+- Asked: create a new agent, Arthur — UI/UX specialist (app/desktop/tablet/game UI),
+  personality = 7DS-Merlin "gluttony for knowledge" perfectionist.
+- Did: wrote .claude/agents/arthur.md (opus; Read/Grep/Glob/Bash/WebSearch/WebFetch;
+  read-only director model — specs not patches; defers to me on network/privacy, Mikoto on
+  words). Seeded team/logs/arthur.md. Wired CLAUDE.md (roster + sleep-mode "one per role" +
+  memory-log list). Claimed/released the lock properly (aadea11 → 36e9d95). Announced + routed
+  to Kaito to fold into dispatch.
+- Noted: "Move my data" Phase 1 redesign landed (c4e3882, index.html) — touches export/import,
+  needs my SAFE review before any gate. NEXT.
+- Open: review c4e3882 data-transfer diff for leak/key/injection + export-strip integrity.
