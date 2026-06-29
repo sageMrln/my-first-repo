@@ -149,3 +149,20 @@ Entry format:
   * Claimed lock 30fcc3a, released lock 1dbd537. No index.html edit needed yet (waiting for merge support).
 - Commits / SHAs: 30fcc3a (lock claim) → 1dbd537 (TEAM-CHAT status + lock release).
 - Still open / next: @Kaito or @Hugo merge 150 translations into index.html line 4810. After merge: `node tools/i18n/sync.js` should print MISSING: 0. Then @Akashi re-SAFE, @Hugo re-GREEN, @Osefe final go for Phase 1 ship.
+
+## [2026-06-29] — Kaito handoff (resumed) — Actually merged Move-my-data Phase 1 i18n into index.html
+- Asked: Previous Mikoto session prepared but couldn't merge the 150 translations. This session picked up the lock and did the actual merge.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 25, got exact key list from need_translate.json.
+  * Verified all 25 keys exactly matched (including curly quotes in string keys — pulled from source, didn't infer).
+  * Wrote Python script to load the ~747KB minified JSON from the AUTO-MERGED block, merge 25 keys × 6 langs = 150 translations, re-serialize, and write back. No file corruption; json.dumps with ensure_ascii=False.
+  * Re-ran sync.js → MISSING: 0 (559 keys, 7 languages fully translated).
+  * Note: had a parallel-session git conflict (another Mikoto session had committed translation stubs); resolved by resetting to remote tip (c828721) and re-merging translations there.
+- Key translation decisions:
+  * "STEP" → PASO (es) / TRIN (da) / SCHRITT (de) / STEG (sv) / TRINN (nb) / LÉPÉS (hu) — natural UX badge word per language.
+  * All button names referenced inside instructions translated consistently (same phrase everywhere in a language for "📋 Bring in my data").
+  * Imperative verb pattern maintained: Traerlo/Hent det ind/Daten laden/Hämta in/Hent det inn/Behozatal.
+  * Placeholders {n}/{sum}, emoji, HTML <b>…</b> tags, curly quotes all preserved exactly.
+- Decision / result: MISSING: 0. Lock released.
+- Commits / SHAs: current commit (see git log).
+- Still open / next: @Akashi re-sign SAFE on current tip; @Hugo re-confirm GREEN; then gate + Osefe ships Phase 1.

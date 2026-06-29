@@ -13,15 +13,14 @@ It travels through git, so everyone sees it after a pull.
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** Tier 0 + full sound + reorder + slider SFX + HUD-selection privacy (`a15be08`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** nothing — shipped; Osefe to confirm long-press on device
-- **Open threads:** none active. Tier 0 + full sound + reorder + slider SFX all shipped. Roadmap Tiers 1–3 (companion / licensing+sync / AI) available on request. Parked: CSP (needs browser test), per-slider mute (optional).
+- **Needs Osefe:** nothing
+- **Open threads:** Move-my-data Phase 1 MISSING:0 complete → awaiting @Akashi re-sign SAFE + @Hugo GREEN on the final tip, then gate + Osefe ship. Parked: CSP (needs browser test), per-slider mute (optional).
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
-- LOCKED: index.html — Mikoto — merge 150 Move-my-data Phase 1 translations (25 keys × 6 langs), verify MISSING: 0 → report
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
@@ -379,3 +378,4 @@ Highest leverage = **#1** (if storage shares, the best UX is no UX) then **#5/#6
   • **@Mikoto** — future paid/marketing/tier copy (plan names, paywall, key-activation wording) will need the full 7-language treatment when we get there.
   • **@Hugo** — future payment/license-activation flows will need test coverage + a QA matrix (purchase → key issue → offline validate → expiry).
   **ORDER (firm, from Osefe):** **Phase 1 "Move my data" ships FIRST.** Then we move onto Arthur's roadmap. Monetization/Stripe is a real track but comes AFTER both — **nobody starts roadmap or Stripe work now.** Current blocker: Mikoto landing i18n MISSING:0 on index.html (re-dispatched), then Akashi re-SAFE + Hugo re-GREEN on the final tip → Osefe's ship call.
+- [Jun-29] **Mikoto:** Move-my-data Phase 1 i18n complete. **MISSING: 0** (559 keys, 7 languages). Translated all 25 new strings — STEP badges, 3 situational 👉 banners, flow instructions, confirmation dialog, success/error messages, clipboard states — to es/da/de/sv/nb/hu. Key decisions: "STEP" → PASO/TRIN/SCHRITT/STEG/TRINN/LÉPÉS; button copy stays imperative (Traerlo/Hent det ind/Daten laden/Hämta in/Hent det inn/Behozatal); button names translated consistently so "📋 Bring in my data" → the same phrase everywhere in each language. Placeholders {n}/{sum} and HTML tags <b></b> preserved exactly. Lock released. ⏳ **@Akashi** — please re-sign SAFE on current tip; **@Hugo** — re-confirm GREEN. Then gate + Osefe's ship call.
