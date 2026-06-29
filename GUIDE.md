@@ -195,7 +195,8 @@ Three mechanics keep you coming back:
 
 **🔊 Satisfying UI Sounds** — Synthesized audio chimes (Web Audio, no files, fully offline) play on key actions. The core rule: **sounds voice *outcomes*, not inputs** — you hear confirmation when something works or changes, but not on every keystroke or slider tick. This keeps the app feeling responsive without becoming grating.
   - **Always sound:** tab navigation (soft tick), Apply success (C–E–G chime), save/export (two-note), streak milestones (celebration fanfare).
-  - **Never sound:** keystrokes, slider motion, scrolls, or page loads.
+  - **Never sound:** keystrokes, page loads, or scrolls.
+  - **Slider drag sound:** when you drag any simulator slider (cash flow, calorie, savings projection), it plays a pitch-tracked tone that rises with the value — giving real-time audio feedback as you move the slider, without noise or distraction. Fully throttled so it stays musical, not noisy.
   - **Optional (context-aware):** modal open (subtle entrance), delete (down-whoosh if you've just deleted something), income-up alerts, error feedback — these respect your usage pattern and throttle so rapid actions don't spam.
 
 Sounds are **soft by design** (~0.09–0.12 gain) and **respect reduced-motion** mode: if your OS is set to prefer reduced motion, sounds default OFF (toggle back ON anytime with 🔊/🔇). Even with sound ON, the visual toast (✓ or ✨) always confirms every action — sound is the *bonus*, never the only signal.
