@@ -541,3 +541,13 @@ Entry format:
 - Commits / SHAs reviewed: c4e3882 (index.html identical at tip b4cdc9f). If index.html moves, I re-sign.
 - Still open: nothing security-side. New i18n strings → Mikoto (MISSING). Gate not opened.
   Sleep-mode: no auto-publish — needs Osefe's explicit go.
+
+## [2026-06-29] — direct (Osefe, status) — SAFE on Phase 1 Move-my-data @ 39df9d0
+- Did: fresh security review of the data-transfer flow on the CURRENT tip (prior SAFE was
+  c4e3882, stale). Verified: exportDataCode omits #__ownerKeySrc; decodeDataCode size-cap
+  (3MB, mine) + schema validate; importSummary = counts only → NO XSS via uiConfirm innerHTML
+  preview; apply gated decode→preview→confirm; clipboard readText user-gesture read, raw text
+  never echoed to DOM; imported content renders through esc()'d renderers. green.js GREEN exit 0.
+- Verdict: SAFE @ 39df9d0. Posted to room; flagged freeze-the-tip (any index.html commit reopens).
+- Open: Phase 2 (QR camera reader) threat model still parked on me — not started. Gate not formally
+  opened in Pending yet; needs Hugo GREEN + Osefe ship.
