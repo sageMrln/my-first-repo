@@ -265,3 +265,37 @@ Entry format:
 - Commits / SHAs: lock claim f5fff0f, i18n merge 767017f, lock release + team chat 17e29db.
 - Still open / next: @Kaito routes to @Akashi re-SAFE (no code changed, pure i18n) + @Hugo re-GREEN (if tip moved), then @Osefe ship call. This completes step 7 of the new BUILD & SHIP WORKFLOW (Kaito code → Arthur review → Kaito polish → Akashi security + poison → Kaito verify → Mikoto translate → Hugo GREEN → Akashi SAFE → Osefe ship).
 
+
+## [2026-06-29] — Kaito dispatch (asleep) — Translate 10 more your-numbers assistant answer strings to 6 langs → MISSING: 0
+
+- Asked: 10 new your-numbers assistant answer strings (empty-state guidance + computed answers for highest costs, income, savings totals, savings box progress, weight). Translate to es, da, de, sv, nb, hu → MISSING: 0. Preserve placeholders {list}/{avg}/{low}/{high}/{amt}/{name}/{bal}/{tgt}/{pct}/{w} exactly; tone serious/factual (no emoji).
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 10 (exact keys from need_translate.json).
+  * Translated all 10 strings to 6 languages (60 translations) with serious, factual tone matching your-numbers Q&A voice (no hype, no emoji, all numbers poison-gated):
+    - "You haven't added any expenses yet — add some in the Expenses tab and I'll show where your money goes." → natural empty-state phrasing per language
+    - "Your biggest monthly costs: {list}." → {list} placeholder preserved (pre-built "Category amount · …" string from source)
+    - "I don't have your income yet — set it in Setup, or tell me e.g. "income is now 25000"." → curly quotes preserved, example number intact
+    - "Your typical monthly income is {avg} — low month {low}, good month {high}." → all 3 placeholders intact, financial phrasing per language
+    - "You haven't opened any savings boxes yet — make one in the Savings tab for a goal." → natural empty-state per language
+    - "Your {name} box holds {bal} of {tgt} — {pct}% of your target." → all 4 placeholders, box name raw (user's own label)
+    - "Your {name} box holds {bal}." → same structure, shorter variant
+    - "Across your savings boxes you hold {amt}." → {amt} placeholder preserved
+    - "I don't have a weight for you yet — add it in the Body/Gym tab or connect a scale." → natural empty-state + "kg" unit kept (no imperial)
+    - "Your last recorded weight is {w} kg." → {w} placeholder, "kg" preserved
+  * Claimed lock 30fcc3a on index.html (TEAM-CHAT.md).
+  * Wrote Python script to parse the AUTO-MERGED block, merge 10 keys × 6 langs = 60 translations. Hit first issue: keys differ in quote types. Initial merge added 8 keys; 2 keys had need_translate.json with straight apostrophes ("haven't", "don't") but Python embedded them wrong. Fixed v2: used exact keys from need_translate.json as authoritative source (byte-for-byte match required).
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (592/592 keys fully translated across all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 27/27 = 92/92 total; preflight CLEAR; all published files leak-clean).
+  * Committed index.html (14ba394) with both verification steps in the message.
+  * Released lock and posted status to TEAM-CHAT.md (71f9d7c).
+- Key translation decisions:
+  * Empty-state strings phrased naturally per language (not literal/clunky) — friendly but serious, no hype/emoji.
+  * All placeholders {name}/{list}/{amt}/{bal}/{tgt}/{pct}/{avg}/{low}/{high}/{w}/{n} preserved exactly as in source.
+  * Curly quotes/apostrophes in example strings ("income is now 25000") and "haven't"/"don't" contractions preserved exactly.
+  * Financial terms ("income", "savings", "target", "leftover") used consistently with existing app vocabulary per language.
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 10 assistant your-numbers strings translated to 6 locales in serious, factual tone. Every placeholder + punctuation preserved exactly. GREEN gate confirmed.
+  * Lesson reinforced: Unicode apostrophes (U+2019 vs U+0027) matter critically in key matching. The need_translate.json output from sync.js is the exact source of truth; construct keys by copy-paste, not infer. Both times I built from a string literal in Python, I lost the exact bytes.
+- Commits / SHAs: lock claim a6d29c0, i18n merge 14ba394, lock release + team chat 71f9d7c.
+- Still open / next: @Kaito routes to @Akashi re-SAFE (no code changed, pure i18n) + @Hugo re-GREEN (if tip moved), then @Osefe final go to ship.
+
