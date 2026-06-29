@@ -224,6 +224,7 @@ All four mechanics are **per-device, never synced** (they reset if you import to
 - **Unforgeable access.** Keys are signed with a private key that exists **only** in the owner's master file. The public app holds just the public half — enough to verify keys, never to make them.
 - **Tamper = poison.** Three independent watchdogs detect a bypassed lock (overlay removed, public key swapped, verifier neutered). If anyone defeats the lock, an integrity token flips and **poisons every number** — finance, body/calories, tax, and food all become `NaN` — and a full-screen warning appears. A broken app is worthless to a thief.
 - **Clean shares.** Any blank/customer copy is **hard-stripped** of all personal data and of the owner key, so nothing private can leak into a file you hand out.
+- **Accidental selection blocked.** Dashboard numbers and labels can't be accidentally selected or searched — long-pressing the screen won't trigger "copy" or "web search" menus that could expose private figures. Your access key, data code, and all input fields stay fully copyable and typeable.
 
 ---
 

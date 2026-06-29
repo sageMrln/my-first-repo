@@ -42,6 +42,17 @@
     min-height:100vh;
     overflow-x:hidden;
     touch-action:manipulation;   /* app-like: no double-tap-to-zoom (panning/scrolling stays free) */
+    /* Privacy + polish (Hugo): block accidental long-press text-selection of the HUD
+       figures/labels — on Android a long-press pops Copy/Share/Web-search, and "Web
+       search" would send a private number to Google (against "data never leaves your
+       device"). Applied at the container; inputs + the access key / data code are
+       explicitly re-enabled below so they stay copyable/typeable. */
+    -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
+  }
+  /* the things people legitimately type into or copy out stay selectable */
+  input, textarea, select, [contenteditable="true"], .selectable,
+  #dataCode, #mintKey, #mintLink, #lkInput{
+    -webkit-user-select:text; user-select:text; -webkit-touch-callout:default;
   }
 
   /* animated grid backdrop */
