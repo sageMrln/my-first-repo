@@ -561,3 +561,10 @@ Entry format:
   throttle); never auto-apply. Noted clear-text-on-screen as accepted v1 property (PIN = future lever).
 - Open: review vendored decoder + reassembly code before it touches STATE. Phase 1 SAFE still holds
   (index.html unchanged since 39df9d0); will re-confirm final tip incl. Hugo's guide before ship.
+
+## [2026-06-29] — direct (Osefe) — RE-SIGN Phase 1 @ e19e1ba
+- Hugo flagged tip moved past my SAFE (39df9d0). Verified: index.html byte-identical (code SAFE holds);
+  only published delta = GUIDE.md §9 sync (Hugo) — leak-clean (no PII/keys/figures); green.js GREEN.
+- Re-signed SAFE on e19e1ba. Scoped my SAFE to the PUBLISHED ARTIFACT, not every commit — chat/log commits
+  don't reopen it; only a published-file change does (stops the re-sign treadmill from chat churn).
+- Gate now aligned: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN → awaiting Osefe ship.
