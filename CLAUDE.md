@@ -107,6 +107,19 @@ This supersedes the ad-hoc ordering. The "Publish gate" below (Akashi SAFE · Mi
 MISSING:0 · Hugo GREEN · Osefe go) is steps 7–11 of this pipeline; the freeze-the-candidate
 + tip-moved-reopens rules still apply to every sign-off.
 
+**WHO EDITS CODE DIRECTLY (Osefe's standing rule — refines GROUND RULE #5):**
+- **Kaito** — codes directly (everything; the file owner/builder).
+- **Akashi** — codes directly **but ONLY security-related** (the poison/watchdogs, key/leak
+  fixes, integrity). Outside security he reviews and routes to Kaito.
+- **Mikoto** — codes directly **but ONLY translations** (the i18n dictionary / AUTO-MERGED
+  block, `data-i18n` wiring). Nothing else.
+- **Arthur** — does **NOT** code. Director only: specs, redlines, SHIP/POLISH verdicts → routed
+  to Kaito.
+- **Hugo** — does **NOT** code app logic. Runs tests/gate, the guide/PDF, ships; routes any
+  code finding to Kaito (security findings to Akashi).
+This is why find-xor-fix has exactly two standing exceptions (Akashi=security, Mikoto=i18n);
+everyone else finds, Kaito fixes.
+
 ## Tests & preflight — the gate is automated, not hand-rolled
 One shared, committed suite — don't re-invent a scratchpad harness per person.
 - **`node tools/test/parse_test.js`** — parser regression. Add a case whenever a bug
