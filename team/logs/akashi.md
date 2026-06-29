@@ -820,3 +820,38 @@ Entry format:
 - Still open: Arthur POLISH (2 EN copy tweaks for savings-total + named-box, no new keys) routes to Kaito →
   will MOVE the tip and REOPEN my SAFE; I re-verify the new tip (copy-only, confirm no figure ungated). New
   strings await Mikoto MISSING:0; Hugo GREEN. Gate not opened. Sleep-mode: no auto-publish w/o Osefe's go.
+
+## [2026-06-29] — via Kaito (asleep, step 10) — RE-SAFE: Assistant v2 final tip — Arthur copy + Mikoto i18n (`14ba394`)
+- Asked: re-SAFE on the final Assistant MRLN v2 tip (predicted reopen from my 666d19f SAFE). Delta since:
+  (1) 34313c4 Kaito folds Arthur 2 copy tweaks ("put away"→"hold", "% of the way there"→"% of your
+  target"); (2) 14ba394 Mikoto merges 10 your-numbers strings × 6 langs. Confirm copy fold left every
+  figure gated; i18n merge well-formed JSON, 10 keys × 6 langs, placeholders intact, no leak/PII, owner
+  slots empty, PUBCHK/__sys intact. Run green.js.
+- Did / found (read full delta 666d19f..14ba394, traced branches on tip, validated JSON, ran gate — not on faith):
+  - SCOPE: index.html only. 6 changed (non-context) lines, TWO hunks: hunk1 = 4 lines (2 reworded tf()
+    strings), hunk2 = 1-line AUTO-MERGED dict regen (old @4956 / now @4959). 34313c4 = PURE COPY,
+    14ba394 = dict regen. index.html BYTE-IDENTICAL 14ba394..HEAD (53b7dd0); 2d35a61=Hugo guide sync,
+    53b7dd0/71f9d7c = Mikoto log + lock release (don't move the published artifact).
+  - GATING UNCHANGED — re-traced both reworded branches with T=NaN @4404/4407:
+    * NAMED-BOX (@4404): `…{pct}% of your target.` — {bal}=money(bal), bal=(+balance||0)*T→NaN;
+      {tgt}=money(tgt*T)→NaN; {pct}=Math.round(bal/tgt*100)=Math.round(NaN)=NaN. All 3 *T-gated.
+    * SAVINGS-TOTAL (@4407): `…you hold {amt}.` — {amt}=money(total), total=reduce(balance)*T→NaN.
+    Reword changed only prose words; zero figure expressions touched. fmtN(NaN)→"NaN" → every figure
+    renders visibly poisoned, never a real number off a removed lock. No DIRECT fix needed (copy-only).
+  - I18N MERGE — line 4959 AUTO-MERGED IIFE arg JSON.parse OK. 6 langs es/da/de/sv/nb (1448 keys) + hu
+    (1488). All 3 reworded savings keys present in ALL 6 langs; stale "…put away."/"% of the way there."
+    confirmed GONE; placeholders ({name}{bal}{tgt}{pct}{amt}) intact per locale (set-equality, no mismatch).
+    Authoritative coverage: `node tools/i18n/sync.js` → MISSING: 0 (592/592) — my hand-guessed probe
+    strings for income/weight were wrong wording (real = "Your typical monthly income is {avg}…", "Your
+    last recorded weight is {w} kg.") so I trusted the TOOL not my guess. Leak scan of merged dict:
+    PEM/private-key, owner identity (osefe|miradi|aarhus), dd.dd-money, 120+char base64 blob → ALL clean.
+  - INVARIANTS — __sys count IDENTICAL parent 666d19f vs tip (35==35) → no watchdog weakened/removed.
+    PUBCHK(4047293148 ×1)+PUB_B64(×3) present, #hud-state empty (@1672), #__ownerKeySrc empty (@1676),
+    0 private-key markers. No SW/manifest change.
+  - Ran node tools/release/green.js → GREEN exit 0 (27/27 release-tests; preflight CLEAR — slots empty,
+    1 public key, no PII, PUBCHK intact, 4 scripts balanced; GUIDE/manifest/sw/team-chat all clean).
+- Verdict: SAFE @ 14ba394 (index.html byte-identical at HEAD 53b7dd0). Copy fold leaves no figure ungated;
+  every branch yields NaN on a tampered copy; i18n merge valid + placeholders intact + no leak; watchdogs intact.
+- Commits / SHAs reviewed: 14ba394 (index.html identical at HEAD 53b7dd0). If index.html moves, I re-sign.
+- Still open: nothing security-side. Gate (steps 7–11) now aligned: Akashi SAFE · Mikoto MISSING:0 ·
+  Hugo GREEN @ 14ba394 — awaiting Osefe ship. Sleep-mode: no auto-publish without Osefe's explicit go.
