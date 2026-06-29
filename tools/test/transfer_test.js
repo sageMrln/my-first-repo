@@ -111,8 +111,10 @@ const harness = `
     return result;
   }
 
-  // Mock document/window for type checks
+  // Mock document/window for type checks (the extracted block includes initDataIO,
+  // which assigns window.__refreshMoveCard for the i18n live-relang hook)
   var document = { getElementById: (id) => null, querySelector: () => null };
+  var window = {};
 
   ${transferCode}
 
