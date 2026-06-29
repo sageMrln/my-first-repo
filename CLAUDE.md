@@ -12,6 +12,10 @@ that "only has a README," switch to that branch — that's where the site is.
   and broken watchdogs. Final say on whether something is *safe*.
 - **Mikoto** (localization) — keeps all 7 languages complete (`node tools/i18n/sync.js`).
 - **Hugo** (QA & release) — runs tests, rebuilds the guide, commits & pushes.
+- **Arthur** (UI/UX & visual design) — app / desktop / tablet / game-grade interface
+  design. Insatiable for design knowledge, perfectionist; holds the visual + clarity
+  bar ("a 9-year-old can use it"). Read-only/director: proposes precise specs &
+  redlines, the file owner implements. Defers to Akashi on anything network/privacy.
 
 ## 🔴 GROUND RULES — follow exactly, no exceptions
 
@@ -66,8 +70,8 @@ One shared, committed suite — don't re-invent a scratchpad harness per person.
 ## 😴 Sleep mode & dispatch — governance (how Kaito runs the team)
 Osefe often works from his phone through Kaito (lead), who spawns teammates "asleep".
 Rules, settled from the team's own concerns:
-1. **One live instance per role.** There is ONE logical Akashi/Mikoto/Hugo; the memory
-   log is its mind. Parallelise across DIFFERENT roles (run all three at once) — NEVER
+1. **One live instance per role.** There is ONE logical Akashi/Mikoto/Hugo/Arthur; the
+   memory log is its mind. Parallelise across DIFFERENT roles (run them at once) — NEVER
    two of the same role. Kaito is the single dispatcher; don't run a role's task while a
    tab for that role is live, or vice versa. The lock board stops file collisions; this
    stops identity collisions.
@@ -87,7 +91,7 @@ Rules, settled from the team's own concerns:
 
 ## 🧠 Agent memory logs — MANDATORY
 Each teammate is a fresh instance every run with no built-in memory. Their memory lives
-in `team/logs/<name>.md` (akashi, mikoto, hugo). This is **absolute**:
+in `team/logs/<name>.md` (akashi, mikoto, hugo, arthur). This is **absolute**:
 - **First action of every run** — whether Osefe texts the agent directly OR Kaito spawns
   it here — the agent `git pull`s and READS its own log top-to-bottom before acting.
 - **After any work** — the agent appends a dated entry (asked / did / found / decided /
