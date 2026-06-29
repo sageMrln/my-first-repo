@@ -299,3 +299,16 @@ Entry format:
 - Commits / SHAs: lock claim a6d29c0, i18n merge 14ba394, lock release + team chat 71f9d7c.
 - Still open / next: @Kaito routes to @Akashi re-SAFE (no code changed, pure i18n) + @Hugo re-GREEN (if tip moved), then @Osefe final go to ship.
 
+
+## [2026-06-29] — Osefe (direct) — Assistant MRLN: misspell tolerance + "20 kr → 20,000" bug
+- Asked: "Write as many silly questions like this for the MRLN bot so it's properly capable of understanding misspells and silly finance/food questions." (Screenshot: "can i afford a 20 kr gum?" → bot wrongly said 20,000 kr.)
+- Git note: my Move-my-data line and the Assistant v1/v2 line had diverged on origin; origin was a strict superset (had BOTH), so I fast-forwarded to origin tip (34313c4) which has the your-numbers/affordability engine the live app uses. Worked from there.
+- Found the engine: answerQuestion → answerData (your-numbers, poison-gated) → MRLN_HELP KB matcher → out-of-scope fallback. Built tools/test/assistant_silly_test.js (41 cases) that MOCKS the runtime globals (MODEL/leftOver/GRAND/STATE/__sys, ≈3,686 kr leftover) so answerData actually computes. Baseline: 23/41 FAILED.
+- Root causes + fixes (engine logic only, NO new user-facing strings → MISSING:0 untouched):
+  1. `_amtFrom` bug: stripped spaces then matched `(k)?` → "20 kr" → "20kr" → k-of-kr read as ×1000 → 20,000. Rewrote: keep spaces, `(k)?(?![a-z])` so k is ×1000 only as a real suffix (2k/5k), never kr/kg/km; pick max figure (ignores text-speak "2"="to"). ReDoS-safe, parseFloat-only.
+  2. Added `_aiNorm` — word-bounded typo/text-speak normaliser on the QUESTION only (aford→afford, muny→money, fud→food, wieght→weight, ern→earn, salry→salary, incom→income, savins→savings, duz/wat/wats/hw/cn, etc.).
+  3. Widened intent regexes: `\bafford` (catches "affordable"), "what costs me the most", "how much…left", weight "way"/"how fat am i".
+- Verified: silly battery 41/41, assistant_test 16/16 (commands still return null → NOT hijacked, the key safety property), green.js GREEN, preflight CLEAR, sync MISSING:0.
+- Poison-safety preserved: parsed price is user-typed; compared/shown `left` still = leftOver()×__sys.token() (NaN on tampered copy). Routed @Akashi for re-SAFE (answerData + _amtFrom changed), @Hugo to wire the new suite into green.js, @Kaito to verify/own.
+- Commits / SHAs: 96020d8 (lock) → this push (fix + test). Lock released.
+- Still open / next: @Akashi re-SAFE, @Hugo wire suite into green.js, @Kaito verify, then gate + Osefe ship. Note: there's no real calorie DATABASE — food questions route to the Food Log feature explanation, not a "calories in X" lookup (logged as a possible future intent, not built).

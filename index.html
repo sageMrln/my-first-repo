@@ -4338,18 +4338,48 @@
      __sys.token()) or multiplied by __sys.token() directly, so a tampered copy yields NaN
      and the assistant can never read real numbers off a bypassed lock. Fully offline. */
   function _amtFrom(s){
-    var m = String(s).replace(/[,\s]/g,'').match(/(\d+(?:\.\d+)?)(k)?/i);
-    if(!m) return NaN; var n = parseFloat(m[1]); if(m[2]) n *= 1000; return n;
+    s = String(s).toLowerCase().replace(/,/g,'');                       // drop thousands separators; KEEP spaces (so "20 kr" stays "20 kr")
+    // every number with an OPTIONAL 'k' thousands suffix — but 'k' counts as ×1000 ONLY when
+    // it's a real magnitude marker (2k, 5k), never the start of a unit like kr/kg/km ("20 kr" = 20).
+    var re = /(\d+(?:\.\d+)?)\s*(k)?(?![a-z])/gi, m, vals = [];
+    while((m = re.exec(s))){ var n = parseFloat(m[1]); if(!isFinite(n)) continue; if(m[2]) n *= 1000; vals.push(n); }
+    if(!vals.length) return NaN;
+    return Math.max.apply(null, vals);                                  // the price/goal asked about is the largest figure (ignores stray "2"="to" text-speak)
+  }
+  // Normalise common misspellings + text-speak in a QUESTION so fast/daft typing still routes
+  // to the right intent. Operates ONLY on the asked text (never on stored data) and is word-bounded
+  // so it can't touch amounts or category names — a recognition aid, nothing more.
+  var _AI_TYPOS = [
+    [/\b(?:aford|affor|affrod|affoord|aforde|aferd|affords?)\b/g, 'afford'],
+    [/\b(?:muny|munny|mony|monney)\b/g, 'money'],
+    [/\b(?:fud|fuud|foood|fyood)\b/g, 'food'],
+    [/\b(?:spnd|sppend|spand)\b/g, 'spend'],
+    [/\bexpence\b/g, 'expense'], [/\bexpences\b/g, 'expenses'],
+    [/\bhav\b/g, 'have'],
+    [/\b(?:surpluss|surplas|surplis)\b/g, 'surplus'],
+    [/\b(?:ern|earnn)\b/g, 'earn'],
+    [/\b(?:salry|salery|sallary)\b/g, 'salary'],
+    [/\b(?:incom|incme|inncome|incomme)\b/g, 'income'],
+    [/\b(?:savins|saveings|savngs|savigs)\b/g, 'savings'],
+    [/\b(?:wieght|weigth|wght|weihgt)\b/g, 'weight'],
+    [/\b(?:calores|calries|calorys|calorice)\b/g, 'calories'],
+    [/\bduz\b/g, 'does'], [/\bwat\b/g, 'what'], [/\bwats\b/g, 'whats'],
+    [/\bhw\b/g, 'how'], [/\bcn\b/g, 'can'], [/\bhowmuch\b/g, 'how much']
+  ];
+  function _aiNorm(text){
+    var s = String(text).toLowerCase();
+    for(var i=0;i<_AI_TYPOS.length;i++) s = s.replace(_AI_TYPOS[i][0], _AI_TYPOS[i][1]);
+    return s;
   }
   function answerData(text){
     // guard: in a non-browser context (test sandbox) these globals are absent → fall through
     if(typeof __sys==='undefined' || typeof MODEL==='undefined' || typeof leftOver!=='function' || typeof GRAND==='undefined') return null;
-    var s=String(text).toLowerCase();
+    var s=_aiNorm(text);
     var T=__sys.token(), sym=curInfo().sym;
     var inc=(MODEL&&MODEL.income)?MODEL.income.avg:0, left=leftOver(inc);   // left already × token()
     function money(n){ return fmtN(n)+' '+sym; }
     // where the money goes — biggest categories (checked before generic spending)
-    if(/\b(where (does|do).*(money|i spend)|biggest (cost|expense|spend)|most expensive|what costs the most|where.*money go)\b/.test(s)){
+    if(/\b(where (does|do).*(money|i spend)|biggest (cost|expense|spend)|most expensive|what costs (?:me )?the most|where.*money go)\b/.test(s)){
       var gs=(MODEL.groups||[]).map(function(g){ return {n:(typeof t==='function'?t(g.name):g.name), v:groupTotal(g)}; }).filter(function(x){return x.v>0;}).sort(function(a,b){return b.v-a.v;});
       if(!gs.length) return t('You haven’t added any expenses yet — add some in the Expenses tab and I’ll show where your money goes.');
       return tf('Your biggest monthly costs: {list}.', {list:gs.slice(0,3).map(function(x){ return x.n+' '+money(x.v*T); }).join(' · ')});
@@ -4365,12 +4395,12 @@
       return tf('Your total monthly spending is about {amt}.', {amt:money(GRAND*T)});
     }
     // leftover / what do I keep
-    if(/\b(left ?over|keep|surplus|net|what.?s left)\b/.test(s)){
+    if(/\b(left ?over|keep|surplus|net|what.?s left)\b/.test(s) || /how much.*\bleft\b/.test(s)){
       if(!inc) return t('I can’t work that out without your income — set it in Setup, or tell me e.g. “income is now 25000”.');
       return tf('You keep about {amt} in a typical month, after every bill and any loan.', {amt:money(left)});
     }
     // affordability
-    if(/\b(afford|can i buy|enough for)\b/.test(s)){
+    if(/\bafford/.test(s) || /\b(can i (?:buy|get|have)|enough for)\b/.test(s)){
       var a=_amtFrom(s);
       if(!isFinite(a)) return t('Tell me the price and I’ll check, e.g. “can I afford 4000?”.');
       if(!inc) return t('I can’t check that without your income — set it in Setup first.');
@@ -4408,7 +4438,7 @@
       return tf('Across your savings boxes you hold {amt}.', {amt:money(total)});
     }
     // weight
-    if(/\b(my weight|how much do i weigh|how heavy am i|what.?s my weight|weigh now)\b/.test(s)){
+    if(/\b(my weight|how much do i (?:weigh|way)|how heavy am i|how fat am i|what.?s my weight|weigh now)\b/.test(s)){
       var w=(STATE&&STATE.body&&+STATE.body.weight)||0;
       if(!w) return t('I don’t have a weight for you yet — add it in the Body/Gym tab or connect a scale.');
       return tf('Your last recorded weight is {w} kg.', {w:Math.round(w*T*10)/10});
@@ -4417,8 +4447,8 @@
   }
   var _Q_WORDS = /^\s*(?:how|what|what's|whats|why|where|which|who|can|could|would|should|does|do|is|are|tell me|explain|help|hvordan|hvad|hvorfor|hvor|kan|forklar|hjælp|wie|was|warum|wo|erklär|erkläre|hilfe|cómo|qué|por qué|dónde|ayuda|explica|hur|vad|varför|var|förklara|hjälp|hva|hvorfor|forklar|hjelp|hogyan|mi|miért|hol|segíts)\b/i;
   function answerQuestion(text){
-    var s = String(text).toLowerCase().trim();
-    var isQ = /\?/.test(text) || _Q_WORDS.test(text);
+    var s = _aiNorm(text).trim();                       // normalise misspells/text-speak first so the gate + matcher see canonical words
+    var isQ = /\?/.test(text) || _Q_WORDS.test(s);
     if(!isQ) return null;
     var d = answerData(text); if(d) return d;          // computed from the user's OWN numbers (poison-gated)
     var best=null, bestScore=0;
