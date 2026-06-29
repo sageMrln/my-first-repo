@@ -281,3 +281,28 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Commits / SHAs: (none this run — verify-only, no edits).
 
 - Still open / next: All three sign-offs ready (Akashi SAFE via prior review, Mikoto MISSING:0 verified now, Hugo GREEN now). Awaiting Osefe's "ship it" and Kaito's merge/publish.
+
+## [2026-06-29] — direct (Osefe) — IndexedDB photo storage QA: gate wiring + transfer_test re-baseline
+
+- Asked: (1) Wire photo_store_test.js (17 cases — IndexedDB migration, fail-closed, hydrate, export exclusion) into green.js as suite 8, run full gate, report pass count. (2) Re-baseline transfer_test.js: fix food fixture to use real field name `photo` + `hasPhoto` flag (not stale `pic`), add assertions proving photo bytes EXCLUDED from quick-move while food metadata KEPT. (3) Update GUIDE.md if needed, rebuild PDF, run full gate. Post GREEN with explicit SHA. Commit + push.
+
+- Did / found / thought:
+  * Ran photo_store_test standalone: **17/17 GREEN** (all IndexedDB logic guards passing).
+  * Updated transfer_test fixture: changed `pic: 'data:...'` → `photo: 'data:...'` + added `hasPhoto: true`, `total: 500` fields to match real app schema. Added 7 new assertions (6 metadata preserved checks + 1 photo exclusion check). Re-ran transfer_test: **34/34 GREEN** (was 27, +7 assertions now exercise the photo-strip behavior).
+  * Wired photo_store_test as suite 8 in tools/release/green.js (added between silly_test and preflight). Ran full gate: **GREEN exit 0** — all 8 suites passed (parse 21, assistant 16, streak 4, sound 7, reorder 7, transfer 34, silly 43, photo_store 17 = **149 total tests**, was 135). Preflight CLEAR, all published files leak-clean.
+  * i18n verified: `node tools/i18n/sync.js` → **MISSING: 0** (616 keys, 7 languages — no new UI strings added, only test harness changes).
+  * **GUIDE judgment:** Photo storage is a technical infra change (photos stored separately in IndexedDB, not transferred with quick-move). This affects user expectation during data transfer — worth a doc note. Updated GUIDE.md §9 (Connect / Move my data) to add: *"Note on photos: Meal photos are stored separately on each device (not in the transfer code), so they don't ride along when you move your data — only the meal metadata (date, calories, description) transfers. When you bring your data to a new phone, your meals come across, but photos stay on the old device."* Rebuilt MRLN-Guide.pdf (477 KB). Re-ran full gate: still **GREEN exit 0**, preflight CLEAR, all files leak-clean.
+
+- Decision / result:
+  * photo_store_test wired successfully as suite 8. Gate is now 8 suites, 149 tests, all GREEN.
+  * transfer_test re-baselined to exercise real photo-strip behavior (was vacuously passing before). Now guards that photos EXCLUDED but all food metadata KEPT during quick-move.
+  * GUIDE.md §9 updated with clear user-facing note about photo storage (informed decision: photos don't transfer, stay local). PDF rebuilt.
+  * Gate is **GREEN exit 0** on current tip with all changes.
+
+- Commits / SHAs:
+  * f39739d (parent — Mikoto's i18n session, photo storage code built + SAFE + MISSING:0)
+  * **eddf573** (Hugo QA commit — photo_store_test wired, transfer_test re-baselined, guide updated, PDF rebuilt, gate 8 suites/149 tests GREEN)
+
+- Still open / next:
+  * Gate is full and ready for Akashi re-SAFE (GUIDE + PDF published, scope extended per freeze-the-candidate rule) + Osefe's "ship it" + Kaito's merge/publish.
+  * My QA commit (`eddf573`) is the new tip; Akashi should re-sign SAFE on this tip (guide + PDF changes are within scope — published artifacts), then Kaito verifies + Osefe gives final go.
