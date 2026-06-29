@@ -607,3 +607,35 @@ Entry format:
   surface; tab routing + panel visibility semantics unchanged; watchdogs intact.
 - Commits / SHAs reviewed: 2a1291b (tip). If index.html moves, I re-sign.
 - Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
+
+## [2026-06-29] — via Kaito (asleep) — RE-SAFE: Arthur E accordion stagger fix (`5e04ee3`)
+- Asked: re-SAFE the tiny delta `2a1291b..5e04ee3` — Arthur's E fix. Keys the rowIn stagger off a
+  transient `just-opened` class (added on the .exp-head open gesture, removed via setTimeout 600ms)
+  instead of the persisted `.open` class, so it can't re-fire on an innerHTML rebuild from an
+  unrelated number change. Confirm presentational only, invariants intact, run green.
+- Did / found (read full delta + JS hunk in context @2239-2250, ran the gate — not on faith):
+  - SCOPE: delta = index.html ONLY. CSS hunk @236-251: 11 selectors renamed `.exp-group.open` →
+    `.exp-group.just-opened` (rowIn keyframe + nth-child delays unchanged). JS hunk @2242-2248:
+    on the OPEN branch only, add `just-opened` + setTimeout(remove,600); the pre-existing
+    MRLN_SFX.panel() call is now nested inside the same `if(opening)` (same trigger condition as
+    before — still open-only). Toggle of `.open` itself UNCHANGED (@2241).
+  - PRESENTATIONAL ONLY ✓: pure classList.add/remove + a setTimeout that only removes a CSS class.
+    Grepped the `+` lines for fetch/XHR/eval/new Function/document.write/.src=/location.*=/innerHTML/
+    outerHTML/insertAdjacentHTML/__sys/PUBCHK/PUB_B64/ownerKeySrc/hud-state/exportBlank/exportHTML/
+    importData/applyChange/parseClause/MODEL./STATE. → only "hit" is the word innerHTML inside a
+    CODE COMMENT (not code). No STATE/value/figure/poison/watchdog/network/data-surface touch.
+    `just-opened` is a transient view-only class, never serialized/exported (it's removed after 600ms).
+  - FIX IS SOUND ✓: keying the animation off a transient open-gesture class instead of the persisted
+    `.open` means renderExpenses' host.innerHTML rebuild (which re-creates rows on any number change)
+    no longer re-applies the stagger to an already-open group — animation now fires ONLY on the actual
+    user open gesture. Doesn't change which rows/figures render (host.innerHTML build @2234 untouched),
+    only when the cosmetic stagger plays.
+  - INVARIANTS ✓: __sys count IDENTICAL parent 2a1291b vs tip (23==23) → no watchdog weakened/removed.
+    #__ownerKeySrc empty (@1660), #hud-state empty (@1656), PUBCHK(4047293148) + PUB_B64(×3) intact.
+    No SW/manifest change. No new i18n string (MISSING:0 holds).
+  - Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, transfer 27/27 + suites, preflight
+    CLEAR — slots empty/PUBCHK/1 public key/script tags balanced 4, all published files clean).
+- Verdict: SAFE @ 5e04ee3. Cosmetic accordion-stagger gating fix; zero money/key/network/injection/leak
+  surface; watchdogs intact; only changes WHEN a CSS animation plays.
+- Commits / SHAs reviewed: 5e04ee3 (tip). If index.html moves, I re-sign.
+- Still open: nothing security-side. Gate not opened. Sleep-mode: no auto-publish — needs Osefe's go.
