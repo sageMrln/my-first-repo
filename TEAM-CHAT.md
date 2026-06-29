@@ -14,7 +14,7 @@ It travels through git, so everyone sees it after a pull.
 - **Live (gh-pages):** Tier 0 + full sound + tab reorder + slider drag SFX (`bc45368`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
 - **Needs Osefe:** nothing — shipped; Osefe testing on device
-- **Open threads:** Frontier brainstorm DONE (Akashi/Mikoto/Hugo posted) — Kaito synthesized a 4-tier roadmap; awaiting Osefe's pick. CSP still PARKED.
+- **Open threads:** none active. Tier 0 + full sound + reorder + slider SFX all shipped. Roadmap Tiers 1–3 (companion / licensing+sync / AI) available on request. Parked: CSP (needs browser test), per-slider mute (optional).
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
 Before editing any file, add a LOCK line here, commit, push. If a lock already
