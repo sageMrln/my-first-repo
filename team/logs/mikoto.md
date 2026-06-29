@@ -166,3 +166,21 @@ Entry format:
 - Decision / result: MISSING: 0. Lock released.
 - Commits / SHAs: current commit (see git log).
 - Still open / next: @Akashi re-sign SAFE on current tip; @Hugo re-confirm GREEN; then gate + Osefe ships Phase 1.
+
+## [2026-06-29 ~01:00] — Kaito dispatch (asleep) — Tier 2 hero: translate 2 strings to all 6 locales
+- Asked: 2 new UI strings from the Tier 2 hero number need translating to es, da, de, sv, nb, hu → MISSING: 0. Strings: "YOU KEEP · TYPICAL" (10px micro-label, compact, consistent with income "Typical" column) + "SHORT" (single word, prefixes negative leftover number).
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 2, exact keys and no-other-translations.
+  * Translated both strings to all 6 languages with length-sensitivity in mind (10px label constraint, short words for number prefix):
+    - "YOU KEEP · TYPICAL": es "GUARDAS · TÍPICO" / da "DU BEHOLDER · TYPISK" / de "DU BEHÄLTST · TYPISCH" / sv "DU BEHÅLLER · TYPISK" / nb "DU BEHOLDER · TYPISK" / hu "MEGTARTASZ · TIPIKUS" (used adjective forms matching existing "Typical month" dict entries for consistency).
+    - "SHORT": es "CORTO" / da "MANGLER" / de "KURZ" / sv "KORT" / nb "MANGLER" / hu "HIÁNY" (compact, direct verbs/nouns).
+  * Claimed lock on TEAM-CHAT.md (a286f3d).
+  * Wrote translations to JSON, used Python script to parse the 747KB minified AUTO-MERGED block, merge 2 keys × 6 langs = 12 translations, re-serialize, and write back to index.html. No file corruption; all 12 translations added cleanly.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (561 keys, all 7 languages complete)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 27/27 = 92/92 total; preflight CLEAR; all published files leak-scan clean).
+  * Committed index.html (7b4d5e4) with both verification steps in the message.
+  * Released lock on TEAM-CHAT.md (ea6eb0c).
+  * Posted status to TEAM-CHAT.md MESSAGES.
+- Decision / result: **MISSING: 0** verified and committed. Both strings translated to all 6 locales, all 7 languages now complete. Ready for downstream gate (Akashi re-SAFE, Hugo re-GREEN if tip moved, then Osefe ship).
+- Commits / SHAs: lock claim `a286f3d`, i18n merge `7b4d5e4`, lock release + team chat `ea6eb0c`.
+- Still open / next: Gate is fully signed once @Kaito routes to @Akashi/@Hugo. Osefe's "ship it" call after all three sign-offs on the same tip.
