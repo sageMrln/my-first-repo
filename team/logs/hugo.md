@@ -120,3 +120,30 @@ Entry format:
 - Decision / result: CSS fix is structurally sound, re-enable list is complete, no privacy elements missed. All 5 suites green before and after guide rebuild. Guide now documents the privacy feature accurately. Ready for Osefe's "ship it" and Kaito's merge/publish.
 - Commits / SHAs: ff765cb (lock claim), a52e18a (guide + PDF + status).
 - Still open / next: Gate is GREEN and ready. Waiting on Osefe's "ship it" and Kaito's merge/publish.
+
+## [2026-06-29] — via Kaito (asleep dispatch) — Phase 1 transfer_test.js + green.js wiring + QA matrix
+
+- Asked: Build `tools/test/transfer_test.js` (round-trip losslessness guard for export→decode→apply). Extract live engine from index.html (same pattern as sound_test.js), populate rich STATE+MODEL (money groups, workouts, calendar, log, body, prs, notes, foodLog, tax, savingsBoxes, reminders, usage, bdayYear, missionsDone), run export→decode, deep-diff all fields. Assert decodeDataCode REJECTS junk (non-MRLN text, empty, oversized). Wire into green.js. Document QA test matrix for clipboard "Bring in my data" flow (happy path · permission denied · wrong/empty · huge payload · offline). Claim tools/ lock, commit + push.
+
+- Did / found / thought:
+  * (1) Built transfer_test.js from scratch (27 test cases). Extraction pattern: locate `function exportDataCode(){` and `(function initDataIO(){` markers, slice between them (all transfer code), eval the harness with STATE/MODEL stubs. Rich test data: workouts array, calendar obj, log array, body obj, prs array, notes array, foodLog with data:image, tax obj, savingsBoxes array (NEW), reminders array, usage (totalSec/streak/lastDay), bdayYear, missionsDone (NEW). Captured originals before export, deep-diffed every field post-decode. Test suite: happy path (export → decode, verify v/cfg/all fields), deep-diff (workouts / calendar / log / body / prs / notes / foodLog / tax / savingsBoxes / reminders / usage / bdayYear / missionsDone / cfg.groups all match original), hostile input rejection (6 cases: empty, whitespace, non-MRLN, bad base64, oversized >3MB, valid base64 but bad JSON). importSummary tested (returns string, has emojis). All 27/27 GREEN.
+  * (2) Wired into green.js as section 6 (new transfer_test, pushed preflight/leak scan to 8/9). Full gate now: parse 21/21 + assistant 16/16 + streak 4/4 + sound 7/7 + reorder 7/7 + transfer 27/27 = **92 tests total**, preflight CLEAR, all published files clean, exit 0 GREEN.
+  * (3) Documented QA test matrix for Phase 1 clipboard "📋 Bring in my data" flow (stored as text for reference, posted to chat). 5 case families: HAPPY PATH (iOS + Android, permission Allow → preview → confirm → success chime + "Done 🎉"), PERMISSION DENIED (permission prompt → "Don't Allow" → .catch → fallback paste-box visible), WRONG/EMPTY CLIPBOARD (empty string or "hello world" → app sniffs for MRLNDATA- prefix → shows "Copy your data first" → no JSON error), HUGE PAYLOAD (1000+ notes + savingsBoxes + foodLog → 3MB base64 round-trips intact on real clipboard + platform limit), OFFLINE (WiFi + cellular OFF → clipboard read is local OS API → pure JS functions, no fetch → works 100% offline). Also: platform specifics (iOS requires user gesture + permission prompt; Android usually auto-grant if requested), regression gates (transfer_test deep-diff proves losslessness), acceptance criteria (9-year-old can do it, all STATE fields survive, zero network, offline works).
+
+- Decision / result:
+  * transfer_test.js is LIVE + wired + GREEN (27/27 cases, proves no field drops in round-trip).
+  * green.js now comprehensive (6 suites, 92 tests total, orchestrates all regression checks).
+  * QA matrix documented for clipboard flow (5 cases + platform specifics + gate guards).
+  * Ready for Kaito to ship Phase 1 index.html changes (already SAFE by Akashi), Mikoto to MISSING:0 sync strings, then full gate sign-off (Akashi SAFE + Mikoto MISSING:0 + Hugo GREEN).
+
+- Commits / SHAs:
+  * b4cdc9f: LOCK claim (tools/ for transfer_test.js + green.js)
+  * 6a016da: Add transfer_test.js + wire into green.js (92/92 tests GREEN, exit 0)
+  * 4d3552c: UNLOCK + status to TEAM-CHAT (lock released, message posted)
+  * Pushed to claude/vibrant-pasteur-ie24ab (branch up to date)
+
+- Still open / next:
+  * Awaiting Mikoto MISSING:0 sync (Kaito's Phase 1 added new UI strings like "📋 Bring in my data", "Paste your data", error messages).
+  * When gate is full (Akashi SAFE + Mikoto MISSING:0 + Hugo GREEN), it's Osefe's "ship it" + Kaito's merge/publish.
+  * Post-ship: I'll smoke-test the real clipboard flow on iOS + Android (permission prompts, fallback, offline).
+  * Phase 2 (QR camera reader) parked; waiting for Akashi's threat model when Kaito scopes it.
