@@ -67,13 +67,19 @@ run(['tools/test/transfer_test.js'], 'transfer suite');
 section('assistant silly-question test — tools/test/assistant_silly_test.js');
 run(['tools/test/assistant_silly_test.js'], 'assistant silly suite');
 
-// 8) deep pre-publish guard on the app itself
+// 8) committed photo-storage IndexedDB logic guard — zero-loss migration, fail-closed import
+//    Photos moved off the ~5MB localStorage ceiling; this guards the SECURITY-CRITICAL
+//    logic (strip-on-save, migrate + hydrate, fail-closed on put failure, export exclusion)
+section('photo-storage IndexedDB logic — tools/test/photo_store_test.js');
+run(['tools/test/photo_store_test.js'], 'photo store suite');
+
+// 9) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
 
-// 9) leak scan across every OTHER published text file (the "whole surface" rule)
-//    Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
-//    by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
+// 10) leak scan across every OTHER published text file (the "whole surface" rule)
+//     Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
+//     by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
 const PUBLISHED_TEXT = ['GUIDE.md', 'manifest.webmanifest', 'sw.js', 'team-chat.html'];
 const KEY = /BEGIN [A-Z ]*PRIVATE|pkcs8/i;                       // private-key material
 const PII = () => /miradi|osefe@|[^a-z]cpr[^a-z]|\bDK\d{8,}\b/gi; // owner PII (same shape as preflight)

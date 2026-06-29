@@ -63,7 +63,7 @@ const harness = `
     body: { height: 180, weight: 75, gender: 'M' },
     prs: [{ id: 'p1', name: 'Bench press', weight: 100, date: '2026-06-29' }],
     notes: [{ id: 'n1', text: 'Remember to hydrate', date: '2026-06-29' }],
-    foodLog: [{ id: 'f1', date: '2026-06-29', name: 'Lunch', cal: 500, pic: 'data:image/png;base64,ABC' }],
+    foodLog: [{ id: 'f1', date: '2026-06-29', name: 'Lunch', cal: 500, total: 500, photo: 'data:image/png;base64,ABC123456789', hasPhoto: true }],
     tax: { status: 'employee', taxId: 'XX1234567X' },
     savingsBoxes: [{ id: 's1', name: 'Vacation', target: 5000, current: 1500 }],
     reminders: [{ id: 'r1', date: '2026-07-01', text: 'Pay rent' }],
@@ -171,13 +171,27 @@ try {
   );
 
   // Deep-diff: compare decoded against original (the exported code should be byte-identical)
+  // EXCEPT foodLog photos which are stripped from the quick-move export (per Osefe's decision:
+  // photos stay on-device in IndexedDB, not in the transfer code).
   check('decoded.workouts matches original', JSON.stringify(decoded.workouts) === JSON.stringify(originalState.workouts));
   check('decoded.calendar matches original', JSON.stringify(decoded.calendar) === JSON.stringify(originalState.calendar));
   check('decoded.log matches original', JSON.stringify(decoded.log) === JSON.stringify(originalState.log));
   check('decoded.body matches original', JSON.stringify(decoded.body) === JSON.stringify(originalState.body));
   check('decoded.prs matches original', JSON.stringify(decoded.prs) === JSON.stringify(originalState.prs));
   check('decoded.notes matches original', JSON.stringify(decoded.notes) === JSON.stringify(originalState.notes));
-  check('decoded.foodLog matches original', JSON.stringify(decoded.foodLog) === JSON.stringify(originalState.foodLog));
+  // foodLog: verify photo bytes are STRIPPED but metadata (id/date/name/cal/total/hasPhoto) is KEPT
+  check('decoded.foodLog has same length', Array.isArray(decoded.foodLog) && decoded.foodLog.length === originalState.foodLog.length);
+  if (decoded.foodLog && decoded.foodLog.length > 0) {
+    const decodedFood = decoded.foodLog[0];
+    const originalFood = originalState.foodLog[0];
+    check('foodLog metadata preserved (id)', decodedFood.id === originalFood.id);
+    check('foodLog metadata preserved (date)', decodedFood.date === originalFood.date);
+    check('foodLog metadata preserved (name)', decodedFood.name === originalFood.name);
+    check('foodLog metadata preserved (cal)', decodedFood.cal === originalFood.cal);
+    check('foodLog metadata preserved (total)', decodedFood.total === originalFood.total);
+    check('foodLog metadata preserved (hasPhoto)', decodedFood.hasPhoto === originalFood.hasPhoto);
+    check('foodLog photo STRIPPED from export (no photo bytes)', decodedFood.photo === undefined);
+  }
   check('decoded.tax matches original', JSON.stringify(decoded.tax) === JSON.stringify(originalState.tax));
   check('decoded.savingsBoxes matches original', JSON.stringify(decoded.savingsBoxes) === JSON.stringify(originalState.savingsBoxes));
   check('decoded.reminders matches original', JSON.stringify(decoded.reminders) === JSON.stringify(originalState.reminders));

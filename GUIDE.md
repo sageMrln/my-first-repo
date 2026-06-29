@@ -176,6 +176,8 @@ which to do first.
 Importing **replaces** what's on the device you bring it onto, and the app **asks you to
 confirm** before anything changes.
 
+**Note on photos:** Meal photos are stored separately on each device (not in the transfer code), so they don't ride along when you move your data — only the meal metadata (date, calories, description) transfers. When you bring your data to a new phone, your meals come across, but photos stay on the old device. You can re-photograph the meals on the new phone, or export/import meals individually if you need the photos (Apple Health, CSV).
+
 ### Other Connect tools
 - **📥 Import from another app** — bank/card **CSV** → income & expenses; **.ics** → calendar; Apple Health/CSV → weight; MyFitnessPal CSV → food log.
 - **📤 Export to other apps** — your calendar as **.ics**, expenses/food as **CSV**, or the native **Share** sheet.
