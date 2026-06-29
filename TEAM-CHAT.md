@@ -11,9 +11,9 @@ It travels through git, so everyone sees it after a pull.
 3. **Format:** `- [SHORT-DATE] **Name:** message`
 
 ## 📌 STATE (glance here first — keep current)
-- **Live (gh-pages):** Tier 0 + full sound + tab reorder + slider drag SFX (`bc45368`)
+- **Live (gh-pages):** Tier 0 + full sound + reorder + slider SFX + HUD-selection privacy (`a15be08`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** 🟡 SHIP IT? — HUD selection privacy fix, gate full + Kaito-verified
+- **Needs Osefe:** nothing — shipped; Osefe to confirm long-press on device
 - **Open threads:** none active. Tier 0 + full sound + reorder + slider SFX all shipped. Roadmap Tiers 1–3 (companion / licensing+sync / AI) available on request. Parked: CSP (needs browser test), per-slider mute (optional).
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
@@ -47,12 +47,10 @@ in **Pending** below and must collect:
 Only when all three sign off does Osefe give the final "ship it."
 
 ### Pending
-**[Jun-29] Privacy: block accidental selection of HUD figures → gh-pages** — tip current, index.html `a674002`.
-- ✅ **Akashi** — `SAFE` (Google-leak path closed; key/data-code/inputs stay copyable — verified; CSS-only)
-- ✅ **Hugo** — `GREEN` (5 suites; re-enable list complete; guide noted) — he requested this fix
-- ✅ **Kaito** — verified on current tip: green.js GREEN, MISSING:0, preflight CLEAR → **awaiting @Osefe's "ship it"**
+_(nothing waiting — clear)_
 
 ### Shipped
+- [Jun-29] **Privacy: HUD figures can't be accidentally selected/web-searched** → live (gh-pages `a15be08`). Gate: Akashi SAFE · Hugo GREEN (5 suites) · Kaito verified · Osefe shipped.
 - [Jun-28] **Slider drag SFX (pitch-mapped pull on every simulator)** → live (gh-pages `bc45368`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN (5 suites) · Kaito verified · Osefe shipped.
 - [Jun-28] **Tab reorder (double-tap → number → ripple) + category-open sound** → live (gh-pages `4399af7`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN (5 suites) · Kaito verified · Osefe shipped.
 - [Jun-28] **Tier 0 — streak + morning briefing v2 + score flash + full sound design** → live (gh-pages `cd30980`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
@@ -279,3 +277,4 @@ Only when all three sign off does Osefe give the final "ship it."
 - [Jun-29] **Hugo → @Kaito (build) / @Akashi (privacy eyeball):** Osefe-requested small task — **disable text selection on the dashboard numbers/labels.** Repro (Osefe's screenshots): long-pressing a HUD figure (e.g. TYPICAL `16.161 kr`) pops Android's Copy/Share/**Web search** menu + Google's "tap to search" bar. Two problems: (1) it's easy to trigger by accident and looks broken; (2) **"Web search" would send a private income figure to Google** — cuts against our "data never leaves your device" promise (@Akashi, your call on how much that matters). **Spec — do it SELECTIVELY, not globally:** apply `user-select:none` (+ `-webkit-user-select:none` and `-webkit-touch-callout:none` for iOS/Android long-press) to the display chrome — HUD stat numbers, labels, headings, read-only cards/briefing text. **MUST stay selectable/copyable:** (a) the **access key** display (`MRLN-…` — users need to copy it), (b) every `<input>`/`<textarea>` (typing + select inside fields), (c) the Assistant input. So scope it to the app container and explicitly re-enable selection on inputs + the key element. @Kaito it's index.html so it's yours to build; route to one session. When it's on the branch I'll QA: numbers NOT selectable, key + all inputs STILL copyable/typeable, then run green.js + guide check for GREEN. Low risk, CSS-only, no logic. — Hugo
 - [Jun-29] **Akashi:** SAFE — HUD long-press selection fix `a674002`. Closes the leak (HUD figures are plain divs, not inputs → fall under body `user-select:none`; long-press Copy/Share/Web-search can't grab a number to send to Google). Did NOT over-disable: traced all three select-to-copy fallbacks the phone `file://` copy path needs — `#dataCode` (data code), `#mintKey` (access key), `#mintLink` (share link) — all in the re-enable list, plus every input/textarea/`#lkInput`. Pure CSS, two style hunks; no money/parser/watchdog/export/SW touch. `green.js` GREEN exit 0 (all 6 suites + preflight CLEAR). No copyable element wrongly disabled.
 - [Jun-29] **Hugo:** GREEN ✓ — HUD text-selection privacy fix QA + guide update. Claimed lock, ran baseline gate: all 5 suites GREEN — parse 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, preflight CLEAR. **CSS QA verified:** body rule disables selection on HUD chrome; re-enable selectors cover all inputs/textareas AND access key (#mintKey) AND export data code (#dataCode) AND unlock input (#lkInput) AND share link (#mintLink) — no critical copyable element left disabled. Updated GUIDE.md §13 (Privacy & anti-tamper): added note on accidental selection blocked (dashboard figures can't be long-pressed; key + inputs stay copyable). Rebuilt MRLN-Guide.pdf (482 KB). Re-ran full gate post-rebuild: still GREEN exit 0, all published files clean. Lock released. Commit: `ff765cb` (lock claim), guide changes staged. Ready for Kaito verify → Osefe ship.
+- [Jun-29] **Kaito (lead):** 🚀 SHIPPED — Osefe gave the go. HUD figures can no longer be accidentally selected/web-searched (key + inputs stay copyable) → gh-pages (`a15be08`), preflight CLEAR. Gate was full (Akashi SAFE · Hugo GREEN, 5 suites). Nice catch @Hugo. No open locks.
