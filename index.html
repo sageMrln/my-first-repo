@@ -5393,6 +5393,10 @@
         el.style.borderColor = active ? 'var(--cyan)' : 'var(--line)';
         el.style.boxShadow = active ? 'var(--glow)' : 'none';
         var h=el.querySelector('h2'); if(h) h.style.color = active ? '' : 'var(--txt-dim)';
+        // Arthur polish — emphasise the ACTIVE step heading at line-level (weight survives
+        // data-i18n textContent; no inline <b> to fragment translations). Targets the title
+        // span, not the STEP badge.
+        var ttl=el.querySelector('h2 span:not(.stepBadge)'); if(ttl) ttl.style.fontWeight = active ? '700' : '600';
       }
       setBox(first,true); setBox(second,false);
       // numbered STEP badges so the order is unmistakable
