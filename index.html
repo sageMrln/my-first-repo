@@ -1777,6 +1777,37 @@
   function nowISO(){ return new Date().toISOString(); }
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+  /* ---------- MEDIA: food photos in IndexedDB (off the ~5MB localStorage ceiling) ----------
+     A food-log photo is a ~1–4MB JPEG data URL — one photo ≈ a year of text. Holding them in
+     localStorage would blow the per-origin quota fast, so the bytes live HERE in IndexedDB
+     (hundreds of MB–GB of the device's own free disk), keyed by the food entry id. STATE keeps
+     only `hasPhoto`; photo bytes never touch localStorage. Strictly on-device — no network, no
+     new exfil surface (preserves the privacy promise). Vendored raw IndexedDB, no lib/CDN. */
+  var MEDIA = (function(){
+    var DB='mrln-media', STORE='photos', VER=1, _db=null;
+    function open(){
+      return new Promise(function(res,rej){
+        if(_db) return res(_db);
+        var rq; try{ rq=indexedDB.open(DB,VER); }catch(e){ return rej(e); }
+        rq.onupgradeneeded=function(){ var d=rq.result; if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE); };
+        rq.onsuccess=function(){ _db=rq.result; res(_db); };
+        rq.onerror=function(){ rej(rq.error||new Error('idb open failed')); };
+      });
+    }
+    function store(mode){ return open().then(function(d){ return d.transaction(STORE,mode).objectStore(STORE); }); }
+    function req(r){ return new Promise(function(res,rej){ r.onsuccess=function(){ res(r.result); }; r.onerror=function(){ rej(r.error); }; }); }
+    return {
+      supported:function(){ try{ return !!window.indexedDB; }catch(_){ return false; } },
+      // put REJECTS on quota/error so callers can warn loudly (no silent photo loss).
+      put:function(id,url){ return store('readwrite').then(function(s){ return req(s.put(url,id)); }); },
+      get:function(id){ return store('readonly').then(function(s){ return req(s.get(id)); }).catch(function(){ return null; }); },
+      del:function(id){ return store('readwrite').then(function(s){ return req(s.delete(id)); }).catch(function(){}); },
+      keys:function(){ return store('readonly').then(function(s){ return req(s.getAllKeys()); }).catch(function(){ return []; }); },
+      // all() → { id: dataUrl, … } ; spec guarantees getAllKeys()/getAll() share ascending key order.
+      all:function(){ return store('readonly').then(function(s){ return Promise.all([req(s.getAllKeys()), req(s.getAll())]); }).then(function(r){ var o={}; (r[0]||[]).forEach(function(k,i){ o[k]=r[1][i]; }); return o; }).catch(function(){ return {}; }); }
+    };
+  })();
+
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
   var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], tax:{}, savingsBoxes:[], showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
@@ -1818,6 +1849,19 @@
   if(!STATE.prefs.lang) STATE.prefs.lang='en';
   if(!STATE.prefs.currency) STATE.prefs.currency='DKK';
   if(STATE.prefs.country==null) STATE.prefs.country='';
+  var _quotaWarned=false;
+  function _warnStorageFull(){            // fail loud, never silent (Akashi constraint #3)
+    if(_quotaWarned) return; _quotaWarned=true;   // once per session — warn, don't nag
+    try{ if(typeof toast==='function') toast(t('Storage is full — export your data to free space.')); }catch(_){ }
+    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● storage full — export to free space'; b.style.color='var(--red)'; }
+  }
+  function _saveReplacer(k,v){
+    // A food photo is dropped from localStorage ONLY once its bytes are confirmed in IndexedDB
+    // (entry.hasPhoto). Until then the inline copy stays put as a zero-loss fallback — a failed
+    // or half-done migration can never strand a photo (Akashi constraint #4).
+    if(k==='photo' && this && this.hasPhoto) return undefined;
+    return v;
+  }
   function autosave(){
     STATE.savedAt = nowISO();
     if(TEMPLATE_MODE){   // fresh share copy: never touch this device's storage
@@ -1825,9 +1869,30 @@
       if(bt){ bt.textContent='● try mode — press Save to keep your file'; bt.style.color='var(--amber)'; }
       return;
     }
-    try{ localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); }catch(_){ }
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(STATE, _saveReplacer)); }
+    catch(e){ if(e && (e.name==='QuotaExceededError'||e.code===22||e.code===1014)) _warnStorageFull(); }
     var b=document.getElementById('saveBadge');
-    if(b){ b.textContent='● unsaved — auto-saved locally'; b.style.color='var(--amber)'; }
+    if(b && !_quotaWarned){ b.textContent='● unsaved — auto-saved locally'; b.style.color='var(--amber)'; }
+  }
+  // One-time migration + hydrate for food photos. Legacy entries carry an inline `photo`
+  // data URL in localStorage; move those bytes into IndexedDB (then localStorage drops the
+  // inline copy on the next save, via _saveReplacer). Already-migrated entries (hasPhoto, no
+  // inline) get their bytes hydrated back into memory so the existing render path is unchanged.
+  function initFoodMedia(){
+    if(TEMPLATE_MODE || !MEDIA.supported()) return;
+    var fl = STATE.foodLog||[], jobs=[], dirty=false;
+    fl.forEach(function(e){
+      if(!e || !e.id) return;
+      var inline = (typeof e.photo==='string' && e.photo.slice(0,5)==='data:');
+      if(inline && !e.hasPhoto){
+        // legacy/unconfirmed inline photo → write to IDB; only flag hasPhoto once the put resolves
+        jobs.push(MEDIA.put(e.id, e.photo).then(function(){ e.hasPhoto=true; dirty=true; }).catch(function(){ /* keep inline fallback */ }));
+      } else if(e.hasPhoto && !e.photo){
+        // already migrated → pull bytes back into memory; if IDB lost them, clear the flag
+        jobs.push(MEDIA.get(e.id).then(function(u){ if(u){ e.photo=u; } else { e.hasPhoto=false; dirty=true; } }));
+      }
+    });
+    if(jobs.length) Promise.all(jobs).then(function(){ if(dirty) autosave(); if(typeof renderFoodLog==='function') renderFoodLog(); });
   }
   function logChange(action, detail){
     STATE.log.unshift({ ts:nowISO(), action:action, detail:detail||'' });
@@ -5417,7 +5482,11 @@
 
   /* ---------- BACKUP / IMPORT DATA (private, device-to-device, no upload) ---------- */
   function exportDataCode(){
-    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], foodLog:STATE.foodLog||[], tax:STATE.tax||{}, savingsBoxes:STATE.savingsBoxes||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
+    // Photos are deliberately EXCLUDED from the quick move (QR/clipboard cap at a few MB; a
+    // single photo can be that big). Food-log METADATA travels; the image bytes move via the
+    // separate "Export my photos" file. Osefe's call — storage size vs transfer ease, decoupled.
+    var foodLogLite = (STATE.foodLog||[]).map(function(e){ var c={},k; for(k in e){ if(k==='photo') continue; c[k]=e[k]; } return c; });
+    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], foodLog:foodLogLite, tax:STATE.tax||{}, savingsBoxes:STATE.savingsBoxes||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
     return 'MRLNDATA-' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));   // UTF-8 safe (emoji/names)
   }
   // Apply a parsed data object (from a MRLNDATA code OR a master file's embedded
@@ -6295,8 +6364,12 @@
       var txt=ta.value.trim();
       if(!txt && !pendingPhoto){ if(msg){ msg.style.display='block'; msg.style.color='var(--amber)'; msg.textContent='Type what you ate (or at least add a photo).'; } return; }
       var r=parseFoodText(txt);
-      var entry={ id:uid(), date:todayKey(), ts:nowISO(), text:txt, items:r.items, total:r.total, photo:pendingPhoto||'' };
-      log().unshift(entry); logChange('food-log','Logged a meal — '+r.total.kcal+' kcal'); autosave();
+      var entry={ id:uid(), date:todayKey(), ts:nowISO(), text:txt, items:r.items, total:r.total, photo:pendingPhoto||'', hasPhoto:false };
+      log().unshift(entry);
+      if(entry.photo && MEDIA.supported()){   // bytes go to IndexedDB, not localStorage; flag only once confirmed
+        MEDIA.put(entry.id, entry.photo).then(function(){ entry.hasPhoto=true; autosave(); }).catch(function(){ _warnStorageFull(); autosave(); });
+      }
+      logChange('food-log','Logged a meal — '+r.total.kcal+' kcal'); autosave();
       ta.value=''; setPhoto(null); liveEstimate();
       if(msg){ msg.style.display='block'; msg.style.color='var(--lime)'; msg.textContent='Added — '+fmtMac(r.total)+(r.unknown.length?(' · '+r.unknown.length+' item(s) couldn\'t be estimated'):''); }
       renderToday(); renderHistory();
@@ -6341,7 +6414,7 @@
         return '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline"><b style="font-family:Orbitron;font-size:13px;color:#eaffff">'+dayLabel(d)+'</b><small style="color:var(--txt-dim)">'+dt.kcal.toLocaleString('en-GB')+' kcal · '+dt.p+'g protein</small></div>'+rows;
       }).join('');
     }
-    function del(id){ STATE.foodLog=log().filter(function(e){ return e.id!==id; }); logChange('food-del','Removed a meal'); autosave(); renderToday(); renderHistory(); }
+    function del(id){ STATE.foodLog=log().filter(function(e){ return e.id!==id; }); if(MEDIA.supported()) MEDIA.del(id); logChange('food-del','Removed a meal'); autosave(); renderToday(); renderHistory(); }
     function openPic(id){
       var e=log().filter(function(x){ return x.id===id; })[0]; if(!e||!e.photo) return;
       elv('foodPicImg').src=e.photo; elv('foodPicNote').innerHTML=esc(e.text||'')+'<br><b>'+fmtMac(e.total)+'</b>';
@@ -7228,6 +7301,7 @@
   if(typeof renderSavingsBoxes==='function') renderSavingsBoxes();
   renderNotebook();
   renderFoodLog();
+  initFoodMedia();    // migrate legacy inline food photos → IndexedDB + hydrate already-migrated ones
   renderTaxHelper();
   initLocale();       // language / currency / country — apply saved prefs + wire pickers
   startI18nObserver();   // auto-translate any dynamic content rendered from here on
