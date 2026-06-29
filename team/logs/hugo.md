@@ -221,3 +221,19 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Commits / SHAs: (none this run — verify-only, no edits).
 
 - Still open / next: None on QA side. Awaiting Akashi re-verify (sw.js confirmed as published artifact) + Osefe's "ship it" + Kaito's gh-pages deploy.
+
+## [2026-06-29] — via Kaito (asleep dispatch) — Assistant MRLN v1 your-numbers Q&A GREEN @ 767017f
+
+- Asked: Final step 9 GREEN on tip `767017f` (Assistant MRLN v1: your-numbers Q&A engine + Mikoto's 13-string × 6-lang i18n). Run `node tools/release/green.js` → expect exit 0 (all 6 suites 92 tests, preflight CLEAR, published files leak-clean) + `node tools/i18n/sync.js` → MISSING: 0. Assess test coverage for NEW data-Q&A behavior (questions about your numbers). Judge if GUIDE.md needs sync on new capability. Don't edit index.html; if RED, report suite + output.
+
+- Did / found / thought:
+  * Ran `node tools/release/green.js`: **GREEN exit 0** — all 6 suites passed (parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, transfer 27/27 ✓ = **92 total**), preflight CLEAR ✓ (slots empty, no private key, 1 public key, no PII, PUBCHK intact, 4 scripts balanced), leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean).
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (582/582 keys, 7 languages).
+  * **Test coverage analysis:** The feature's new `answerData()` function computes answers about the user's numbers (spending by category or total, leftover/surplus, affordability check, save-time to a goal). It has a hard guard: `if(typeof __sys==='undefined' || typeof MODEL==='undefined' || typeof leftOver!=='function' || typeof GRAND==='undefined') return null;`. This means in the node test sandbox, answerData returns null as designed (no browser globals available), and the router correctly falls through to the feature KB lookup. **Known limitation:** The data-Q&A computation itself cannot be unit-tested in the node sandbox; browser-context globals are required. The guard + the poison-gated structure (verified SAFE by Akashi) mean the feature is safe, but the actual data computation logic will need manual browser verification by Kaito. I did NOT add synthetic test cases for data questions (they would mask as "answered" via the feature KB fallback) — this is correctly a manual/browser gate.
+  * **Guide judgment:** Section 10 "Assistant MRLN" documents questions about the app features, but doesn't mention the NEW your-numbers Q&A capability (spending, leftover, affordability, save-time). This is user-facing and significant — updated GUIDE.md §10 to note: "You can also ask about **your own numbers** — *'how much do I spend a month?', 'can I afford 5000?', 'how long to save 50000?'* — and it computes the answer directly from your data (income, expenses, savings target). All computed locally, offline." Rebuilt MRLN-Guide.pdf (474 KB). Re-ran green.js: still **GREEN exit 0**, MISSING: 0, preflight CLEAR, all files clean.
+
+- Decision / result: `767017f` is **GREEN** (via 39296c5 commit which adds guide sync + PDF rebuild, no code changes to index.html). All 6 suites 92 tests pass, MISSING: 0, preflight CLEAR, published files leak-clean. Guide now accurately documents the new your-numbers Q&A capability. Test-coverage gap (data-Q&A logic unit test impossible in node) is known and acceptable — manual browser verification by Kaito recommended; the guard + poison structure is secure.
+
+- Commits / SHAs: 39296c5 (guide sync + PDF rebuild, ready for gate).
+
+- Still open / next: Awaiting Akashi re-SAFE (guide + PDF are published, so covered by the scope-extension rule), Mikoto confirm MISSING:0 on `39296c5` (already verified), and Kaito/Osefe for ship. Manual browser test of data-Q&A by Kaito recommended post-ship.
