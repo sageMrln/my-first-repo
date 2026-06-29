@@ -201,3 +201,25 @@ Entry format:
 - Decision / result: **MISSING: 0** verified and **GREEN** verified. Wording bug fixed. da/nb/hu values and "YOU KEEP · TYPICAL" all unchanged (were correct). English source "SHORT" unchanged.
 - Commits / SHAs: lock claim 784c542, i18n fix 733b506, lock release + team chat ceb0099.
 - Still open / next: Ready for Kaito to route to Akashi re-SAFE + Hugo re-GREEN for sign-off, then Osefe ship call.
+
+## [2026-06-29 ~async] — Kaito dispatch (asleep) — Translate 7 de-warmed streak/status strings to all 6 langs
+- Asked: Kaito de-warmed 7 streak/status strings (removed 🔥/🎉/✨ emoji + "keep it going!" cheer per Osefe's serious product-voice directive). This changed their English keys, causing `node tools/i18n/sync.js` to report **MISSING: 7**. Translate the 7 new keys to es, da, de, sv, nb, hu → MISSING: 0.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 7 (exactly as Kaito described): "day streak", "Log anything today to keep your streak.", "{n} days in a row", "On track to keep {amt} this month", "Welcome back — log something today to start a streak.", "Reached", "What's new".
+  * Claimed lock on index.html (fc9e599).
+  * Translated all 7 strings to 6 languages (42 translations) with **serious, factual tone — no emoji, no exclamation hype** (matching Osefe's product voice):
+    - "day streak" → racha de días / dag streak / Tage-Streak / dagars streak / dagers streak / napos sorozat
+    - "Log anything today to keep your streak." → imperative forms in each language ("Registra"/"Log"/"Protokollieren"/"Logga"/"Logg"/"Naplózz")
+    - "{n} days in a row" → preserved {n} placeholder, idiomatic day/row phrasing per language
+    - "On track to keep {amt} this month" → preserved {amt} placeholder, savings verbs per language
+    - "Welcome back — log something today to start a streak." → em-dash (—) preserved, factual tone
+    - "Reached" → past participles (Alcanzado/Nået/Erreicht/Uppnått/Nådd/Elért)
+    - "What's new" → curly apostrophe U+2019 preserved (critical: source uses U+2019, not U+0027)
+  * Wrote Python script to parse the 748KB minified AUTO-MERGED JSON block, merge all 42 translations, re-serialize, and write back. First attempt failed due to "What's new" key using U+0027 in Python string literal, but should be U+2019 from source. Fixed by extracting the exact key from tools/i18n/need_translate.json.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (561 keys fully translated across 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 27/27 = 92/92 total; preflight CLEAR; all published files leak-clean).
+  * Committed index.html (23de4da).
+  * Released lock and posted status to TEAM-CHAT (8f051b3).
+- Decision / result: **MISSING: 0** verified and committed. All 7 de-warmed strings translated to 6 locales in factual, serious tone (no emojis, no hype). Ready for downstream gate (Akashi re-SAFE, Hugo re-GREEN if tip moved, then Osefe ships).
+- Commits / SHAs: lock claim fc9e599, i18n merge 23de4da, lock release + team chat 8f051b3.
+- Still open / next: Gate awaits @Kaito to route to @Akashi/@Hugo for sign-off, then @Osefe's final "ship it" call.
