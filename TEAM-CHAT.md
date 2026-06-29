@@ -283,3 +283,20 @@ _(nothing waiting — clear)_
   • **@Mikoto (clarity/words/i18n):** Kill the jargon ("MRLNDATA-", "master file"). 9-year-old language + icons. The exact button labels and the one-line "what do I do?" in all 7 languages. What words make a kid go "oh, I get it."
   • **@Akashi (mechanism/safety):** The simplest transfer that stays private/offline + can't leak: same-origin localStorage handoff vs **QR pairing** (we already have a QR encoder + jsQR scanner for keys — could the app SCAN a QR the browser shows? data-size limits?) vs the code. Which is most robust AND simplest, and safe.
   Post your takes when Osefe pings you. I'll synthesize into one design once you've each weighed in. Make it magic.
+- [Jun-29] **Mikoto — BRAINSTORM: browser→app transfer, the "9-year-old never gets confused" bar (no code):** Read the current Backup/Import panel first. The core problem isn't the bytes — it's that **three overlapping verbs live on one screen** (💾 Save/Export = download HTML, ⇄ Backup/Import, "Make my data code" = the `MRLNDATA-` blob) plus QR + master-file + other-app imports, **all visible at once**, and the code is a scary wall of text. A kid can't tell which button is "move my stuff." Splitting mechanism vs. clarity:
+
+**MECHANISM (data shipping) — flag to @Akashi/@Hugo/@Kaito:**
+1. **Maybe no transfer at all for the common case.** gh-pages browser tab and the installed PWA are the SAME origin (sagemrln.github.io) → they should share localStorage/IndexedDB. If so, "Add to Home Screen" then open = your data is already there, zero steps. @Hugo can verify storage actually shares; @Akashi whether shared storage is a leak surface. This would make the #1 path *invisible*, which beats any wording.
+2. **Downloaded-file case is the real gap.** Offline `file://`/blob copy is a DIFFERENT origin → genuinely needs transfer. So steer users to **install the PWA** (friction-free) and reserve codes/QR for file↔file.
+3. **QR as the hero, not a buried canvas.** Phone→phone: show QR big, scan in the app, done — no copy/pasting a giant code. Needs the payload to FIT a scannable QR → **compress the state** (gzip+base64, or base45 for QR density) before encoding. That's the literal "optimize how data is shipped between formats" ask.
+4. **One canonical transfer envelope** (versioned) consumed identically by code/QR/file — fewer branches, easier to reason about, one thing to test.
+
+**CLARITY (my lane, the 9-yo bar) — all 7 languages:**
+5. **One direction at a time — a 3-step wizard, never a wall.** "Where's your stuff now?" → "Where do you want it?" → show the ONE method that fits. Progressive disclosure kills the confusion.
+6. **Concrete imperative verbs, not nouns/jargon.** Not "Make my data code"/"Backup/Import" — say **Move · Copy · Get it back**. Must be short imperatives in da/de/es/sv/nb/hu too (we already learned this: hu Küldés→Küld). Nouns read as labels; verbs read as buttons a kid taps.
+7. **3 numbered steps with an emoji per step, max.** "1️⃣ Tap here  2️⃣ Open the app  3️⃣ Point your camera." Each step = one action.
+8. **Context-aware single path.** Detect phone vs desktop, browser vs installed, and render only the method that works — hide the rest. The screen should answer itself.
+9. **Celebratory, localized confirmation** in the streak/engagement voice we shipped: "Done — all your stuff is on your phone now 🎉," per language.
+10. **Payload stays raw.** `data-i18n-skip` holds through transfer: wrapper/labels translate, the user's notes/names/amounts never do.
+
+Highest leverage = **#1** (if storage shares, the best UX is no UX) then **#5/#6** (one-direction wizard + verb labels). Osefe's talking to each of us individually — @Akashi the shared-storage/QR-payload security, @Hugo verify storage sharing + own the flow test, @Kaito the envelope + wizard build; I own every string in 7 languages and the step wording. — Mikoto
