@@ -11,9 +11,9 @@ It travels through git, so everyone sees it after a pull.
 3. **Format:** `- [SHORT-DATE] **Name:** message`
 
 ## 📌 STATE (glance here first — keep current)
-- **Live (gh-pages):** Tier 0 + full sound + tab reorder + category-open sound (`4399af7`)
+- **Live (gh-pages):** Tier 0 + full sound + tab reorder + slider drag SFX (`bc45368`)
 - **Gate:** clear · **Locks:** none · **Pending:** none
-- **Needs Osefe:** 🟡 SHIP IT? — slider drag SFX, gate full + Kaito-verified
+- **Needs Osefe:** nothing — shipped; Osefe testing on device
 - **Open threads:** Frontier brainstorm DONE (Akashi/Mikoto/Hugo posted) — Kaito synthesized a 4-tier roadmap; awaiting Osefe's pick. CSP still PARKED.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
@@ -47,13 +47,10 @@ in **Pending** below and must collect:
 Only when all three sign off does Osefe give the final "ship it."
 
 ### Pending
-**[Jun-28] Slider drag SFX (pitch-mapped pull) → gh-pages** — tip current, index.html `ea94ab2`.
-- ✅ **Akashi** — `SAFE` (rapid drag bounded by throttle+cap, reads value only, no money logic, no leak)
-- ✅ **Mikoto** — `MISSING: 0` (no new strings)
-- ✅ **Hugo** — `GREEN` (5 suites incl. sound 7/7 pitch-rise; no fatigue risk)
-- ✅ **Kaito** — verified on current tip: green.js GREEN, MISSING:0, preflight CLEAR → **awaiting @Osefe's "ship it"**
+_(nothing waiting — clear)_
 
 ### Shipped
+- [Jun-28] **Slider drag SFX (pitch-mapped pull on every simulator)** → live (gh-pages `bc45368`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN (5 suites) · Kaito verified · Osefe shipped.
 - [Jun-28] **Tab reorder (double-tap → number → ripple) + category-open sound** → live (gh-pages `4399af7`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN (5 suites) · Kaito verified · Osefe shipped.
 - [Jun-28] **Tier 0 — streak + morning briefing v2 + score flash + full sound design** → live (gh-pages `cd30980`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
 - [Jun-28] **Assistant MRLN** (rename + offline Q&A about every feature, 7 langs) → live (gh-pages `fc51fc1`). Gate: Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN · Kaito verified · Osefe shipped.
@@ -275,3 +272,4 @@ Only when all three sign off does Osefe give the final "ship it."
 - [Jun-28] **Kaito (lead):** 🚀 SHIPPED — Osefe gave the go. Tab reorder (double-tap → set number → ripple) + distinct category-open sound mirrored to gh-pages (`4399af7`), preflight CLEAR. Gate was full (Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN across 5 suites). Osefe testing on device. No open locks, gate clear.
 - [Jun-28] **Akashi:** SAFE — slider drag SFX (`ea94ab2`). slide() routes through the SAME guarded play(fn,42)→note(): shared throttle (audio clock) + voice cap 14 + onended cleanup, so a fast drag collapses to ≤1 blip/42ms and ≤14 live voices — no runaway nodes, no leak. The delegated `input` listener is a passive observer: per-event = 3×parseFloat + one subtract/divide/clamp, no allocation; range-only (keystrokes stay silent), mx>mn guard kills NaN. Reads el.value for a fraction only — never writes a slider, never recomputes finance; the sims own handlers untouched. No fetch/innerHTML/eval, output-only, no new STATE/i18n. Owner slot+hud-state empty, PUB_B64/PUBCHK + __sys (23==23) intact. sound_test 7/7 (pitch rises), green.js exit 0.
 - [Jun-29] **Hugo:** GREEN ✓ — Slider drag SFX gate + guide update complete. Claimed GUIDE.md lock, ran baseline: all 5 suites GREEN — parse 21/21, assistant 16/16, streak 4/4, **sound 7/7** (new test: pitch rises with slider value), reorder 7/7, preflight CLEAR. Updated GUIDE.md §11 (Daily Habits): documented slider drag sound (pitch-tracked tone on simulators, rises with value, fully throttled for musicality). Rebuilt MRLN-Guide.pdf (478 KB). Re-ran full gate post-rebuild: still GREEN exit 0, all published files clean. Lock released. Commit: `d857029` (guide + PDF). Gate is full — Akashi SAFE, Mikoto MISSING:0, Hugo GREEN. Non-blocking note: slider sound is subtle + well-throttled (no fatigue risk from my QA angle); if Osefe wants a mute option per-sim (not just global 🔊/🔇), that's a 2-line add. Ready for Osefe's "ship it."
+- [Jun-28] **Kaito (lead):** 🚀 SHIPPED — Osefe gave the go. Slider drag SFX (pitch climbs with the value, all 6 simulators) mirrored to gh-pages (`bc45368`), preflight CLEAR. Gate was full (Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN, 5 suites). No open locks. Backlog note: optional per-slider mute (Hugo, 2-line add) if Osefe wants it later.
