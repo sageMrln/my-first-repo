@@ -1350,3 +1350,65 @@ Entry format:
   gross (poison count must rise, never the bare-num path), (b) the 7 Latin regexes actually extended +
   CJK→CJK sweep tested, (c) txMoney JPY/KRW/SGD added, (d) data-i18n-skip still honored, (e) __sys count
   rises with new poisoned figures / never drops. Sleep-mode: no auto-publish.
+
+## [2026-06-30] — via Kaito (asleep, step 4+10) — REAL-CODE SAFE: Wave 1 — FR/IT/SG/JP/KR tax engines (`8d22a1a`)
+- Asked: SAFE-review the real code for 5 new tax engines (France/Italy/Singapore/Japan/South Korea)
+  built from sourced 2025 data, against my design-pass hard rule (poison from gross) + standing
+  invariants. Security = find-xor-fix exception: fix DIRECTLY if a hole, else route to Kaito.
+- BASELINE: 8d22a1a^=6698eda is a LOCK-only commit; index.html byte-identical to 3937b4f (the Arthur
+  brainstorm commit before the lock). So the real index.html delta is exactly the tax feature:
+  3937b4f..8d22a1a = +73/-6, one file. No sw.js/manifest/parser/applyChange/export/finance-calc edit.
+- THE HARD RULE — POISON FROM GROSS ✓ (the watchdog-integrity check):
+  - Confirmed `grossRaw`/`T.gross` appear ONLY at line 5849 (`grossRaw=num(T.gross),
+    gross=__sys.token()*grossRaw, withheld=__sys.token()*num(T.withheld)`) and the `ok:grossRaw>0` /
+    `if(!(grossRaw>0))return R` early-gate (5851/5852). NO new branch re-reads `num(T.gross)`
+    un-poisoned — grep proves it. Every figure in all 5 branches derives from the poisoned `gross`
+    (or from `ded`/`taxAdv` = USER input, and bracket constants = public).
+  - INDEPENDENTLY traced + RAN all 5 on a tampered copy (extracted the 5 branches verbatim from the
+    file into a Node harness, set __sys.token()=NaN): FR/IT/SG/JP/KR ALL → totalTax/incomeTax/social
+    = NaN. NO branch can surface a real figure off a removed lock. (Confirmed Kaito's JP→NaN claim AND
+    the other four myself, not on faith.) fmtN(NaN)/M(NaN)→"NaN" renders visibly poisoned.
+- __sys / token() COUNT — HELD, did not drop ✓: __sys 35==35 parent vs tip; __sys.token() 14==14.
+  Kaito added ZERO new token calls — poison cascades free from the single gross multiply @5849, exactly
+  as my design pass specified. (Design baseline said "12/26" but the live parent baseline is 14/35 post-
+  cardio; the rule is HOLD-or-RISE, and it held.) PUBCHK 4047293148 (×1) + PUB_B64 (×3) intact.
+- NO NEW NETWORK / EXFIL ✓: grepped the `+` lines for fetch/XHR/.src=/eval/new Function/location.*=/
+  innerHTML/insertAdjacentHTML/document.write/localStorage/navigator. → ZERO. Tax = pure arithmetic; FX
+  untouched. Render is the PRE-EXISTING escaped sink (breakdown @6067 `esc(b.label)`+`M(amount)`; notes
+  @6093 `R.notes.map(esc)`) — the 5 branches only push into those arrays, add no new sink.
+- NO LEAK / PII ✓: added code is ONLY public bracket constants (FR/IT/SG/JP/KR_BR from NTA/IRAS/INPS/
+  Agenzia/NTS) + rate literals + TAX_CCY/TAX_COUNTRIES/txMoney/defCountry/field-set wiring. Grep of added
+  lines for osefe|miradi|aarhus|PRIVATE KEY|BEGIN|@gmail → NONE. #__ownerKeySrc empty (@1693), #hud-state
+  empty (@1689). exportBlank path UNTOUCHED (tax country/gross is user input in STATE.tax, already handled
+  by the existing reconstruct-not-dump export) — the 5 branches add NO new owner-data path into a
+  published/blank file.
+- txMoney FIX ✓ (the bug I flagged in design): map now has JPY:['¥',''],KRW:['₩',''],SGD:['S$',''] →
+  no "12345 JPY" fallthrough. defCountry reverse-map gained SGD→SG/JPY→JP/KRW→KR. Decimal-less stays safe
+  (Math.round → integer; no .toFixed anywhere). Placeholder hint handles ¥/₩/S$ magnitudes.
+- SANITY ✓ (token=1, ran them): FR €40k 31.9% / IT €40k 31.9% / SG S$80k 22.7% / JP ¥5M 21.4% /
+  KR ₩50M 17.9% — match Kaito's spot-run; all finite, all in [0,gross], marg finite. Edge inputs
+  (1 / 100 / 1e9): never NaN, never negative, never crash; txBr/txMarg/`/fr_parts` guarded
+  (fr_parts<1→1), Math.max(0,…) on every taxable.
+- ONE NON-GATING ACCURACY NOTE (NOT a security defect — routed to Kaito, does NOT block SAFE): at
+  ABSURD sub-¥1000 / sub-₩1000 incomes, JP and KR return total>gross because flat social-insurance
+  floors dominate (KR pension floor `Math.max(gross,4800000)*0.045`=₩216k; JP inhabitant flat `+5000`).
+  At realistic low wages (JP ¥500k+, KR ₩5M+) effective rates are sane (JP ~15%, KR ~9–12%). Never NaN,
+  never negative, never a crash, leaks nothing — it's a tax-model artifact at non-real inputs (txGross has
+  min=0; real input is an annual salary). Tax-rate ACCURACY is covered by the sourced research + the
+  per-branch "unofficial estimate — adjust in Advanced / verify with your tax authority" disclaimers; I'm
+  clearing that it can't crash or leak, not auditing the brackets.
+- Ran node tools/release/green.js → GREEN exit 0 (11 suites: parser 21, assistant 16, streak 4, sound 7,
+  reorder 7, transfer 47, silly 43, photo_store 17, pr 12; preflight CLEAR — slots empty, 1 public key,
+  no PII, PUBCHK intact, 4 scripts balanced; GUIDE/manifest/sw/team-chat clean). node tools/i18n/sync.js →
+  MISSING:18 (the new tax UI labels + disclaimer notes) — EXPECTED, awaiting Mikoto, not a security issue.
+- VERDICT: SAFE @ 8d22a1a. All 5 engines fully poison-gated (NaN on tamper, never a real figure off a
+  removed lock); __sys 35==35 / token 14==14 (held, didn't drop); no new network/exfil/injection; only
+  public bracket constants + rate literals added (no PII/key/owner figure); slots empty; txMoney ¥/₩/S$
+  fix in; render via pre-existing escaped sink; exportBlank path untouched (no new owner-data path to a
+  blank/published file). No DIRECT security fix required (build is correct).
+- Commits / SHAs reviewed: 8d22a1a (tip). TIP WILL MOVE (Mikoto i18n MISSING→0 + Hugo tests/guide) —
+  I re-sign the final tip before any ship per freeze-the-candidate.
+- Still open: gate (steps 7–11) — my SAFE in @ 8d22a1a; needs Mikoto MISSING:0 (18 tax strings) + Hugo
+  GREEN on the final tip + Osefe ship. Non-gating JP/KR low-income floor note → Kaito (accuracy). Wave 2/3
+  (CJK langs + remaining engines) still to come — esp. the 7 Latin i18n regexes actually extended for
+  CJK→CJK sweep. Sleep-mode: no auto-publish without Osefe's explicit go.
