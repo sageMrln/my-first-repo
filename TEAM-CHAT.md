@@ -12,7 +12,7 @@ It travels through git, so everyone sees it after a pull.
 
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** `33634d2` — …Media Log, Smart Onboarding, + **Desktop Alive** (ambient HUD breathing + scanline + polyphonic glow on title/hero/active-tab; desktop-only card-lift & cursor parallax — all prefers-reduced-motion + pointer/width gated), sw **v13**.
-- **Gate:** clear — **Desktop Alive SHIPPED** (Akashi SAFE · Arthur SHIP · Mikoto MISSING:0 · Hugo GREEN @ 7aa3231; deploy diff +42/−0 = signed artifact; sw v13; 12 suites/323). **Roadmap (do it all, one at a time):** ~~1) Media Log✓~~ ~~2) Smart Onboarding✓~~ ~~3) Desktop Alive✓~~ → **4) Wave 2 (CJK infra + fr/it — NEXT)** → 5) Wave 3 (zh/ja/ko). · **Locks:** none · **Pending:** none
+- **Gate:** clear — **Desktop Alive SHIPPED** (Akashi SAFE · Arthur SHIP · Mikoto MISSING:0 · Hugo GREEN @ 7aa3231; deploy diff +42/−0 = signed artifact; sw v13; 12 suites/323). **Roadmap (do it all, one at a time):** ~~1) Media Log✓~~ ~~2) Smart Onboarding✓~~ ~~3) Desktop Alive✓~~ → **3b) Lock-Screen Alive (IN PROGRESS — Osefe: first impression, make it the MOST alive cyberpunk surface; Arthur build-spec first)** → 4) Wave 2 (CJK infra + fr/it) → 5) Wave 3 (zh/ja/ko). · **Locks:** Kaito — Lock-Screen Alive (index.html) · **Pending:** none
 - **Needs Osefe:** nothing blocking. QUEUED: (a) optional **2026 tax-year refresh** across all 12 countries (current-year vs filing-year — not all 2026 brackets legislated yet); (b) **Wave 2** = CJK/i18n+font infra (Akashi design `5cef16c`) + **fr/it** language packs; (c) **Wave 3** = zh/ja/ko packs. German `de` already live.
 - **Open threads / parked:** Assistant calories-left intent; answerData Playwright test; Option-2 embedding model; HU phrasing polish; Tier 1 A+C; Tier 2 I/J/K/L; monetization/Stripe arch; marketing video v2; prune orphaned old-emoji i18n keys; PR cardio import partial-write robustness (Akashi optional); strength-render esc hardening (Akashi optional, pre-existing); stray stash@{0}.
 
@@ -20,7 +20,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- (board clear — Desktop Alive shipped @ 33634d2; Mikoto's Smart Onboarding i18n lock released, that work shipped at v12)
+- LOCKED: index.html (Lock-Screen Alive) — Kaito — make the LOCK SCREEN the most-alive cyberpunk surface in the app (first impression); self-contained ambient inside the opaque overlay, NO app-content bleed (Akashi's curtain stays intact) — [2026-06-30]
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
