@@ -1366,13 +1366,19 @@
     <div class="card" data-collapse data-collapsed>
       <h2>Personal Records (PRs)</h2>
       <div class="desc">Log your best lifts and watch them climb. We track your best per exercise and estimate your 1-rep max.</div>
-      <div class="form-row">
-        <div class="field"><label>Exercise</label><input id="prEx" placeholder="e.g. Bench press"></div>
-        <div class="field"><label>Weight</label><input id="prWt" type="number" min="0" step="0.5" placeholder="kg"></div>
+      <div id="prSeg" style="display:flex;gap:6px;margin-bottom:12px">
+        <button type="button" class="btn ghost prSeg" data-prmode="strength" style="flex:1" data-i18n="STRENGTH">STRENGTH</button>
+        <button type="button" class="btn ghost prSeg" data-prmode="cardio" style="flex:1" data-i18n="CARDIO">CARDIO</button>
       </div>
       <div class="form-row">
-        <div class="field"><label>Reps</label><input id="prReps" type="number" min="1" max="100" placeholder="reps"></div>
-        <div class="field"><label>Date</label><input id="prDate" type="date"></div>
+        <div class="field"><label><span class="prStrength" data-i18n="Exercise">Exercise</span><span class="prCardio" style="display:none" data-i18n="Activity">Activity</span></label><input id="prEx" placeholder="e.g. Bench press"></div>
+        <div class="field prStrength"><label data-i18n="Weight">Weight</label><input id="prWt" type="number" min="0" step="0.5" placeholder="kg"></div>
+        <div class="field prCardio" style="display:none"><label data-i18n="Distance">Distance</label><div style="display:flex;gap:6px"><input id="prDist" type="number" min="0" step="0.1" placeholder="0.0" style="flex:1;min-width:0"><select id="prUnit" style="flex:0 0 auto;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:0 8px"><option value="km">km</option><option value="mi">mi</option></select></div></div>
+      </div>
+      <div class="form-row">
+        <div class="field prStrength"><label data-i18n="Reps">Reps</label><input id="prReps" type="number" min="1" max="100" placeholder="reps"></div>
+        <div class="field prCardio" style="display:none"><label data-i18n="Time (optional)">Time (optional)</label><div style="display:flex;gap:6px;align-items:center"><input id="prMin" type="number" min="0" max="9999" placeholder="min" style="flex:1;min-width:0"><span style="color:var(--txt-dim)">:</span><input id="prSec" type="number" min="0" max="59" placeholder="sec" style="flex:1;min-width:0"></div></div>
+        <div class="field"><label data-i18n="Date">Date</label><input id="prDate" type="date"></div>
       </div>
       <button class="btn" id="prAdd">+ Log PR</button>
       <div id="prMsg" class="note" style="display:none"></div>
@@ -3582,20 +3588,52 @@
     if(mtr){ if(STATE.body.training) mtr.value=STATE.body.training; mtr.addEventListener('change', function(){ STATE.body.training=mtr.value; mealOffset=0; autosave(); updateMealTargets(); if(document.getElementById('mealOut').innerHTML.trim()) renderMeals(false); }); }
     if(typeof updateMealBadge==='function') updateMealBadge();
     if(typeof updateMealTargets==='function') updateMealTargets();
-    // PR form
+    // PR form — strength ⇄ cardio
+    var prMode='strength';
+    function setPrMode(m){
+      prMode = (m==='cardio')?'cardio':'strength';
+      var show=function(sel,on){ var els=document.querySelectorAll(sel); for(var i=0;i<els.length;i++) els[i].style.display = on?'' : 'none'; };
+      show('.prStrength', prMode==='strength'); show('.prCardio', prMode==='cardio');
+      var segs=document.querySelectorAll('.prSeg');
+      for(var i=0;i<segs.length;i++){ var on=segs[i].getAttribute('data-prmode')===prMode;
+        segs[i].style.background = on?'var(--cyan-dim)':''; segs[i].style.borderColor = on?'var(--cyan)':''; segs[i].style.color = on?'#eaffff':''; }
+      var ex=document.getElementById('prEx'); if(ex) ex.placeholder = t(prMode==='cardio'?'e.g. Running, Rowing':'e.g. Bench press');
+    }
+    window.__refreshPrMode=function(){ setPrMode(prMode); };   // re-apply labels/placeholder on a live language switch
+    var segBtns=document.querySelectorAll('.prSeg');
+    for(var si=0;si<segBtns.length;si++) segBtns[si].addEventListener('click', function(){ setPrMode(this.getAttribute('data-prmode')); });
+    setPrMode('strength');
+
     var prAdd=document.getElementById('prAdd');
     if(prAdd) prAdd.addEventListener('click', function(){
       var ex=(document.getElementById('prEx').value||'').trim();
-      var wt=parseFloat(document.getElementById('prWt').value);
-      var reps=parseInt(document.getElementById('prReps').value,10);
       var date=document.getElementById('prDate').value || nowISO().slice(0,10);
       var msg=document.getElementById('prMsg');
-      if(!ex || !(wt>0) || !(reps>0)){ msg.style.display='block'; msg.style.color='var(--red)'; msg.textContent='Enter an exercise, weight and reps.'; return; }
-      STATE.prs.push({ id:uid(), ex:ex, wt:wt, reps:reps, date:date });
-      logChange('add-pr', ex+' '+wt+'kg × '+reps);
-      autosave(); renderPRs();
-      document.getElementById('prEx').value=''; document.getElementById('prWt').value=''; document.getElementById('prReps').value='';
-      msg.style.display='block'; msg.style.color='var(--lime)'; msg.textContent='Logged '+ex+' '+wt+'kg × '+reps+'.';
+      function fail(s){ msg.style.display='block'; msg.style.color='var(--red)'; msg.textContent=s; }
+      function ok(s){ msg.style.display='block'; msg.style.color='var(--lime)'; msg.textContent=s; }
+      if(prMode==='cardio'){
+        var dist=parseFloat(document.getElementById('prDist').value);
+        var unit=(document.getElementById('prUnit').value==='mi')?'mi':'km';
+        var mins=parseInt(document.getElementById('prMin').value,10); if(!(mins>0)) mins=0;
+        var ssec=parseInt(document.getElementById('prSec').value,10); if(!(ssec>0)) ssec=0;
+        var secs=mins*60+ssec;
+        if(!ex || !(dist>0)){ fail(t('Enter an activity and a distance.')); return; }
+        if(dist>100000) dist=100000; if(secs>86400) secs=86400;        // sane caps (Akashi)
+        STATE.prs.push({ id:uid(), ex:ex, dist:dist, distUnit:unit, secs:secs, date:date, type:'cardio' });
+        logChange('add-pr', ex+' '+dist+unit);
+        autosave(); renderPRs();
+        document.getElementById('prEx').value=''; document.getElementById('prDist').value=''; document.getElementById('prMin').value=''; document.getElementById('prSec').value='';
+        ok(tf('Logged {ex} — {dist} {unit}.',{ex:ex,dist:dist,unit:unit}));
+      } else {
+        var wt=parseFloat(document.getElementById('prWt').value);
+        var reps=parseInt(document.getElementById('prReps').value,10);
+        if(!ex || !(wt>0) || !(reps>0)){ fail(t('Enter an exercise, weight and reps.')); return; }
+        STATE.prs.push({ id:uid(), ex:ex, wt:wt, reps:reps, date:date, type:'strength' });
+        logChange('add-pr', ex+' '+wt+'kg × '+reps);
+        autosave(); renderPRs();
+        document.getElementById('prEx').value=''; document.getElementById('prWt').value=''; document.getElementById('prReps').value='';
+        ok(tf('Logged {ex} {wt}kg × {reps}.',{ex:ex,wt:wt,reps:reps}));
+      }
     });
     var prList=document.getElementById('prList');
     if(prList) prList.addEventListener('click', function(e){
@@ -3605,7 +3643,7 @@
   function removePR(id){
     var p=STATE.prs.filter(function(x){ return x.id===id; })[0];
     STATE.prs=STATE.prs.filter(function(x){ return x.id!==id; });
-    if(p) logChange('remove-pr', p.ex+' '+p.wt+'kg');
+    if(p) logChange('remove-pr', p.ex+' '+(prType(p)==='cardio'?((+p.dist)+(p.distUnit||'km')):(p.wt+'kg')));
     autosave(); renderPRs();
   }
   /* ===================== MEAL IDEAS (goal-matched, likes/dislikes) ===================== */
@@ -3886,24 +3924,47 @@
     if(out) out.addEventListener('click', function(e){ var r=e.target.closest('.meal-row'); if(!r) return; var ix=+r.getAttribute('data-meal'); if(_mealView[ix]) openMealDetail(_mealView[ix]); });
   })();
   function epley1rm(w,r){ return w*(1+r/30); }
+  // PR type is explicit: anything not 'cardio' renders as a strength lift (back-compat for old PRs).
+  function prType(p){ return (p&&p.type==='cardio')?'cardio':'strength'; }
+  function prDistKm(p){ return (+p.dist||0) * (p.distUnit==='mi'?1.60934:1); }   // normalise for fair "best" compare
+  function prPace(secs, distInUnit){ if(!(secs>0)||!(distInUnit>0)) return ''; var pace=secs/distInUnit, m=Math.floor(pace/60), s=Math.round(pace-m*60); if(s===60){m++;s=0;} return m+':'+(s<10?'0':'')+s; }
   function renderPRs(){
     var host=document.getElementById('prList'); if(!host) return;
-    if(!STATE.prs.length){ host.innerHTML='<div class="empty">No PRs logged yet — add your first lift above.</div>'; return; }
-    // group by exercise, best estimated 1RM first
-    var groups={};
-    STATE.prs.forEach(function(p){ var k=p.ex.toLowerCase(); (groups[k]=groups[k]||[]).push(p); });
+    if(!STATE.prs.length){ host.innerHTML='<div class="empty">'+esc(t('No records yet — log your first lift or run above.'))+'</div>'; return; }
+    // group by (exercise, type) so the SAME name logged as both a lift and a run never merges
+    var groups={}, order=[];
+    STATE.prs.forEach(function(p){ var k=(p.ex||'').toLowerCase()+' '+prType(p); if(!groups[k]){ groups[k]=[]; order.push(k); } groups[k].push(p); });
     var html='';
-    Object.keys(groups).forEach(function(k){
-      var arr=groups[k].slice().sort(function(a,b){ return epley1rm(b.wt,b.reps)-epley1rm(a.wt,a.reps); });
-      var best=arr[0];
-      html += '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline">'+
-        '<b style="font-family:\'Orbitron\';font-size:14px;color:#eaffff">'+esc(best.ex)+'</b>'+
-        '<span style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--lime)">best '+best.wt+'kg×'+best.reps+' · ~'+Math.round(epley1rm(best.wt,best.reps))+'kg 1RM</span></div>';
-      html += arr.map(function(p){
-        return '<div class="item-row"><div class="meta">'+p.wt+' kg × '+p.reps+(p.id===best.id?' <span class="tag now" style="font-size:8px;padding:1px 5px">PR</span>':'')+
-          '<small>'+esc(p.date)+' · est 1RM '+Math.round(epley1rm(p.wt,p.reps))+' kg</small></div>'+
-          '<button class="btn danger" data-del="'+p.id+'">Delete</button></div>';
-      }).join('');
+    order.forEach(function(k){
+      var arr=groups[k];
+      if(prType(arr[0])==='cardio'){
+        // cardio "best": fastest pace among timed entries, else longest distance — never a 1RM
+        var timed=arr.filter(function(p){ return (+p.secs>0)&&(+p.dist>0); }), best;
+        if(timed.length){ best=timed.slice().sort(function(a,b){ return (a.secs/prDistKm(a))-(b.secs/prDistKm(b)); })[0]; }
+        else { best=arr.slice().sort(function(a,b){ return prDistKm(b)-prDistKm(a); })[0]; }
+        var bu=best.distUnit==='mi'?'mi':'km', bpace=prPace(best.secs, +best.dist);
+        var header = bpace ? tf('best {dist} {unit} · {pace} /{unit}',{dist:(+best.dist),unit:bu,pace:bpace}) : tf('best {dist} {unit}',{dist:(+best.dist),unit:bu});
+        html += '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline">'+
+          '<b style="font-family:\'Orbitron\';font-size:14px;color:#eaffff">'+esc(best.ex)+'</b>'+
+          '<span style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--lime)">'+esc(header)+'</span></div>';
+        html += arr.map(function(p){
+          var u=p.distUnit==='mi'?'mi':'km', pc=prPace(p.secs,+p.dist);
+          return '<div class="item-row"><div class="meta">'+esc((+p.dist)+' '+u+(pc?(' · '+pc+' /'+u):''))+(p.id===best.id?' <span class="tag now" style="font-size:8px;padding:1px 5px">PR</span>':'')+
+            '<small>'+esc(p.date)+'</small></div>'+
+            '<button class="btn danger" data-del="'+p.id+'">'+esc(t('Delete'))+'</button></div>';
+        }).join('');
+      } else {
+        var sarr=arr.slice().sort(function(a,b){ return epley1rm(b.wt,b.reps)-epley1rm(a.wt,a.reps); });
+        var best=sarr[0];
+        html += '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline">'+
+          '<b style="font-family:\'Orbitron\';font-size:14px;color:#eaffff">'+esc(best.ex)+'</b>'+
+          '<span style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--lime)">best '+best.wt+'kg×'+best.reps+' · ~'+Math.round(epley1rm(best.wt,best.reps))+'kg 1RM</span></div>';
+        html += sarr.map(function(p){
+          return '<div class="item-row"><div class="meta">'+p.wt+' kg × '+p.reps+(p.id===best.id?' <span class="tag now" style="font-size:8px;padding:1px 5px">PR</span>':'')+
+            '<small>'+esc(p.date)+' · est 1RM '+Math.round(epley1rm(p.wt,p.reps))+' kg</small></div>'+
+            '<button class="btn danger" data-del="'+p.id+'">'+esc(t('Delete'))+'</button></div>';
+        }).join('');
+      }
     });
     host.innerHTML=html;
   }
@@ -5144,6 +5205,8 @@
     // built via tf(), so a static walk can't retranslate them) — fixes the card staying in
     // the old language when you switch language while on the Connect tab.
     if(typeof window.__refreshMoveCard==='function'){ try{ window.__refreshMoveCard(); }catch(_){ } }
+    if(typeof window.__refreshPrMode==='function'){ try{ window.__refreshPrMode(); }catch(_){ } }   // PR toggle labels/placeholder
+    if(typeof renderPRs==='function'){ try{ renderPRs(); }catch(_){ } }                              // cardio rows use tf() → re-render in new lang
     if(typeof renderDeviceTip==='function' && document.getElementById('deviceTip')){ try{ renderDeviceTip(); }catch(_){ } }
   }
   // Reverse index: every known translation value -> its English source. Lets us
