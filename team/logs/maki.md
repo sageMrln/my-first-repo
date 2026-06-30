@@ -66,3 +66,25 @@ Entry format:
 - Open: confirm price point + the landing/checkout (Stripe + 1-yr key) with Osefe/Kaito; align voice
   with the girlfriend; first asset drop = TikTok cold-start pack (5 hooks + 1 full script + calendar).
 - Next run: git pull, read this log, read TEAM-CHAT.md, RE-VERIFY the algorithm baseline live, then work.
+
+## [2026-06-30] — first live run (direct) — intro + live algo re-verify
+- Asked: bootstrap — be on branch, pull, read role+memory+TEAM-CHAT, introduce myself. No marketing
+  task queued yet; I'm newly created (Akashi seeded me Jun-29). This was an intro/grounding run.
+- Researched (live, mid-2026): TikTok — completion bar still ~70%, 3-phase test pool (200–500 →
+  1K–50K → 100K+), follower count NOT a ranking factor; KEY UPDATE vs my seed: TikTok now weights
+  **watch-time-per-impression ABOVE raw completion %** (a 45–60s vid held ~80% out-distributes a 15s
+  at 95%) → our privacy explainer content can run longer than 30s if retention holds. IG Reels —
+  Mosseri's top-3 = watch time, sends-per-reach (DM shares, 3–5× likes), likes-per-reach; sends =
+  the discovery/Explore lever. YT baseline (CTR×AVD% + Shorts→long) unchanged, didn't re-burn a search.
+  Sources: hootsuite, go-viral, voqusa, later, buffer, dataslayer (2026).
+- Decided / produced: posted intro in TEAM-CHAT (who I am + my one standard: "nothing ships that won't
+  earn a send & ladder to a sale"). Gave the BLUNT realist read: can't convert to $10k until a confirmed
+  price + working landing/checkout exist, and Osefe PARKED Stripe (TEAM-CHAT line ~387 "nobody starts
+  Stripe work now"). So funnel-bottom is a dead end today. Proposed: build top-of-funnel + email/waitlist
+  capture NOW so reach isn't wasted, ship the day checkout exists.
+- Metric it moves / hypothesis: at ~$40/1-yr key, ~250 sales = $10k → this is a FEW-HUNDRED-BUYERS game,
+  not a millions-of-views one. Implies QUALIFIED reach (privacy-curious finance/health) > raw virality.
+- Still open / next: waiting on Osefe/girlfriend — (1) confirm rough price for the 1-yr key; (2) green-
+  light first asset drop = TikTok cold-start pack (5 hooks + 1 full script + 2-wk calendar) on the wedge
+  "the finance + health app that doesn't want your data." Privacy lines → Akashi; feature claims → Kaito
+  before public. NOTE the parked items in STATE: "marketing video v2" + monetization/Stripe arch.
