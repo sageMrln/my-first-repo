@@ -1458,3 +1458,16 @@ Entry format:
 - Still open: nothing security-side. Gate: Akashi SAFE @ a614f48 OK / Mikoto MISSING:0 OK / Hugo GREEN
   OK — awaiting Osefe explicit "ship it". Wave 2/3 (CJK langs + remaining engines) still to come — esp.
   the 7 Latin i18n regexes extended for CJK->CJK sweep.
+
+## [2026-06-29] — direct (Osefe) — created Maki (marketing agent) w/ deep research
+- Asked: create a Lead Branding/Marketing agent (TikTok/IG/YT/Twitter/Google Trends), goal first
+  $10k revenue; persona female, 22, perfectionist, media-trained, knows the algorithms + what
+  degrees teach; works w/ Osefe's girlfriend. Use deep research (salvaged a stalled workflow).
+- Did: ran live WebSearch across TikTok/YT/IG algorithms (2026), $0→customers GTM, FTC/fintech
+  marketing compliance. Wrote .claude/agents/maki.md (opus; web tools; read-only director) +
+  seeded team/logs/maki.md with a grounded first-$10k plan + algo baseline. Wired CLAUDE.md
+  (roster + sleep-mode + memory-log). Lock claimed/released. Announced + routed to Kaito (5th role).
+- Security guardrails baked into Maki: every privacy/security CLAIM routes to me before public;
+  market only shipped features; no gamifying financial decisions; FTC disclosure + no dark patterns;
+  serious-not-warm voice; organic-first.
+- Open: I vet her first batch of public privacy claims when she produces content.
