@@ -1247,3 +1247,57 @@ Entry format:
 - Still open: gate (steps 7–11) — my SAFE in @ d2abf77; needs Mikoto MISSING:0 (12 cardio strings),
   Hugo GREEN (add cardio fixture + fix transfer_test ex/wt drift) on the final tip, Osefe ship.
   Sleep-mode: no auto-publish without Osefe's explicit go.
+
+## [2026-06-30] — via Kaito (asleep, step 10) — DELTA RE-SIGN: cardio-PR final tip (`ba19dc0`)
+- Asked: re-sign on the current tip per freeze-the-candidate. My cardio SAFE was @ d2abf77;
+  tip moved to ba19dc0. Delta = Arthur display-fix (folded into 2c1bd0b) + Mikoto i18n (8220f21)
+  + Hugo QA/docs (81d1486). Confirm load-bearing add/validate/poison UNCHANGED; verify every
+  published file clean. Run green.js + i18n sync; text-extract the rebuilt PDF.
+- INDEX.HTML DELTA d2abf77..ba19dc0 PROVEN = exactly 2 hunks, nothing else:
+  1. @3942 renderPRs CARDIO branch (Arthur): whole group renders in best entry's unit via a
+     DISPLAY-ONLY distIn(p) = km→(gu==='mi'?km/1.60934:km), +v.toFixed(2) → Number (never raw
+     string). Storage stays per-entry (distIn used ONLY in render strings). Pace spacing
+     {pace}/{unit} (no space, matches dict). ALL values still esc()'d (esc(best.ex)/esc(header)/
+     esc(dv+' '+gu+…)); gu enum-collapsed ('mi'/'km'); dv/pc numeric. NO add/validate/parser/
+     poison/export line touched.
+  2. @5128 the single AUTO-MERGED dict line (Mikoto): IIFE merge wrapper byte-identical; only
+     embedded dict data changed. No logic moved. Confirmed by short-line grep (<400 char) for
+     exportBlank/exportHTML/importData/parseClause/applyChange/__sys/PUBCHK/PUB_B64/fetch/eval/
+     innerHTML/.src= → ZERO hits on any logic line (only the long dict line matches, harmless).
+- I18N (8220f21): node tools/i18n/sync.js → 632/632, MISSING:0 ✓. New cardio values carry only
+  placeholders {ex}{dist}{unit}{wt}{reps}{pace} (intact, incl. {pace}/{unit} no-space) + labels
+  (STRENGTH/CARDIO/Activity/Distance/Time(optional)/best…/Logged…). NO figure/key/PII in new
+  values. The long-number scan hits (18000/2600/2000/25000/319700/…) ALL have IDENTICAL count
+  parent vs tip (18000:4==4, 2600:6==6, etc.) → pre-existing illustrative KB figures, NONE
+  introduced by this commit.
+- HUGO QA/DOCS (81d1486) — TEST/DOC only, no app logic, no guard weakened:
+  • new tools/test/pr_test.js (suite 9, 12/12 incl. "cardio fields cannot be used with epley1rm
+    → NaN" + grouping-no-collision guards). • transfer_test: REMOVED only the broken
+    {id,name,weight} fixture + 1 weak assertion; REPLACED with real {ex,wt,reps,type}+cardio row
+    + 14 field-level round-trip asserts (the exact ex/wt drift I flagged, now fixed + cardio
+    guarded). NO guard deleted — upgraded. • green.js: inserted suite 9, renumbered downstream
+    sections 10/11; deep guard + leak scan still run. • GUIDE.md §6.3 = cardio doc only (strength
+    1RM + cardio dist/time/pace), no figures.
+- STANDING INVARIANTS on tip ba19dc0 (text-mode -a counts): __sys 35==35 parent vs tip → NO
+  watchdog added/removed; PUBCHK 4047293148 ×1, PUB_B64 ×3, __sys.token ×14 intact; #__ownerKeySrc
+  + #hud-state EMPTY (closing tag immediately follows); no PRIVATE KEY/PEM marker. exportBlank
+  @4711 still snapshots STATE.prs (snapP) → clears → reconstructs hud-state → restores (delta
+  doesn't touch it) → cardio fields CANNOT reach a customer/blank file. No new network/exfil
+  (no fetch/eval line in delta). Cardio figures correctly UN-poisoned (personal health, not owner
+  financial).
+- PUBLISHED FILES: node tools/release/green.js → GREEN exit 0 (9 suites incl. pr 12/12; preflight
+  CLEAR — slots empty, 1 public key, no PII, PUBCHK intact, 4 scripts balanced; GUIDE/manifest/sw/
+  team-chat clean). Among published files only index.html + GUIDE.md + MRLN-Guide.pdf changed;
+  sw.js/manifest/team-chat/icons untouched. Independently text-extracted MRLN-Guide.pdf (85,173
+  chars): NO key/PII marker (no PRIVATE KEY/PEM/osefemiradi/@gmail); the 4+ digit numbers are PDF
+  structural tokens (object offsets/xref) — ZERO of them appear as prose in GUIDE.md. The only
+  guide figures (8,000 kr→~1,070 €, Ingrid €2,140) are pre-existing illustrative samples, not
+  owner data, not in this delta.
+- VERDICT: SAFE @ ba19dc0. Delta is display-only + i18n + tests/docs; all load-bearing add/
+  validate/poison logic I cleared @ d2abf77 is unchanged; watchdogs/key-slots intact; exportBlank
+  reconstructs; published files (incl. rebuilt PDF) leak-clean; MISSING:0; GREEN. No DIRECT
+  security fix required. This is the last gate sign-off — Kaito freeze-checks the tip, then Osefe
+  ships. Sleep-mode: NO auto-publish without Osefe's explicit go.
+- Commits / SHAs reviewed: ba19dc0 (tip). If the tip moves again, I re-sign.
+- Still open: nothing security-side. Gate: Akashi SAFE @ ba19dc0 ✓ · Mikoto MISSING:0 ✓ · Hugo
+  GREEN ✓ — awaiting Osefe's explicit "ship it".
