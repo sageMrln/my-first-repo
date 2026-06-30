@@ -867,7 +867,8 @@
     <button class="tab" data-p="calendar"><span class="ix">13</span>Calendar</button>
     <button class="tab" data-p="stats"><span class="ix">14</span>Stats &amp; Grades</button>
     <button class="tab" data-p="notebook"><span class="ix">15</span>Notebook</button>
-    <button class="tab" data-p="connect"><span class="ix">16</span>Connect</button>
+    <button class="tab" data-p="media"><span class="ix">16</span>Media Log</button>
+    <button class="tab" data-p="connect"><span class="ix">17</span>Connect</button>
     <button class="tab" data-p="log"><span class="ix">17</span>Change Log</button>
   </nav>
 
@@ -1513,6 +1514,53 @@
     </div>
   </section>
 
+  <!-- MEDIA LOG -->
+  <section class="panel" id="media">
+    <div class="card">
+      <h2 data-i18n="🎬 Media Log">🎬 Media Log</h2>
+      <div class="desc" data-i18n="Every film and show you've seen — rated and auto-ranked, so when someone asks your favourite you have an answer. Private, offline, yours.">Every film and show you've seen — rated and auto-ranked, so when someone asks your favourite you have an answer. Private, offline, yours.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 8px">
+        <input id="medTitle" data-i18n-ph="Add a film or show…" placeholder="Add a film or show…" style="flex:1;min-width:160px;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+        <button class="btn" id="medAdd" data-i18n="＋ Add">＋ Add</button>
+      </div>
+      <input id="medSearch" data-i18n-ph="🔍 Search your list" placeholder="🔍 Search your list" style="width:100%;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+      <div id="medMsg" class="note" style="display:none;margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+        <h2 style="margin:0" data-i18n="📥 To watch">📥 To watch</h2>
+        <small id="medToWatchCount" style="color:var(--txt-dim);font-family:'Share Tech Mono'">—</small>
+      </div>
+      <div id="medToWatch" data-i18n-skip></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px">
+        <h2 style="margin:0" data-i18n="🏆 Ranked">🏆 Ranked</h2>
+        <button class="btn ghost" id="medShare" style="padding:5px 10px;font-size:12px" data-i18n="📋 Share my list">📋 Share my list</button>
+      </div>
+      <div id="medRanked" data-i18n-skip></div>
+    </div>
+
+    <div class="card" id="medRateCard" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+        <b id="medRateTitle" data-i18n-skip style="font-family:'Orbitron';color:#eaffff;font-size:15px">—</b>
+        <button class="btn ghost" id="medRateClose" style="padding:6px 11px;font-size:12px" data-i18n="Done">Done</button>
+      </div>
+      <div style="text-align:center;margin:6px 0"><span id="medRateVal" style="font-family:'Orbitron';font-size:40px;color:var(--lime)">—</span><span style="color:var(--txt-dim);font-size:16px"> / 10</span></div>
+      <div id="medChips" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px"></div>
+      <div style="display:flex;gap:8px;justify-content:center;align-items:center;margin-bottom:10px">
+        <button class="btn ghost" id="medMinus" style="min-width:56px;font-family:'Share Tech Mono'">−0.1</button>
+        <button class="btn ghost" id="medPlus" style="min-width:56px;font-family:'Share Tech Mono'">+0.1</button>
+      </div>
+      <div id="medCompare" style="display:none;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:11px;margin-bottom:10px;font-size:13px"></div>
+      <label class="note" data-i18n="A note to your future self (optional)" style="display:block;margin-bottom:4px">A note to your future self (optional)</label>
+      <textarea id="medComment" data-i18n-ph="Why this score? What did it make you feel?" placeholder="Why this score? What did it make you feel?" style="width:100%;min-height:70px;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px;resize:vertical"></textarea>
+      <button class="btn" id="medRateSave" style="width:100%;margin-top:10px" data-i18n="Save rating">Save rating</button>
+    </div>
+  </section>
+
   <!-- CONNECT -->
   <section class="panel" id="connect">
     <div class="card" id="teamRoomCard" data-i18n-skip style="display:none">
@@ -1827,7 +1875,7 @@
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], tax:{}, savingsBoxes:[], showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], media:[], tax:{}, savingsBoxes:[], showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -1850,7 +1898,7 @@
     return Object.assign({}, DEFAULTS, pick||{}, {
       customItems:(pick&&pick.customItems)||[], workouts:(pick&&pick.workouts)||[],
       calendar:(pick&&pick.calendar)||{}, log:(pick&&pick.log)||[],
-      body:(pick&&pick.body)||{}, prs:(pick&&pick.prs)||[], notes:(pick&&pick.notes)||[], foodLog:(pick&&pick.foodLog)||[], tax:(pick&&pick.tax)||{}
+      body:(pick&&pick.body)||{}, prs:(pick&&pick.prs)||[], notes:(pick&&pick.notes)||[], foodLog:(pick&&pick.foodLog)||[], media:(pick&&pick.media)||[], tax:(pick&&pick.tax)||{}
     });
   }
   var STATE = loadState();
@@ -4703,6 +4751,7 @@
     if(typeof renderEvents==='function') renderEvents();
     if(typeof renderLog==='function') renderLog();
     if(typeof renderNotebook==='function') renderNotebook();
+    if(typeof renderMedia==='function') renderMedia();
     if(typeof renderFoodLog==='function') renderFoodLog();
     if(typeof renderTaxHelper==='function') renderTaxHelper();
     if(window.rebuildScenarios) window.rebuildScenarios();
@@ -5527,6 +5576,7 @@
     if(typeof renderManage==='function') renderManage();
     if(typeof renderProfile==='function') renderProfile();
     if(typeof renderNotebook==='function') renderNotebook();
+    if(typeof renderMedia==='function') renderMedia();
     if(typeof renderFoodLog==='function') renderFoodLog();
     if(typeof renderTaxHelper==='function') renderTaxHelper();
     if(typeof initLocale==='function'){ var ci=document.getElementById('countryInp'); if(ci) ci.value=STATE.prefs.country||''; }
@@ -5564,7 +5614,7 @@
     // single photo can be that big). Food-log METADATA travels; the image bytes move via the
     // separate "Export my photos" file. Osefe's call — storage size vs transfer ease, decoupled.
     var foodLogLite = (STATE.foodLog||[]).map(function(e){ var c={},k; for(k in e){ if(k==='photo') continue; c[k]=e[k]; } return c; });
-    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], foodLog:foodLogLite, tax:STATE.tax||{}, savingsBoxes:STATE.savingsBoxes||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
+    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], foodLog:foodLogLite, media:STATE.media||[], tax:STATE.tax||{}, savingsBoxes:STATE.savingsBoxes||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
     return 'MRLNDATA-' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));   // UTF-8 safe (emoji/names)
   }
   // Apply a parsed data object (from a MRLNDATA code OR a master file's embedded
@@ -5573,7 +5623,7 @@
   function applyImportedData(d){
     if(!d || !d.cfg || !d.cfg.groups) throw new Error('Not a valid MRLN data set');
     MODEL = d.cfg; ensureIds(MODEL); STATE.cfg = MODEL;
-    STATE.workouts=d.workouts||[]; STATE.calendar=d.calendar||{}; STATE.log=d.log||[]; STATE.body=d.body||{}; STATE.prs=d.prs||[]; STATE.notes=d.notes||[]; STATE.foodLog=d.foodLog||[]; STATE.tax=d.tax||{};
+    STATE.workouts=d.workouts||[]; STATE.calendar=d.calendar||{}; STATE.log=d.log||[]; STATE.body=d.body||{}; STATE.prs=d.prs||[]; STATE.notes=d.notes||[]; STATE.foodLog=d.foodLog||[]; STATE.media=d.media||[]; STATE.tax=d.tax||{};
     STATE.savingsBoxes=d.savingsBoxes||[];
     if(d.reminders) STATE.reminders=d.reminders;
     // carry the LIFETIME total across to this device — never lose progress (take the higher)
@@ -6727,6 +6777,139 @@
     return { render:function(){ if(curId && !notes().some(function(x){return x.id===curId;})) closeEditor(); renderList(); } };
   })();
   function renderNotebook(){ if(NOTEBOOK) NOTEBOOK.render(); }
+
+  /* ===================== MEDIA LOG (films & shows — rate, rank, recall) =====================
+     Add a film/show → rate 1–10 in 0.1 steps → it auto-ranks against everything you've rated.
+     A ±0.2 "does it belong here?" calibration prompt keeps scores honest. Comments are private
+     notes to your future self. Text-only (no external posters → stays offline-first). Ratings are
+     the user's OWN taste, not owner finances → no __sys poison. Titles/comments are user content
+     (the lists are data-i18n-skip) so the translation walker never touches them. */
+  var MEDIALOG = (function(){
+    var q='', curId=null, draft=null;
+    function items(){ STATE.media = STATE.media || []; return STATE.media; }
+    function watched(){ return items().filter(function(m){ return m.status==='watched'; }); }
+    function ranked(){ return watched().slice().sort(function(a,b){ return (b.rating||0)-(a.rating||0) || (a.title||'').localeCompare(b.title||''); }); }
+    function fmtR(r){ return (Math.round(r*10)/10).toFixed(1); }
+    function clamp(r){ r=Math.round(r*10)/10; if(r<1) r=1; if(r>10) r=10; return r; }
+    function whenY(iso){ if(!iso) return ''; try{ return new Date(iso).toLocaleDateString(undefined,{month:'short',year:'numeric'}); }catch(_){ return ''; } }
+    function msg(text, ok){ var m=document.getElementById('medMsg'); if(!m) return; m.style.display='block'; m.style.color= ok?'var(--lime)':'var(--amber)'; m.textContent=text; }
+    function matchQ(m){ if(!q) return true; var ql=q.toLowerCase(); return ((m.title||'')+' '+(m.comment||'')).toLowerCase().indexOf(ql)>=0; }
+
+    function add(){
+      var inp=document.getElementById('medTitle'); if(!inp) return;
+      var title=(inp.value||'').trim();
+      if(!title){ msg(t('Type a film or show name first.'),false); return; }
+      items().unshift({ id:uid(), title:title, status:'towatch', rating:null, comment:'', added:nowISO(), rated:null });
+      logChange('media-add', title); autosave(); inp.value=''; renderLists();
+      msg(tf('Added “{title}” to your To-watch list.',{title:title}), true);
+    }
+    function del(id){
+      STATE.media=items().filter(function(x){ return x.id!==id; });
+      logChange('media-del','Removed an entry'); autosave();
+      if(curId===id) closeRate(); renderLists();
+    }
+
+    function openRate(id){
+      var m=items().filter(function(x){ return x.id===id; })[0]; if(!m) return;
+      curId=id; draft={ id:id, rating:(m.rating!=null?m.rating:8) };
+      document.getElementById('medRateTitle').textContent=m.title||'';
+      document.getElementById('medComment').value=m.comment||'';
+      document.getElementById('medCompare').style.display='none';
+      buildChips(); paintVal();
+      var card=document.getElementById('medRateCard'); card.style.display=''; try{ card.scrollIntoView({behavior:'smooth',block:'nearest'}); }catch(_){}
+    }
+    function closeRate(){ curId=null; draft=null; var c=document.getElementById('medRateCard'); if(c) c.style.display='none'; }
+    function paintVal(){ var v=document.getElementById('medRateVal'); if(v) v.textContent=fmtR(draft.rating); }
+    function buildChips(){
+      var host=document.getElementById('medChips'); if(!host) return; host.innerHTML='';
+      var whole=Math.floor(draft.rating);
+      for(var i=1;i<=10;i++){ (function(n){
+        var b=document.createElement('button'); b.className='btn ghost'; b.textContent=n;
+        b.style.cssText='min-width:38px;padding:7px 0'+(n===whole?';background:var(--cyan-dim);border-color:var(--cyan);color:#eaffff':'');
+        b.addEventListener('click', function(){ var dec=draft.rating-Math.floor(draft.rating); draft.rating=(n===10)?10:clamp(n+dec); paintVal(); buildChips(); });
+        host.appendChild(b);
+      })(i); }
+    }
+    function nudge(d){ draft.rating=clamp(draft.rating+d); paintVal(); buildChips(); }
+    function saveRate(){
+      if(!draft) return; var m=items().filter(function(x){ return x.id===draft.id; })[0]; if(!m) return;
+      m.rating=clamp(draft.rating); m.comment=(document.getElementById('medComment').value||'').trim();
+      m.status='watched'; m.rated=nowISO();
+      logChange('media-rate', m.title+' '+fmtR(m.rating)); autosave();
+      var near=watched().filter(function(x){ return x.id!==m.id && Math.abs((x.rating||0)-m.rating)<=0.2; }).sort(function(a,b){ return (b.rating||0)-(a.rating||0); }).slice(0,3);
+      if(near.length) showCompare(m, near);
+      else { closeRate(); renderLists(); msg(tf('Rated “{title}” {r}.',{title:m.title,r:fmtR(m.rating)}), true); }
+    }
+    function showCompare(m, near){
+      var box=document.getElementById('medCompare'); if(!box) return;
+      var rows=near.map(function(x){ return '<div style="display:flex;justify-content:space-between;gap:8px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.title)+'</span><b style="color:var(--lime);flex:0 0 auto">'+fmtR(x.rating)+'</b></div>'; }).join('');
+      box.innerHTML='<div style="margin-bottom:6px">'+tf('It sits with these — does “{title}” really belong here?',{title:esc(m.title)})+'</div>'+rows+
+        '<div style="display:flex;gap:6px;margin-top:8px"><button class="btn ghost" data-cmp="up" style="flex:1;font-size:12px">'+t('Better ▲')+'</button><button class="btn ghost" data-cmp="keep" style="flex:1;font-size:12px">'+t('About right')+'</button><button class="btn ghost" data-cmp="down" style="flex:1;font-size:12px">'+t('Worse ▼')+'</button></div>';
+      box.style.display='block';
+    }
+    function applyCompare(dir){
+      var m=items().filter(function(x){ return x.id===curId; })[0];
+      if(m){ if(dir==='up') m.rating=clamp(m.rating+0.1); else if(dir==='down') m.rating=clamp(m.rating-0.1); m.rated=nowISO(); autosave(); }
+      var t2=m?m.title:'', r2=m?fmtR(m.rating):'';
+      closeRate(); renderLists(); if(m) msg(tf('Rated “{title}” {r}.',{title:t2,r:r2}), true);
+    }
+    function share(){
+      var list=ranked();
+      if(!list.length){ msg(t('Rate a few things first, then share your ranked list.'),false); return; }
+      var txt='MY TOP — MRLN\n'+list.slice(0,20).map(function(x,i){ return (i+1)+'. '+x.title+'  '+fmtR(x.rating); }).join('\n');
+      var done=function(){ msg(t('Copied your ranked list — paste it anywhere.'), true); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(function(){ fb(txt,done); }); } else fb(txt,done);
+    }
+    function fb(txt,done){ try{ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.top='-1000px'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); }catch(_){ msg(t('Could not copy automatically.'),false); } }
+
+    function renderLists(){
+      var tw=document.getElementById('medToWatch'), cnt=document.getElementById('medToWatchCount');
+      if(cnt) cnt.textContent=items().filter(function(m){return m.status==='towatch';}).length+'';
+      if(tw){ var twList=items().filter(function(m){ return m.status==='towatch' && matchQ(m); });
+        tw.innerHTML = twList.length ? twList.map(function(m){
+          return '<div class="item-row" style="align-items:center"><div class="meta" style="flex:1;min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(m.title)+'</div></div>'+
+            '<button class="btn" data-rate="'+m.id+'" style="padding:5px 11px;font-size:12px;flex:0 0 auto">'+t('Rate it')+'</button>'+
+            '<button class="btn danger" data-delmed="'+m.id+'" style="padding:5px 10px;font-size:12px;flex:0 0 auto">✕</button></div>';
+        }).join('') : '<div class="empty">'+(q?t('Nothing here matches.'):t('Nothing queued. Add something you want to watch.'))+'</div>';
+      }
+      var rk=document.getElementById('medRanked');
+      if(rk){ var full=ranked(), rkList=full.filter(matchQ);
+        if(!rkList.length){ rk.innerHTML='<div class="empty">'+(q?t('Nothing here matches.'):t('What’s the last thing you finished? Add it above, then tap Rate it.'))+'</div>'; }
+        else rk.innerHTML=rkList.map(function(m){
+          var rankNo=full.indexOf(m)+1;
+          var cm=m.comment?('<div data-cm="'+m.id+'" style="display:none;color:var(--txt-dim);font-size:12px;margin-top:4px;white-space:pre-wrap">'+esc(m.comment)+' <span style="opacity:.6">· '+esc(whenY(m.rated))+'</span></div>'):'';
+          var cmBtn=m.comment?('<button class="btn ghost" data-togcm="'+m.id+'" style="padding:3px 8px;font-size:11px;flex:0 0 auto">'+t('note')+'</button>'):'';
+          return '<div class="item-row" style="align-items:center;flex-wrap:wrap"><span style="font-family:\'Share Tech Mono\';color:var(--txt-dim);width:26px;flex:0 0 auto">'+rankNo+'</span>'+
+            '<div class="meta" style="flex:1;min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(m.title)+'</div></div>'+
+            '<b style="font-family:\'Orbitron\';color:var(--lime);flex:0 0 auto;margin:0 8px">'+fmtR(m.rating)+'</b>'+cmBtn+
+            '<button class="btn ghost" data-rate="'+m.id+'" style="padding:4px 9px;font-size:11px;flex:0 0 auto">'+t('edit')+'</button>'+
+            '<button class="btn danger" data-delmed="'+m.id+'" style="padding:4px 9px;font-size:11px;flex:0 0 auto">✕</button>'+
+            '<div style="flex-basis:100%">'+cm+'</div></div>';
+        }).join('');
+      }
+    }
+    function wire(){
+      var a=document.getElementById('medAdd'); if(a) a.addEventListener('click', add);
+      var ti=document.getElementById('medTitle'); if(ti) ti.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); add(); } });
+      var s=document.getElementById('medSearch'); if(s) s.addEventListener('input', function(){ q=s.value; renderLists(); });
+      var sh=document.getElementById('medShare'); if(sh) sh.addEventListener('click', share);
+      var mn=document.getElementById('medMinus'); if(mn) mn.addEventListener('click', function(){ nudge(-0.1); });
+      var pl=document.getElementById('medPlus'); if(pl) pl.addEventListener('click', function(){ nudge(0.1); });
+      var sv=document.getElementById('medRateSave'); if(sv) sv.addEventListener('click', saveRate);
+      var cl=document.getElementById('medRateClose'); if(cl) cl.addEventListener('click', function(){ closeRate(); renderLists(); });
+      var cmp=document.getElementById('medCompare'); if(cmp) cmp.addEventListener('click', function(e){ var b=e.target.closest('[data-cmp]'); if(b) applyCompare(b.getAttribute('data-cmp')); });
+      ['medToWatch','medRanked'].forEach(function(hid){ var host=document.getElementById(hid); if(!host) return;
+        host.addEventListener('click', function(e){
+          var r=e.target.closest('[data-rate]'); if(r){ openRate(r.getAttribute('data-rate')); return; }
+          var d=e.target.closest('[data-delmed]'); if(d){ var id=d.getAttribute('data-delmed'); uiConfirm({title:'🗑️ Remove entry?',message:'Remove this from your Media Log? This can’t be undone.'},function(){ del(id); }); return; }
+          var tg=e.target.closest('[data-togcm]'); if(tg){ var el=host.querySelector('[data-cm="'+tg.getAttribute('data-togcm')+'"]'); if(el) el.style.display=(el.style.display==='none'?'block':'none'); return; }
+        });
+      });
+    }
+    wire();
+    return { render:function(){ if(curId && !items().some(function(x){return x.id===curId;})) closeRate(); renderLists(); } };
+  })();
+  function renderMedia(){ if(MEDIALOG) MEDIALOG.render(); }
 
   /* ===================== ONBOARDING WIZARD ===================== */
   var WIZ = (function(){
