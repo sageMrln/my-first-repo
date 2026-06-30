@@ -6946,7 +6946,6 @@
     // the picker (tap-to-rank) writes STATE.tabOrder so the user's #1 page becomes tab 1.
     var PICK_CARDS=['overview','income','expenses','flow','rule','gym','food','media'];
     var STAGE_PICK={ school:['media','food','gym'], working:['income','expenses','media','gym','flow'], managing:['overview','flow','expenses','rule'] };
-    var FIRST_PROMPT={ media:'What’s the last show you finished?', income:'What’s your monthly income?', overview:'What’s your monthly income?', gym:'Add today’s weight', food:'Log what you ate today', expenses:'Add your first regular cost' };
     var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     var ETHNS=[['','Prefer not to say'],['white','White / European'],['black','Black / African'],['asian','East Asian'],['south_asian','South Asian'],['hispanic','Hispanic / Latino'],['mena','Middle Eastern / N. African'],['mixed','Mixed / Other']];
     var el = {
@@ -7073,7 +7072,7 @@
       switch(p){
         case 'overview': return '<div class="mok-num">1 240</div><div class="mok-lbl">'+t('YOU KEEP')+'</div>';
         case 'income': return '<div class="mok-bar" style="width:55%"></div><div class="mok-bar" style="width:78%"></div><div class="mok-bar" style="width:95%"></div>';
-        case 'expenses': return '<div class="mok-row"><span></span><i style="width:40%"></i></div><div class="mok-row"><span></span><i style="width:62%"></i></div>';
+        case 'expenses': return '<div class="mok-row"><span></span><i style="width:40%"></i></div><div class="mok-row"><span></span><i style="width:62%"></i></div><div class="mok-lbl">kr/mo</div>';
         case 'flow': return '<svg width="62" height="24" viewBox="0 0 62 24"><polyline points="2,18 18,8 34,14 60,3" fill="none" stroke="var(--cyan)" stroke-width="2"/></svg>';
         case 'rule': return '<svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="var(--line)" stroke-width="3"/><circle cx="15" cy="15" r="12" fill="none" stroke="var(--lime)" stroke-width="3" stroke-dasharray="52 75" stroke-linecap="round" transform="rotate(-90 15 15)"/></svg>';
         case 'gym': return '<div class="mok-bar lime" style="width:60%"></div><div class="mok-bar lime" style="width:40%"></div><div class="mok-bar lime" style="width:80%"></div>';
@@ -7095,7 +7094,7 @@
       return '<h2>'+t('Put your top things first')+'</h2>'+
         '<p class="wsub">'+t('Tap the pages you care about, in order. Your first pick becomes tab 1.')+'</p>'+
         '<div class="pgrid">'+cards+'</div>'+
-        '<button class="chip" id="wPrioSkip" style="margin-top:12px">'+t('Skip for now')+'</button>';
+        '<button class="chip" id="wPrioSkip" style="margin-top:12px;min-height:44px">'+t('Skip for now')+'</button>';
     }
     function installStepHTML(){
       // tailor the emphasis to the device they told us about (highlighted first),
