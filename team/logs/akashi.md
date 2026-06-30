@@ -1412,3 +1412,49 @@ Entry format:
   GREEN on the final tip + Osefe ship. Non-gating JP/KR low-income floor note → Kaito (accuracy). Wave 2/3
   (CJK langs + remaining engines) still to come — esp. the 7 Latin i18n regexes actually extended for
   CJK→CJK sweep. Sleep-mode: no auto-publish without Osefe's explicit go.
+
+
+## [2026-06-30] — via Kaito (asleep, step 10) — RE-SIGN: Wave 1 final tip (`a614f48`)
+- Asked: re-sign SAFE on the moved tip per freeze-the-candidate. My prior SAFE was @ 8d22a1a
+  (5 tax engines). Tip moved to a614f48 (Mikoto i18n dfbcbad + Hugo QA/docs a614f48). DELTA
+  re-review: prove the load-bearing engine code I cleared is unchanged; clear the i18n/test/doc delta.
+- DELTA 8d22a1a..a614f48 (git diff --numstat / --stat):
+  - index.html: +1/-1, ONE line — the AUTO-MERGED dict line @5131 only. Hunk header
+    `@@ -5128,7 +5128,7 @@` = single-line change. NO tax-engine logic moved; the 5 branches +
+    poison (gross=__sys.token()*grossRaw) + txMoney byte-identical to my 8d22a1a sign-off (numstat 1/1).
+  - GUIDE.md +3/-1 (doc: covers 12 countries + XX fallback — no figures/keys); MRLN-Guide.pdf
+    rebuilt (binary); tools/test/tax_test.js new (+254); tools/release/green.js +10/-4 (renumber +
+    INSERTS tax suite run — adds a guard, weakens none); team logs/TEAM-CHAT. No sw.js/manifest edit.
+- i18n DICT (dfbcbad) OK: eval-loaded the live AUTO-MERGED IIFE -> parses clean. 6 langs es/da/de/
+  sv/nb/hu (1506x5 + 1546 hu keys). 0 PII/key hits in all values (osefe|miradi|aarhus|BEGIN|PRIVATE
+  KEY|@gmail|----|ownerKey|signingKey). Tax acronyms/symbols intact: IRPEF/CPF/IRAS/bareme/
+  addizionale/% present. (Won/S$ absent in dict values is EXPECTED — those glyphs come from txMoney
+  CODE not translatable strings; notes reference CPF/IRAS/brackets. Not a defect.) MISSING:0 (650/650).
+- INVARIANTS on tip (parent vs tip, grep -a) OK: __sys 35==35, __sys.token() 14==14 (held, no drop).
+  PUBCHK 4047293148 x1, PUB_B64 x3. #hud-state empty (@1689), #__ownerKeySrc empty (@1693). hud-state
+  read = JSON.parse of the slot (@1832), reconstruct-not-dump export path untouched. NOTE: index.html
+  has 1 NUL byte @3936 (a key-join delimiter in a grouping fn) — PRE-EXISTING (1==1 parent vs tip),
+  deliberate code, NOT in a translation value; only effect = grep sees the file as binary (use -a). Benign.
+- NO NEW NETWORK/EXFIL OK: the only index delta is a dict line (Object.keys/I18N assign) — no
+  fetch/XHR/eval/.src=/location.*=. Pure data merge.
+- PUBLISHED FILES all clean OK: node tools/release/green.js -> GREEN exit 0 (tax suite 105/105;
+  preflight CLEAR — slots empty, 1 public key, no PII, PUBCHK intact, 4 scripts balanced; leak scan
+  GUIDE.md/manifest/sw.js/team-chat.html clean). node tools/i18n/sync.js -> MISSING:0. PDF:
+  independently extracted (decompressed streams + ToUnicode CMap decode + raw byte scan) -> 0 hits for
+  -----BEGIN / PRIVATE KEY / osefe / miradi / aarhus / @gmail / ownerKey / signingKey; decoded text
+  shows updated section 6 (covers 12 countries; Singapore/France/Japan/Denmark/Norway), no PII, no
+  private figure. The earlier `-----` raw hits were Markdown rules (-----BEGIN count = 0).
+- POISON-GATE TEST IS REAL, NOT THEATER OK: tax_test.js readFileSync-extracts the LIVE computeTax
+  from index.html (no copy drift); Test 3 (@155-175) sets __sys.token=()=>NaN and asserts totalTax
+  AND incomeTax AND social each NaN for ALL 5 engines (FR/IT/SG/JP/KR) = 15 NaN assertions, all pass
+  in the 105/105 GREEN. The tamper-guard I hand-verified @8d22a1a is now regression-locked: any future
+  un-poisoned num(T.gross) re-read in those branches turns this suite RED.
+- VERDICT: SAFE @ a614f48. index.html delta is exactly the Mikoto dict line — all load-bearing
+  engine/poison/txMoney logic byte-identical to my 8d22a1a SAFE; watchdogs held (35/14), slots empty,
+  exportBlank reconstructs, no new network; every published file (incl. rebuilt PDF) leak-clean;
+  MISSING:0; GREEN. No DIRECT security fix required. Last gate sign-off — Kaito freeze-checks the tip,
+  then Osefe ships. Sleep-mode: NO auto-publish without Osefe explicit go.
+- Commits / SHAs reviewed: a614f48 (tip). If the tip moves again, I re-sign.
+- Still open: nothing security-side. Gate: Akashi SAFE @ a614f48 OK / Mikoto MISSING:0 OK / Hugo GREEN
+  OK — awaiting Osefe explicit "ship it". Wave 2/3 (CJK langs + remaining engines) still to come — esp.
+  the 7 Latin i18n regexes extended for CJK->CJK sweep.
