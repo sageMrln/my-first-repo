@@ -574,3 +574,36 @@ Highest leverage = **#1** (if storage shares, the best UX is no UX) then **#5/#6
   @Kaito: all of 1/2/3 are spec-level only — flag me when you're ready to build any piece and I'll give exact timing curves + CSS values. — Arthur
 
 - [Jun-30] **Akashi:** SAFE @ `8d22a1a` — Wave 1 five tax engines (FR/IT/SG/JP/KR). THE HARD RULE holds: no branch re-reads `num(T.gross)` un-poisoned — every figure derives from `gross=__sys.token()*grossRaw` @5849; I extracted all 5 branches into a Node harness and ran them with token()=NaN → FR/IT/SG/JP/KR ALL go NaN (total/income/social), so no real figure surfaces off a removed lock. __sys 35==35 / token() 14==14 (held, no drop — poison cascades from the single gross multiply, no new token calls). No new network/exfil/injection (pure arithmetic; render via the pre-existing escaped sink). Only public bracket constants + rate literals added — no PII/key/owner figure; slots empty; PUBCHK/PUB_B64 intact. txMoney ¥/₩/S$ fix in. exportBlank path untouched (no new owner-data path to a blank/published file). Sanity matches Kaito's spot-run (FR/IT 31.9%, SG 22.7%, JP 21.4%, KR 17.9%), all finite + in [0,gross]. green.js GREEN exit 0 (11 suites). @Kaito non-gating accuracy note: at absurd sub-1000 ¥/₩ incomes JP/KR return total>gross (flat social floors dominate) — never NaN/negative/crash, realistic wages are fine; tax-model artifact, not a security issue. **Gate:** my SAFE is on this tip; awaiting Mikoto MISSING:0 (18 tax strings) + Hugo GREEN on the final tip + Osefe ship. Tip will move (i18n + tests) → I re-sign the final tip.
+- [Jun-30] **Arthur → WHOLE TEAM — DIRECTIVE from Osefe: Desktop "Alive" + Boot Sequence (PC/desktop only, scope locked)**
+  Osefe has confirmed this is the next major UI direction. **SCOPE: PC/desktop only.** Mobile stays as-is; we decide later what pieces, if any, earn their way onto phone. All team members weigh in before Kaito builds.
+
+  **THE FULL VISION — "talking into a machine from Cyberpunk":**
+  When you open the site on PC, the screen does not just appear. It boots. Every frame is intentional. When it settles, it never fully settles — the machine is always running.
+
+  **BOOT SEQUENCE (every first load, in-browser and installed PWA):**
+  - `0.0–0.3s` — Complete black. The machine is off.
+  - `0.3–0.8s` — Grid materializes: radiates outward from center, `opacity 0→1`, `cubic-bezier(0.4,0,0.2,1)`.
+  - `0.8–1.1s` — One full scanline sweep top-to-bottom. Radar initializing.
+  - `1.1–1.6s` — Diamond logo pulses in with cyan glow bloom + a 60ms glitch (`filter:contrast(1.08) brightness(1.15)`) before locking clean.
+  - `1.6–2.4s` — Three lines type out in Share Tech Mono, blinking cursor between each:
+    `// MRLN FINANCE COMMAND CENTER`
+    `// OPERATOR: INITIALIZING...`
+    `// ALL SYSTEMS ONLINE`
+  - `2.4–3.0s` — UI materializes: tab bar snaps in, all Orbitron numbers count up from `0`, panels fade in with existing `.35s` ease.
+  - `3.0s` — One full-screen cyan pulse (`rgba(0,229,255,0.04)`, `200ms`). Machine ready. Alive state begins.
+
+  **ONGOING ALIVE STATE (desktop, always-on):**
+  - Ambient bg pulse: glow intensity breathes `0.8→1.0→0.8`, `5–6s ease-in-out infinite`.
+  - Cursor parallax: `mousemove` → grid shifts `3–4px` opposite cursor direction. Pure CSS `transform`. Depth illusion.
+  - Polyphonic glow rhythm: logo / hero number / active tab pulse in offset phases (`+1.3s` apart). Heartbeat with harmonics.
+  - Data glyphs: Share Tech Mono chars at `2–3% opacity`, `8s fade cycle`, in empty desktop space. Texture, not readable.
+  - Card hover depth: `translateY(-2px)` + glow intensifies, `150ms ease-out`. Panel illuminates on focus.
+  - Second scanline layer: existing sweep at `6s` + ghost layer at `15s`, `30% opacity`. Depth in the scan.
+  - Window Controls Overlay (installed PWA only): logo + streak extend into title bar. Full-window canvas.
+  - ALL effects: `@media (prefers-reduced-motion: no-preference)` wrapped. Non-negotiable.
+
+  **TEAM — your inputs needed before Kaito builds:**
+  **@Akashi:** all pure CSS/JS, zero network, zero external assets. Three things to eyeball: (1) boot overlay approach (full-screen div removed after sequence) — any integrity concern? (2) document-level `mousemove` listener — any surface to flag? (3) the typewriter lines — static EN "system strings" or do they need `tf()` i18n? My instinct: treat them as command-line chrome (intentionally English, like real terminals), but your call since you hold the safety bar.
+  **@Mikoto:** do the 3 typewriter lines need 7-language versions, or are they "system English" UI chrome? If they translate, I need char limits per language before Kaito builds the typewriter logic.
+  **@Hugo:** when Kaito builds: (1) test that `prefers-reduced-motion` skips to ready state immediately; (2) test that the overlay removes itself cleanly and doesn't block interaction post-sequence. Alive-state CSS animations = visual QA only, no automated test needed.
+  **@Kaito:** this is its own build pass — the biggest single visual feature we've added. I'd phase it: (a) boot sequence first (overlay, typewriter, reveal), then (b) alive state (parallax, pulse, glow rhythm). Flag me when ready and I give exact values for every frame. — Arthur
