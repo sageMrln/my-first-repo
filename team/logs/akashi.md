@@ -1651,3 +1651,49 @@ Entry format:
 - Still open: gate (steps 7–11) — my SAFE @ 38a87c2; needs Mikoto MISSING:0 (14 strings) + Hugo GREEN
   (wants a picker→tabOrder test) on the final tip + Osefe ship. Non-gating FIRST_PROMPT dead-var → Kaito.
   Sleep-mode: NO auto-publish without Osefe's explicit go.
+
+## [2026-06-30] — via Kaito (asleep, final gate) — RE-SIGN: Smart Onboarding delta 38a87c2..d4e14f1 (re-SAFE @ `d4e14f1`)
+- Asked: re-sign Smart Onboarding (item 2) on the moved tip per freeze-the-candidate. Prior SAFE @ 38a87c2.
+  Delta = Arthur polish + dead-code removal (d103359), Mikoto i18n 14 strings×6 langs (ebcd7d7), Hugo
+  tests/guide/PDF (d1fe834). Confirm no onboarding logic / tab-order / finish() write changed; invariants;
+  every published file leak-clean; MISSING:0; GREEN; PDF text-extract clean.
+- DELTA 38a87c2..d4e14f1 (numstat): index.html +3/-7, GUIDE.md +9/-7, MRLN-Guide.pdf rebuilt, TEAM-CHAT,
+  green.js +6, NEW tools/test/onboarding_test.js (126), logs/maki docs. No sw.js/manifest edit.
+- index.html delta = EXACTLY 3 polish hunks + the i18n dict line (proved by awk-folding the long
+  AUTO-MERGED lines): (1) FIRST_PROMPT dead map REMOVED @6949 — verified 0 references on tip (grep -ac=0),
+  it was never read so removal breaks nothing; (2) expenses mok() gains a STATIC `<div class="mok-lbl">
+  kr/mo</div>` literal in the switch — no interpolation, no user data; (3) #wPrioSkip inline style gains
+  min-height:44px (Arthur's tap-target floor). ALL touch only static HTML/style — NO logic/validation/
+  parser/finance/tab-order change, NO new user-input sink. mok(p) still feeds the SAME existing wizard
+  render() innerHTML path ('<div class="pmok">'+mok(p)+'</div>') — no NEW sink; mok returns only fixed
+  literals/SVG. The COPPA-safe stage enum + the picked.concat(rest) tabOrder concat + finish()/__applyTabOrder/
+  __tabReorder are NOT in the delta — byte-identical to what I cleared @38a87c2 (git diff: zero hits for
+  blankModel/__tabReorder/__applyTabOrder/finish in the index delta).
+- INVARIANTS (base 38a87c2 vs tip d4e14f1, grep -a) ✓: __sys 27==27, token() 16==16 (HELD), PUBCHK
+  4047293148 ×1, PUB_B64 ×3. #__ownerKeySrc empty (type=text/plain, no content), #hud-state empty. No new
+  network/exfil in index delta (added lines: fetch/XHR/.src=/eval/new Function/location.*/document.write/
+  innerHTML → NONE). exportBlank `MODEL=blankModel()` strip intact (untouched) → profile.stage dropped by
+  construction, can't reach a customer file.
+- i18n DICT ✓: AUTO-MERGED IIFE parses; node tools/i18n/sync.js → MISSING:0 (695/695). PII/key scan: the
+  Osefe(3)/Aarhus(1)/ownerKey(7) hits in index are base==tip (pre-existing, in code COMMENTS + the empty
+  key slot, NOT new, NOT a leaked figure). The only delta-added matches are 6× "private key" — descriptive
+  licensing UI copy translations, no PEM/key material. Zero `-----BEGIN` added.
+- TESTS/GUIDE/PDF ✓: green.js delta ONLY inserts the onboarding suite (5b) — no guard removed, PUBLISHED_TEXT
+  unchanged. onboarding_test.js (new) mirrors the real picked.concat(rest) contract: picked-first-in-order,
+  unpicked-original-order, no-tab-lost/dup, empty-pick preserves order, stale keys don't corrupt — a TEST,
+  weakens no guard. GUIDE.md §4 setup adds life-stage + prioritize steps; delta-added GUIDE lines have NO
+  PII/key/figure. Rebuilt MRLN-Guide.pdf (503KB) independently extracted (raw + FlateDecode streams): 0 hits
+  for -----BEGIN/PRIVATE KEY/MIIB/MIIC/osefe/miradi/aarhus/@gmail/ownerKey/signingKey. The 156 "BEGIN" hits
+  are PostScript CMap font keywords (begincmap/beginbfchar/dict begin) — font machinery, NOT PEM. Clean.
+- GATE: node tools/release/green.js → GREEN exit 0 (12 suites incl onboarding; preflight CLEAR — slots
+  empty, 1 public key, no private key, no PII, PUBCHK, 4 scripts balanced; leak scan GUIDE/manifest/sw/
+  team-chat clean). MISSING:0.
+- VERDICT: SAFE @ d4e14f1. index.html delta vs my 38a87c2 SAFE is exactly the 3 polish/dead-code hunks +
+  the Mikoto dict line — onboarding logic / tab-order mapping / finish() write byte-identical, FIRST_PROMPT
+  removal breaks nothing (never read), exportBlank strip present, watchdogs held (27/16), slots empty, no
+  new network, every published file (incl rebuilt PDF) leak-clean, MISSING:0, GREEN. No DIRECT security fix
+  required this pass. Last gate sign-off — Kaito freeze-checks the tip, then Osefe ships item 2.
+  Sleep-mode: NO auto-publish without Osefe's explicit go.
+- Commits / SHAs reviewed: re-signed d4e14f1 (tip). If the tip moves again, I re-sign.
+- Still open: nothing security-side. Gate: Akashi SAFE @ d4e14f1 / Mikoto MISSING:0 @ ebcd7d7 / Hugo GREEN
+  @ d1fe834 — awaiting Kaito freeze-check + Osefe "ship it" for item 2 (Smart Onboarding).
