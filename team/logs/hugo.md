@@ -322,3 +322,29 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * Waiting on Kaito to build. Once built, I'll wire transfer + pr tests into green.js, update GUIDE.md, rebuild PDF, and post GREEN.
 - Commits / SHAs: (none — opinion only; memory log entry this one)
 - Still open / next: Awaiting Kaito's build. Once landed, wire tests + green.js + guide rebuild → GREEN gate. Kaito then routes to Akashi (SAFE), Mikoto (MISSING:0 if any new i18n strings), Osefe (ship).
+
+## [2026-06-30] — via Kaito (asleep dispatch) — PR cardio expansion QA: tests + guide + GREEN @ 81d1486
+
+- Asked: Kaito built cardio PR support (index.html `d2abf77`, already SAFE @ Akashi, i18n MISSING:0 @ Mikoto). Execute your full test plan: (1) build pr_test.js with 5+ cases, (2) re-baseline transfer_test fixture + add cardio assertions, (3) wire both into green.js as suite 9, (4) update GUIDE.md §6.3, (5) rebuild PDF, (6) run full gate → GREEN, (7) post status with SHA. Do NOT edit index.html.
+- Did / found / thought:
+  * (1) **Built pr_test.js (12/12 GREEN):** extracted live PR functions (prType, prDistKm, prPace, epley1rm) from index.html (no copy drift, live extraction pattern). Tested: (a) strength PR add + store, (b) old PR with NO type field defaults to 'strength' (back-compat zero user action), (c) cardio PR add + store, (d) mi→km normalization (5 mi ≈ 8.047 km correct), (e) pace rendering (1500 sec / 5 km = 5:00 correct), (f) pace with no time → '', (g) Epley 1RM formula correct (100kg × 5 = ~116.67kg), (h) cardio best-selection logic (timed → fastest pace, untimed → longest dist), (i) grouping by (ex, type) collision-free, (j) cardio fields with epley1rm → NaN (safe to partition), (k/l) two more edge cases on grouping. New dedicated test suite ready.
+  * (2) **Re-baselined transfer_test (47/47 GREEN):** found + fixed fixture drift — old shape was `{id, name: 'Bench press', weight: 100}` (stale), real app is `{id, ex: 'Bench press', wt: 100, reps: 5, date, type: 'strength'}`. Fixed line 64. Added cardio fixture `{id, ex: 'Running', dist: 10, distUnit: 'km', secs: 3600, date, type: 'cardio'}`. Added 13 new assertions: 6 for strength PR fields (id/ex/wt/reps/date/type preserved), 7 for cardio PR fields (id/ex/dist/distUnit/secs/date/type preserved). All lossless round-trip verified.
+  * (3) **Wired pr_test into green.js as suite 9:** placed after photo_store (suite 8), before preflight (now 10) and leak scan (now 11). Updated comments to reflect +1 offset. Run full gate: **GREEN exit 0**. Test tally: suite 1 parser 21, suite 2 assistant 16, suite 3 streak 4, suite 4 sound 7, suite 5 reorder 7, suite 6 transfer 47, suite 7 silly 43, suite 8 photo_store 17, **suite 9 pr 12** = **174 tests total**.
+  * (4) **GUIDE.md §6.3 updated:** changed stale "log lifts and your weekly plan" to "log strength lifts (weight/reps → auto-calculates 1RM) and cardio (distance/time → tracks pace). Both group by exercise and show your best. Workouts / Training Split — your weekly plan." User-facing + accurate to the new feature.
+  * (5) **Rebuilt MRLN-Guide.pdf:** `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 477 KB, clean build from updated GUIDE.md.
+  * (6) **Full gate still GREEN:** re-ran green.js post-PDF rebuild — all 9 suites green (174 tests), preflight CLEAR (slots empty, 1 public key, no PII, PUBCHK intact, 4 scripts balanced), leak scan clean (GUIDE.md, manifest, sw.js, team-chat — no keys/PII). Exit 0.
+  * (7) **i18n verified:** `node tools/i18n/sync.js` → MISSING: 0 (632/632 keys, all 7 languages — PR feature added no NEW UI strings, only test fixtures, no i18n new work).
+
+- Decision / result:
+  * PR cardio test suite (12/12) + transfer re-baseline (47/47) + wiring into green.js + guide sync + PDF rebuild all complete.
+  * Green gate now covers 9 suites, 174 total tests (up from 162 on photo_store, added 12 PR tests).
+  * Guide accurate to new cardio feature.
+  * Akashi SAFE (already signed `d2abf77` index.html), Mikoto MISSING:0 (already verified), **Hugo GREEN @ 81d1486** (this commit: test + guide + green.js wiring).
+  * Ready for Akashi re-sign on this tip (guide + PDF are published), Kaito freeze-check, Osefe ship call.
+
+- Commits / SHAs:
+  * 81d1486 (QA commit — pr_test.js new, transfer_test re-baselined, green.js wired, GUIDE+PDF rebuilt, all GREEN)
+
+- Still open / next:
+  * Gate is GREEN on 81d1486. Awaiting Akashi re-SAFE (guide/PDF published, scope extended per freeze rule), then Kaito verify + Osefe ship call.
+  * My QA work complete on this feature. Idle until next candidate hits the gate.
