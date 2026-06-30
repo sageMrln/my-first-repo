@@ -306,3 +306,19 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Gate is full and ready for Akashi re-SAFE (GUIDE + PDF published, scope extended per freeze-the-candidate rule) + Osefe's "ship it" + Kaito's merge/publish.
   * My QA commit (`eddf573`) is the new tip; Akashi should re-sign SAFE on this tip (guide + PDF changes are within scope — published artifacts), then Kaito verifies + Osefe gives final go.
+
+## [2026-06-30] — direct (Osefe via Kaito) — PR cardio expansion QA opinion + test plan
+
+- Asked: Tester suggested expanding Gym → Personal Records (PRs) from strength-only (weight/reps/1RM) to cardio-capable (distance/time). No code yet. Give my QA opinion on edge cases that will bite, what test coverage is needed, guide impact, and backward-compat expectation. Opinion only, no code edits — will wire tests + green.js once Kaito builds.
+- Did / found / thought:
+  * Reviewed current PR code (index.html ~1366–1380 form; ~3585–3609 add/validate logic; ~3889–3908 render grouping/sorting by Epley 1RM).
+  * Identified 7 concrete edge cases that will ship broken if Kaito doesn't design carefully: (1) cardio entry with zero weight (current validate requires wt>0; must branch on type); (2) render's epley1rm() returns NaN for cardio rows + "1RM" label is nonsense on distance; (3) grouping collision if "Running" is both strength and cardio (same exercise name, different type); (4) distance unit consistency (km vs mi across entries); (5) "best" metric ambiguous for cardio (longest? fastest pace? most recent?); (6) blank/garbage numeric input (dist must be >0, time ≥0 or absent); (7) very large numbers (50000 km typo renders huge labels, not a leak but UX breakage).
+  * Test plan: (a) re-baseline transfer_test.js with cardio PR fixture (photo storage already re-baselined, now add two cardio assertions proving dist/distUnit/time fields round-trip lossless); (b) **build a dedicated pr_test.js** (5 cases: add strength PR, add cardio PR, backward-compat default for old PRs with no type, no-1RM-for-cardio rule, grouping-by-exercise+type collision guard). Recommend YES on dedicated suite because PR logic is now isolated + substantial (validation branching, type routing, render branching).
+  * Wire pr_test into green.js as suite 9 (after photo_store_test). New gate count: 9 suites, ~145 tests (transfer 36 + photo_store 17 + others).
+  * GUIDE.md §6.3 currently says "log lifts" — inaccurate now. Update to mention both strength + cardio, rebuild PDF.
+  * Backward-compat: existing PRs (no `type` field) must render as strength zero user action. Load-time default (`type: 'strength'` if missing) or render-time check — Kaito's call. Test one case: old PR with no type loads + displays with 1RM label.
+- Decision / result:
+  * QA opinion complete. Concrete edge-case list (7) + test plan (transfer re-baseline + new pr_test.js, 5 assertions) + guide sync note + backward-compat expectation documented.
+  * Waiting on Kaito to build. Once built, I'll wire transfer + pr tests into green.js, update GUIDE.md, rebuild PDF, and post GREEN.
+- Commits / SHAs: (none — opinion only; memory log entry this one)
+- Still open / next: Awaiting Kaito's build. Once landed, wire tests + green.js + guide rebuild → GREEN gate. Kaito then routes to Akashi (SAFE), Mikoto (MISSING:0 if any new i18n strings), Osefe (ship).
