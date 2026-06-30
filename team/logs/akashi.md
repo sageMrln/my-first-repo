@@ -1301,3 +1301,52 @@ Entry format:
 - Commits / SHAs reviewed: ba19dc0 (tip). If the tip moves again, I re-sign.
 - Still open: nothing security-side. Gate: Akashi SAFE @ ba19dc0 ✓ · Mikoto MISSING:0 ✓ · Hugo
   GREEN ✓ — awaiting Osefe's explicit "ship it".
+
+## [2026-06-30] — via Kaito (asleep, pre-build) — DESIGN: CJK/i18n + 5-tax-engine infra (NO code)
+- Asked: architecture design pass for the +5 lang (fr/it/zh/ja/ko) + 5 tax-engine (FR/IT/SG/JP/KR) expansion.
+  No code edits — produce build-ready design + risk flags Kaito builds to. 4 blockers: fonts/CJK,
+  i18n Latin assumption, currency (SGD/JPY/KRW, decimal-less), integrity/offline invariants.
+- Read the REAL code (not memory): @import @16 (Latin-only Orbitron/Rajdhani/ShareTechMono); ~16
+  font-family stacks (grep); i18n engine @5138-5410 (t/tf @5138-5140, collectI18nNodes @5147, applyLang
+  @5170, sweepRemnants @5226, translateForwardAll @5271, observer @5302, translateSubtree @5318, audit
+  watchdog @5349); 7 Latin gates `/[A-Za-zÀ-ÿ]/` @5154/5230/5274/5289/5322/5374/5383; CURRENCIES @1742
+  (JPY ALREADY present ¥ before:true; NO KRW/SGD), FX_RATES @1751 (no KRW/SGD), fmt/fmtN @1759-1760
+  (Math.round → integer, decimal-less safe by construction); curSel @809-820 (JPY present, no KRW/SGD),
+  langSel @799-807 + lkLangSel @600-608 (7 langs, no fr/it/zh/ja/ko); TAX_CCY @5825, TAX_COUNTRIES @5826,
+  computeTax @5839 (poison @5842 gross=__sys.token()*grossRaw, withheld likewise), txMoney @5951 (own
+  symbol map, NO JPY/KRW/SGD), defCountry @5954, txCountry select @5982. SW @19-42 (doc network-first,
+  asset cache-first), CORE @9 (6 same-origin files, NO fonts).
+- KEY FINDINGS:
+  1. FONTS — system-CJK fallback chain is correct + free + offline-neutral. Append CJK system fonts to
+     the ~16 font-family stacks (or fewer via a CSS var). Google @import is ALREADY an online-only dep
+     (cross-origin, NOT in SW CORE @9 → never cached → already fails to Latin system fallback offline);
+     CJK adds ZERO new network surface (system fonts are on-device). RISK (low, pre-existing): offline =
+     no Orbitron, falls to sans-serif — true today, unchanged by CJK. Decorative Orbitron has no CJK
+     glyphs → per-glyph fallback already routes CJK chars to the next family in the stack, so appending
+     system CJK makes headings render. NO bundled webfont (would be 5-15MB → violates size/free, rejected).
+  2. i18n LATIN GATES — applyLang (data-i18n + __en capture) is script-AGNOSTIC → CJK target fully covered
+     for tagged/captured strings. The 7 `/[A-Za-zÀ-ÿ]/` gates are the BACKSTOP walkers (forward translator,
+     remnant sweep, observer, audit). For en→zh they still work (source is Latin). The REAL gap: zh→ja or
+     any CJK→CJK switch — sweepRemnants/translateForwardAll REJECT CJK-only nodes (no Latin) → stale
+     previous-CJK text never swept forward. FIX: extend each regex to include CJK ranges. Exact:
+     `/[A-Za-zÀ-ÿぁ-ヿ㐀-䶿一-鿿가-힯]/` (Hiragana+Katakana ぀-ヿ, CJK-Ext-A
+     㐀-䶿, CJK Unified 一-鿿, Hangul 가-힯). Safer than "guarantee 100% data-i18n coverage" (fragile, one
+     missed dynamic string = permanent leak). KEEP data-i18n-skip honored (user content) — unchanged.
+  3. CURRENCY — JPY already wired (CURRENCIES@1747 + curSel@819 + FX@1753). Decimal-less is ALREADY SAFE
+     in the MAIN formatters (fmt/fmtN Math.round → integer; toLocaleString won't add decimals to a round
+     int). NEED: add KRW{sym:'₩',before:true,loc:'ko-KR'} + SGD{sym:'S$',before:true,loc:'en-SG'} to
+     CURRENCIES@1742; FX_RATES.perUSD KRW/SGD@1753; curSel options@820 + lkLangSel n/a; TAX_CCY@5825
+     SG:'SGD',JP:'JPY',KR:'KRW'; defCountry@5954 map SGD→SG,JPY→JP,KRW→KR; **txMoney@5951 own map MUST add
+     JPY:['¥',''],KRW:['₩',''],SGD:['S$','']** (today falls through to `ccy+' '` → "12345 JPY", ugly but
+     not decimal-broken). NO .toFixed(2)/decimal money formatter anywhere → no ¥/₩ mis-render risk.
+  4. INTEGRITY/OFFLINE — poison cascades FREE to new engines IF they compute from the @5842 `gross`
+     (=__sys.token()*grossRaw); HARD RULE for Kaito: new engines must derive every figure from that
+     poisoned `gross`/`withheld`, never re-read num(T.gross) un-poisoned. No new network (tax = pure
+     arithmetic, FX = offline snapshot). SW CORE unchanged (no new cached files; langs/fonts add nothing
+     to cache — fonts are system/online-import, dict is inline in index.html).
+- Verdict: design delivered, build-ready. No code touched. Nothing gated.
+- Commits / SHAs: this log + TEAM-CHAT note only. App tip unchanged (ba19dc0 cardio still pending Osefe ship).
+- Still open: SAFE-review the REAL Wave-1/2/3 builds later — esp. (a) new tax engines compute from poisoned
+  gross (poison count must rise, never the bare-num path), (b) the 7 Latin regexes actually extended +
+  CJK→CJK sweep tested, (c) txMoney JPY/KRW/SGD added, (d) data-i18n-skip still honored, (e) __sys count
+  rises with new poisoned figures / never drops. Sleep-mode: no auto-publish.
