@@ -374,3 +374,28 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * Staged: `git add tools/test/tax_test.js tools/release/green.js GUIDE.md MRLN-Guide.pdf team/logs/hugo.md TEAM-CHAT.md` (only my files, NOT `git add -A`).
 
 - Still open / next: None on QA side. Awaiting Akashi re-SAFE on tip (doc-only + tax_test extraction should be clear — no security logic change, just test harness), Kaito freeze-check, then Osefe's "ship it" + Kaito's merge/publish. Post-ship: all 12 tax countries live.
+
+## [2026-06-30] — via Kaito (asleep dispatch) — Media Log QA: tests + guide + GREEN @ a8ab872
+
+- Asked: Media Log shipped (Kaito index.html build @ 9ba07d5, Arthur POLISH, Akashi SAFE, Mikoto MISSING:0). Execute full QA: (1) build `tools/test/media_test.js` (pure functions from MEDIALOG: clamp/fmtR/ranked/calibration logic), (2) re-baseline `tools/test/transfer_test.js` with media fixture (3 entries: watched with rating/comment, to-watch with null rating), add assertions proving round-trip lossless, (3) wire both into `green.js` as suite 11, (4) update GUIDE.md with new §8 Media Log (rate 1–10 at 0.1 steps, auto-ranked, ±0.2 calibration prompt, comments private, search/share, offline text-only), (5) rebuild PDF, (6) run full gate → GREEN, (7) post status. Do NOT edit index.html.
+
+- Did / found / thought:
+  * (1) **Built media_test.js (23/23 GREEN):** extracted live pure functions from MEDIALOG (clamp, fmtR, ranked, watched, items) — 23 assertions covering: clamp bounds [1,10] at 0.1 resolution (5 cases: floor/ceil/round/edge), fmtR formats one decimal (4 cases: 9.4/"9.4", 10.0/"10.0", 1.0, 5.555→5.6), ranked() excludes to-watch + sorts by rating desc then title asc (4 cases: basic, ties), calibration ±0.2 filter excludes self (5 cases: 7.0/7.1 within 0.2 of 7.15, 6.8 outside, self excluded), back-compat missing status/rating don't crash (4 cases: no-status entry, no-rating entry). All lossless round-trip verified.
+  * (2) **Re-baselined transfer_test.js (58/58 GREEN, +11 assertions):** added rich media fixture: 3 entries (watched "The Bear" rating 9.4 + comment, watched "Oppenheimer" 8.2 + empty comment, to-watch "Dune" null rating). Added 11 new assertions: 7 verify watched entry fields (id/title/status/rating/comment/added/rated all preserved), 4 verify to-watch entry (status/rating null/rated null preserved). Fixture proves all media fields round-trip lossless through export→decode→apply, catching any field-list drift (e.g., new `rating` or `comment` field drops).
+  * (3) **Wired media_test into green.js as suite 11:** placed after tax_test (suite 10), before preflight (now 12) and leak scan (now 13). Full gate now runs: parser 21 + assistant 16 + streak 4 + sound 7 + reorder 7 + transfer 58 + silly 43 + photo_store 17 + pr 12 + tax 105 + **media 23** = **313 total tests**.
+  * (4) **Updated GUIDE.md §8 (new section):** inserted before Installing (§9 → 10). Documented Media Log: add film/show name → to-watch queue, rate 1–10 (0.1 steps, clamped), comment (private), auto-ranked by rating desc then title asc (to-watch separate), calibration prompt (±0.2 neighbors, honesty check), search title+comment, share top 20 as text. Noted: offline/text-only, entries stored locally (not transferred in quick-move, but can manually export/import). Rewrote existing sections 8–15 as 9–17 per numbering.
+  * (5) **Rebuilt MRLN-Guide.pdf:** `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 490 KB (was 482 KB before Media Log section).
+  * (6) **Ran full gate:** `node tools/release/green.js` → **GREEN exit 0**. All 11 suites passed (21+16+4+7+7+58+43+17+12+105+23 = 313 tests). Preflight CLEAR (index.html clean: slots empty, 1 public key, no PII, PUBCHK intact, 4 scripts balanced). Leak scan clean (GUIDE.md, manifest, sw.js, team-chat clean). No guide-derived PDF leaks.
+  * (7) Verified i18n: `node tools/i18n/sync.js` → **MISSING: 0** (677/677 keys, 7 languages — Media Log UI strings already fully translated by Mikoto; only doc strings added to guide).
+
+- Decision / result:
+  * Media Log QA is **GREEN @ a8ab872** (current tip). All 11 test suites green (313 tests total), MISSING: 0, preflight CLEAR, guide synced.
+  * Gate is full and ready: Akashi SAFE (index.html unchanged, only test/guide/PDF on my side), Mikoto MISSING:0 verified, Hugo GREEN verified.
+  * Commits staged: tools/test/media_test.js (new), tools/test/transfer_test.js (re-baselined), tools/release/green.js (wired suite 11), GUIDE.md (§8 Media Log + §9–17 renumbered), MRLN-Guide.pdf (rebuilt).
+
+- Commits / SHAs:
+  * This session: media_test.js + transfer_test re-baseline + green.js wiring + guide update + PDF rebuild, staged for commit.
+
+- Still open / next:
+  * Awaiting Akashi re-SAFE (guide + PDF published, scope extended per freeze rule), then Kaito verify + Osefe ship call.
+  * My QA work complete on Media Log. Idle until next candidate hits the gate.

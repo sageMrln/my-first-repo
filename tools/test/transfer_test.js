@@ -67,6 +67,11 @@ const harness = `
     ],
     notes: [{ id: 'n1', text: 'Remember to hydrate', date: '2026-06-29' }],
     foodLog: [{ id: 'f1', date: '2026-06-29', name: 'Lunch', cal: 500, total: 500, photo: 'data:image/png;base64,ABC123456789', hasPhoto: true }],
+    media: [
+      { id: 'm1', title: 'The Bear', status: 'watched', rating: 9.4, comment: 'Intense series about a fine-dining kitchen', added: '2026-06-15T10:30:00Z', rated: '2026-06-20T14:45:00Z' },
+      { id: 'm2', title: 'Oppenheimer', status: 'watched', rating: 8.2, comment: '', added: '2026-06-10T09:00:00Z', rated: '2026-06-18T16:20:00Z' },
+      { id: 'm3', title: 'Dune', status: 'towatch', rating: null, comment: '', added: '2026-06-25T12:00:00Z', rated: null }
+    ],
     tax: { status: 'employee', taxId: 'XX1234567X' },
     savingsBoxes: [{ id: 's1', name: 'Vacation', target: 5000, current: 1500 }],
     reminders: [{ id: 'r1', date: '2026-07-01', text: 'Pay rent' }],
@@ -217,6 +222,26 @@ try {
     check('foodLog metadata preserved (total)', decodedFood.total === originalFood.total);
     check('foodLog metadata preserved (hasPhoto)', decodedFood.hasPhoto === originalFood.hasPhoto);
     check('foodLog photo STRIPPED from export (no photo bytes)', decodedFood.photo === undefined);
+  }
+  // Media Log: verify all fields round-trip losslessly (no photo storage in quick-move, but entries themselves are preserved)
+  check('decoded.media has same length', Array.isArray(decoded.media) && decoded.media.length === originalState.media.length);
+  if (decoded.media && decoded.media.length > 0) {
+    const decodedBear = decoded.media[0];
+    const originalBear = originalState.media[0];
+    check('media watched entry: id preserved', decodedBear.id === originalBear.id);
+    check('media watched entry: title preserved', decodedBear.title === originalBear.title);
+    check('media watched entry: status preserved', decodedBear.status === originalBear.status);
+    check('media watched entry: rating preserved', decodedBear.rating === originalBear.rating);
+    check('media watched entry: comment preserved', decodedBear.comment === originalBear.comment);
+    check('media watched entry: added date preserved', decodedBear.added === originalBear.added);
+    check('media watched entry: rated date preserved', decodedBear.rated === originalBear.rated);
+  }
+  if (decoded.media && decoded.media.length > 2) {
+    const decodedToWatch = decoded.media[2];
+    const originalToWatch = originalState.media[2];
+    check('media towatch entry: status preserved', decodedToWatch.status === originalToWatch.status);
+    check('media towatch entry: rating null preserved', decodedToWatch.rating === null);
+    check('media towatch entry: rated null preserved', decodedToWatch.rated === null);
   }
   check('decoded.tax matches original', JSON.stringify(decoded.tax) === JSON.stringify(originalState.tax));
   check('decoded.savingsBoxes matches original', JSON.stringify(decoded.savingsBoxes) === JSON.stringify(originalState.savingsBoxes));

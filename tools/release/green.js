@@ -85,11 +85,18 @@ run(['tools/test/pr_test.js'], 'PR suite');
 section('tax engine — tools/test/tax_test.js');
 run(['tools/test/tax_test.js'], 'tax suite');
 
-// 11) deep pre-publish guard on the app itself
+// 11) committed Media Log test — rating clamping, formatting, ranking, calibration-neighbour selection
+//     Guards clamp(r) keeps ratings in [1,10] at 0.1 resolution, fmtR formats one decimal,
+//     ranked() sorts by rating desc + title asc (excludes to-watch), calibration ±0.2 filter
+//     excludes self, and back-compat for entries missing status or rating don't crash the sort
+section('Media Log (rating/ranking/calibration) — tools/test/media_test.js');
+run(['tools/test/media_test.js'], 'media suite');
+
+// 12) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
 
-// 12) leak scan across every OTHER published text file (the "whole surface" rule)
+// 13) leak scan across every OTHER published text file (the "whole surface" rule)
 //     Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
 //     by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
 const PUBLISHED_TEXT = ['GUIDE.md', 'manifest.webmanifest', 'sw.js', 'team-chat.html'];
