@@ -5105,7 +5105,7 @@
       W = cv.clientWidth; H = cv.clientHeight; if(!W || !H) return;
       cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
       ctx = cv.getContext('2d'); if(!ctx) return; ctx.setTransform(dpr,0,0,dpr,0,0);
-      var cap = Math.min(Math.round(W*H/4600), 90);                    // ~72 on a 390×844 phone, hard ceil 90
+      var cap = Math.min(Math.round(W*H/4600), 140);                   // ~72 on a 390×844 phone; ceil 140 holds density on big desktops (Arthur)
       ps = []; for(var i=0;i<cap;i++) ps.push(spawn(true));
     }
     function frame(){
