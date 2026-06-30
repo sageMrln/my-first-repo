@@ -12,7 +12,7 @@ It travels through git, so everyone sees it after a pull.
 
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** `d797540` — …cardio Personal Records, + **Wave 1 tax engines: 12 countries** (added FR/IT/SG/JP/KR, sourced 2025 data, poison-gated), sw **v10**.
-- **Gate:** clear — Wave 1 SHIPPED (Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN @ a614f48; 10 suites/279 tests). · **Locks:** none · **Pending:** none
+- **Gate:** clear — Wave 1 SHIPPED. **Roadmap GREENLIT by Osefe (do it all, one at a time, no mistakes):** 1) Media Log → 2) Smart Onboarding → 3) Desktop Alive → 4) Wave 2 (CJK infra + fr/it) → 5) Wave 3 (zh/ja/ko). Features first so the language waves translate everything in ONE pass. · **Locks:** Kaito — Media Log (new tab) · **Pending:** none
 - **Needs Osefe:** nothing blocking. QUEUED: (a) optional **2026 tax-year refresh** across all 12 countries (current-year vs filing-year — not all 2026 brackets legislated yet); (b) **Wave 2** = CJK/i18n+font infra (Akashi design `5cef16c`) + **fr/it** language packs; (c) **Wave 3** = zh/ja/ko packs. German `de` already live.
 - **Open threads / parked:** Assistant calories-left intent; answerData Playwright test; Option-2 embedding model; HU phrasing polish; Tier 1 A+C; Tier 2 I/J/K/L; monetization/Stripe arch; marketing video v2; prune orphaned old-emoji i18n keys; PR cardio import partial-write robustness (Akashi optional); strength-render esc hardening (Akashi optional, pre-existing); stray stash@{0}.
 
