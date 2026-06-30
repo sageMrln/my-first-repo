@@ -559,6 +559,27 @@
   .wiz .instcard ol.isteps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px}
   .wiz .instcard ol.isteps li{font-size:13px;color:var(--txt-dim);line-height:1.45}
   .wiz .instcard ol.isteps li b{color:var(--txt)}
+  /* Smart onboarding — life-stage cards + priority picker (Arthur spec) */
+  .wiz .stagewrap{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .wiz .stagecard{cursor:pointer}
+  .wiz .pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px}
+  .wiz .pcard{position:relative;border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:11px;min-height:88px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;gap:8px}
+  .wiz .pcard.picked{border-color:var(--cyan);box-shadow:var(--glow)}
+  .wiz .pbadge{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--cyan);color:#04121a;font-family:'Orbitron';font-size:12px;display:flex;align-items:center;justify-content:center}
+  .wiz .pcard .ptitle{font-size:12.5px;color:#eaffff}
+  .wiz .pmok{display:flex;flex-direction:column;gap:3px;min-height:34px;justify-content:center}
+  .wiz .mok-num{font-family:'Orbitron';font-size:20px;color:var(--lime);line-height:1}
+  .wiz .mok-lbl{font-family:'Share Tech Mono';font-size:9px;letter-spacing:.08em;color:var(--txt-dim);text-transform:uppercase}
+  .wiz .mok-bar{height:4px;border-radius:3px;background:var(--cyan)}
+  .wiz .mok-bar.lime{background:var(--lime)}
+  .wiz .mok-row{display:flex;align-items:center;gap:6px}
+  .wiz .mok-row span{width:30%;height:4px;border-radius:3px;background:var(--line)}
+  .wiz .mok-row i{height:5px;border-radius:3px;background:var(--cyan);margin-left:auto}
+  .wiz .mok-split{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+  .wiz .mok-split i{display:block;height:100%;background:var(--cyan)}
+  .wiz .mok-rank{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:11px}
+  .wiz .mok-rank span{color:var(--txt-dim)}
+  .wiz .mok-rank b{color:var(--cyan)}
   .wiz .wact{display:flex;gap:10px;margin-top:20px}
   .wiz .wact button{flex:1;font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.03em;text-transform:uppercase;
     border-radius:11px;padding:13px;cursor:pointer;border:1px solid var(--line);transition:all .15s}
@@ -6920,7 +6941,12 @@
 
   /* ===================== ONBOARDING WIZARD ===================== */
   var WIZ = (function(){
-    var STEPS=['welcome','profile','income','expenses','hobbies','transport','install','review'];
+    var STEPS=['welcome','stage','profile','income','expenses','hobbies','transport','priority','install','review'];
+    // Smart-onboarding maps (Arthur spec). Life stage pre-highlights relevant picker cards;
+    // the picker (tap-to-rank) writes STATE.tabOrder so the user's #1 page becomes tab 1.
+    var PICK_CARDS=['overview','income','expenses','flow','rule','gym','food','media'];
+    var STAGE_PICK={ school:['media','food','gym'], working:['income','expenses','media','gym','flow'], managing:['overview','flow','expenses','rule'] };
+    var FIRST_PROMPT={ media:'What’s the last show you finished?', income:'What’s your monthly income?', overview:'What’s your monthly income?', gym:'Add today’s weight', food:'Log what you ate today', expenses:'Add your first regular cost' };
     var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     var ETHNS=[['','Prefer not to say'],['white','White / European'],['black','Black / African'],['asian','East Asian'],['south_asian','South Asian'],['hispanic','Hispanic / Latino'],['mena','Middle Eastern / N. African'],['mixed','Mixed / Other']];
     var el = {
@@ -6940,7 +6966,8 @@
         ethnicity:m?(m.profile.ethnicity||''):'', phone:m?(m.profile.phone||''):'', computer:m?(m.profile.computer||''):'',
         incomeAvg:m&&m.income.avg?m.income.avg:'', incomeLow:m&&m.income.low?m.income.low:'', incomeHigh:m&&m.income.high?m.income.high:'',
         loan:m&&m.loanPayment?m.loanPayment:'', save:m&&m.savingsMatch?m.savingsMatch:'',
-        expenses:m?collectExpenses(m):[], hobbies:[], transport:[]
+        expenses:m?collectExpenses(m):[], hobbies:[], transport:[],
+        stage:(m&&m.profile&&m.profile.stage)||'', priority:[]
       };
     }
     var CHIPS=[ ['Rent','Housing'],['Groceries','Food'],['Phone','Subscriptions'],['Transport','Transport'],
@@ -7007,6 +7034,10 @@
           '<div class="wrow" id="wTrFinRow" style="display:none"><div><label>Last payment date</label><input id="wTrUntil" type="date"></div></div>'+
           '<button class="chip" id="wTrAdd" style="margin-top:10px">＋ Add transport</button>'+
           '<div class="wlist" id="wTrList"></div>';
+      } else if(s==='stage'){
+        h=stageStepHTML();
+      } else if(s==='priority'){
+        h=priorityStepHTML();
       } else if(s==='install'){
         h=installStepHTML();
       } else if(s==='review'){
@@ -7027,6 +7058,44 @@
       el.body.innerHTML=h;
       if(typeof translateSubtree==='function') translateSubtree(el.body);
       wire(s);
+    }
+    function stageStepHTML(){
+      var opts=[ ['school', t('Studying'), t('Little or no income yet')],
+                 ['working', t('Working'), t('Earning and spending')],
+                 ['managing', t('Managing it all'), t('Income, bills and savings')] ];
+      return '<h2>'+t('What describes you right now?')+'</h2>'+
+        '<p class="wsub">'+t('This sets up your dashboard. You can change anything later.')+'</p>'+
+        '<div class="stagewrap">'+opts.map(function(o){ var hot=data.stage===o[0];
+          return '<div class="instcard stagecard'+(hot?' hot':'')+'" data-stage="'+o[0]+'"><div class="ih"><b>'+o[1]+'</b>'+(hot?' <span class="yours">✓</span>':'')+'</div><div style="font-size:12.5px;color:var(--txt-dim)">'+o[2]+'</div></div>';
+        }).join('')+'</div>';
+    }
+    function mok(p){
+      switch(p){
+        case 'overview': return '<div class="mok-num">1 240</div><div class="mok-lbl">'+t('YOU KEEP')+'</div>';
+        case 'income': return '<div class="mok-bar" style="width:55%"></div><div class="mok-bar" style="width:78%"></div><div class="mok-bar" style="width:95%"></div>';
+        case 'expenses': return '<div class="mok-row"><span></span><i style="width:40%"></i></div><div class="mok-row"><span></span><i style="width:62%"></i></div>';
+        case 'flow': return '<svg width="62" height="24" viewBox="0 0 62 24"><polyline points="2,18 18,8 34,14 60,3" fill="none" stroke="var(--cyan)" stroke-width="2"/></svg>';
+        case 'rule': return '<svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="var(--line)" stroke-width="3"/><circle cx="15" cy="15" r="12" fill="none" stroke="var(--lime)" stroke-width="3" stroke-dasharray="52 75" stroke-linecap="round" transform="rotate(-90 15 15)"/></svg>';
+        case 'gym': return '<div class="mok-bar lime" style="width:60%"></div><div class="mok-bar lime" style="width:40%"></div><div class="mok-bar lime" style="width:80%"></div>';
+        case 'food': return '<div class="mok-split"><i style="width:62%"></i></div><div class="mok-lbl">kcal</div>';
+        case 'media': return '<div class="mok-rank"><span>1</span><b>9.4</b></div><div class="mok-rank"><span>2</span><b>8.9</b></div><div class="mok-rank"><span>3</span><b>8.7</b></div>';
+        default: return '';
+      }
+    }
+    function pickTitle(p){ return ({overview:t('Overview'),income:t('Income'),expenses:t('Expenses'),flow:t('Cash Flow'),rule:t('Savings'),gym:t('Health'),food:t('Food Log'),media:t('Media Log')})[p]||p; }
+    function priorityStepHTML(){
+      if(!data.prioritySeeded){   // open already-ranked from the stage map (editable); only seed once
+        data.prioritySeeded=true;
+        if(data.stage && STAGE_PICK[data.stage]) data.priority=STAGE_PICK[data.stage].filter(function(p){ return PICK_CARDS.indexOf(p)>=0; });
+      }
+      var cards=PICK_CARDS.map(function(p){ var n=data.priority.indexOf(p);
+        return '<div class="pcard'+(n>=0?' picked':'')+'" data-pick="'+p+'">'+(n>=0?'<span class="pbadge">'+(n+1)+'</span>':'')+
+          '<div class="pmok">'+mok(p)+'</div><div class="ptitle">'+pickTitle(p)+'</div></div>';
+      }).join('');
+      return '<h2>'+t('Put your top things first')+'</h2>'+
+        '<p class="wsub">'+t('Tap the pages you care about, in order. Your first pick becomes tab 1.')+'</p>'+
+        '<div class="pgrid">'+cards+'</div>'+
+        '<button class="chip" id="wPrioSkip" style="margin-top:12px">'+t('Skip for now')+'</button>';
     }
     function installStepHTML(){
       // tailor the emphasis to the device they told us about (highlighted first),
@@ -7073,6 +7142,16 @@
       if(s==='welcome'){
         var demo=document.getElementById('wDemo');
         if(demo) demo.addEventListener('click', function(){ collect(s); loadDemoData(); hide(); setTimeout(function(){ if(!STATE.tourDone && window.TOURSTART) window.TOURSTART(); },300); });
+      }
+      if(s==='stage'){
+        var sw=el.body.querySelector('.stagewrap');
+        if(sw) sw.addEventListener('click', function(e){ var c=e.target.closest('[data-stage]'); if(!c) return; data.stage=c.getAttribute('data-stage'); data.prioritySeeded=false; data.priority=[]; render(); });
+      }
+      if(s==='priority'){
+        var pg=el.body.querySelector('.pgrid');
+        if(pg) pg.addEventListener('click', function(e){ var c=e.target.closest('[data-pick]'); if(!c) return; var p=c.getAttribute('data-pick'); var idx=data.priority.indexOf(p); if(idx>=0) data.priority.splice(idx,1); else data.priority.push(p); render(); });
+        var sk=document.getElementById('wPrioSkip');
+        if(sk) sk.addEventListener('click', function(){ data.priority=[]; data.prioritySeeded=true; render(); });   // cleared on purpose → nav stays default
       }
       if(s==='expenses'){
         renderExpList();
@@ -7162,7 +7241,7 @@
       // language / currency / country
       STATE.prefs.lang=data.lang; STATE.prefs.currency=data.currency; STATE.prefs.country=(data.country||'').trim();
       // profile
-      MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim(), birthday:(data.birthday||'').trim(), ethnicity:(data.ethnicity||'').trim(), phone:(data.phone||'').trim(), computer:(data.computer||'').trim() };
+      MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim(), birthday:(data.birthday||'').trim(), ethnicity:(data.ethnicity||'').trim(), phone:(data.phone||'').trim(), computer:(data.computer||'').trim(), stage:(data.stage||'') };
       if(STATE.body){ STATE.body.ethnicity=MODEL.profile.ethnicity; }   // health thresholds (WHO) read this
       if(typeof syncBirthday==='function') syncBirthday();   // put 🎂 on the calendar
       // income
@@ -7196,6 +7275,14 @@
           STATE.calendar[key]=STATE.calendar[key]||[];
           STATE.calendar[key].push({ id:uid(), text:'🏃 '+hb.name+(hb.time?' · '+hb.time:''), repeat:'weekly' });
         });
+      }
+      // priority picker → tab order: picked pages lead, all unpicked tabs keep their order at the end
+      if(data.priority && data.priority.length){
+        var allP=Array.prototype.slice.call(document.querySelectorAll('#tabs .tab')).map(function(tb){ return tb.getAttribute('data-p'); });
+        var rest=allP.filter(function(p){ return data.priority.indexOf(p)<0; });
+        STATE.tabOrder=data.priority.concat(rest);
+        if(window.__applyTabOrder) window.__applyTabOrder();
+        var t1=document.querySelector('#tabs .tab[data-p="'+data.priority[0]+'"]'); if(t1) t1.click();   // drop into their #1 page
       }
       STATE.fresh=false; STATE.skippedSetup=false; STATE.cfg=MODEL;
       var nag=document.getElementById('personalizeNag'); if(nag) nag.remove();
