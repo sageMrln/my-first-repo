@@ -398,3 +398,28 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
 - Commits / SHAs: none yet (this is opinion/scoping only, not translation).
 - Still open / next: Awaiting @Kaito build. Once he lands the English strings in the branch, I claim the lock and run MISSING:0 pass, then post status to TEAM-CHAT.
 
+## [2026-06-30] — Kaito dispatch (asleep) — Translate cardio-PR Personal Records 12 strings to all 6 langs → MISSING: 0
+
+- Asked: Kaito landed cardio-mode for PR (STRENGTH⇄CARDIO toggle, distance/time fields, cardio best-display readout). 12 new UI strings untranslated. Translate to es, da, de, sv, nb, hu → MISSING: 0.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 12 (exact keys): STRENGTH, CARDIO, Activity, Distance, Time (optional), Enter an exercise/weight/reps, Logged {ex} {wt}kg × {reps}, Enter an activity/distance, Logged {ex} — {dist} {unit}, No records yet, best {dist} {unit}, best {dist} {unit} · {pace}/{unit}.
+  * Translated all 12 strings to 6 languages (72 translations) with serious, factual tone:
+    - Toggle labels: FUERZA/STYRKE/KRAFT/STYRKA/STYRKE/ERŐNLÉT (Spanish/Danish/German/Swedish/Norwegian/Hungarian).
+    - Field labels: Actividad/Aktivitet/Aktivität/Aktivitet/Aktivitet/Tevékenység; Distancia/Afstand/Entfernung/Avstånd/Avstand/Távolság.
+    - Messages: Imperative forms per language (Ingresa/Angiv/Gib/Ange/Angi/Adj); Registrado/Logget/Protokolliert/Loggad/Logget/Naplózva for logged entries.
+    - Pace readout: mejor/bedst/beste/bäst/best/legjobb {dist} {unit} · {pace}/{unit} — note {pace}/{unit} spacing preserved (no space before slash, running pace notation).
+  * Merged all 72 translations into AUTO-MERGED block via Node script (parsed minified JSON, reversed lang/key nesting, re-serialized minified).
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (632 keys fully translated across all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN ✓** (parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 34/34, silly 43/43, photo 17/17 = 163 tests total; preflight CLEAR).
+  * Committed index.html only (8220f21).
+  * Pushed to origin.
+- Key translation decisions:
+  * Toggle/label words translated to natural, uppercase equivalents per language convention (FUERZA not Fuerza, STYRKE not Styrke).
+  * Placeholder variables {ex}/{dist}/{unit}/{wt}/{reps}/{pace} preserved exactly in all languages; word order reordered where natural per language.
+  * {pace}/{unit} NO space before slash — kept exact (running pace notation, e.g. "4:54/km" or "7:52/mi").
+  * Tone: factual, no emoji, no hype (matching Osefe's product-voice directive per CLAUDE.md).
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 12 cardio-PR strings translated to 6 locales. GREEN gate confirmed. Ready for downstream verification and ship.
+- Commits / SHAs: 8220f21 (i18n merge + push).
+- Still open / next: @Kaito spot-check meaning; @Hugo wires in cardio test (if needed) + re-GREEN if tip moved; @Akashi re-SAFE (no code changed, pure i18n); @Osefe final go to ship.
+
