@@ -12,8 +12,8 @@ It travels through git, so everyone sees it after a pull.
 
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** `2bc1157` — Phase 1 Move-my-data, Tier 1 motion, Tier 2 hero, serious-tone, Assistant v1+v2, `_amtFrom` fix, IndexedDB photo storage, + **cardio Personal Records** (STRENGTH⇄CARDIO toggle, distance/time, km/mi, pace ranking, back-compat), sw **v9**.
-- **Gate:** clear — cardio PR shipped (Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN @ ba19dc0; 9 suites/174 tests). · **Locks:** none · **Pending:** none
-- **Needs Osefe:** nothing blocking. QUEUED (big, next): +5 languages **fr, it, zh (Mandarin), ja, ko** AND their tax engines (France, Italy, Singapore, Japan, Korea). NOTE: German `de` already live — not new. This is Kaito-builds-5-tax-engines + CJK i18n/font infra + Mikoto-translates-5-langs; Osefe to pick one-shot vs waves.
+- **Gate:** **Wave 1 (5 tax engines FR/IT/SG/JP/KR) is gate-COMPLETE @ `a614f48`** — Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN (10 suites/279 tests, new tax_test). Freeze-checked, sourced 2025 data, poison-gated. **⛔ HELD — Osefe said "don't ship yet" (keeping the 2025 model for now). NOT deployed; live stays `2bc1157`.** Do NOT publish without his explicit go. · **Locks:** none
+- **Needs Osefe:** the Wave-1 ship call when ready (currently held). QUEUED: (a) optional **2026 tax-year refresh** across all 12 countries if Osefe wants current-year vs filing-year — research showed not all 2026 brackets are legislated yet; (b) **Wave 2** = CJK/i18n+font infra (Akashi design `5cef16c`) + **fr/it** language packs; (c) **Wave 3** = zh/ja/ko packs. German `de` already live.
 - **Open threads / parked:** Assistant calories-left intent; answerData Playwright test; Option-2 embedding model; HU phrasing polish; Tier 1 A+C; Tier 2 I/J/K/L; monetization/Stripe arch; marketing video v2; prune orphaned old-emoji i18n keys; PR cardio import partial-write robustness (Akashi optional); strength-render esc hardening (Akashi optional, pre-existing); stray stash@{0}.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
