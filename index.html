@@ -4760,13 +4760,13 @@
   function exportBlank(fid){
     var hs = document.getElementById('hud-state');
     var oks = document.getElementById('__ownerKeySrc');
-    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapN = STATE.notes, snapFL = STATE.foodLog, snapTX = STATE.tax, snapOK = oks?oks.textContent:'';
+    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapN = STATE.notes, snapFL = STATE.foodLog, snapMedia = STATE.media, snapTX = STATE.tax, snapOK = oks?oks.textContent:'';
     try{
       // 0) CRITICAL: strip the owner's private signing key — a Blank copy / customer
       //    file must NEVER contain it, or anyone could mint keys.
       if(oks) oks.textContent = '';
       // 1) blank every data-bearing thing and re-render so NO personal text remains
-      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = []; STATE.notes = []; STATE.foodLog = []; STATE.tax = {};
+      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = []; STATE.notes = []; STATE.foodLog = []; STATE.media = []; STATE.tax = {};
       STATE.reminders = []; STATE.usage = { totalSec:0, streak:0, lastDay:'' }; delete STATE.bdayYear; STATE.missionsDone = {};
       renderAll();
       // 2) mark it a FRESH template (ignores any device's stored data on open),
@@ -4792,7 +4792,7 @@
     } finally {
       // 3) restore YOUR data + private key exactly as they were
       if(oks) oks.textContent = snapOK;
-      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP; STATE.notes = snapN; STATE.foodLog = snapFL; STATE.tax = snapTX;
+      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP; STATE.notes = snapN; STATE.foodLog = snapFL; STATE.media = snapMedia; STATE.tax = snapTX;
       renderAll();
     }
   }
