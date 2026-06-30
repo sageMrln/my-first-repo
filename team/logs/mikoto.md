@@ -369,3 +369,32 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
 - Commits / SHAs: i18n merge c9334c6.
 - Still open / next: @Kaito routes to @Akashi re-SAFE + @Hugo re-GREEN if tip moved, then @Osefe final go. This completes i18n for the IndexedDB photo storage feature; the feature now ships fully translated in all 7 languages.
 
+## [2026-06-30] — Osefe (relay via Kaito) — PR (Personal Records) i18n scoping opinion: expand to cardio (distance/time)
+
+- Asked: Tester suggests expanding PRs from strength-only (exercise/weight/reps/1RM) to cover cardio (exercise/distance/time). Kaito will build a strength↔cardio mode. Before he writes English, need a localization scoping opinion on: (1) anticipated new strings, (2) i18n traps to avoid, (3) confirm 7-language scope + MISSING:0 gate after build.
+- Did / found / thought:
+  * Read current PR feature: `{id,ex,wt,reps,date}`, form labels (Exercise/Weight/Reps/Date), render groups by exercise, rank strength by Epley 1RM (3889-3908).
+  * Identified likely new strings Kaito will add:
+    - **Tab/toggle:** "Strength" / "Cardio" (or a segmented button)
+    - **Mode-aware labels:** (strength) "Weight" / (cardio) "Distance" (this is the swap)
+    - **Unit picker / selector:** "km" / "mi" (user preference, likely in settings or inline)
+    - **Cardio-specific display:** "best {dist} {unit}" + pace format "5:00 /{unit}" (mm:ss/km or mm:ss/mi)
+    - **Cardio empty-state:** "No cardio PRs logged yet — add your first run above."
+    - **Validation messages:** "Distance is required" / "Time is required" (already have weight/reps analogs)
+    - **Data-i18n attributes:** if the mode toggle is a static button/label, it will need `data-i18n` to translate on lang-switch
+  * Flagged which are trivial vs. which need care:
+    - Trivial: empty-state message (same pattern as strength empty-state), validation errors (standard form patterns), the words "Strength"/"Cardio" (single-word labels).
+    - **NEEDS CARE:** (a) units (km/mi logic); (b) pace formatting ("5:00 /km" — each language orders this differently); (c) plurals (1 km vs. 2 km, 1 time vs. 2 times); (d) number formatting (toLocaleString usage).
+- Key i18n traps to warn Kaito about BEFORE he writes English:
+  1. **Units — km vs mi:** Should the unit be a user-visible translatable LABEL or a fixed TOKEN? Current app uses kg (hard-coded), but distance should probably be a setting. Proposal: add a user-pref `prefs.distUnit` (default 'km'), display it as "5.2 km" or "5.2 mi" in the UI. If Kaito hard-codes "km", only Nordic/European users see it. If he makes it a pref, he must provide BOTH km + mi options (no other distance units — keep it simple). The unit itself (km/mi) is NOT translatable; it's a fixed token. The label "Distance" IS translatable.
+  2. **Pace formatting — must use `tf()` with named placeholders, NOT string concat.** Current strength renders "best 100kg×5 · ~200kg 1RM" with HARD-CODED strings. For cardio, Kaito will want "best 5.2 km in 25:30 · pace 4:54 /km" or in miles "best 3.2 mi in 25:30 · pace 7:52 /mi". The trap: each language orders pace differently. Spanish: "ritmo 4:54 /km" (pace AFTER time). German: "Tempo 4:54 je km" (using "je" = "per"). Hungarian: "4:54 /km átlag" (average after). If Kaito concatenates "pace " + pace + " /km", it can't be localized to put the unit at the end in German. **INSIST: use `tf('best_cardio_pr_display', {dist, unit, time, pace})` with the full phrase as the key, so each language can reorder.** Ditto for the empty-state, validation, and the render snippet.
+  3. **Plurals & number formatting — check all 6 langs:** Distance/time will render in plurals across languages. Spanish: "1 km" (singular no s), "2 km" (also no s). Norwegian: "1 km" (no s), "2 km" (no s) — both languages DON'T pluralize km. **BUT times do:** "1 time" (nb "1 gang"), "5 times" (nb "5 ganger"). Some languages distinguish "1 run" vs "5 runs" — need to check if cardio-specific labels (run, swim, cycle, row) need plural forms. For now, assume Kaito will keep exercise names as user-typed text (raw, no plural), so that's data-i18n-skip. The COUNT of cardio entries might pluralize in empty-states or summary messages — that's a check during translation.
+  4. **Number/locale formatting — does Kaito use `toLocaleString()`?** Current strength renders `best.wt+'kg'` directly (hard-coded numeric format). For cardio, distance might be "5.2 km" (decimal). In some regions (German, French), the decimal separator is "," not "."; in others (Nordic), it's ".". Kaito should check: do the cardio distance/time inputs use `type="number"` (which auto-formats to the user's locale), or does the render manually format? If manual, it needs `toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 2})` to respect the user's region's decimal sep. This is a BUILD-TIME decision, not an i18n one, but it affects how strings render. Flag to Kaito: if you hand-build "5.2 km", test it in a German/French locale emulator to verify "5,2 km" (comma) is correct for that region.
+- Scope confirmation:
+  * **7 languages:** en (source), es, da, de, sv, nb, hu. Confirm — same as Tier 0 / photo storage.
+  * **Gate:** After Kaito lands the English strings (t()/tf() calls + data-i18n attrs), I run `node tools/i18n/sync.js`. If it reports MISSING: X, I translate all X keys to all 6 non-English languages, then re-run until MISSING: 0.
+  * **Regression:** The existing strength PR strings ("No PRs logged yet…", "est 1RM", etc. at lines 3891–3901) are already in the dictionary and won't break. The new cardio strings are ADDITIONS. Sync.js will ONLY flag NEW keys missing from the dict.
+- Decision / result: Scoping opinion complete. Three key traps to warn Kaito: (1) units must be a pref (km/mi toggle, NOT hard-coded); (2) pace/display strings MUST use tf() with named placeholders so languages can reorder; (3) number formatting must respect locale (toLocaleString or input type=number auto-format). Once Kaito has English locked in, I'll run the full i18n pass and post MISSING:0.
+- Commits / SHAs: none yet (this is opinion/scoping only, not translation).
+- Still open / next: Awaiting @Kaito build. Once he lands the English strings in the branch, I claim the lock and run MISSING:0 pass, then post status to TEAM-CHAT.
+
