@@ -1175,3 +1175,75 @@ Entry format:
 - Still open: review the ACTUAL cardio-PR code on a real tip (partition-before-sort, validate/clamp,
   esc on cardio fields, __sys count unchanged, exportBlank still reconstructs); Hugo to add cardio
   fixture + fix transfer_test ex/wt drift. Sleep-mode: no auto-publish without Osefe's go.
+
+## [2026-06-30] — via Kaito (asleep, step 4+10) — REAL-CODE SAFE: cardio PRs wired (`d2abf77`)
+- Asked: SAFE review of the ACTUAL cardio-PR code (Kaito's build d2abf77) vs my R-list from the
+  design opinion + standing invariants. Security = find-xor-fix exception: fix DIRECTLY if a hole,
+  else route non-security to Kaito. Run green.js + i18n sync.
+- Parent baseline: d2abf77^ = 30daa6f (a LOCK-only commit; index.html byte-identical to the prior
+  shipped tip a5baaf8 — confirmed `git diff a5baaf8 30daa6f -- index.html` empty). So the real diff
+  is exactly the cardio feature, +92/-29 in index.html, no other file touched.
+- Did / found (read the FULL diff + every load-bearing fn on the tip, ran the gate — not on faith):
+  - SCHEMA / BACK-COMPAT (R1) ✓ — prType(p)=`(p&&p.type==='cardio')?'cardio':'strength'` @3928 is an
+    EXPLICIT discriminator, NOT has-wt inference. Old PRs (no type) → 'strength' → render via the
+    epley path unchanged. Add-path stamps `type:'strength'` @3631 / `type:'cardio'` @3622. Exactly
+    my recommendation.
+  - PARTITION / NO-1RM-FOR-CARDIO (R4/integrity-nit) ✓ — group key @3936 = `(ex).toLowerCase()+' '+
+    prType(p)`, so a group is HOMOGENEOUS in type (same name as both lift+run never merges). Render
+    branches on `prType(arr[0])` @3940: cardio branch sorts by pace/distance and NEVER calls
+    epley1rm; strength branch is the only caller of epley1rm. A cardio entry (no wt) can't enter the
+    1RM comparator → no NaN sort. The exact correctness guard I required is implemented.
+  - INPUT SAFETY (R4) ✓ — add-path uses parseFloat(prDist)/parseInt(prMin/prSec) + a km/mi <select>
+    validated `==='mi'?'mi':'km'` @3621 (no free-text "5km"/"25:00" parse → no ReDoS surface).
+    mm:ss is TWO numeric fields (prMin/prSec), `secs=mins*60+ssec`. Caps APPLIED @3623:
+    `dist>100000→100000`, `secs>86400→86400`. Validation: cardio requires `ex && dist>0` (time
+    optional), strength requires `ex && wt>0 && reps>0` — both reject NaN/≤0.
+  - INJECTION (R-guard b) ✓ — every cardio render value is esc()'d: ex `esc(best.ex)` @3948,
+    date `esc(p.date)` @3953, header `esc(header)` @3949, row meta `esc((+p.dist)+' '+u+…)` @3952,
+    Delete `esc(t('Delete'))`. Load-bearing defense: dist/secs are coerced with unary `+`
+    (`+p.dist`, `+p.secs`) → Number or NaN, NEVER a raw string into the DOM, and distUnit is
+    collapsed to the enum 'km'/'mi' EVERYWHERE rendered (`p.distUnit==='mi'?'mi':'km'`, prDistKm
+    uses the same). So even a hand-crafted MALICIOUS import can't inject via the cardio path. p.id
+    in data-del is uid() (same as parent). prPace returns only numeric `m:ss`.
+  - TRANSFER (R2) ✓ — exportDataCode @5563 dumps `prs:STATE.prs||[]` (whole array, no field
+    allowlist) → applyImportedData @5572 `STATE.prs=d.prs||[]`. New cardio fields ride for free,
+    round-trip lossless. Nothing strips them. (Hugo to add the cardio fixture + fix the pre-existing
+    transfer_test {name,weight}→{ex,wt,reps} drift — robustness, non-gating.)
+  - EXPORTBLANK (R-guard a) ✓ — exportBlank @4707 snapshots STATE.prs (snapP) → clears to `[]`
+    @4716 → reconstructs hud-state → restores @4742. prs (incl. cardio fields) CANNOT reach a
+    customer/blank file — it's a reconstruct, not a dump. Unchanged mechanism, cardio inherits it.
+  - POISON/INTEGRITY (R3) ✓ — __sys count IDENTICAL parent vs tip (35==35) → NO watchdog weakened/
+    removed; the diff adds/removes ZERO __sys/token()/PUBCHK/PUB_B64 line (grep of +/- lines empty).
+    PUBCHK 4047293148 (×1) + PUB_B64 (×3) intact. #__ownerKeySrc empty (@1693), #hud-state empty
+    (@1689). CONFIRMED computeBodyGrade reads STATE.body ONLY (0 prs refs in the fn) → a cardio
+    entry with no wt CANNOT NaN the body-grade. wt/reps/dist/secs are personal HEALTH stats, NOT
+    owner financial figures → correctly UN-poisoned (no __sys.token() gating needed/added), exactly
+    as the design opinion established.
+  - applyLang hook @5208-5209: adds `__refreshPrMode()` + `renderPRs()` re-run on language switch,
+    both try/catch-wrapped, render-only (cardio rows use tf() so must re-render in new lang). No
+    money/state write. setPrMode @3590 only flips .style.display on .prStrength/.prCardio fields +
+    styles the seg buttons — pure UI toggle, no STATE write, no hidden-tab reveal.
+  - Ran node tools/release/green.js → GREEN exit 0 (8 suites: parser 21/21, assistant 16/16,
+    streak 4/4, sound 7/7, reorder 7/7, transfer 34/34, silly 43/43, photo_store 17/17 = 149;
+    preflight CLEAR — slots empty, 1 public key, no PII, PUBCHK intact, 4 scripts balanced;
+    GUIDE/manifest/sw/team-chat clean). node tools/i18n/sync.js → MISSING:12 (the 12 new cardio
+    strings: STRENGTH/CARDIO/Activity/Distance/Time(optional) + the validation/log/best strings) —
+    EXPECTED, awaiting Mikoto; not a security issue.
+- ONE NON-GATING PRE-EXISTING NOTE (robustness, NOT a defect this diff introduced — routed to Kaito,
+  does NOT block SAFE): the STRENGTH render branch still emits `best.wt`/`p.wt`/`reps` UN-esc'd
+  @3961/3963 (as it did at parent). For app-entered PRs these are always numeric (parseFloat/
+  parseInt). The only way to inject is a hand-crafted import with a string wt containing HTML — a
+  pre-existing condition the cardio work neither created nor widened (cardio's own dist/secs ARE
+  hardened via unary-+ coercion + esc()). Optional future hardening: coerce wt/reps with unary +
+  (or esc) on the strength row too, mirroring the cardio path. Non-gating.
+- VERDICT: SAFE @ d2abf77. All R1–R4 met on the real wired code; explicit discriminator (old PRs =
+  strength); cardio never enters 1RM math; numeric+enum inputs, no free-text parse, caps applied;
+  all cardio fields esc()'d + dist/secs unary-+-coerced + distUnit enum-validated → no injection even
+  from a crafted import; key never travels; exportBlank reconstructs (prs can't reach a customer
+  file); __sys 35==35 + watchdogs intact; body-grade can't NaN; cardio correctly un-poisoned. No
+  DIRECT security fix required (build is correct).
+- Commits / SHAs reviewed: d2abf77 (tip). TIP WILL MOVE (Mikoto i18n MISSING→0 + Hugo cardio fixture/
+  transfer_test fix) — I re-sign the final tip before any ship per freeze-the-candidate.
+- Still open: gate (steps 7–11) — my SAFE in @ d2abf77; needs Mikoto MISSING:0 (12 cardio strings),
+  Hugo GREEN (add cardio fixture + fix transfer_test ex/wt drift) on the final tip, Osefe ship.
+  Sleep-mode: no auto-publish without Osefe's explicit go.

@@ -3942,14 +3942,18 @@
         var timed=arr.filter(function(p){ return (+p.secs>0)&&(+p.dist>0); }), best;
         if(timed.length){ best=timed.slice().sort(function(a,b){ return (a.secs/prDistKm(a))-(b.secs/prDistKm(b)); })[0]; }
         else { best=arr.slice().sort(function(a,b){ return prDistKm(b)-prDistKm(a); })[0]; }
-        var bu=best.distUnit==='mi'?'mi':'km', bpace=prPace(best.secs, +best.dist);
-        var header = bpace ? tf('best {dist} {unit} · {pace} /{unit}',{dist:(+best.dist),unit:bu,pace:bpace}) : tf('best {dist} {unit}',{dist:(+best.dist),unit:bu});
+        // whole group renders in the BEST entry's unit (one comparison axis), converting others
+        // for display only — storage stays per-entry. (Arthur: avoid mixed-unit stacked rows.)
+        var gu=best.distUnit==='mi'?'mi':'km';
+        var distIn=function(p){ var km=prDistKm(p); var v=(gu==='mi')?km/1.60934:km; return +v.toFixed(2); };
+        var bpace=prPace(best.secs, distIn(best));
+        var header = bpace ? tf('best {dist} {unit} · {pace}/{unit}',{dist:distIn(best),unit:gu,pace:bpace}) : tf('best {dist} {unit}',{dist:distIn(best),unit:gu});
         html += '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline">'+
           '<b style="font-family:\'Orbitron\';font-size:14px;color:#eaffff">'+esc(best.ex)+'</b>'+
           '<span style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--lime)">'+esc(header)+'</span></div>';
         html += arr.map(function(p){
-          var u=p.distUnit==='mi'?'mi':'km', pc=prPace(p.secs,+p.dist);
-          return '<div class="item-row"><div class="meta">'+esc((+p.dist)+' '+u+(pc?(' · '+pc+' /'+u):''))+(p.id===best.id?' <span class="tag now" style="font-size:8px;padding:1px 5px">PR</span>':'')+
+          var dv=distIn(p), pc=prPace(p.secs, dv);
+          return '<div class="item-row"><div class="meta">'+esc(dv+' '+gu+(pc?(' · '+pc+'/'+gu):''))+(p.id===best.id?' <span class="tag now" style="font-size:8px;padding:1px 5px">PR</span>':'')+
             '<small>'+esc(p.date)+'</small></div>'+
             '<button class="btn danger" data-del="'+p.id+'">'+esc(t('Delete'))+'</button></div>';
         }).join('');
