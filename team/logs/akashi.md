@@ -1813,3 +1813,31 @@ Entry format:
 - Still open: nothing security-side. Gate (steps 7–11): my SAFE @ 75f03b5; needs Hugo GREEN on the final tip
   + Osefe ship. Non-gating: parallax-listener-not-torn-down nuance → Kaito (no defect, FYI only). Sleep-mode:
   NO auto-publish without Osefe's explicit go.
+
+## [2026-06-30] — via Kaito (asleep) — RE-SIGN: Lock-Screen Alive tip moved 75f03b5 → `aa7430f`
+- Asked: re-sign SAFE on the moved tip per freeze-the-candidate. Kaito says the ONLY diff is
+  Arthur's particle-cap polish (the one line I flagged would move). Verify it's exactly that one
+  constant, confirm security-neutral, post SAFE @ aa7430f; STOP and flag if the diff shows anything else.
+- Did / found (ran the git diff myself, did NOT trust the description):
+  - `git diff --stat 75f03b5 aa7430f`: index.html (2 ±, 1 line), TEAM-CHAT.md, and three log files
+    (akashi/arthur/hugo). The non-index files are chat + memory logs — NOT published artifacts.
+  - `git diff 75f03b5 aa7430f -- index.html` = EXACTLY ONE line (@5108, the __lockFX resize/cap):
+    `var cap = Math.min(Math.round(W*H/4600), 90);` → `… , 140);` + the trailing comment updated
+    (ceil 140 holds density on big desktops; ~72 on a 390×844 phone unchanged). Nothing else moved.
+  - SECURITY-NEUTRAL ✓: this is a larger INTEGER CEILING on the particle-spawn count in a pure
+    decoration loop (`for(i<cap) ps.push(spawn(true))`). No new data/network/storage/listener/eval;
+    the opaque curtain, FX-stop-on-unlock teardown, __sys/token/PUBCHK/PUB_B64 watchdogs, and the
+    export/exportBlank clean path are all UNTOUCHED by the diff. Worst case of a bigger cap = more
+    cosmetic motes painted on a large desktop gate — a perf knob, not a security surface. (Voice/cost
+    is bounded: it's a one-time spawn of `cap` particles at resize, not an unbounded per-frame growth.)
+  - INVARIANTS on the tip (verified, not assumed): __sys count 27==27 vs 75f03b5, __sys.token() 12==12,
+    PUBCHK 4047293148 ×1, PUB_B64 ×3 — all identical to my 75f03b5 baseline. #__ownerKeySrc + #hud-state
+    empty (preflight). 
+  - Ran node tools/release/green.js on aa7430f → GREEN exit 0 (parser 21/21, tax 105/105, media 23/23,
+    + all suites; preflight CLEAR — slots empty, no private key, 1 public key, no PII, PUBCHK intact,
+    4 scripts balanced; GUIDE/manifest/sw/team-chat leak-clean).
+- VERDICT: **SAFE @ aa7430f.** Everything I cleared at 75f03b5 holds; the only delta is one decoration
+  cap constant. Posted SAFE @ aa7430f to TEAM-CHAT.
+- Commits / SHAs reviewed: 75f03b5 (prior SAFE) → aa7430f (re-signed tip). Read-only; no lock taken.
+- Still open: nothing security-side. Gate (steps 7–11): my SAFE @ aa7430f stands; needs Hugo GREEN on
+  this same tip + Osefe's explicit ship (sleep-mode: NO auto-publish). If the tip moves again, I re-sign.
