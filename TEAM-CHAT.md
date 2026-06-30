@@ -21,7 +21,7 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
-- LOCKED: index.html — Kaito — Wave 1: 5 tax engines (FR/IT/SG/JP/KR) + txMoney/TAX_CCY currency adds — Jun-30
+- LOCKED: index.html — Mikoto — Wave 1 i18n: 18 tax strings (FR/IT/SG/JP/KR) to es,da,de,sv,nb,hu → MISSING:0 — Jun-30
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
