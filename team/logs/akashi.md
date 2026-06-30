@@ -1741,3 +1741,75 @@ Entry format:
   TIP WILL MOVE (Arthur polish + Hugo GREEN) → I re-sign the final tip per freeze-the-candidate.
 - Still open: nothing security-side. Gate (steps 7–11): my SAFE @ 7aa3231; no new strings so Mikoto MISSING:0
   trivially; Hugo GREEN on final tip + Osefe ship. Sleep-mode: NO auto-publish without Osefe's explicit go.
+
+## [2026-06-30] — via Kaito (asleep, step 4+10) — REAL-CODE SAFE: Lock-Screen Alive (flagship gate) @ `75f03b5`
+- Asked: SAFE-review Lock-Screen Alive — cyberpunk ambient INSIDE the pre-unlock gate overlay (Arthur
+  spec 98d3435). Confirm Kaito's 5 points: (1) opaque curtain still hides ALL app content (negative-z
+  decoration can't punch through), (2) zero app data in the canvas/particles/parallax, (3) FX stops dead
+  on unlock (no in-app rAF/listener) + restarts on re-lock, (4) watchdog/anti-tamper intact + decide if
+  the canvas needs watchdog coverage, (5) export/template stays clean. Fix DIRECTLY if a hole.
+- BASELINE: parent 98d3435 (Arthur spec, non-code) — `git diff 33634d2(last-shipped) 98d3435 -- index.html`
+  EMPTY → real diff = exactly the feature, index.html ONLY +126/-2. (NOTE: Kaito's quoted base 33634d2 is
+  the gh-pages SHIP commit, NOT an ancestor of 75f03b5 — divergent line; the byte-identical check confirms
+  index.html is the same so the delta is clean. Used 98d3435 as the true parent.) sw.js/manifest UNTOUCHED.
+- 1. CURTAIN HOLDS ✓ (the load-bearing privacy check): #lockScreen base rule (@377) UNCHANGED in diff —
+  still `position:fixed;inset:0;z-index:100000` + `background:radial(...),var(--bg)` (the var(--bg) layer is
+  the OPAQUE base) + `.unlocked{display:none}` + lk-noscroll page-freeze (@382) all byte-identical. #lockScreen
+  forms a STACKING CONTEXT (positioned + z-index:100000≠auto), so its children's negative z-index resolves
+  WITHIN that context: the new layers (::before z-2, ::after z-2, .lk-scan z-1, #lkfx z-1) paint ABOVE the
+  overlay's own var(--bg) bg but BELOW .lockcard (z auto/0) — they CANNOT escape #lockScreen to render behind
+  it / reveal the dashboard. No opacity/filter/mix-blend added to #lockScreen or .lockcard (would break
+  compositing) — confirmed absent from diff. Markup: lk-scan + canvas inserted as FIRST children (before
+  .lockcard) → card/guides sit clear+interactive on top. scan band animates translateY(102vh) but #lockScreen
+  has overflow-y:auto → clipped, can't paint outside the gate. Both new els aria-hidden + textless.
+- 2. ZERO DATA IN DECORATION ✓: scanned the entire new JS block (5089-5162) for fetch/XHR/eval/new Function/
+  innerHTML/outerHTML/localStorage/indexedDB/cookie/WebSocket/.src=/location.*/MODEL/STATE./__sys/PUBCHK/
+  PUB_B64/ownerKey/hud-state/fmtN/leftOver/GRAND → the ONLY hit is the word "STATE" inside a comment ("reads
+  NO app STATE"). Canvas particles = Math.random + geometry (clientWidth/clientHeight/devicePixelRatio) only;
+  parallax = e.clientX/clientY + innerWidth/innerHeight only. Nothing private can enter the canvas or the
+  --lkpx/--lkpy CSS vars (cosmetic ±4px cursor offsets). Parallax listener is {passive:true}, pointerType
+  guarded to mouse.
+- 3. STOPS DEAD ON UNLOCK ✓: unlock() (@5016) now calls __lockFX.stop() (try-wrapped). unlock() is the SINGLE
+  chokepoint for both dismiss paths — manual verify-success (@5074) AND silent saved-key auto-unlock (@5050)
+  both route through unlock(). stop() teardown is COMPLETE: running=false (frame() early-returns), 
+  cancelAnimationFrame, removeEventListener('resize',onResize), clearRect (blank bitmap) → zero in-app rAF +
+  zero canvas listener + nothing painted. start() guards re-entry (if(running)return) → no double rAF stack.
+  RE-LOCK restarts: lock() (@5017) calls __lockFX.start(); lock() is hit by expireNow (@5035), failed verify
+  (@5075), logout (@5085) → field correctly comes back. Initial start (@5161) gated on #lockScreen present &&
+  !.unlocked. ONE HONEST NON-GATING NUANCE (flagged to Kaito, does NOT gate): the lkParallax pointermove
+  listener is NEVER torn down — but it's DESKTOP-ONLY (matchMedia hover+fine+≥1024px+no-pref gate; never
+  attaches on touch/phone) AND after unlock it early-returns at `if(el.classList.contains('unlocked'))return`
+  BEFORE scheduling any rAF or DOM write → near-zero residual (one early-return per desktop mousemove, no
+  animation/paint). So "ZERO CPU once in-app" is very slightly imprecise (trivial idle early-return on
+  desktop), but there is no animation/leak/perf defect; re-attaching per lock-cycle would be more error-prone.
+  Acceptable by design.
+- 4. WATCHDOG / ANTI-TAMPER INTACT ✓: __sys count IDENTICAL parent vs tip (27==27), __sys.token() 12==12 (HELD,
+  no drop), PUBCHK 4047293148 ×1, PUB_B64 ×3 — diff touches NONE. watchdog beat #1 (@5194) trips on
+  'overlay-removed' if #lockScreen is GONE — the diff only ADDS children inside it, never removes it → no
+  false trip. beats #2/#3 (key-swapped pubChk, verifier-neutered) untouched. POISON DECISION: the canvas
+  needs NO watchdog coverage — it's pure decoration, not a security control; deleting it cannot bypass the
+  gate (gate = opaque overlay + key verify, neither depends on the canvas), and watch-guarding a cosmetic
+  element would add fragility (a future canvas-removal refactor would falsely trip the lock) for zero security
+  gain. Agree with Kaito's read. #__ownerKeySrc empty (@1840), #hud-state empty (@1836).
+- 5. EXPORT/TEMPLATE CLEAN ✓: both export paths (exportDataCode @4827, exportBlank @4874) toggle the
+  'unlocked' class DIRECTLY (not via unlock()/lock()) → __lockFX.start/stop NOT called → export doesn't
+  perturb FX state. Serialization is documentElement.outerHTML: the two new els serialize as empty static
+  tags (no data); the canvas BITMAP is NOT serialized by outerHTML (never the painted pixels). The only new
+  serialized state is the inline --lkpx/--lkpy on #lockScreen IF the owner moused before exporting — two
+  ±4px cosmetic cursor offsets, NOT private data, re-computed on the new device. exportBlank's data-wipe
+  (MODEL=blankModel + STATE arrays zeroed incl media + reconstruct hud-state {__fresh,fid,prefs}) UNTOUCHED.
+  A shared/blank file carries no new data and just inherits the decoration.
+- Ran node tools/release/green.js → GREEN exit 0 (parser 21/21, assistant 16/16, streak 4/4, sound 7/7,
+  reorder 7/7, transfer/silly/photo_store/pr 12, tax 105/105, media 23/23; preflight CLEAR — slots empty,
+  no private key, 1 public key, no PII, PUBCHK intact, 4 scripts balanced; GUIDE/manifest/sw/team-chat clean).
+  node tools/i18n/sync.js → MISSING:0 (new els are aria-hidden, ZERO new strings). sw.js/manifest untouched.
+- VERDICT: SAFE @ 75f03b5. Pure presentation inside the gate; opaque curtain holds (negative-z can't escape
+  #lockScreen's stacking context, base bg/lk-noscroll untouched); decoration carries zero app data; FX stops
+  dead on unlock (complete teardown via the single unlock() chokepoint covering click+auto paths) + restarts
+  on re-lock; watchdogs held (27/12) + canvas correctly UN-watched (decoration, not a control); export bakes
+  no new data (canvas bitmap not serialized, only cosmetic --lkpx/y offsets). No DIRECT security fix required.
+- Commits / SHAs reviewed: 75f03b5 (tip). TIP WILL MOVE (Arthur polish + Hugo GREEN; no new i18n so Mikoto
+  MISSING:0 trivially) → I re-sign the final tip per freeze-the-candidate. No lock taken (read-only review).
+- Still open: nothing security-side. Gate (steps 7–11): my SAFE @ 75f03b5; needs Hugo GREEN on the final tip
+  + Osefe ship. Non-gating: parallax-listener-not-torn-down nuance → Kaito (no defect, FYI only). Sleep-mode:
+  NO auto-publish without Osefe's explicit go.
