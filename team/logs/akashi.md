@@ -1589,3 +1589,65 @@ Entry format:
 - Commits / SHAs reviewed: re-signed d718677 (tip). If the tip moves again, I re-sign.
 - Still open: nothing security-side. Gate: Akashi SAFE @ d718677 / awaiting Kaito freeze-check + Osefe
   "ship it". Wave-2 (CJK langs) Media Log strings still future work, not in scope here.
+
+## [2026-06-30] — via Kaito (asleep, step 4) — REAL-CODE REVIEW: Smart Onboarding (life-stage + priority picker) — SAFE @ `38a87c2`
+- Asked: SAFE-review item 2 Smart Onboarding (2 additive WIZ steps: 'stage' life-stage enum +
+  'priority' tap-to-rank picker → STATE.tabOrder). Verify COPPA (no numeric age), tab-order
+  integrity (no tab lost/dup, klarna stays hidden, __tabReorder/reorder_test untouched, returning
+  users unaffected), no XSS, no net/leak, exportBlank covers new stage field, no wizard regression.
+  Security = find-AND-fix exception. Run green.js (reorder must pass).
+- BASELINE: parent 38956c8 (Arthur build-spec, non-code) — index.html BYTE-IDENTICAL to last-shipped
+  d718677 (numstat empty). Real diff = exactly Smart Onboarding, index.html ONLY +90/-3.
+- COPPA ✓: 'stage' step (stageStepHTML) is 3 single-select cards school/working/managing → data.stage,
+  an ENUM only. Collects NO numeric age. Existing Age field stays OPTIONAL on profile, NOT made
+  required. data.stage is only compared (===o[0]) and stored; never a number. Sidesteps COPPA/GDPR-K
+  exactly as Arthur designed.
+- TAB-ORDER INTEGRITY ✓ (the load-bearing check): finish() @7279-7286 builds STATE.tabOrder=
+  data.priority.concat(rest) where rest = live `#tabs .tab` data-p keys NOT picked, then calls the
+  EXISTING window.__applyTabOrder (@2283). applyTabOrder filters saved→present (drops unknowns) and
+  RE-APPENDS any present key missing from saved at the end → NO tab can be lost or duplicated; it only
+  appendChild's existing nodes, never creates/deletes, NEVER touches .style.display. KLARNA: not in
+  PICK_CARDS so can't be in data.priority; it lands in `rest`, gets re-appended, display:none untouched
+  → stays hidden. priority[0].click() only ever targets a PICK_CARDS key (all visible tabs) → no hidden
+  tab surfaced. __tabReorder (pure, reorder_test.js) NOT in the diff — unchanged. Returning user
+  (STATE.fresh=false → wizard never opens, new steps never run) unaffected; saved tabOrder still applies.
+  SKIP / empty-pick: finish gated `if(data.priority && data.priority.length)` → block skipped →
+  STATE.tabOrder untouched → nav default (as specced).
+- NO XSS ✓: new step HTML interpolates ONLY fixed internal values — data-stage from the fixed opts
+  array (school/working/managing), data-pick=p from PICK_CARDS (fixed), pbadge number n+1 (numeric),
+  mok(p) (static switch SVG/HTML), pickTitle(p)/t() (i18n strings). NO user free-text reaches innerHTML;
+  data.stage/data.priority are constrained to internal enums/keys (click handler only pushes data-pick
+  values from rendered PICK_CARDS cards; seed filtered to PICK_CARDS). Rendered via the existing wizard
+  render() innerHTML path — no NEW sink. A crafted value can't reach the step HTML.
+- NO POISON NEEDED ✓: nothing new reads/writes an owner FINANCIAL figure. mok('overview') "1 240" is a
+  STATIC mock label, not a real figure. stage=enum, priority=key array → not owner money → no
+  __sys.token() gating required (consistent with how profile/tabOrder are handled). __sys 36==36 /
+  __sys.token() 14==14 (HELD, no drop), PUBCHK 4047293148 ×1, PUB_B64 ×3 — all intact (diff touches none).
+- NO LEAK / EXPORT-BLANK ✓: exportBlank @4792 does `MODEL = blankModel()` — replaces the WHOLE MODEL,
+  so MODEL.profile.stage is dropped by construction (blankModel().profile @2125 has no stage field).
+  New stage field CANNOT reach a blank/customer file; and even if it did, it's a 1-word enum, not PII/
+  number/key. Owner master (exportHTML) dumps full STATE incl stage — his private file, fine. No new
+  network/exfil: added lines scanned for fetch/XHR/eval/new Function/.src=/location.*/document.write/
+  innerHTML → ZERO. #__ownerKeySrc empty, #hud-state empty. No SW/manifest change.
+- NO WIZARD REGRESSION ✓: STEPS extended additively (2 steps inserted); existing step branches,
+  collect/validate/finish MODEL writes, go() clamp, demo-data path, WIZOPEN — NOT modified in the diff
+  (only the `el` data-object init gained stage:''/priority:[] + a trailing comma; finish's profile
+  object gained `stage:(data.stage||'')`). collect/validate/go absent from the diff entirely.
+- ONE NON-GATING NOTE (cosmetic, routed to Kaito — does NOT block SAFE): `FIRST_PROMPT` map (@6945) is
+  DECLARED but never read (1 occurrence, dead var) — fixed internal static strings, never interpolated/
+  rendered → no security impact; likely a future first-prompt nudge. Kaito: wire it or drop it.
+- Ran node tools/release/green.js → GREEN exit 0 (11 suites: parser 21, assistant 16, streak 4, sound 7,
+  reorder 7, transfer 58, silly 43, photo_store 17, pr 12, tax 105, media 23; preflight CLEAR — slots
+  empty, 1 public key, no PII, PUBCHK, 4 scripts; GUIDE/manifest/sw/team-chat clean). reorder_test
+  explicit 7/7 (hidden tab stays put). node tools/i18n/sync.js → MISSING:14 (new onboarding strings →
+  Mikoto; EXPECTED, not security).
+- VERDICT: SAFE @ 38a87c2. Additive UI wizard steps; zero money/key/network/injection/leak surface;
+  tab-order integrity proven (no tab lost/dup, klarna hidden, returning users + skip unaffected,
+  __tabReorder/reorder_test untouched); COPPA-safe (enum, no numeric age); exportBlank reconstructs whole
+  MODEL so stage can't reach a customer file; watchdogs held (36/14), slots empty. No DIRECT security fix
+  required (build is correct).
+- Commits / SHAs reviewed: 38a87c2 (tip). TIP WILL MOVE (Arthur polish + Mikoto MISSING:0 + Hugo tests/
+  guide) → I re-sign the final tip per freeze-the-candidate. No lock taken (read-only review, no fix).
+- Still open: gate (steps 7–11) — my SAFE @ 38a87c2; needs Mikoto MISSING:0 (14 strings) + Hugo GREEN
+  (wants a picker→tabOrder test) on the final tip + Osefe ship. Non-gating FIRST_PROMPT dead-var → Kaito.
+  Sleep-mode: NO auto-publish without Osefe's explicit go.
