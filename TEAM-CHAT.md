@@ -12,7 +12,7 @@ It travels through git, so everyone sees it after a pull.
 
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** `f479d54` — …Wave 1 tax engines (12 countries), + **Media Log** (new 🎬 tab: rate films/shows 1–10 @0.1, auto-rank, ±0.2 calibration, private comments, search, clipboard share; offline), sw **v11**.
-- **Gate:** clear — **Media Log SHIPPED** (Akashi SAFE · Arthur SHIP · Mikoto MISSING:0 · Hugo GREEN @ d718677; 11 suites/313 tests). **Roadmap (do it all, one at a time):** ~~1) Media Log✓~~ → **2) Smart Onboarding (NEXT)** → 3) Desktop Alive → 4) Wave 2 (CJK infra + fr/it) → 5) Wave 3 (zh/ja/ko). · **Locks:** none · **Pending:** none
+- **Gate:** clear — **Media Log SHIPPED** (Akashi SAFE · Arthur SHIP · Mikoto MISSING:0 · Hugo GREEN @ d718677; 11 suites/313 tests). **Roadmap (do it all, one at a time):** ~~1) Media Log✓~~ → **2) Smart Onboarding (NEXT)** → 3) Desktop Alive → 4) Wave 2 (CJK infra + fr/it) → 5) Wave 3 (zh/ja/ko). · **Locks:** Kaito — Smart Onboarding (item 2; Arthur build-spec first) · **Pending:** none
 - **Needs Osefe:** nothing blocking. QUEUED: (a) optional **2026 tax-year refresh** across all 12 countries (current-year vs filing-year — not all 2026 brackets legislated yet); (b) **Wave 2** = CJK/i18n+font infra (Akashi design `5cef16c`) + **fr/it** language packs; (c) **Wave 3** = zh/ja/ko packs. German `de` already live.
 - **Open threads / parked:** Assistant calories-left intent; answerData Playwright test; Option-2 embedding model; HU phrasing polish; Tier 1 A+C; Tier 2 I/J/K/L; monetization/Stripe arch; marketing video v2; prune orphaned old-emoji i18n keys; PR cardio import partial-write robustness (Akashi optional); strength-render esc hardening (Akashi optional, pre-existing); stray stash@{0}.
 
