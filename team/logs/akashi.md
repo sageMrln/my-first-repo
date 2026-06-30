@@ -1119,3 +1119,59 @@ Entry format:
 - Commits / SHAs reviewed: a5baaf8 (tip). If index.html or any published file moves, I re-sign.
 - Still open: gate (steps 7–11) now aligned @ a5baaf8 — Akashi SAFE · Mikoto MISSING:0 · Hugo GREEN —
   awaiting Osefe's explicit ship. Sleep-mode: no auto-publish without his go.
+
+## [2026-06-30] — via Kaito (asleep) — DESIGN OPINION (no code): cardio PRs in STATE.prs[]
+- Asked: arch/security opinion (NO code) on expanding Gym→Personal Records to cover cardio
+  (distance/time) alongside lifts. Read PR form @1370-1379, logic @3585-3609, render @3889-3908,
+  transfer path. Answer 4 Qs: data model, transfer/storage, poison/integrity, input safety.
+- Read the REAL code (not from memory):
+  - PR object today = {id, ex, wt, reps, date} (push @3594). render @3889-3908 groups by ex, sorts
+    by epley1rm(wt,reps), shows wt/reps/1RM. esc() on best.ex + p.date in render. Inputs @1370-1379:
+    prEx text, prWt number(min0 step.5), prReps number(min1 max100), prDate date.
+  - body-grade: computeBodyGrade @3270 reads STATE.body ONLY (h/w/a/sex) — does NOT read prs. A cardio
+    entry with no wt can NOT NaN the grade. answerData/finance don't read prs either (12 prs refs total,
+    all enumerated: DEFAULTS/blankState/Array-guard/push/remove/render/exportBlank snap+clear+restore/
+    exportDataCode/applyImportedData). prs is render-only + transfer payload.
+  - transfer: exportDataCode @5500 includes prs:STATE.prs||[] (whole array, no field allowlist) →
+    applyImportedData @5509 STATE.prs=d.prs||[]. New optional fields ride for FREE (just more JSON).
+  - exportBlank @4649/4655 snapshots+clears STATE.prs=[] then reconstructs → prs CANNOT reach a
+    customer/blank file (cardio fields inherit that, no new leak).
+  - transfer_test fixture @64 uses prs:[{id,name,weight,date}] — note: REAL app field is `ex`/`wt`,
+    fixture uses name/weight. It deep-diffs decoded==original so it round-trips ITS OWN shape, but does
+    NOT exercise the real {ex,wt,reps} keys. Pre-existing drift; flagged to Hugo to fix + add cardio row.
+- VERDICT: SAFE TO BUILD (design opinion, no gate). My recommendation to Kaito:
+  1. DATA MODEL — single prs[] array + a `type:'strength'|'cardio'` discriminator on the SAME object;
+     do NOT add a second array. Strength keeps {ex,wt,reps}; cardio adds {dist,distUnit:'km'|'mi',secs}.
+     BACKWARD-COMPAT default-on-READ: treat missing/!=='cardio' as strength (`var ty=(p.type==='cardio')
+     ?'cardio':'strength'`), so every existing PR (no type) renders as a lift unchanged. Never default by
+     presence of wt — be explicit on the discriminator. epley1rm/1RM/PR-sort path must run ONLY for
+     strength; cardio sorts by its own metric (pace or distance) and shows no 1RM.
+  2. TRANSFER/STORAGE — round-trips losslessly for free (whole-array dump, no allowlist to update). No
+     localStorage/size concern (text, negligible; photos are the only heavy thing and they're IDB now).
+     HARD ASK: Hugo adds a cardio-PR fixture to transfer_test (and fix the name/weight→ex/wt drift) so
+     the new fields are guarded against a future silent drop.
+  3. POISON/INTEGRITY — wt/reps/dist/secs are PERSONAL HEALTH stats, NOT owner FINANCIAL figures →
+     NO __sys.token() gating, consistent with how wt/reps are handled today (un-poisoned). Adding cardio
+     touches NO watchdog, NO key, NO #hud-state/#__ownerKeySrc. Confirmed body-grade does NOT read prs →
+     a cardio entry missing wt can't NaN the grade. The ONLY integrity nit: render @3897 sorts by
+     epley1rm(p.wt,p.reps); a cardio entry (wt undefined) → epley1rm(NaN)→NaN in the strength comparator.
+     MUST partition by type BEFORE the epley sort so a cardio row never enters the 1RM math (NaN sort =
+     cosmetic mis-order, not a security bug, but fix it). No poison needed; this is a correctness guard.
+  4. INPUT SAFETY — keep NUMERIC inputs + a UNIT SELECTOR (km/mi dropdown, and time as mm:ss numeric or
+     two number fields) — do NOT free-text parse "5km"/"25:00" (avoids any parse/ReDoS surface; today's
+     form already uses parseFloat/parseInt + type=number). Validate/clamp: dist>0 with a sane cap (e.g.
+     ≤1000 km), secs>0 with a sane cap (e.g. ≤24h=86400), reject NaN/≤0 like the existing wt>0/reps>0
+     guard @3593. ex/type text already esc()'d in render @3900/3904 → no injection; keep any new cardio
+     label (e.g. "Run") on the SAME esc() path. distUnit must be a fixed enum ('km'/'mi'), never rendered
+     raw from import — validate on read.
+- HARD GUARDS TO PRESERVE (for the eventual real-code SAFE review): (a) prs stays out of exportBlank
+  (reconstruct, not dump) — already true; (b) all PR strings rendered via esc() incl. new cardio fields;
+  (c) no __sys/PUBCHK/PUB_B64 line added or removed (count must stay equal parent vs tip); (d) epley/1RM
+  math runs strength-only (partition before sort); (e) numeric+enum inputs, no free-text unit parsing,
+  positive+capped clamps.
+- Did NOT edit index.html (opinion only; Kaito builds, I SAFE-review the real diff later). Posted verdict
+  to TEAM-CHAT.
+- Commits / SHAs: this log + TEAM-CHAT post only. App tip unchanged.
+- Still open: review the ACTUAL cardio-PR code on a real tip (partition-before-sort, validate/clamp,
+  esc on cardio fields, __sys count unchanged, exportBlank still reconstructs); Hugo to add cardio
+  fixture + fix transfer_test ex/wt drift. Sleep-mode: no auto-publish without Osefe's go.
