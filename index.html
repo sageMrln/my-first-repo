@@ -5822,8 +5822,15 @@
   /* ===================== TAX HELPER (offline, adaptive by country) =====================
      Transparent ESTIMATOR using published ~2025 rates. Not official — every rate is
      adjustable and the breakdown is shown. Your numbers stay private to your file. */
-  var TAX_CCY={ DK:'DKK', US:'USD', GB:'GBP', DE:'EUR', ES:'EUR', SE:'SEK', NO:'NOK' };
-  var TAX_COUNTRIES=[['DK','🇩🇰 Denmark'],['US','🇺🇸 United States'],['GB','🇬🇧 United Kingdom'],['DE','🇩🇪 Germany'],['ES','🇪🇸 Spain'],['SE','🇸🇪 Sweden'],['NO','🇳🇴 Norway'],['XX','🌍 Other / generic']];
+  var TAX_CCY={ DK:'DKK', US:'USD', GB:'GBP', DE:'EUR', ES:'EUR', SE:'SEK', NO:'NOK', FR:'EUR', IT:'EUR', SG:'SGD', JP:'JPY', KR:'KRW' };
+  // Bracket tables for the added engines — [upper_threshold, marginal_rate]. Sourced from official
+  // 2025 authorities (NTA/IRAS/INPS/Agenzia Entrate/NTS); ship under the "unofficial estimate" disclaimer.
+  var FR_BR=[[11497,0],[29315,0.11],[83823,0.30],[180294,0.41],[Infinity,0.45]];                                   // barème 2025 (revenus 2024)
+  var IT_BR=[[28000,0.23],[50000,0.35],[Infinity,0.43]];                                                            // IRPEF 2025 (3 bands)
+  var SG_BR=[[20000,0],[30000,0.02],[40000,0.035],[80000,0.07],[120000,0.115],[160000,0.15],[200000,0.18],[240000,0.19],[280000,0.195],[320000,0.20],[500000,0.22],[1000000,0.23],[Infinity,0.24]]; // IRAS resident YA2025
+  var JP_BR=[[1950000,0.05],[3300000,0.10],[6950000,0.20],[9000000,0.23],[18000000,0.33],[40000000,0.40],[Infinity,0.45]]; // national 2025
+  var KR_BR=[[14000000,0.06],[50000000,0.15],[88000000,0.24],[150000000,0.35],[300000000,0.38],[500000000,0.40],[1000000000,0.42],[Infinity,0.45]]; // 2025
+  var TAX_COUNTRIES=[['DK','🇩🇰 Denmark'],['US','🇺🇸 United States'],['GB','🇬🇧 United Kingdom'],['DE','🇩🇪 Germany'],['FR','🇫🇷 France'],['IT','🇮🇹 Italy'],['ES','🇪🇸 Spain'],['SE','🇸🇪 Sweden'],['NO','🇳🇴 Norway'],['SG','🇸🇬 Singapore'],['JP','🇯🇵 Japan'],['KR','🇰🇷 South Korea'],['XX','🌍 Other / generic']];
   var US_STATES=[['',0],['AL',4.0],['AK',0],['AZ',2.5],['AR',3.9],['CA',6.0],['CO',4.4],['CT',5.0],['DE',5.0],['FL',0],['GA',5.39],['HI',7.0],['ID',5.695],['IL',4.95],['IN',3.0],['IA',3.8],['KS',5.0],['KY',4.0],['LA',3.0],['ME',5.0],['MD',4.75],['MA',5.0],['MI',4.25],['MN',6.8],['MS',4.4],['MO',4.7],['MT',5.9],['NE',5.2],['NV',0],['NH',0],['NJ',5.5],['NM',4.9],['NY',6.0],['NC',4.5],['ND',2.0],['OH',3.5],['OK',4.75],['OR',8.75],['PA',3.07],['RI',4.75],['SC',6.2],['SD',0],['TN',0],['TX',0],['UT',4.55],['VT',6.6],['VA',5.0],['WA',0],['WV',5.1],['WI',5.3],['WY',0],['DC',8.5]];
   // bracket tax: br = [[upTo, rate], ...] with last upTo = Infinity
   function txBr(taxable, br){ var t=0, prev=0; for(var i=0;i<br.length;i++){ var cap=br[i][0], r=br[i][1]; var amt=Math.max(0, Math.min(taxable,cap)-prev); t+=amt*r; prev=cap; if(taxable<=cap) break; } return t; }
@@ -5927,6 +5934,61 @@
       R.breakdown=[{label:t('Ordinary tax')+' (22%)',amount:ord},{label:'Trinnskatt ('+t('bracket')+')',amount:trinn},{label:'Trygdeavgift (7.8%)',amount:tryg}];
       R.incomeTax=ord+trinn; R.social=tryg; R.totalTax=ord+trinn+tryg;
       R.marg=Math.round((0.22+txMarg(gross,[[217400,0],[306050,.017],[697150,.04],[942400,.136],[1410750,.166],[Infinity,.176]])+0.078)*100);
+    } else if(c==='FR'){
+      var fr_pen=num(ded.pension);
+      var fr_abat=Math.min(Math.max(gross*0.10,504),14426);                      // déduction forfaitaire 10% (min 504 / max 14426)
+      var fr_taxable=Math.max(0, gross - fr_abat - fr_pen);
+      var fr_parts=taxAdv('fr_parts',1)||1; if(fr_parts<1) fr_parts=1;            // quotient familial (default 1 part)
+      var fr_ir=fr_parts*txBr(fr_taxable/fr_parts, FR_BR);
+      var fr_socR=taxAdv('fr_soc',0.22), fr_soc=fr_socR*gross;                    // employee social ≈22% (labelled approx)
+      R.breakdown=[{label:t('Income tax')+' (barème)',amount:fr_ir},{label:t('Social contributions')+' (CSG/CRDS+, ≈)',amount:fr_soc}];
+      R.incomeTax=fr_ir; R.social=fr_soc; R.totalTax=fr_ir+fr_soc;
+      R.marg=Math.round((txMarg(fr_taxable/fr_parts,FR_BR)+fr_socR)*100);
+      R.notes.push(t('French income tax uses the barème after the 10% allowance; employee social is a labelled ~22% approximation — adjust in Advanced.'));
+    } else if(c==='IT'){
+      var it_pen=num(ded.pension), it_capped=Math.min(gross,120607);
+      var it_inps=0.0919*it_capped + 0.01*Math.max(0, it_capped-55448);          // INPS 9.19% (+1% above €55,448), ceiling €120,607
+      var it_taxable=Math.max(0, gross - it_inps - it_pen);
+      var it_gross=txBr(it_taxable, IT_BR);
+      var it_detr = it_taxable<=15000?1955 : it_taxable<=28000?(1910+1190*((28000-it_taxable)/13000)) : it_taxable<=50000?(1910*((50000-it_taxable)/22000)) : 0;
+      var it_ir=Math.max(0, it_gross - it_detr);                                  // lavoro dipendente tax credit
+      var it_regR=taxAdv('it_reg',0.017), it_comR=taxAdv('it_com',0.008), it_addl=(it_regR+it_comR)*it_taxable;
+      R.breakdown=[{label:'IRPEF',amount:it_ir},{label:t('Regional + municipal addizionale')+' (≈)',amount:it_addl},{label:'INPS (9.19%)',amount:it_inps}];
+      R.incomeTax=it_ir+it_addl; R.social=it_inps; R.totalTax=it_ir+it_addl+it_inps;
+      R.marg=Math.round((txMarg(it_taxable,IT_BR)+0.0919+it_regR+it_comR)*100);
+      R.notes.push(t('IRPEF after the employee credit (detrazione); regional/municipal addizionali are typical defaults — adjust in Advanced.'));
+    } else if(c==='SG'){
+      var sg_cpf=0.20*Math.min(gross, taxAdv('sg_cpfcap',88800));                 // CPF 20% employee up to the annual OW ceiling (~$7,400×12)
+      var sg_taxable=Math.max(0, gross - 1000 - sg_cpf);                          // earned-income relief + CPF relief (approx)
+      var sg_it=txBr(sg_taxable, SG_BR);
+      R.breakdown=[{label:t('Income tax'),amount:sg_it},{label:'CPF (20%)',amount:sg_cpf}];
+      R.incomeTax=sg_it; R.social=sg_cpf; R.totalTax=sg_it+sg_cpf;
+      R.marg=Math.round(txMarg(sg_taxable,SG_BR)*100);
+      R.notes.push(t('Resident IRAS rates; CPF is the 20% employee share up to the wage ceiling (citizens/PRs). Most personal reliefs and the annual rebate are not modelled.'));
+    } else if(c==='JP'){
+      var jp_emp = gross<=1900000?650000 : gross<=3600000?(gross*0.30+80000) : gross<=6600000?(gross*0.20+440000) : gross<=8500000?(gross*0.10+1100000) : 1950000; // 給与所得控除 (2025 floor ¥650k)
+      var jp_ti = Math.max(0, gross - jp_emp);
+      var jp_healthR=taxAdv('jp_health',0.0496);                                  // health employee share (prefecture-varying, Tokyo ≈4.96%)
+      var jp_soc = 0.0915*Math.min(gross,7800000) + jp_healthR*Math.min(gross,16680000) + 0.0055*gross; // pension(cap ¥650k/mo)+health(cap ¥1.39M/mo)+employment
+      var jp_basic = jp_ti<=1320000?950000 : jp_ti<=3360000?880000 : jp_ti<=4890000?680000 : jp_ti<=6550000?630000 : jp_ti<=23500000?580000 : jp_ti<=24000000?480000 : jp_ti<=24500000?320000 : jp_ti<=25000000?160000 : 0; // 基礎控除 (2025 reform)
+      var jp_taxable = Math.floor(Math.max(0, jp_ti - jp_soc - jp_basic)/1000)*1000; // 課税所得 rounded to ¥1,000
+      var jp_nat = txBr(jp_taxable, JP_BR), jp_recon = jp_nat*0.021, jp_jumin = 0.10*jp_taxable + 5000;
+      R.breakdown=[{label:t('National income tax'),amount:jp_nat},{label:t('Reconstruction surtax')+' (2.1%)',amount:jp_recon},{label:t('Inhabitant tax')+' (≈10%)',amount:jp_jumin},{label:t('Social insurance')+' (≈)',amount:jp_soc}];
+      R.incomeTax=jp_nat+jp_recon+jp_jumin; R.social=jp_soc; R.totalTax=jp_nat+jp_recon+jp_jumin+jp_soc;
+      R.marg=Math.round((txMarg(jp_taxable,JP_BR)*1.021+0.10+0.0915+jp_healthR)*100);
+      R.notes.push(t('National tax + 2.1% reconstruction surtax + ~10% inhabitant tax; social insurance approximates standard remuneration ≈ salary with the official ceilings.'));
+    } else if(c==='KR'){
+      var kr_eid = gross<=5000000?(gross*0.70) : gross<=15000000?(3500000+(gross-5000000)*0.40) : gross<=45000000?(7500000+(gross-15000000)*0.15) : gross<=100000000?(12000000+(gross-45000000)*0.05) : (14750000+(gross-100000000)*0.02);
+      kr_eid=Math.min(kr_eid,20000000);                                          // 근로소득공제 (cap ₩20M)
+      var kr_pension=0.045*Math.min(Math.max(gross,4800000),76440000);           // national pension 4.5% (base ₩400k–6.37M/mo)
+      var kr_healthR=taxAdv('kr_health',0.03545), kr_health=kr_healthR*gross, kr_care=kr_health*0.1295, kr_emp=0.009*gross;
+      var kr_soc=kr_pension+kr_health+kr_care+kr_emp;
+      var kr_taxable=Math.max(0, gross - kr_eid - 1500000 - kr_pension);          // basic deduction ₩1.5M; pension deductible
+      var kr_nat=txBr(kr_taxable, KR_BR), kr_local=kr_nat*0.10;
+      R.breakdown=[{label:t('Income tax'),amount:kr_nat},{label:t('Local income tax')+' (10%)',amount:kr_local},{label:t('Social insurance')+' (4대보험, ≈)',amount:kr_soc}];
+      R.incomeTax=kr_nat+kr_local; R.social=kr_soc; R.totalTax=kr_nat+kr_local+kr_soc;
+      R.marg=Math.round((txMarg(kr_taxable,KR_BR)*1.10+0.045+kr_healthR+0.009)*100);
+      R.notes.push(t('National + 10% local income tax; pension is deductible; the earned-income tax credit is not modelled (estimate runs slightly high).'));
     } else {
       var flat=taxAdv('xx_rate',0.25), socR=taxAdv('xx_soc',0);
       var it3=flat*gross, soc3=socR*gross;
@@ -5948,16 +6010,16 @@
     return Math.round(0.45*x-19246.67);
   }
   function deMarg(x){ if(x<=12096) return 0; if(x<=17443) return 0.20; if(x<=68480) return 0.32; if(x<=277825) return 0.42; return 0.45; }
-  function txMoney(n,ccy){ var s={DKK:['',' kr'],SEK:['',' kr'],NOK:['',' kr'],USD:['$',''],GBP:['£',''],EUR:['€','']}[ccy]||['',' '+(ccy||'')]; return s[0]+Math.round(n).toLocaleString('en-GB')+s[1]; }
+  function txMoney(n,ccy){ var s={DKK:['',' kr'],SEK:['',' kr'],NOK:['',' kr'],USD:['$',''],GBP:['£',''],EUR:['€',''],JPY:['¥',''],KRW:['₩',''],SGD:['S$','']}[ccy]||['',' '+(ccy||'')]; return s[0]+Math.round(n).toLocaleString('en-GB')+s[1]; }
   var TAXUI=(function(){
     var calcTimer=null;
-    function defCountry(){ return ({DKK:'DK',USD:'US',GBP:'GB',EUR:'DE',SEK:'SE',NOK:'NO'})[(STATE.prefs&&STATE.prefs.currency)]||'DK'; }
+    function defCountry(){ return ({DKK:'DK',USD:'US',GBP:'GB',EUR:'DE',SEK:'SE',NOK:'NO',SGD:'SG',JPY:'JP',KRW:'KR'})[(STATE.prefs&&STATE.prefs.currency)]||'DK'; }
     function ts(){ STATE.tax=STATE.tax||{}; var t=STATE.tax; if(!t.country) t.country=defCountry(); t.ded=t.ded||{}; t.adv=t.adv||{}; return t; }
     function deductionsHTML(c,t){
       var d=t.ded||{}, f=[];
       if(c==='DK') f=[['akasse',tf('A-kasse contribution (year)')],['union',tf('Union / fagforening (year)')],['pension',tf('Own pension contribution (year)')],['commute',tf('Commute / befordring deduction (year)')],['capitalNet',tf('Net capital income — interest (can be −)')],['other',tf('Other deductions (year)')]];
       else if(c==='US') f=[['pension',tf('401(k) / pre-tax contributions (year)')]];
-      else if(c==='GB'||c==='DE'||c==='ES') f=[['pension',tf('Pension contributions (year)')]];
+      else if(c==='GB'||c==='DE'||c==='ES'||c==='FR'||c==='IT'||c==='JP'||c==='KR') f=[['pension',tf('Pension contributions (year)')]];
       else return '';
       return '<details style="margin:10px 0"><summary style="cursor:pointer;font-size:13px;color:var(--cyan)">'+tf('Deductions (optional) — improves accuracy')+'</summary><div style="margin-top:8px">'+
         f.map(function(x){ return '<div class="field"><label>'+x[1]+'</label><input data-txded="'+x[0]+'" type="number" step="1" value="'+esc(d[x[0]]!=null?d[x[0]]:'')+'" placeholder="0"></div>'; }).join('')+'</div></details>';
@@ -5970,6 +6032,11 @@
       else if(c==='NO') f=[['no_pf',tf('Personfradrag')]];
       else if(c==='ES') f=[['es_sscap',tf('Social-security income cap')]];
       else if(c==='DE') f=[['de_capKV',tf('Health/care ceiling')],['de_capPK',tf('Pension/unempl. ceiling')]];
+      else if(c==='FR') f=[['fr_soc',tf('Employee social rate (e.g. 0.22)')],['fr_parts',tf('Parts (quotient familial)')]];
+      else if(c==='IT') f=[['it_reg',tf('Regional addizionale rate (e.g. 0.017)')],['it_com',tf('Municipal addizionale rate (e.g. 0.008)')]];
+      else if(c==='SG') f=[['sg_cpfcap',tf('CPF annual wage ceiling (e.g. 88800)')]];
+      else if(c==='JP') f=[['jp_health',tf('Health-insurance employee rate (e.g. 0.0496)')]];
+      else if(c==='KR') f=[['kr_health',tf('Health-insurance employee rate (e.g. 0.03545)')]];
       else if(c==='XX') f=[['xx_rate',tf('Flat income-tax rate (e.g. 0.25)')],['xx_soc',tf('Social rate (e.g. 0.08)')]];
       if(!f.length) return '';
       return '<details style="margin:10px 0"><summary style="cursor:pointer;font-size:13px;color:var(--cyan)">'+tf('Advanced — adjust the rates used')+'</summary><div style="margin-top:8px">'+
@@ -5987,7 +6054,7 @@
       if(c==='US') sub+='<div class="field"><label>'+tf('Filing status')+'</label><select id="txStatus">'+[['single',tf('Single')],['mfj',tf('Married — joint')],['hoh',tf('Head of household')]].map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===(t.status||'single')?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select></div>';
       if(c==='DK'||c==='DE') sub+='<div class="field"><label>'+(c==='DK'?tf('Member of folkekirken?'):tf('Pay church tax?'))+'</label><select id="txChurch"><option value="no"'+(!t.church?' selected':'')+'>'+tf('No')+'</option><option value="yes"'+(t.church?' selected':'')+'>'+tf('Yes')+'</option></select></div>';
       if(sub) h+='<div class="form-row">'+sub+'</div>';
-      h+='<div class="field"><label>'+tf('Gross annual income (before tax)')+'</label><input id="txGross" type="number" min="0" step="100" value="'+esc(t.gross||'')+'" placeholder="'+tf('e.g.')+' '+(c==='DK'?'319700':c==='US'?'60000':'50000')+'"></div>';
+      h+='<div class="field"><label>'+tf('Gross annual income (before tax)')+'</label><input id="txGross" type="number" min="0" step="100" value="'+esc(t.gross||'')+'" placeholder="'+tf('e.g.')+' '+(c==='DK'?'319700':c==='US'?'60000':c==='JP'?'5000000':c==='KR'?'50000000':c==='SG'?'80000':'50000')+'"></div>';
       h+='<div class="field"><label>'+tf('Tax already withheld this year (optional)')+'</label><input id="txWithheld" type="number" min="0" value="'+esc(t.withheld||'')+'" placeholder="'+(c==='DK'?tf('forskudsskat from your skattekort'):tf('total withheld so far'))+'"></div>';
       h+=deductionsHTML(c,t)+advancedHTML(c,t);
       host.innerHTML=h;
