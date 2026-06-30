@@ -1546,7 +1546,7 @@
     <div class="card" id="medRateCard" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
         <b id="medRateTitle" data-i18n-skip style="font-family:'Orbitron';color:#eaffff;font-size:15px">—</b>
-        <button class="btn ghost" id="medRateClose" style="padding:6px 11px;font-size:12px" data-i18n="Done">Done</button>
+        <button class="btn ghost" id="medRateClose" style="padding:6px 11px;font-size:12px" data-i18n="Cancel">Cancel</button>
       </div>
       <div style="text-align:center;margin:6px 0"><span id="medRateVal" style="font-family:'Orbitron';font-size:40px;color:var(--lime)">—</span><span style="color:var(--txt-dim);font-size:16px"> / 10</span></div>
       <div id="medChips" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px"></div>
@@ -1555,9 +1555,11 @@
         <button class="btn ghost" id="medPlus" style="min-width:56px;font-family:'Share Tech Mono'">+0.1</button>
       </div>
       <div id="medCompare" style="display:none;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:11px;margin-bottom:10px;font-size:13px"></div>
-      <label class="note" data-i18n="A note to your future self (optional)" style="display:block;margin-bottom:4px">A note to your future self (optional)</label>
-      <textarea id="medComment" data-i18n-ph="Why this score? What did it make you feel?" placeholder="Why this score? What did it make you feel?" style="width:100%;min-height:70px;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px;resize:vertical"></textarea>
-      <button class="btn" id="medRateSave" style="width:100%;margin-top:10px" data-i18n="Save rating">Save rating</button>
+      <div id="medRateForm">
+        <label class="note" data-i18n="A note to your future self (optional)" style="display:block;margin-bottom:4px">A note to your future self (optional)</label>
+        <textarea id="medComment" data-i18n-ph="Why this score? Note it for your future self." placeholder="Why this score? Note it for your future self." style="width:100%;min-height:70px;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px;resize:vertical"></textarea>
+        <button class="btn" id="medRateSave" style="width:100%;margin-top:10px" data-i18n="Save rating">Save rating</button>
+      </div>
     </div>
   </section>
 
@@ -6815,17 +6817,19 @@
       document.getElementById('medRateTitle').textContent=m.title||'';
       document.getElementById('medComment').value=m.comment||'';
       document.getElementById('medCompare').style.display='none';
+      document.getElementById('medRateForm').style.display='';   // reset (a prior calibration may have hidden it)
       buildChips(); paintVal();
       var card=document.getElementById('medRateCard'); card.style.display=''; try{ card.scrollIntoView({behavior:'smooth',block:'nearest'}); }catch(_){}
     }
     function closeRate(){ curId=null; draft=null; var c=document.getElementById('medRateCard'); if(c) c.style.display='none'; }
-    function paintVal(){ var v=document.getElementById('medRateVal'); if(v) v.textContent=fmtR(draft.rating); }
+    function paintVal(){ var v=document.getElementById('medRateVal'); if(!v) return; v.textContent=fmtR(draft.rating);
+      v.style.color = draft.rating<4?'var(--red)':draft.rating<7?'var(--amber)':'var(--lime)'; }   // honest tint by band
     function buildChips(){
       var host=document.getElementById('medChips'); if(!host) return; host.innerHTML='';
       var whole=Math.floor(draft.rating);
       for(var i=1;i<=10;i++){ (function(n){
         var b=document.createElement('button'); b.className='btn ghost'; b.textContent=n;
-        b.style.cssText='min-width:38px;padding:7px 0'+(n===whole?';background:var(--cyan-dim);border-color:var(--cyan);color:#eaffff':'');
+        b.style.cssText='min-width:44px;min-height:44px;padding:6px 0'+(n===whole?';background:var(--cyan-dim);border-color:var(--cyan);color:#eaffff':'');   // 44px tap-target floor (Arthur)
         b.addEventListener('click', function(){ var dec=draft.rating-Math.floor(draft.rating); draft.rating=(n===10)?10:clamp(n+dec); paintVal(); buildChips(); });
         host.appendChild(b);
       })(i); }
@@ -6842,6 +6846,7 @@
     }
     function showCompare(m, near){
       var box=document.getElementById('medCompare'); if(!box) return;
+      var form=document.getElementById('medRateForm'); if(form) form.style.display='none';   // Save+comment hidden while the calibration question is up (Arthur)
       var rows=near.map(function(x){ return '<div style="display:flex;justify-content:space-between;gap:8px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.title)+'</span><b style="color:var(--lime);flex:0 0 auto">'+fmtR(x.rating)+'</b></div>'; }).join('');
       box.innerHTML='<div style="margin-bottom:6px">'+tf('It sits with these — does “{title}” really belong here?',{title:esc(m.title)})+'</div>'+rows+
         '<div style="display:flex;gap:6px;margin-top:8px"><button class="btn ghost" data-cmp="up" style="flex:1;font-size:12px">'+t('Better ▲')+'</button><button class="btn ghost" data-cmp="keep" style="flex:1;font-size:12px">'+t('About right')+'</button><button class="btn ghost" data-cmp="down" style="flex:1;font-size:12px">'+t('Worse ▼')+'</button></div>';
