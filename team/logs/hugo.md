@@ -424,3 +424,25 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Akashi re-SAFE on ebcd7d7 tip (guide + PDF published, scope extended per freeze rule), Kaito verify, then Osefe's "ship it" + Kaito's merge/publish.
   * Smart Onboarding QA complete. Idle until next candidate hits the gate.
+
+## [2026-06-30] — direct (Osefe via Kaito) — Desktop Alive v1 GREEN sign-off @ 7aa3231
+
+- Asked: Desktop Alive v1 (item 3: ambient breath + slow scanline + polyphonic glow + desktop-only card-lift & cursor parallax) is built (Kaito), Arthur SHIP, Akashi SAFE @ 7aa3231 (published artifact). Execute final release gate: (1) run `node tools/release/green.js` → confirm GREEN exit 0 (12 suites / 323 tests, nothing should have changed — feature adds no testable logic). (2) run `node tools/i18n/sync.js` → MISSING: 0 (no new strings). (3) No new unit test needed for pure ambient CSS (no deterministic logic to assert in node harness; Kaito's Playwright 8/8 coverage). (4) GUIDE.md judgment: invisible ambient polish, no user action — does it warrant a doc line? I lean no; flag your judgment explicitly. Post **GREEN @ <tip-sha>** naming the explicit SHA (published artifact 7aa3231 or your tip if you change docs).
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (on branch, tip bef6647 Arthur's comment only; app artifact at 7aa3231). 
+  * Ran `node tools/release/green.js`: **GREEN exit 0**. All 12 suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 23/23 ✓ = **323 total tests**. Preflight CLEAR (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced). Leak scan clean (GUIDE.md, manifest, sw.js, team-chat all clean).
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (695/695 keys, 7 languages — Desktop Alive added no UI strings, pure CSS/rAF ambient).
+  * **No unit test needed.** Desktop Alive is pure-CSS (breath keyframe, scanline ::before, glow filters, card-lift 3D transforms, cursor parallax via rAF) + all effects are prefers-reduced-motion gated + desktop-only effects further gated to fine-pointer + ≥1024px width. No STATE change, no logic to unit-test; the feature is passive ambient. Kaito's Playwright 8/8 verified the gating works (desktop effects present + parallax responds; mobile attaches nothing). Node-harness tests for logic, not CSS; this is pure presentation.
+  * **GUIDE.md verdict: NO REBUILD NEEDED.** Desktop Alive is ambient motion/polish invisible to users on mobile (all effects are desktop-only or motion-gated). No new UI strings (MISSING:0). No new user actions or interactions (it's passive — no buttons, toggles, settings). The guide documents what users *do*, not what they *see* passively. Current GUIDE.md is accurate; the feature requires no documentation.
+
+- Decision / result:
+  * Desktop Alive v1 is **GREEN @ 7aa3231** (the published artifact, unchanged). All 12 suites 323 tests pass, MISSING: 0, preflight CLEAR. No guide rebuild needed (invisible ambient polish, no user action, no new strings). No unit-test gap (pure CSS+rAF, Kaito's browser verification covers the gating).
+  * Published artifact ready: index.html @ 7aa3231 (Kaito built, Arthur SHIP, Akashi SAFE, unchanged by this QA run).
+
+- Commits / SHAs:
+  * None this run (verify-only, no edits to index.html or guide). This log entry is the only change.
+
+- Still open / next:
+  * Gate is GREEN on 7aa3231. Akashi's SAFE @ 7aa3231 holds (index.html unchanged). Mikoto's MISSING:0 holds (no new strings). Ready for @Osefe's "ship it" and @Kaito's merge/publish to gh-pages.
+  * Desktop Alive v1 QA complete. Idle until next candidate hits the gate.
