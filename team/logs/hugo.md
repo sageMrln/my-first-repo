@@ -446,3 +446,25 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Gate is GREEN on 7aa3231. Akashi's SAFE @ 7aa3231 holds (index.html unchanged). Mikoto's MISSING:0 holds (no new strings). Ready for @Osefe's "ship it" and @Kaito's merge/publish to gh-pages.
   * Desktop Alive v1 QA complete. Idle until next candidate hits the gate.
+
+## [2026-06-30] — via Kaito (asleep dispatch) — Lock-Screen Alive GREEN sign-off @ 75f03b5
+
+- Asked: Release/QA pass for GREEN sign-off on Lock-Screen Alive at commit 75f03b5 (branch claude/vibrant-pasteur-ie24ab). Kaito's directive: make the pre-unlock lock screen feel like a living cyberpunk machine. Execute: (1) run `node tools/release/green.js` (expect GREEN: parser + preflight + leak scan; 12 suites / 323 tests), (2) confirm `node tools/publish/preflight.js` exits 0 (script-tags balanced, owner slots empty, no private key, watchdog intact), (3) verify `node tools/i18n/sync.js` → MISSING: 0 (the decoration is aria-hidden/textless, no new keys), (4) GUIDE judgment: invisible ambient on a screen the guide doesn't document step-by-step — no rebuild needed, (5) unit test judgment: node harness can't test CSS keyframes or canvas rAF; Kaito's Playwright 16/16 verified the gating works.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (tip 75f03b5). Reviewed commit message + diff: Lock-Screen Alive is pure-presentation decoration self-contained **INSIDE** #lockScreen (zero app-content bleed, Akashi's curtain intact): self-masked HUD grid + desktop cursor parallax, ambient breath glow + slow data-scan band (out-of-phase for depth), capped data-mote particle field (~72/phone, hard ceil 90; additive cyan), one-shot wordmark boot-glitch → calm glow + UNLOCK energy breath. All prefers-reduced-motion gated to still fallback. Field stops dead on unlock (cancelAnimationFrame + listener removed + canvas cleared = zero in-app cost) and restarts on re-lock. No new strings, no network, no storage, no money cost. Built to Arthur's spec; particle-cap divisor corrected (/26000 → /4600) to hit spec's ~72-on-phone.
+  * Ran `node tools/release/green.js`: **GREEN exit 0**. All 12 suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 23/23 ✓ = **323 total tests**. Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced). Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean).
+  * Ran `node tools/publish/preflight.js`: **exit 0**. All checks CLEAR: slots empty, no private-key material, 1 public key present, no owner PII, PUBCHK watchdog intact, script tags balanced (4).
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (695/695 keys, 7 languages — Lock-Screen Alive added no UI strings: `<i class="lk-scan" aria-hidden="true"></i>` + `<canvas id="lkfx" aria-hidden="true"></canvas>` are decoration, all inline CSS/keyframes/JS are non-translatable).
+  * **No unit test needed.** Lock-Screen Alive is pure-CSS animations (keyframes for grid drift, breath, scan, boot-glitch, btn-breath) + one canvas rAF particle field (no STATE read, no logic to unit-test in node). All motion effects are prefers-reduced-motion gated. Field teardown on unlock is explicit (stop() calls cancelAnimationFrame + clearRect). Kaito's Playwright 16/16 verified the gating works (desktop effects present + parallax responds; mobile effects gated; reduced-motion disables animation; unlock stops field; re-lock restarts field).
+  * **GUIDE.md verdict: NO REBUILD NEEDED.** Lock-Screen Alive is ambient motion/polish invisible to users on reduced-motion or mobile (all effects are CSS/canvas/parallax + all gated). No new UI strings (MISSING:0). No new user actions or interactions (it's passive — no buttons, toggles, settings). Lock screen is a pre-unlock gate overlay, transparent to the guide's documentation of the app itself. Current GUIDE.md is accurate; the feature requires no documentation.
+
+- Decision / result:
+  * Lock-Screen Alive is **GREEN @ 75f03b5** (the published artifact, unchanged). All 12 suites 323 tests pass, preflight CLEAR (script balance verified: 4 tags), MISSING: 0 (695 keys, no new strings). No guide rebuild needed (invisible ambient, no user action, prefers-reduced-motion gated + field teardown explicit). No unit-test gap (pure CSS+rAF, Kaito's browser verification covers the gating). Ready for ship.
+
+- Commits / SHAs:
+  * None this run (verify-only, no edits to index.html or guide). This log entry is the only change.
+
+- Still open / next:
+  * Gate is **GREEN @ 75f03b5**. Awaiting Akashi's SAFE sign-off and Osefe's "ship it" call + Kaito's merge/publish to gh-pages.
+  * Lock-Screen Alive QA complete. Idle until next candidate hits the gate.
