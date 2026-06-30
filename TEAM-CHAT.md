@@ -21,7 +21,7 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.)
 
-_(no active locks)_
+- LOCKED: index.html — Kaito — PR cardio mode (STRENGTH⇄CARDIO toggle, distance/time, type discriminator) — Jun-30
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
