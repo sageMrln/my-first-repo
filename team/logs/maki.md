@@ -156,3 +156,20 @@ Entry format:
   optimization, not a launch call).
 - Recommended lineup to LOCK: **monthly $6.99 + annual $59 + 30-day guarantee.** Awaiting Osefe's
   confirm. (No proof-doc/TEAM-CHAT edit yet — sub-decision in flight, will fold in once he locks.)
+
+## [2026-06-30 e] — direct (Osefe) — PRICING LOCKED + shipped first asset drop
+- Asked: Osefe "yes lock that in."
+- Decided / produced: **PRICING FINAL** — monthly $6.99 · annual $59/yr (12-mo, save ~30%) · 30-day
+  money-back · free trial · cancel anytime. Two options, anchor annual. Folded the LOCK into the proof
+  doc banner (was "TEST prices"). Then — instead of asking a 3rd time and stalling — PRODUCED the first
+  asset drop: **`team/maki-asset-drop-01.md`** (TikTok cold-start pack): the 1-line wedge, safe-true
+  claim set + the NEVER-say list, 5 hooks (built for completion+sends), 4 content pillars, 1 voice-DRAFT
+  example script w/ shot directions, a 2-week TikTok-first calendar (mirror native to Reels no-watermark,
+  YT Shorts wk2), the CTA chain, compliance hard-lines.
+- Metric it moves / hypothesis: week-1 = test all 5 hooks cheap, keep the 2 that earn SENDS+completion,
+  kill the rest. Early CTA = "follow for the build" until landing exists (reach not wasted), flip to
+  "try free, link in bio" once live.
+- Still open / next: gated on (1) **Akashi** vet every [Akashi] privacy line; (2) **Kaito** confirm which
+  features are SHIPPED + safe to demo ([Kaito?] tags); (3) girlfriend 20-min voice call → finalize scripts
+  to her voice; (4) who builds the landing page (I spec, don't code). NOTHING posts until 1+2 clear.
+  Tax: Osefe still to confirm personal-vs-ApS w/ a real accountant before scale.

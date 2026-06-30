@@ -4,12 +4,14 @@
 **Status:** internal strategy. No public claims here are approved — every privacy line is
 marked [DRAFT—Akashi] and goes past Akashi before it ever goes live. Feature claims past Kaito.
 
-> ### ⚠️ UPDATE [Jun-30] — PRICING MODEL DECIDED BY OSEFE: hybrid (annual key LEADS + monthly sub)
-> §1–2 below were modeled on an annual-only $40 assumption. Osefe's call: **lead with the 1-year
-> key, offer a monthly subscription alongside.** Proposed TEST prices (not yet locked): **$6.99/mo
-> OR $59/yr** (annual = $4.92/mo, "save ~30%"; both ~half of YNAB $109 / Monarch $100 / Copilot
-> $95 — and we're the only one not monetizing your bank data). Present TWO options only (paralysis
-> kills checkout), anchor on annual, flag it "best value." Goals re-cast for the hybrid:
+> ### ✅ LOCKED [Jun-30] — PRICING (Osefe approved): hybrid, annual key LEADS + monthly sub
+> §1–2 below were modeled on an annual-only $40 assumption. **Final, Osefe-approved offer:**
+> **Monthly $6.99/mo · Annual $59/yr (12-month, "save ~30%", $4.92/mo equiv) · 30-day money-back
+> guarantee · free trial · cancel anytime.** Both ~half of YNAB $109 / Monarch $100 / Copilot $95 —
+> and we're the only one not monetizing your bank data. TWO options only (paralysis kills checkout),
+> anchor on annual, flag it "best value." **Term decided: 12-month, NOT 6** — the monthly sub already
+> IS the low-commitment option; a 6-mo tier adds a 3rd choice for no distinct job. The year is
+> de-risked by the 30-day guarantee + start-monthly-then-upgrade path, not a shorter term. Goals re-cast for the hybrid:
 > **G1 first $10k ≈ ~170 annual keys; G2 ($5k/mo net) ≈ ~1,500–2,500 paying customers; G3 ≈ 2×.**
 > Annual buyers net more (less Stripe fixed-fee drag + cash up front + no churn) → content PUSHES
 > annual, monthly mops up the commitment-shy. NEW front-line risk = **churn** (consumer subs lose
