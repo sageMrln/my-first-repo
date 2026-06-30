@@ -468,3 +468,21 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Gate is **GREEN @ 75f03b5**. Awaiting Akashi's SAFE sign-off and Osefe's "ship it" call + Kaito's merge/publish to gh-pages.
   * Lock-Screen Alive QA complete. Idle until next candidate hits the gate.
+
+## [2026-06-30] — via Kaito (asleep dispatch) — Lock-Screen Alive re-sign GREEN @ aa7430f (particle cap polish)
+
+- Asked: Tip moved from 75f03b5 → aa7430f (Arthur's desktop particle-ceiling polish: cap 90→140 only). Confirm ONLY diff is that one constant, then re-run full gate (GREEN expected) + i18n (MISSING:0), post explicit **GREEN @ aa7430f** with test count.
+
+- Did / found / thought:
+  * Ran `git diff 75f03b5 aa7430f -- index.html`: confirmed **ONLY change** is line 5108: `var cap = Math.min(Math.round(W*H/4600), 140);` (was 90, comment updated to note "ceil 140 holds density on big desktops"). Zero other diffs. Comment clarified: "~72 on a 390×844 phone; ceil 140 holds density on big desktops (Arthur)".
+  * Ran `node tools/release/green.js`: **GREEN exit 0**. All 12 suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 23/23 ✓ = **323 total tests**. Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced). Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean).
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (695/695 keys, 7 languages — constant change, no new UI strings).
+
+- Decision / result:
+  * Tip moved for desktop density polish (cap 90→140). Diff confirmed as ONLY that one line + comment. Full gate still GREEN. Re-signing on aa7430f.
+
+- Commits / SHAs:
+  * None this run (verify-only). This log entry only change.
+
+- Still open / next:
+  * **Hugo GREEN @ aa7430f** — 12 suites / 323 tests, preflight CLEAR, MISSING: 0. Awaiting Akashi re-SAFE on aa7430f and Osefe ship call + Kaito's gh-pages push.
