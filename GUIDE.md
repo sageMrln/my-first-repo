@@ -145,7 +145,25 @@ A built-in notes app (like iPhone Notes) — title + body, autosaved, private.
 
 ---
 
-## 8. Installing the app
+## 8. Media Log — rate films and shows
+
+MRLN's Media Log is a personal **rating journal for films, series, and shows** — not a social network, just a ranked list of what you've watched and what you think.
+
+**How it works:**
+
+- **Add** — type a film or show name and it goes to your "To-watch" queue.
+- **Rate** — open an entry and rate it 1–10 in **0.1-step increments** (e.g. 8.4, 7.6, 9.0). The rating is locked to [1, 10] with one decimal place.
+- **Comment** — add a private note (spoilers welcome — it's yours alone). Comments stay on your device.
+- **Auto-ranked** — your watched entries sort **by rating descending** — highest-rated at the top, ties broken alphabetically. To-watch entries stay in a separate list.
+- **Calibration prompt** — when you rate something, MRLN shows you up to 3 similar-rated entries (within ±0.2 of your new rating) and asks *"does this belong here?"* — a quick honesty check. The prompt vanishes once you confirm (or you can ignore it).
+- **Search** — search by title or comment; matches highlight in both lists.
+- **Share** — tap the share button to copy your ranked list (top 20) as plain text — paste it anywhere. Formatted as a numbered list: `1. Title  9.4`, etc.
+
+**Data:** Rating, comment, date added, date rated, and title — all stored locally. **Nothing ever leaves your device.** Your Media Log doesn't transfer in the quick clipboard move (because it's personal opinion, not data you might need on another phone), but you can manually export/import it via the photos path if you want a backup on a USB stick or cloud drive.
+
+---
+
+## 9. Installing the app
 
 Installing is **front and centre**, not buried in a menu:
 
@@ -153,7 +171,7 @@ Installing is **front and centre**, not buried in a menu:
 - **"Get the app" banner** — a bright banner across the top of the dashboard. Tap **Install** and it either installs in **one tap** (Android / Chrome / Edge) or opens a **step-by-step** card for your exact device (iPhone Safari, Android, or desktop).
 - It **removes itself automatically** the moment the app is installed — no clutter once you're set up.
 
-## 9. Connect — move data between devices
+## 11. Connect — move data between devices
 
 The hub for moving your data — all **on-device**, nothing is ever uploaded.
 
@@ -187,7 +205,7 @@ confirm** before anything changes.
 
 ---
 
-## 10. 💬 Assistant MRLN — offline Q&A + plain-language commands
+## 12. 💬 Assistant MRLN — offline Q&A + plain-language commands
 
 Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **free, offline, in your browser** — nothing changes until you confirm. 
 
@@ -211,7 +229,7 @@ Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask que
 
 ---
 
-## 11. Daily Habits — engagement & motivation
+## 13. Daily Habits — engagement & motivation
 
 Three mechanics keep you coming back:
 
@@ -237,7 +255,7 @@ All four mechanics are **per-device, never synced** (they reset if you import to
 
 ---
 
-## 12. Updates — how new features reach you
+## 14. Updates — how new features reach you
 
 - **On the hosted link / installed app:** updates are **automatic**. Open it online and the newest version loads itself (network-first service worker); offline still works from cache. Your data is preserved across every update — no migration, no re-login.
 - **On a downloaded file:** that file is frozen. To get new features, open the hosted app (or a newer file) and **import your data** across.
@@ -246,7 +264,7 @@ All four mechanics are **per-device, never synced** (they reset if you import to
 
 ---
 
-## 13. Privacy & anti-tamper (the security model)
+## 15. Privacy & anti-tamper (the security model)
 
 - **Your data is yours.** It lives in your browser's local storage (and embedded in your saved file). It is never uploaded — there's no server to upload to.
 - **Unforgeable access.** Keys are signed with a private key that exists **only** in the owner's master file. The public app holds just the public half — enough to verify keys, never to make them.
@@ -256,7 +274,7 @@ All four mechanics are **per-device, never synced** (they reset if you import to
 
 ---
 
-## 14. For the owner — running the show
+## 16. For the owner — running the show
 
 These tools appear only on **your master file** (where the private key lives):
 
@@ -270,7 +288,7 @@ These tools appear only on **your master file** (where the private key lives):
 
 ---
 
-## 15. Quick troubleshooting
+## 17. Quick troubleshooting
 
 | Symptom | Fix |
 |---|---|
