@@ -117,3 +117,26 @@ Entry format:
   THEN ship first asset drop (TikTok cold-start pack: 5 hooks + 1 script + 2-wk calendar). ⚠️ tax
   figures MODELED not from real owner data — Osefe must confirm personal-vs-ApS w/ a real accountant
   before scale. All example hooks in the proof doc marked [DRAFT—Akashi]; nothing public yet.
+
+## [2026-06-30 c] — direct (Osefe) — PRICING MODEL LOCKED: hybrid annual-lead + monthly sub
+- Asked: Osefe pushed back "$40 a month isn't insane for a new product?" → turned out a UNIT mix-up
+  ($40 in my model = per YEAR, not month). Then he decided the MODEL: **lead with the yearly key
+  buy, AND offer a monthly subscription alongside.** (He waved off my annual-only lean + my pricing
+  AskUserQuestion menu — "no preference"; drove it conversationally.)
+- Researched: live comp pricing 2026 — YNAB $14.99/mo or $109/yr; Copilot $13/$95; Monarch
+  $14.99/$99.99 (Plus $199). All plug into banks via Plaid + monetize/aggregate data → our wedge.
+- Decided / produced: ENDORSED the hybrid (earned — it's what all 3 leaders run; annual fits the
+  built 1-yr-key infra + better margin + cash up front + no churn; monthly = low-barrier on-ramp +
+  the recurring engine G2/G3 are measured in). Added the craft: **two options ONLY** (3+ = paralysis),
+  anchor annual, flag "best value · save ~30%". Proposed TEST prices: **$6.99/mo OR $59/yr** ($59 =
+  $4.92/mo). Re-cast goals: **G1 ≈ ~170 annual keys = first $10k; G2 ($5k/mo net) ≈ 1,500–2,500
+  paying customers; G3 ≈ 2×.** Net-per-customer after 25% VAT + Stripe + ~40–52% DK tax: annual $59
+  ≈ ~$1.8–2.3/mo-equiv, monthly $6.99 ≈ ~$2.4–3.0/mo (but churn-exposed) → annual is more RELIABLE
+  revenue, so content pushes annual. Updated proof doc with an UPDATE banner.
+- Metric it moves / hypothesis: monthly small charges bleed ~7–8% to Stripe's fixed $0.30 (vs ~4%
+  annual) → annual option recovers margin. NEW front-line risk = churn (~5–10%/mo consumer) +
+  monthly auto-renew = FTC/EU dark-pattern zone → one-tap cancel/clear renewal mandatory, free
+  trial now non-negotiable.
+- Still open / next: prices NOT locked (proposed $6.99/$59 — Osefe to confirm/adjust). Still need
+  the Stage-B MVP green-light (Payment Link/landing/email — Stripe supports both sub + one-time) +
+  20-min voice align w/ girlfriend. THEN first asset drop. Tax = confirm personal-vs-ApS w/ accountant.

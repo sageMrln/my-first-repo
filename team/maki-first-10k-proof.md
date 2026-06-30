@@ -4,6 +4,18 @@
 **Status:** internal strategy. No public claims here are approved — every privacy line is
 marked [DRAFT—Akashi] and goes past Akashi before it ever goes live. Feature claims past Kaito.
 
+> ### ⚠️ UPDATE [Jun-30] — PRICING MODEL DECIDED BY OSEFE: hybrid (annual key LEADS + monthly sub)
+> §1–2 below were modeled on an annual-only $40 assumption. Osefe's call: **lead with the 1-year
+> key, offer a monthly subscription alongside.** Proposed TEST prices (not yet locked): **$6.99/mo
+> OR $59/yr** (annual = $4.92/mo, "save ~30%"; both ~half of YNAB $109 / Monarch $100 / Copilot
+> $95 — and we're the only one not monetizing your bank data). Present TWO options only (paralysis
+> kills checkout), anchor on annual, flag it "best value." Goals re-cast for the hybrid:
+> **G1 first $10k ≈ ~170 annual keys; G2 ($5k/mo net) ≈ ~1,500–2,500 paying customers; G3 ≈ 2×.**
+> Annual buyers net more (less Stripe fixed-fee drag + cash up front + no churn) → content PUSHES
+> annual, monthly mops up the commitment-shy. NEW front-line risk = **churn** (consumer subs lose
+> ~5–10%/mo) + monthly auto-renew is the FTC/EU dark-pattern enforcement zone → one-tap cancel,
+> clear renewal, zero auto-charge tricks, built in from day one. Free trial now non-negotiable.
+
 > Osefe's challenge: *"prove you can make MRLN the first $10k at all."* Fair. I can't promise
 > virality and I won't. What I can do is show you the arithmetic that says the path closes,
 > exactly what has to be true, and the smallest real experiment that turns this from a model
