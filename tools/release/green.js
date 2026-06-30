@@ -73,11 +73,17 @@ run(['tools/test/assistant_silly_test.js'], 'assistant silly suite');
 section('photo-storage IndexedDB logic — tools/test/photo_store_test.js');
 run(['tools/test/photo_store_test.js'], 'photo store suite');
 
-// 9) deep pre-publish guard on the app itself
+// 9) committed Personal Records (PRs) test — strength + cardio support
+//    Guards cardio expansion (distance/time/pace), back-compat for old PRs without type,
+//    grouping by (exercise, type) prevents collisions, and render logic never applies 1RM to cardio
+section('Personal Records (strength + cardio) — tools/test/pr_test.js');
+run(['tools/test/pr_test.js'], 'PR suite');
+
+// 10) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
 
-// 10) leak scan across every OTHER published text file (the "whole surface" rule)
+// 11) leak scan across every OTHER published text file (the "whole surface" rule)
 //     Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
 //     by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
 const PUBLISHED_TEXT = ['GUIDE.md', 'manifest.webmanifest', 'sw.js', 'team-chat.html'];

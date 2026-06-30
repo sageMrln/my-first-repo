@@ -61,7 +61,10 @@ const harness = `
     calendar: { '2026-06-29': { notes: 'Had a good day' } },
     log: [{ id: 'l1', date: '2026-06-28', time: '09:00', name: 'Income', type: 'income', value: 3000 }],
     body: { height: 180, weight: 75, gender: 'M' },
-    prs: [{ id: 'p1', name: 'Bench press', weight: 100, date: '2026-06-29' }],
+    prs: [
+      { id: 'p1', ex: 'Bench press', wt: 100, reps: 5, date: '2026-06-29', type: 'strength' },
+      { id: 'p2', ex: 'Running', dist: 10, distUnit: 'km', secs: 3600, date: '2026-06-30', type: 'cardio' }
+    ],
     notes: [{ id: 'n1', text: 'Remember to hydrate', date: '2026-06-29' }],
     foodLog: [{ id: 'f1', date: '2026-06-29', name: 'Lunch', cal: 500, total: 500, photo: 'data:image/png;base64,ABC123456789', hasPhoto: true }],
     tax: { status: 'employee', taxId: 'XX1234567X' },
@@ -177,7 +180,30 @@ try {
   check('decoded.calendar matches original', JSON.stringify(decoded.calendar) === JSON.stringify(originalState.calendar));
   check('decoded.log matches original', JSON.stringify(decoded.log) === JSON.stringify(originalState.log));
   check('decoded.body matches original', JSON.stringify(decoded.body) === JSON.stringify(originalState.body));
-  check('decoded.prs matches original', JSON.stringify(decoded.prs) === JSON.stringify(originalState.prs));
+  check('decoded.prs has correct length', Array.isArray(decoded.prs) && decoded.prs.length === originalState.prs.length);
+  // Verify strength PR fields round-trip losslessly
+  if (decoded.prs && decoded.prs.length >= 1) {
+    const decodedStrength = decoded.prs[0];
+    const originalStrength = originalState.prs[0];
+    check('strength PR: id preserved', decodedStrength.id === originalStrength.id);
+    check('strength PR: ex preserved', decodedStrength.ex === originalStrength.ex);
+    check('strength PR: wt preserved', decodedStrength.wt === originalStrength.wt);
+    check('strength PR: reps preserved', decodedStrength.reps === originalStrength.reps);
+    check('strength PR: date preserved', decodedStrength.date === originalStrength.date);
+    check('strength PR: type preserved', decodedStrength.type === originalStrength.type);
+  }
+  // Verify cardio PR fields round-trip losslessly
+  if (decoded.prs && decoded.prs.length >= 2) {
+    const decodedCardio = decoded.prs[1];
+    const originalCardio = originalState.prs[1];
+    check('cardio PR: id preserved', decodedCardio.id === originalCardio.id);
+    check('cardio PR: ex preserved', decodedCardio.ex === originalCardio.ex);
+    check('cardio PR: dist preserved', decodedCardio.dist === originalCardio.dist);
+    check('cardio PR: distUnit preserved', decodedCardio.distUnit === originalCardio.distUnit);
+    check('cardio PR: secs preserved', decodedCardio.secs === originalCardio.secs);
+    check('cardio PR: date preserved', decodedCardio.date === originalCardio.date);
+    check('cardio PR: type preserved', decodedCardio.type === originalCardio.type);
+  }
   check('decoded.notes matches original', JSON.stringify(decoded.notes) === JSON.stringify(originalState.notes));
   // foodLog: verify photo bytes are STRIPPED but metadata (id/date/name/cal/total/hasPhoto) is KEPT
   check('decoded.foodLog has same length', Array.isArray(decoded.foodLog) && decoded.foodLog.length === originalState.foodLog.length);

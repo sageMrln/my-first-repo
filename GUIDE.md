@@ -123,7 +123,7 @@ A clear, honest breakdown of interest-free pay-in-2 as a **zero-cost liquidity b
 - **Body Measurements** — track measurements over time.
 - **Calorie Simulator** — your BMR/TDEE and a slider for cut / maintain / bulk, with honest verdicts ("aggressive deficit", "lean surplus", etc.).
 - **Meal Ideas** — suggests the **healthiest tasty meals for your goal**, respects likes/dislikes (typo-tolerant — "avoid chesse" still works), pins favourites, rotates fresh ideas, and surfaces the healthiest pick.
-- **Personal Records (PRs)** and **Workouts / Training Split** — log lifts and your weekly plan.
+- **Personal Records (PRs)** — log strength lifts (weight/reps → auto-calculates 1RM) and cardio (distance/time → tracks pace). Both group by exercise and show your best. **Workouts / Training Split** — your weekly plan.
 
 ### Food Log
 - **Log a meal** by **typing** ("2 eggs and rice") — an offline estimator reads quantities/units and returns calories + macros — and/or attach a **photo**.
