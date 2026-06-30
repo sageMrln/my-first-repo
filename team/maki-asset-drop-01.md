@@ -108,3 +108,24 @@ content → profile → **link in bio** → landing → **free trial** → keep 
 2. **Kaito** — confirm which features are SHIPPED + safe to demo (the **[Kaito?]** tags).
 3. **Girlfriend** — 20-min voice call → finalize the word-for-word scripts to how she actually talks.
 4. **Landing page** — who builds it? (I spec it line-for-line; I don't code.) Needed for the real CTA.
+
+---
+
+## 9. Voice intake (how I get her voice — there is NO literal call; I'm an AI)
+I can't be on a phone call. I need her voice *as text*, async — Osefe relays it. Any ONE of these:
+- **(best) 60-sec unscripted sample** — she answers, on camera/voice-memo: *"Tell me about MRLN like
+  you're telling a friend why you use it."* Auto-transcribe → paste. One clip = her cadence.
+- **Mini-interview** — she answers the 8 Qs below (voice notes or typed) → paste.
+- **React to the draft** — she reads Hook #1 aloud; Osefe reports what felt fake; I re-tune.
+
+**The 8 questions** (answers in HER words — don't tidy them, the rough phrasing is the signal):
+1. Describe MRLN to a friend in one sentence — your words.
+2. On camera: talk to it, or prefer voiceover / text-on-screen / hands-only demos?
+3. Natural energy: calm & dry / warm & chatty / fast & punchy?
+4. Any words/phrases that'd feel fake in your mouth?
+5. What do YOU like about the app / what made you start using it?
+6. Face on camera — yes/no? Handle/name to go by?  ← reshapes every format
+7. English / Danish / both — which feels natural to camera?  ← market + VAT decision (I rec English-lead)
+8. Realistically, how many videos/week can you film without hating it?
+
+Not a blocker — the scripts already exist as voice-drafts; this just makes them sound like her.

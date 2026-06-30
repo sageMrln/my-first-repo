@@ -173,3 +173,14 @@ Entry format:
   features are SHIPPED + safe to demo ([Kaito?] tags); (3) girlfriend 20-min voice call → finalize scripts
   to her voice; (4) who builds the landing page (I spec, don't code). NOTHING posts until 1+2 clear.
   Tax: Osefe still to confirm personal-vs-ApS w/ a real accountant before scale.
+
+## [2026-06-30 f] — direct (Osefe) — "how does the voice call even happen?"
+- Asked: Osefe rightly called out that I can't literally do a voice call with his gf (I'm an AI).
+- Decided / produced: owned the sloppy framing. Clarified — I don't need a CALL, I need her VOICE AS
+  TEXT, async, Osefe relays. 3 methods: (best) 60-sec unscripted self-recording → auto-transcribe →
+  paste; or an 8-Q mini-interview; or she reacts to Hook #1 and I re-tune. Added an 8-question voice
+  intake to asset-drop-01 §9 (incl. 2 plan-shaping decisions: face-on-camera y/n + English/Danish/both).
+  Stressed it is NOT a blocker — scripts already exist as voice-drafts; this just makes them sound like her.
+- Still open / next: same as before — Akashi vet [Akashi] privacy lines, Kaito confirm [Kaito?] shipped
+  features, landing-page builder, + now: Osefe to relay her voice via any of the 3 methods. FUTURE NOTE
+  to self: never promise a live call/meeting — I'm text; all human-collab is async-relayed through Osefe.
