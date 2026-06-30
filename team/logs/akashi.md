@@ -1697,3 +1697,47 @@ Entry format:
 - Commits / SHAs reviewed: re-signed d4e14f1 (tip). If the tip moves again, I re-sign.
 - Still open: nothing security-side. Gate: Akashi SAFE @ d4e14f1 / Mikoto MISSING:0 @ ebcd7d7 / Hugo GREEN
   @ d1fe834 — awaiting Kaito freeze-check + Osefe "ship it" for item 2 (Smart Onboarding).
+
+## [2026-06-30] — via Kaito (asleep, step 4) — REAL-CODE SAFE: Desktop Alive v1 (item 3) @ `7aa3231`
+- Asked: SAFE-review Desktop Alive v1 (ambient-HUD polish). CSS block after @keyframes gridPulse
+  (body::after breath, html::before scanline, body::before translate3d(var(--px),--py), 3 keyframes,
+  reduced-motion @media, desktop-gated card:hover lift) + cursorParallax IIFE before initPWA. Verify
+  no net/exfil/storage, no watchdog/key/money touch, no mobile perf landmine (listener gated off touch),
+  SW/manifest unchanged, no new injection surface. Run green.js + i18n sync.
+- BASELINE: parent 394d705 (Arthur build-spec, non-code) — real diff = exactly Desktop Alive, index.html
+  ONLY +42/-0 (purely additive). sw.js/manifest UNTOUCHED by this build (394d705..7aa3231 numstat empty
+  for sw.js/manifest); the v11→v12 sw bump was the PRIOR Smart Onboarding ship (d4e14f1..394d705), not this.
+  Item 4 (manifest/SW unchanged, CORE list untouched) ✓.
+- NO NETWORK / NO EXFIL / NO STORAGE ✓: added `+` lines grepped for fetch/XHR/eval/new Function/
+  document.write/innerHTML/location.(href|search|hash)/.src=/localStorage/sessionStorage/cookie/indexedDB/
+  WebSocket/EventSource/import() → ZERO. The ONLY JS is cursorParallax: reads e.clientX/clientY + window
+  innerWidth/innerHeight, computes tx,ty (centered frac), and writes TWO CSS custom props --px/--py on
+  document.documentElement via style.setProperty (±3.5px after *7 then .toFixed). Coords used transiently
+  for a transform; never stored, never networked, never into a text/DOM sink. No PII/money touched.
+- NO MOBILE PERF LANDMINE ✓ (the load-bearing perf check): IIFE gates on matchMedia
+  '(hover:hover) and (pointer:fine) and (min-width:1024px)' AND '(prefers-reduced-motion: no-preference)';
+  `if(!ok) return;` sits BEFORE window.addEventListener → on touch/phone/reduced-motion NO listener is
+  attached → zero added per-event work on phones. pointermove handler is rAF-coalesced (one DOM write per
+  frame), passive:true, and early-returns for non-mouse pointerType. will-change:transform is on body::before
+  ONLY (one existing fixed grid layer), not sprayed. Whole IIFE try/catch-wrapped. Reduced-motion users get
+  the static HUD (all animation under @media prefers-reduced-motion:no-preference).
+- NO WATCHDOG / KEY / MONEY IMPACT ✓: pure presentation. __sys 36==36, __sys.token() 14==14 (HELD), PUBCHK
+  4047293148 ×1, PUB_B64 ×3 — IDENTICAL parent vs tip (diff touches none). #__ownerKeySrc empty, #hud-state
+  empty on tip. No money figure in the added CSS — the only 4+ digit numbers are 1024 (breakpoint), 1100/620
+  (gradient sizing px), 229/255 (cyan rgba channels); no owner figure/PII/key material (grep osefe|miradi|
+  aarhus|@gmail|BEGIN|PRIVATE KEY|MIIB|MIIC|signingKey|ownerKey → only false-positive comment/CSS hits).
+  No parser/applyChange/finance/export edits.
+- NO NEW ATTACK SURFACE ✓: no innerHTML, no user input, no new DOM from untrusted data. CSS custom props
+  consumed only by body::before transform:translate3d(var(--px),var(--py),0). No new i18n string (CSS+rAF
+  only) → MISSING:0 holds.
+- GATE: node tools/release/green.js → GREEN exit 0 (12 suites incl onboarding/media; preflight CLEAR — slots
+  empty, 1 public key, no private key, no PII, PUBCHK, 4 scripts; GUIDE/manifest/sw/team-chat leak-clean).
+  node tools/i18n/sync.js → MISSING:0 (695/695).
+- VERDICT: SAFE @ 7aa3231. Lowest-risk feature yet — pure CSS ambient layer + one rAF cursor read writing
+  two CSS vars; zero network/exfil/storage/money/key/watchdog/injection surface; phones get NO added listener
+  (matchMedia gate returns early); reduced-motion users keep static HUD; SW/manifest/CORE untouched; watchdogs
+  held (36/14), slots empty; GREEN; MISSING:0. No DIRECT security fix required (build is clean).
+- Commits / SHAs reviewed: 7aa3231 (tip), baseline 394d705. No lock taken (read-only review, no fix).
+  TIP WILL MOVE (Arthur polish + Hugo GREEN) → I re-sign the final tip per freeze-the-candidate.
+- Still open: nothing security-side. Gate (steps 7–11): my SAFE @ 7aa3231; no new strings so Mikoto MISSING:0
+  trivially; Hugo GREEN on final tip + Osefe ship. Sleep-mode: NO auto-publish without Osefe's explicit go.
