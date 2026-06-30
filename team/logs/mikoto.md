@@ -423,3 +423,36 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
 - Commits / SHAs: 8220f21 (i18n merge + push).
 - Still open / next: @Kaito spot-check meaning; @Hugo wires in cardio test (if needed) + re-GREEN if tip moved; @Akashi re-SAFE (no code changed, pure i18n); @Osefe final go to ship.
 
+
+## [2026-06-30] — Kaito dispatch (asleep) — Translate Wave 1 tax engines (18 strings) to all 6 langs → MISSING: 0
+
+- Asked: Kaito built Wave 1 of the tax expansion: 5 new tax engines (France, Italy, Singapore, Japan, South Korea) with 18 untranslated UI strings. Translate to es, da, de, sv, nb, hu → MISSING: 0. Scope: existing-6-language coverage only (Wave 2/3 will add fr/it/zh/ja/ko). Strings are tax-domain: country names, tax-breakdown labels (Regional + municipal addizionale, National income tax, Reconstruction surtax, Inhabitant tax, Social insurance, Local income tax), and 9 detailed tax-engine disclaimer notes for each country.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 18 (exact keys from need_translate.json).
+  * Identified all 18 strings: 2 country-label descriptions + 4 tax-breakdown term labels + 9 detailed engine disclaimers + 3 config parameter labels (employee rate, regional/municipal rate, ceiling).
+  * Translated all 18 to 6 languages (108 translations total) with factual, serious tone:
+    - French income tax barème explanation (es/da/de/sv/nb/hu) — preserved barème, 10% allowance, ~22% approximation phrase.
+    - Italian IRPEF & regional/municipal addizionale system (all 6 langs) — preserved IRPEF, detrazione, addizionale terms exactly, translated surrounding explanatory words.
+    - Singapore IRAS + CPF (20% ceiling, citizen/PR note) — preserved IRAS, CPF, wage ceiling phrasing.
+    - Japan national + reconstruction surtax + inhabitant tax (es/da/de/sv/nb/hu) — percentages (2.1%, ~10%), social insurance approximation preserved exactly.
+    - South Korea national + local income tax + pension logic (all 6 langs) — National/10% local/pension-deductible preserved, translation of "earned-income tax credit not modelled" to each language.
+    - All rate/percentage examples preserved byte-for-byte (0.22, 0.017, 0.008, 88800, 0.0496, 0.03545, etc.).
+    - Em-dashes (—) preserved throughout.
+    - Proper nouns (IRPEF, barème, addizionale, CPF, IRAS) NEVER translated.
+  * Merged all 108 translations into AUTO-MERGED block: wrote Node script to parse the 747KB minified JSON block (by brace-counting from IIFE boundary), merged 18 keys × 6 langs, re-serialized minified, and wrote back to index.html. No corruption; JSON.stringify with ensure_ascii=False.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (650 keys fully translated across all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (9 suites: parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 47/47, silly 43/43, photo_store 17/17, pr 12/12 = 174 tests total; preflight CLEAR; all published files leak-clean).
+  * Committed index.html (82884af) with full description of the 18 strings and translation approach.
+  * Claimed lock on TEAM-CHAT.md (a38382d), released lock and posted status to TEAM-CHAT (034770e).
+  * Rebased onto origin/claude/vibrant-pasteur-ie24ab (conflict on TEAM-CHAT.md resolved: kept theirs, re-appended my message).
+- Key translation decisions:
+  * Tax acronyms (IRPEF, barème, addizionale, CPF, IRAS, 4대보험 etc.) kept byte-for-byte as proper nouns — only surrounding words translated.
+  * Percentages, rates, examples (0.22, 2.1%, 10%, 88800, etc.) preserved exactly in all languages.
+  * Em-dashes (—) and parenthetical notes preserved exactly.
+  * Tone: factual, serious, no emoji, no hype (matching Osefe's product-voice directive per CLAUDE.md).
+  * Country names: translated to language-specific exonyms (e.g., de "Japan"→"Japan", "South Korea"→"Südkorea"; es "Japan"→"Japón", "Singapore"→"Singapur"; etc.), with flag emoji preserved.
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 18 tax-engine strings translated to 6 locales. GREEN gate confirmed. Ready for downstream verification (Kaito spot-check, Hugo GREEN-confirm if tip moved, Akashi re-SAFE, Osefe ship).
+  * Lesson: tax/financial terminology is universal across languages (IRPEF, CPF, IRAS); translate only explanatory prose and country names. Proper nouns must be preserved exactly.
+- Commits / SHAs: lock claim a38382d, i18n merge 82884af, rebase 034770e.
+- Still open / next: @Kaito spot-check meaning; @Hugo re-GREEN if tip moved (but no code changed, pure i18n); @Akashi re-sign SAFE if published files changed; @Osefe final go to ship Wave 1.
