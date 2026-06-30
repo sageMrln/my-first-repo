@@ -185,21 +185,6 @@ Entry format:
   features, landing-page builder, + now: Osefe to relay her voice via any of the 3 methods. FUTURE NOTE
   to self: never promise a live call/meeting — I'm text; all human-collab is async-relayed through Osefe.
 
-## [2026-06-30 g] — direct (Osefe) — capability test: "find Norlys customer service mail"
-- Asked: Osefe — "Test for you. Find me Norlys customer service mail." (Norlys = Danish energy/telecom co.)
-- Researched/did: web-searched + tried to fetch norlys.dk/kontakt (403'd). Found **kundeservice@norlys.dk**
-  cited by a 3rd-party directory (billing/products) BUT Norlys's own stance = no direct private email,
-  they route to a contact form. Was HONEST about the conflict rather than asserting one email as verified.
-  Gave: the email w/ caveat + the real channels (skriv-til-os form, live chat, Mit Norlys portal) + phone
-  by topic (70 11 40 40 internet/TV; 70 11 50 00 el/gas; 80 40 40 30 mobile). Closed by tying it back to
-  MRLN (offering expense-tracking help) — staying in-lane while being useful.
-- Decided / hypothesis: n/a (not a marketing task) — but logged because Osefe asked for EVERYTHING
-  MRLN-session-related captured. Note: this kind of "find me X" lookup is outside my marketing remit but
-  fine as a one-off; my actual job stays GTM/content.
-- Still open / next: unchanged from [e]/[f] — Akashi vet [Akashi] privacy lines, Kaito confirm [Kaito?]
-  shipped features, landing-page builder, gf voice-intake (3 async methods). Asset-drop-01 ready, nothing
-  posts until vetted.
-
 ## [2026-06-30 h] — session bookkeeping — confirm full memory capture (Osefe instruction)
 - Asked: Osefe — "log everything you've done/thought/said MRLN-related so far."
 - State: this session's full arc is now captured across entries [2026-06-30] through [g]:
@@ -209,8 +194,9 @@ Entry format:
   falsifiable 30-day prediction; (3) pricing pivot annual→hybrid; (4) 6-vs-12-mo kept 12; (5) PRICING
   LOCKED (monthly $6.99 · annual $59 · 30-day money-back · free trial · cancel anytime) + shipped
   `team/maki-asset-drop-01.md` (TikTok cold-start pack: wedge, 5 hooks, 4 pillars, voice-draft script,
-  2-wk calendar, CTA chain, compliance, voice-intake §9); (6) clarified no literal call (async text);
-  (7) Norlys lookup test. Files committed+pushed to branch claude/vibrant-pasteur-ie24ab each step.
+  2-wk calendar, CTA chain, compliance, voice-intake §9); (6) clarified no literal call (async text).
+  Files committed+pushed to branch claude/vibrant-pasteur-ie24ab each step. (A one-off non-marketing
+  lookup test was done + then removed at Osefe's request — not relevant to MRLN, intentionally not logged.)
 - Key standing facts for future-me: I work on branch **claude/vibrant-pasteur-ie24ab**; Osefe PARKED
   in-app Stripe (don't unpark); every privacy claim → Akashi, every feature claim → Kaito BEFORE public;
   serious-not-hype voice; tax figures MODELED (Osefe to confirm personal-vs-ApS w/ a real accountant).
