@@ -88,3 +88,32 @@ Entry format:
   light first asset drop = TikTok cold-start pack (5 hooks + 1 full script + 2-wk calendar) on the wedge
   "the finance + health app that doesn't want your data." Privacy lines → Akashi; feature claims → Kaito
   before public. NOTE the parked items in STATE: "marketing video v2" + monetization/Stripe arch.
+
+## [2026-06-30 b] — direct (Osefe challenge) — "prove you can make the first $10k at all" + 3 goals
+- Asked: Osefe set 3 goals & challenged me to PROVE the path. **Goal 1 = $10k USD total (first ever).**
+  **Goal 2 = $5k/mo NET after Danish tax/Stripe/VAT. Goal 3 = $10k/mo NET, stabilized (final goal).**
+  Told me to dig his tax data out of "the master file."
+- Researched/dug: NO real owner data in repo (by design — #__ownerKeySrc empty @ index.html:1693; his
+  real numbers live in localStorage on his device, not git; Akashi guards public copies). The usable
+  "tax data" = the app's **DK tax engine**: eff ~40% @ DKK 320k (tax_test.js:183 oracle), ~55.9%
+  *skatteloft* ceiling (0.55 cap @ index.html ~2883–2990). Live 2026 conversion benchmarks pulled:
+  organic view→click 0.5–1.0%; high-priced app free→paid 2.8% median / 6.1% top quartile (RevenueCat,
+  ScreenFast, BoA); small new-account 500–2k views/post.
+- Decided / produced: wrote **`team/maki-first-10k-proof.md`** (NEW file, my area, no lock needed).
+  Key arithmetic — on a $40 EU key Osefe NETS ~$15–18 (25% VAT → $32; ~4% Stripe → $30.40; ~40–52%
+  DK income tax). Goals in buyers: G1 ~250 keys total; G2 ~280–330 NEW buyers/MONTH; G3 ~550–670/mo.
+  First $10k ≈ ~1–2M cumulative views over ~4–9 months, needs 1–2 repeatable formats + breakouts.
+  3 strategic calls: (1) launch at **$59–79 not $40** (halves buyer targets); (2) lead English / aim
+  US-UK-global (EU B2C = 25% VAT drag); (3) THE UNLOCK — **Stripe Payment Link + 1-page landing +
+  manual key-by-email = sell THIS MONTH with zero index.html changes**, keeps Osefe's "no Stripe arch
+  now" rule intact. Put a falsifiable 30-day prediction on the table (≥50k views, ≥0.7% CTR, ≥200
+  try-starts, $0 ad spend). Posted summary in TEAM-CHAT.
+- Metric it moves / hypothesis: hypothesis — first $10k is reachable in ~4–9 mo via qualified niche
+  reach, NOT virality; price is the #1 controllable lever; the riskiest unknown = free-try→paid rate
+  (4–10% assumed), which the 30-day sprint must MEASURE. Goal 2/3 are a sustained machine, a far
+  bigger ask than Goal 1 — prove G1 first.
+- Still open / next: waiting on Osefe (doc §6) — (1) one test price; (2) green-light Payment-Link/
+  landing/email MVP (who builds the page — I spec, don't code); (3) 20-min voice align w/ girlfriend.
+  THEN ship first asset drop (TikTok cold-start pack: 5 hooks + 1 script + 2-wk calendar). ⚠️ tax
+  figures MODELED not from real owner data — Osefe must confirm personal-vs-ApS w/ a real accountant
+  before scale. All example hooks in the proof doc marked [DRAFT—Akashi]; nothing public yet.
