@@ -399,3 +399,28 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Akashi re-SAFE (guide + PDF published, scope extended per freeze rule), then Kaito verify + Osefe ship call.
   * My QA work complete on Media Log. Idle until next candidate hits the gate.
+
+## [2026-06-30 HH:MM] — via Kaito (asleep dispatch) — Smart Onboarding QA: tests + guide + GREEN @ ebcd7d7
+
+- Asked: Smart Onboarding feature shipped (Kaito item 2: life-stage enum + priority picker, Arthur POLISH @ d103359, Akashi SAFE @ 38a87c2, Mikoto MISSING:0 @ ebcd7d7). Execute full QA: (1) build `tools/test/onboarding_test.js` testing the priority picker → tab-order mapping (the regression-critical contract), (2) extend green.js to wire it in, (3) update GUIDE.md Setup section (now steps 2 & 8: life-stage question, priority picker + skip path), (4) rebuild PDF, (5) run full gate → GREEN, (6) confirm MISSING:0, (7) commit + push. Do NOT edit index.html.
+
+- Did / found / thought:
+  * (1) **Built onboarding_test.js (10/10 GREEN):** extracted and replicated the priority-picker mapping logic from index.html line 7278–7285: `STATE.tabOrder = data.priority.concat(rest)` where rest = all tab keys not in priority. Tested pure function `applyPriorityToTabOrder(allTabKeys, picked)` with 10 assertions: (a) full reverse pick, (b) partial pick [expenses, food, gym], (c) empty pick (skip path), (d) single pick, (e/f/g) no-loss-no-duplicate guards (all 3 paths), (h) picked keys come first in pick order, (i) invalid/stale picked key (NONEXISTENT) not filtered by mapping (filters by __applyTabOrder later), (j) unpicked tabs follow original order. All 10/10 ✓. Logic is sound: mapping preserves contract, no tab lost/duplicated, skip path returns original order unchanged.
+  * (2) **Wired into green.js as suite 5b** (placed between reorder_test and transfer_test, keeping nav-related tests together). Full gate now runs 12 test suites: parser 21 + assistant 16 + streak 4 + sound 7 + reorder 7 + **onboarding 10** + transfer 58 + silly 43 + photo_store 17 + pr 12 + tax 105 + media 23 = **323 total tests**.
+  * (3) **Updated GUIDE.md §4 "First-time setup":** (a) added step 2 "Life stage" — ask Studying/Working/Managing (no age, COPPA-safe) to suggest relevant pages; (b) renumbered existing steps 2→3 through 7→8; (c) added step 8 "Prioritize pages" — tap pages in order (top picks become tabs 1–N, rest follow), skip to keep default, re-order anytime by double-tap. Now 10 steps total (was 8). Updated step numbers in the text (install is now step 9, review is step 10).
+  * (4) **Rebuilt MRLN-Guide.pdf** with `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 491 KB (was 490 KB, §4 text expanded).
+  * (5) **Ran full green.js**: **GREEN exit 0** — all 12 suites passed (323 tests), preflight CLEAR, leak scan clean (GUIDE.md, manifest, sw.js, team-chat all clean).
+  * (6) **Verified i18n:** `node tools/i18n/sync.js` → **MISSING: 0** (695/695 keys, 7 languages — Smart Onboarding i18n already completed by Mikoto in prior session, no new strings added, only guide doc).
+
+- Decision / result:
+  * Smart Onboarding QA is **GREEN @ ebcd7d7** (current tip, which is Mikoto's i18n commit). All 12 test suites green (323 tests total), MISSING: 0, preflight CLEAR. Guide synced to new onboarding flow (life-stage + priority picker documented, steps renumbered 1–10).
+  * Regression guard in place: onboarding_test.js proves the priority picker → tabOrder mapping contract holds (no tabs lost, picks come first in order, unpicked follow original order, skip preserves default).
+  * Gate is full and ready: Akashi SAFE (index.html built @ 38a87c2, unchanged since), Mikoto MISSING:0 verified, Hugo GREEN verified.
+
+- Commits / SHAs:
+  * This session: tools/test/onboarding_test.js (new, 10 test cases, pure mapping replication), tools/release/green.js (wired suite 5b, 12 suites now), GUIDE.md (§4 updated, 10-step wizard documented), MRLN-Guide.pdf (rebuilt, 491 KB).
+  * Staged: `git add tools/test/onboarding_test.js tools/release/green.js GUIDE.md MRLN-Guide.pdf team/logs/hugo.md`.
+
+- Still open / next:
+  * Awaiting Akashi re-SAFE on ebcd7d7 tip (guide + PDF published, scope extended per freeze rule), Kaito verify, then Osefe's "ship it" + Kaito's merge/publish.
+  * Smart Onboarding QA complete. Idle until next candidate hits the gate.

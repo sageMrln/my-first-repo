@@ -57,6 +57,12 @@ run(['tools/test/sound_test.js'], 'sound suite');
 section('tab reorder engine — tools/test/reorder_test.js');
 run(['tools/test/reorder_test.js'], 'reorder suite');
 
+// 5b) committed Smart Onboarding priority-picker test — tab-order mapping contract
+//     Guards that priority picker → tabOrder sets picked tabs first in order,
+//     unpicked follow in original order, no tab lost/duplicated, skip path preserves order
+section('Smart Onboarding priority-picker mapping — tools/test/onboarding_test.js');
+run(['tools/test/onboarding_test.js'], 'onboarding suite');
+
 // 6) committed data-transfer round-trip test — export → decode → deep-diff for losslessness
 //    Phase 1: guards exportDataCode/decodeDataCode/applyImportedData field lists don't drift
 section('data-transfer losslessness — tools/test/transfer_test.js');

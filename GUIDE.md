@@ -54,13 +54,15 @@ Currency is a **real conversion**, not just a relabel. Switch from kr to € and
 On first unlock, a short wizard sets you up in under a minute:
 
 1. **Welcome** — language, currency, country (or tap *"show me a filled example"*).
-2. **About you** — name (optional age/work/birthday/ethnicity*, phone & main device).
-3. **Your income** — typical monthly take-home, plus optional slow/good months, debt payment, savings target.
-4. **Your expenses** — quick-add chips or type your own.
-5. **Sports & hobbies** — added to your calendar as weekly repeats.
-6. **Getting around** — transport costs; mark anything *financed* and it drops off your budget automatically once it's paid off.
-7. **Install** — tailored guide to add MRLN to your home screen (iPhone / Android / PC).
-8. **Review** — your starting picture.
+2. **Life stage** — a quick question: are you *Studying*, *Working*, or *Managing* others? (No age required — COPPA-safe for all ages.) Used to suggest which app pages matter most to you.
+3. **About you** — name (optional birthday/ethnicity*, phone & main device).
+4. **Your income** — typical monthly take-home, plus optional slow/good months, debt payment, savings target.
+5. **Your expenses** — quick-add chips or type your own.
+6. **Sports & hobbies** — added to your calendar as weekly repeats.
+7. **Getting around** — transport costs; mark anything *financed* and it drops off your budget automatically once it's paid off.
+8. **Prioritize pages** — tap app pages in the order *you* want them (most important first). Your top picks become tabs 1–N; the rest stay available, just lower. Tap **Skip** to keep the default order, or reorder anytime later by double-tapping a tab.
+9. **Install** — tailored guide to add MRLN to your home screen (iPhone / Android / PC).
+10. **Review** — your starting picture.
 
 \* Ethnicity is used **only** to set accurate WHO health thresholds (BMI/body-fat). It never changes calorie targets.
 
