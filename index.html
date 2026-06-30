@@ -70,6 +70,30 @@
   }
   @keyframes gridPulse{0%,100%{opacity:.72}50%{opacity:1}}
 
+  /* ===== Desktop Alive (Arthur item 3) — ambient "living HUD". ALL motion is gated on
+     prefers-reduced-motion:no-preference (reduced-motion users keep the static HUD); the
+     desktop-only effects (card lift + cursor parallax) are further gated to fine pointer +
+     ≥1024px so phones get zero extra cost. Pure CSS + one rAF — no network, no assets. ===== */
+  body::after{ content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:radial-gradient(1100px 620px at 70% -8%, rgba(0,229,255,.05), transparent 62%); opacity:.55; }
+  html::before{ content:""; position:fixed; left:0; right:0; top:0; height:140px; pointer-events:none; z-index:1;
+    background:linear-gradient(180deg, transparent, rgba(0,229,255,.05), transparent); opacity:.30; }
+  body::before{ transform:translate3d(var(--px,0px),var(--py,0px),0); will-change:transform; transition:transform .25s ease-out; }
+  @keyframes ambientBreath{0%,100%{opacity:.40}50%{opacity:.70}}
+  @keyframes hudGlowPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+  @keyframes scanSlow{0%{transform:translateY(-160px)}100%{transform:translateY(102vh)}}
+  @media (prefers-reduced-motion: no-preference){
+    body::after{ animation:ambientBreath 6s ease-in-out infinite; }              /* breathe with the 6s grid */
+    html::before{ animation:scanSlow 15s linear infinite; }                       /* slow second scanline */
+    h1{ animation:hudGlowPulse 5s ease-in-out infinite; }                         /* polyphonic glow: 3 voices, */
+    .hero-num{ animation:hudGlowPulse 5s ease-in-out infinite; animation-delay:-1.7s; }   /* offset phases (5s ≠ 6s */
+    .tab.active{ animation:hudGlowPulse 5s ease-in-out infinite; animation-delay:-3.4s; } /* → drift = harmonics) */
+  }
+  @media (prefers-reduced-motion: no-preference) and (hover:hover) and (pointer:fine) and (min-width:1024px){
+    .card{ transition:transform .18s cubic-bezier(.25,.1,.25,1), box-shadow .18s ease; }
+    .card:hover{ transform:translateY(-2px); box-shadow:0 6px 22px rgba(0,229,255,.10), var(--glow); }
+  }
+
   .wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:26px 16px 80px}
 
   /* HEADER */
@@ -7866,6 +7890,24 @@
   })();
 
   /* ===================== PWA: persistent storage + offline + install ===================== */
+  /* Desktop Alive — cursor parallax on the grid (desktop pointer + motion-ok ONLY; no listener
+     is attached on touch/phones → zero mobile cost). Grid shifts ±3.5px OPPOSITE the cursor for a
+     looking-through-glass depth. rAF-coalesced to one DOM write per frame. Pure pointer read — no data. */
+  (function cursorParallax(){
+    try{
+      var ok = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine) and (min-width:1024px)').matches
+               && window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+      if(!ok) return;
+      var tx=0, ty=0, raf=0, root=document.documentElement;
+      function apply(){ raf=0; root.style.setProperty('--px',(-tx*7).toFixed(1)+'px'); root.style.setProperty('--py',(-ty*7).toFixed(1)+'px'); }
+      window.addEventListener('pointermove', function(e){
+        if(e.pointerType && e.pointerType!=='mouse') return;
+        tx=(e.clientX/window.innerWidth)-0.5; ty=(e.clientY/window.innerHeight)-0.5;
+        if(!raf) raf=requestAnimationFrame(apply);
+      }, {passive:true});
+    }catch(_){}
+  })();
+
   (function initPWA(){
     // 1) ask the browser to keep our localStorage (stops iOS/Safari 7-day eviction once granted)
     // Ask the browser to keep our storage; if persistence is DENIED, surface a state so the user
