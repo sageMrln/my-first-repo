@@ -140,3 +140,19 @@ Entry format:
 - Still open / next: prices NOT locked (proposed $6.99/$59 — Osefe to confirm/adjust). Still need
   the Stage-B MVP green-light (Payment Link/landing/email — Stripe supports both sub + one-time) +
   20-min voice align w/ girlfriend. THEN first asset drop. Tax = confirm personal-vs-ApS w/ accountant.
+
+## [2026-06-30 d] — direct (Osefe) — "is a full year too long? 6 months instead?"
+- Asked: Osefe — should the committed plan be 6 months instead of 12?
+- Decided / recommended (held my ground, didn't just agree): **NO — keep 12-mo annual as the lead.**
+  Reasoning: the "a year is a big ask for an unknown brand" worry is real, but the **monthly sub
+  ($6.99, cancel anytime) ALREADY IS the low-commitment option** and solves it better than a 6-mo.
+  A 6-mo tier sits awkwardly between monthly and annual (a job neither end needs) AND adds a THIRD
+  option → decision paralysis kills checkout. Category proof: YNAB/Copilot/Monarch all run exactly
+  TWO (monthly + annual), zero 6-month. The right de-risker for a year = **30-day money-back
+  guarantee** + start-monthly-then-upgrade path, NOT a shorter term.
+- Metric it moves / hypothesis: this knob barely moves the first $10k — content-lands + trial-
+  converts dominate; term length is a rounding error. Flagged that to Osefe so he doesn't over-index.
+  IF later data shows weak annual conversion + high monthly churn, THEN test a 6-mo bridge (month-3
+  optimization, not a launch call).
+- Recommended lineup to LOCK: **monthly $6.99 + annual $59 + 30-day guarantee.** Awaiting Osefe's
+  confirm. (No proof-doc/TEAM-CHAT edit yet — sub-decision in flight, will fold in once he locks.)
