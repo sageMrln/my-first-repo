@@ -1471,3 +1471,70 @@ Entry format:
   market only shipped features; no gamifying financial decisions; FTC disclosure + no dark patterns;
   serious-not-warm voice; organic-first.
 - Open: I vet her first batch of public privacy claims when she produces content.
+
+## [2026-06-30] — via Kaito (asleep, step 4) — REAL-CODE SAFE w/ DIRECT FIX: Media Log new tab (review @ `9ba07d5` → fixed @ `63c2a01`)
+- Asked: SAFE-review the new Media Log tab (STATE.media[] {id,title,status,rating,comment,added,rated};
+  panel #media + var MEDIALOG ~6786 + renderMedia; wired into DEFAULTS/loadState/exportDataCode/
+  applyImportedData; startup render x2). Verify: (1) XSS — title/comment free user input into innerHTML;
+  (2) MEDIA/IDB name-collision fully resolved (Kaito renamed his module MEDIA→MEDIALOG to stop clobbering
+  the IDB photo helper var MEDIA ~1851); (3) data-i18n-skip on dynamic containers correct+sufficient;
+  (4) no poison needed (user taste, not owner figures) + no watchdog touched; (5) no new net surface +
+  exportBlank still strips. Security = find-AND-fix exception. Run green.js (sync MISSING:27 expected).
+- BASELINE: 9ba07d5^=ac794d2 (Maki, non-code); index.html byte-identical a614f48(last shipped)..ac794d2 →
+  real diff = exactly Media Log, index.html only +188/-5. Arthur 8d29ca3 landed after (POLISH verdict,
+  TEAM-CHAT+arthur.md only; index.html byte-identical to 9ba07d5 — confirmed).
+- FOUND A REAL LEAK → FIXED DIRECTLY (the gating defect):
+  - exportBlank @4760 RECONSTRUCTS hud-state {__fresh,fid,prefs} (so media can't re-hydrate from the
+    embedded JSON) BUT then serializes `document.documentElement.outerHTML` @4782 AFTER renderAll() @4771.
+    renderAll calls renderMedia @4754 → renderLists writes the owner's STATE.media titles + PRIVATE
+    comments into #medToWatch/#medRanked innerHTML. exportBlank zeroes every OTHER personal array @4769
+    (workouts/calendar/log/body/prs/notes/foodLog/tax/reminders/usage/bdayYear/missionsDone) precisely so
+    the serialized blank DOM has no personal text — but STATE.media was MISSED from that zero list. Result:
+    owner's film titles + "note to your future self" comments BAKED into every customer/blank file's DOM
+    (visible in the file / view-source). Violates invariant #1 (no private content in public/customer files).
+  - FIX (3 surgical edits, mirror the existing snapshot→zero→restore pattern): snapMedia=STATE.media @4763;
+    STATE.media=[] @4769 (before renderAll/serialize); STATE.media=snapMedia in finally @4795. Owner master
+    (exportHTML @4713) is UNTOUCHED — still dumps full STATE incl media (his private file, intended; also
+    trips on a tampered copy @4714). Committed 63c2a01. Verified diff = exactly those 3 lines, nothing else.
+- XSS — VERIFIED CLOSED (the primary risk). tf() @5189 does PLAIN {k} substitution (NO escaping) → any
+  user content into an innerHTML sink must be pre-esc()'d. esc() @1843 escapes & < > ". Traced ALL sinks:
+  - renderLists tw.innerHTML (To-watch): esc(m.title) + m.id(uid, [a-z0-9]) + static t(). ✓
+  - renderLists rk.innerHTML (ranked): esc(m.title), esc(m.comment), esc(whenY(m.rated)), m.id(uid),
+    numeric rankNo/fmtR, static t(). ✓  empty branch = static t() only. ✓
+  - showCompare box.innerHTML: rows = esc(x.title)+numeric; header tf('…{title}…',{title:esc(m.title)})
+    (esc'd BEFORE substitution); buttons static t(). ✓
+  - buildChips: b.textContent=n. ✓  openRate: medRateTitle.textContent + medComment.value. ✓
+  - msg() m.textContent (so tf with raw {title} is safe). ✓  paintVal textContent. ✓
+  - share()/fb(): clipboard.writeText / textarea.value + execCommand('copy') — NOT innerHTML, NO net. ✓
+  - del-confirm uiConfirm message is STATIC (no user content) — uiConfirm DOES innerHTML message elsewhere,
+    but here no user text. ✓
+  A crafted title `<img src=x onerror=…>` renders as escaped text in list/ranked/calibration; rate-title via
+  textContent → NO execution path anywhere. (grep: 5 innerHTML sinks in diff, all enumerated above.)
+- MEDIA/IDB COLLISION — FULLY RESOLVED. `var MEDIA` declared EXACTLY ONCE (@1851, the IDB photo helper).
+  All MEDIA.supported/put/get/del/all calls (initFoodMedia @1947, addEntry @6568, food del @6616, photo
+  export/import @6667-6704) resolve to that one helper. New module = `var MEDIALOG` @6786 (distinct id, no
+  shadowing). The applyCompare local is named `t2` (doesn't shadow global t()). Photo storage intact.
+- data-i18n-skip — CORRECT + SUFFICIENT. #medToWatch/#medRanked/#medRateTitle all carry data-i18n-skip;
+  the i18n TreeWalker FILTER_REJECTs any node under [data-i18n-skip] @5282 → never descends → dynamic
+  titles/comments never mangled. #medComment is a textarea (.value not walked); data-i18n-ph = static UI.
+- POISON / INVARIANTS. NO poison needed/added — ratings/comments are user's OWN media taste, not owner
+  FINANCIAL figures (consistent w/ notes/foodLog/prs un-poisoned). __sys 35→36 is ONE word in the Media
+  Log header COMMENT ("…no __sys poison."), NOT a watchdog change → __sys.token() 14==14 (held). PUBCHK
+  4047293148 ×1 + PUB_B64 ×3 intact. #hud-state empty (@1737), #__ownerKeySrc empty (@1741). No SW/manifest
+  change. No new network/exfil (grep added lines: fetch/XHR/.src=/eval/new Function/location.*/document.write
+  → ZERO). exportDataCode @5617 adds media:STATE.media||[] (whole-array, round-trips lossless via
+  applyImportedData STATE.media=d.media||[]); no key/owner figure in the data object.
+- Ran node tools/release/green.js → GREEN exit 0 (10 suites: parser 21, assistant 16, streak 4, sound 7,
+  reorder 7, transfer 47, silly 43, photo_store 17, pr 12, tax 105; preflight CLEAR — slots empty, 1 public
+  key, no PII, PUBCHK, 4 scripts; GUIDE/manifest/sw/team-chat clean). node tools/i18n/sync.js → MISSING:27
+  (new Media Log strings → Mikoto; EXPECTED, not security).
+- ONE NON-GATING NOTE (robustness, routed to Hugo — does NOT block SAFE): transfer_test required-fields
+  assert doesn't yet list `media`; exportDataCode round-trips it fine but it's not test-guarded (same pattern
+  as the cardio/photo fixture adds). Hugo: add a media entry to the transfer fixture + required-fields list.
+- VERDICT: SAFE @ 63c2a01 (after my DIRECT security fix). The exportBlank media-leak is the gating defect,
+  now closed; XSS fully esc()'d-closed on every sink; MEDIA/IDB collision resolved (photo storage intact);
+  data-i18n-skip correct; no poison needed; watchdogs/key-slots intact; exportBlank now strips media (owner
+  content can't reach a customer file); owner master unaffected; no net surface; GREEN.
+- Commits / SHAs: reviewed 9ba07d5; FIX 63c2a01 (tip). Lock claimed (6a774ba) + released this session.
+  TIP WILL MOVE (Arthur polish folded by Kaito + Mikoto MISSING:0 + Hugo media fixture/GREEN) → I re-sign
+  the final tip per freeze-the-candidate. Sleep-mode: no auto-publish without Osefe's explicit go.
