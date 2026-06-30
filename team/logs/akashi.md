@@ -1538,3 +1538,54 @@ Entry format:
 - Commits / SHAs: reviewed 9ba07d5; FIX 63c2a01 (tip). Lock claimed (6a774ba) + released this session.
   TIP WILL MOVE (Arthur polish folded by Kaito + Mikoto MISSING:0 + Hugo media fixture/GREEN) → I re-sign
   the final tip per freeze-the-candidate. Sleep-mode: no auto-publish without Osefe's explicit go.
+
+## [2026-06-30] — via Kaito (asleep, final gate) — RE-SIGN: Media Log delta 63c2a01..d718677 (re-SAFE @ `d718677`)
+- Asked: re-sign Media Log on the moved tip per freeze-the-candidate. My prior SAFE was @ 63c2a01
+  (after I fixed the exportBlank media leak). Delta = Arthur polish + Kaito calibration nit
+  (display-only), Mikoto i18n (27 strings × 6 langs), Hugo tests/guide/PDF. Confirm no logic/poison/
+  export-blank regression; XSS verdict holds; published files leak-clean; MISSING:0; GREEN.
+- DELTA 63c2a01..d718677 (numstat): index.html +15/-8, GUIDE.md +26/-8, MRLN-Guide.pdf rebuilt,
+  green.js +9/-2, NEW tools/test/media_test.js (149), transfer_test.js +25, logs/chat/maki docs.
+  No sw.js/manifest edit.
+- index.html delta = EXACTLY the display-toggle hunks + the i18n dict line (proved by awk-omitting
+  the 2 long AUTO-MERGED lines): (1) Done→Cancel label; (2) #medNudge id added; (3) Save+comment
+  wrapped in #medRateForm; (4) openRate resets medRateForm/medChips/medNudge display=''; (5) showCompare
+  hides medRateForm/medChips/medNudge (style.display='none' — "strictly one decision"); (6) paintVal
+  band-tint v.style.color red/amber/lime; (7) chips 38px→44px min-width+min-height; (8) comment
+  placeholder reworded. ALL touch only .style.display / .style.color / textContent — NO user data into
+  any NEW sink, NO logic/validation/parser/finance/poison change.
+- MY MEDIA-STRIP INTACT ✓: exportBlank snapMedia @4765, `STATE.media=[]` @4771 (before renderAll/
+  serialize), restore `STATE.media=snapMedia` @4797 — all THREE present on tip and UNCHANGED in the
+  delta (git diff shows zero hits for snapMedia/STATE.media in the 63c2a01..d718677 index diff).
+  exportDataCode media:STATE.media||[] @5619 + applyImportedData STATE.media=d.media||[] @5628 intact.
+- XSS VERDICT HOLDS ✓: all sinks still esc()'d on tip — showCompare esc(x.title) @6852 +
+  tf(...,{title:esc(m.title)}) @6853; renderLists esc(m.title) @6877/6890, esc(m.comment)+esc(whenY())
+  @6887. New display toggles introduce no innerHTML and no user content. Crafted title/comment cannot
+  execute anywhere. MEDIA/MEDIALOG split still clean (no var rename in delta; IDB photo helper untouched).
+- INVARIANTS (base 63c2a01 vs tip d718677, grep -a) ✓: __sys 36==36, __sys.token() 14==14 (HELD),
+  PUBCHK 4047293148 ×1, PUB_B64 ×3. #__ownerKeySrc empty, #hud-state empty. No new network/exfil in
+  index delta (added lines scanned: fetch/XHR/.src=/eval/new Function/location.*/document.write → NONE).
+- i18n DICT ✓: AUTO-MERGED IIFE parses as JSON; 6 langs es/da/de/sv/nb (1537 keys each) + hu (1577).
+  0 PII/key hits in added values (osefe|miradi|aarhus|BEGIN|PRIVATE KEY|@gmail|ownerKey|signingKey).
+  Placeholder integrity perfect — {title}/{r} present in value iff present in key (0 mismatches).
+  node tools/i18n/sync.js → MISSING:0 (fully translated).
+- TESTS/GUIDE/PDF ✓: green.js delta ONLY inserts the media suite (now 11; preflight→12, leak→13) —
+  no guard removed, PUBLISHED_TEXT list unchanged. transfer_test ADDS a media fixture + round-trip
+  asserts (closes my prior non-gating note). media_test.js new = 23/23. GUIDE.md adds §8 Media Log
+  ("Nothing ever leaves your device"; excluded from clipboard quick-move — matches exportBlank/transfer)
+  — the 3 grep "hits" are descriptive security-model copy ("private key only in owner master"), NOT key
+  material/PII. Rebuilt MRLN-Guide.pdf independently extracted (FlateDecode streams + paren-string +
+  raw byte scan): 0 hits for BEGIN/PRIVATE KEY/osefe/miradi/aarhus/@gmail/ownerKey/signingKey — clean.
+- GATE: node tools/release/green.js → GREEN exit 0 (media 23/0; preflight CLEAR — slots empty, 1 public
+  key, no PII, PUBCHK, 4 scripts balanced; leak scan GUIDE/manifest/sw/team-chat clean). MISSING:0.
+- VERDICT: SAFE @ d718677. index.html delta vs my 63c2a01 SAFE is exactly the display-toggle hunks +
+  the Mikoto dict line — load-bearing logic/poison/export-blank byte-identical, my media-strip present,
+  XSS closed, watchdogs held (36/14), slots empty, no new network, every published file (incl. rebuilt
+  PDF) leak-clean, MISSING:0, GREEN. No DIRECT security fix required this pass. Last gate sign-off —
+  Kaito freeze-checks the tip, then Osefe ships item 1 (Media Log). Sleep-mode: NO auto-publish without
+  Osefe's explicit go.
+- ONE NON-GATING NOTE (routed to Hugo, does NOT block SAFE): GUIDE.md section numbering skips §10
+  (§9 Installing → §11 Connect). Cosmetic doc-numbering only, no security impact.
+- Commits / SHAs reviewed: re-signed d718677 (tip). If the tip moves again, I re-sign.
+- Still open: nothing security-side. Gate: Akashi SAFE @ d718677 / awaiting Kaito freeze-check + Osefe
+  "ship it". Wave-2 (CJK langs) Media Log strings still future work, not in scope here.
