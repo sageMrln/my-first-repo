@@ -456,3 +456,33 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
   * Lesson: tax/financial terminology is universal across languages (IRPEF, CPF, IRAS); translate only explanatory prose and country names. Proper nouns must be preserved exactly.
 - Commits / SHAs: lock claim a38382d, i18n merge 82884af, rebase 034770e.
 - Still open / next: @Kaito spot-check meaning; @Hugo re-GREEN if tip moved (but no code changed, pure i18n); @Akashi re-sign SAFE if published files changed; @Osefe final go to ship Wave 1.
+
+## [2026-06-30] — Kaito dispatch (asleep) — Translate 27 Media Log strings to all 6 langs → MISSING: 0
+
+- Asked: Kaito built the new Media Log feature (rate & rank films/shows, private offline, yours). 27 new UI strings untranslated. Translate to es, da, de, sv, nb, hu → MISSING: 0. Strings: tab/section headers (🎬 Media Log, 📥 To watch, 🏆 Ranked), descriptions, add/search placeholders, rating-sheet labels (A note to your future self (optional), Why this score? Note it for your future self, Save rating), calibration prompt with "{title}" placeholders, row actions (Rate it, note, edit), toasts (Added/Rated/Copied), empty states (Nothing queued, What's the last thing you finished?).
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 27 (exact keys from need_translate.json).
+  * Translated all 27 strings to 6 languages (162 translations) with factual, serious tone (no hype, no emoji except functional icons 🎬📥🏆):
+    - Spanish: natural verbs (Califícalo, Guardar), friendly tone (tuya for "yours").
+    - Danish/Norwegian: idiomatic (Bedøm det, Se senere), parallel structure.
+    - German: precise imperatives (Bewerte es), formal tone.
+    - Swedish: warm phrasing (Vill titta på, Betygsätt det).
+    - Hungarian: imperative verbs (Értékeld meg), clear empty-states.
+  * Claimed lock on TEAM-CHAT (commit bbb8911).
+  * Wrote Node script to parse the 822KB minified AUTO-MERGED JSON block, merged 27 keys × 6 langs = 162 translations, then re-serialized and wrote back. First merge added 23 keys; discovered 4 keys had curly quotes around {title} placeholders (U+201C/U+201D), not straight quotes (U+0022) — my initial translations had straight quotes, causing sync.js to not find them. Extracted exact 4 keys from need_translate.json, rebuilt translations with proper curly quotes, and merged the 4 corrections.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (677 keys fully translated across all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (9 test suites: parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 47/47, silly 43/43, photo 17/17, pr 12/12, tax 105/105 = 205 tests total; preflight CLEAR; all published files leak-clean).
+  * Committed index.html only (6420457).
+  * Pushed to origin/claude/vibrant-pasteur-ie24ab.
+- Key translation decisions:
+  * Placeholders {title}, {r} preserved exactly in all languages; word order reordered per natural language (e.g., de puts {title} first in some cases, preserves in others as source dictates).
+  * Curly quotes (U+201C/U+201D) around placeholders preserved exactly by extracting and using the exact keys from need_translate.json (not inferring from string literals).
+  * Functional emoji (🎬 tab header, 📥 To watch tab, 🏆 Ranked tab) preserved in all languages (these aid comprehension, not hype).
+  * Calibration buttons: "Better ▲", "About right", "Worse ▼" — terse, factual, no hype, using triangle symbols exactly.
+  * Empty-state strings phrased naturally per language, not clunky or literal.
+  * Tone: factual, serious, no "keep it going!" or emoji celebration (matching Osefe's product-voice directive).
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 27 Media Log strings translated to 6 locales. GREEN gate confirmed. Ready for downstream verification (Kaito spot-check, Hugo GREEN-confirm if tip moved, Akashi re-SAFE if published files changed, Osefe final go).
+  * Lesson reinforced: Unicode quote characters (straight vs. curly) are CRITICAL in key matching. The need_translate.json keys are the authoritative byte-for-byte source; always extract/copy keys directly, never infer.
+- Commits / SHAs: lock claim bbb8911, i18n merge 6420457 (pushed to origin).
+- Still open / next: @Kaito spot-check; @Hugo re-GREEN if tip moved; @Akashi re-SAFE if published files changed; @Osefe final "ship it" call.
