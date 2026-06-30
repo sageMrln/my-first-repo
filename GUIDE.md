@@ -81,7 +81,8 @@ Your monthly take-home across **slow / typical / good** months. The **typical** 
 An offline **estimate** of your income tax, adapting to your country/region:
 - What you'll pay, what to expect back.
 - **Denmark:** full model — AM-bidrag, personfradrag, beskæftigelsesfradrag, bund/kommune/kirke/topskat — plus **forskudsopgørelse** suggestions (trækprocent + monthly fradrag) and an **over/under-estimate simulator** (set your expected annual vs. actual → refund or owe).
-- Models for every country whose language we support (DK/US/GB/DE/ES/SE/NO) + a generic fallback.
+- Now covers 12 countries with local tax models: **Denmark (DK)**, **United States (US)** by state, **United Kingdom (GB)**, **Germany (DE)**, **Spain (ES)**, **Sweden (SE)**, **Norway (NO)**, **France (FR)**, **Italy (IT)**, **Singapore (SG)**, **Japan (JP)**, **South Korea (KR)** — each with an unofficial estimate using local brackets, employee social contributions, and surtaxes. Adjust any rate in **Advanced** to refine the estimate for your region.
+- Generic fallback **(XX)** for all other countries — set your flat tax + social rate.
 - Always unofficial — verify with your tax authority. Numbers stay on your device.
 
 ### Expenses — *Expense Breakdown*

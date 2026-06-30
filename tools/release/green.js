@@ -79,11 +79,17 @@ run(['tools/test/photo_store_test.js'], 'photo store suite');
 section('Personal Records (strength + cardio) — tools/test/pr_test.js');
 run(['tools/test/pr_test.js'], 'PR suite');
 
-// 10) deep pre-publish guard on the app itself
+// 10) committed tax engine test — all 13 countries (5 new FR/IT/SG/JP/KR, 8 old DK/US/GB/DE/ES/SE/NO/XX)
+//     Guards sane output (finite, ≥0, ≤gross, correct currency), poison gate (NaN on bypass),
+//     back-compat (no regression on existing engines), and edge cases (zero/negative/empty no-crash)
+section('tax engine — tools/test/tax_test.js');
+run(['tools/test/tax_test.js'], 'tax suite');
+
+// 11) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
 
-// 11) leak scan across every OTHER published text file (the "whole surface" rule)
+// 12) leak scan across every OTHER published text file (the "whole surface" rule)
 //     Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
 //     by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
 const PUBLISHED_TEXT = ['GUIDE.md', 'manifest.webmanifest', 'sw.js', 'team-chat.html'];

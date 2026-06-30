@@ -348,3 +348,29 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Gate is GREEN on 81d1486. Awaiting Akashi re-SAFE (guide/PDF published, scope extended per freeze rule), then Kaito verify + Osefe ship call.
   * My QA work complete on this feature. Idle until next candidate hits the gate.
+
+## [2026-06-30] — via Kaito (asleep dispatch) — Wave 1 tax expansion (FR/IT/SG/JP/KR) GREEN @ c79fbd4
+
+- Asked: Wave 1 of tax expansion landed (Kaito: 5 new engines FR/IT/SG/JP/KR, security-cleared Akashi SAFE @ 8d22a1a, translated Mikoto MISSING:0). QA-only task (NOT index.html app logic): create `tools/test/tax_test.js` extracting live tax engine from index.html, test all 5 NEW + 8 OLD engines (sane output, currency correct, poison gate, no-crash edges, exactness oracle SG@S$80k). Wire into `green.js` as suite 10. Update GUIDE.md Tax Helper (now 12 countries). Rebuild PDF. Confirm GREEN + MISSING:0. Commit + push.
+
+- Did / found / thought:
+  * (1) **Built `tools/test/tax_test.js` from scratch** (105 test cases). Extracted live computeTax + txBr/txMarg/taxAdv/num/deIncomeTax/deMarg + bracket constants (FR_BR/IT_BR/SG_BR/JP_BR/KR_BR) + TAX_CCY map from index.html (no copy drift). Built harness mocking __sys.token(), STATE, t/tf globals. Ran 6 test groups:
+    - **Test 1: New engines sane output** (FR €40k, IT €40k, SG S$80k, JP ¥5M, KR ₩50M) — totalTax finite, ≥0, ≤gross, currency correct (EUR/EUR/SGD/JPY/KRW), eff rates match spot-run bands (31.9/31.9/22.7/21.4/17.9 ±2pp). All 30/30 ✓
+    - **Test 2: Singapore exactness oracle (IRAS)** — txBr(80000, SG_BR) == S$3,350 (published schedule deterministic). 1/1 ✓
+    - **Test 3: Poison gate** — __sys.token() mocked to NaN, all 5 new engines return NaN for totalTax/incomeTax/social (bypass lock works). 15/15 ✓
+    - **Test 4: Back-compat** (DK/US/GB/DE/ES/SE/NO/XX) — all compute finite sane output, currencies right, eff rates in sane bands. 48/48 ✓
+    - **Test 5: Edge cases** (zero, negative, empty gross) — no crash, returns empty result. 7/7 ✓
+    - **Test 6: Sub-floor non-realistic incomes** (JP ¥500, KR ₩1k — known artifact that flat social can breach total>gross) — no NaN/crash, finite calc. 4/4 ✓
+  * Total: **105/105 tests GREEN**. No regression on old engines, new ones ship sound.
+  * (2) **Wired into `tools/release/green.js`** as suite 10 (between pr_test 9 and preflight 11). Full gate now runs 10 suites: parser 21 + assistant 16 + streak 4 + sound 7 + reorder 7 + transfer 47 + silly 43 + photo_store 17 + pr 12 + **tax 105** = **279 total tests**.
+  * (3) **Ran full green.js**: **GREEN exit 0** — all 10 suites passed (parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 47/47, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105 = **279 total** ✓), preflight CLEAR ✓, leak scan clean ✓. Previous tally was 9 suites / 174 tests; now **10 suites / 279 tests** (+1 suite / +105 tests).
+  * (4) **Updated GUIDE.md §6 "Tax Helper"** to list all 12 countries (previously 8): Denmark (DK), United States (US), United Kingdom (GB), Germany (DE), Spain (ES), Sweden (SE), Norway (NO), **France (FR), Italy (IT), Singapore (SG), Japan (JP), South Korea (KR)** — each with unofficial estimate using local brackets + employee social + surtaxes, adjustable in Advanced. Rebuilt MRLN-Guide.pdf (478 KB). Re-ran green.js: still GREEN exit 0, preflight CLEAR, all files clean.
+  * (5) **Verified i18n**: ran `node tools/i18n/sync.js` → **MISSING: 0** (650/650 keys, 7 languages — Wave 1 added no new UI strings, only tax logic).
+
+- Decision / result: **GREEN @ c79fbd4** — all 10 suites (279 tests) pass, preflight CLEAR, MISSING: 0, published files leak-clean. Wave 1 tax expansion is sound: new engines tested + documented, old engines back-compat verified, poison gate armed (NaN on bypass), guide synced. Ready for Akashi re-SAFE (tip moved past Kaito's build) and Osefe's ship call.
+
+- Commits / SHAs:
+  * This session adds 3 files: `tools/test/tax_test.js` (105 test cases, extracted-live engine, no copy drift), `tools/release/green.js` (wired suite 10), GUIDE.md (§6 updated), MRLN-Guide.pdf (rebuilt).
+  * Staged: `git add tools/test/tax_test.js tools/release/green.js GUIDE.md MRLN-Guide.pdf team/logs/hugo.md TEAM-CHAT.md` (only my files, NOT `git add -A`).
+
+- Still open / next: None on QA side. Awaiting Akashi re-SAFE on tip (doc-only + tax_test extraction should be clear — no security logic change, just test harness), Kaito freeze-check, then Osefe's "ship it" + Kaito's merge/publish. Post-ship: all 12 tax countries live.
