@@ -542,3 +542,16 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
   * **MISSING: 0 verified and committed.** All 11 Media Log v2 strings translated to 6 locales in serious, factual tone. GREEN gate confirmed. Ready for downstream verification (Kaito spot-check, Hugo GREEN-confirm if tip moved, Akashi re-SAFE, Osefe final go).
 - Commits / SHAs: i18n merge 6f3c065.
 - Still open / next: @Kaito spot-check meaning (es "Película" vs "Film", da "Serie" vs "Show", en TV series convention); @Hugo re-GREEN if tip moved; @Akashi re-SAFE if published files changed; @Osefe final "ship it" call for Media Log v2.
+
+## [2026-07-01 ~follow-up] — Kaito spot-check (step 8) — grammar fixes in seed-prompt translations
+
+- Asked: Kaito's verify-don't-trust step 8 caught 2 grammar errors in the "New here? Tap a few to start your list:" seed-prompt translations just shipped. Fix: (1) Hungarian — "az lista" is incorrect (az only before vowels); must be "a lista". (2) German — missing comma before "um … zu" infinitive clause. Apply both fixes, re-run sync + green, commit, push.
+- Did / found:
+  * Identified both strings in AUTO-MERGED block using Python JSON parser.
+  * **Hungarian fix:** "Új vagy itt? Koppints néhányra az lista elkezdéséhez:" → "Új vagy itt? Koppints néhányra a lista elkezdéséhez:" (changed "az" to "a", as "lista" starts with a consonant).
+  * **German fix:** "Neu hier? Tippe auf ein paar um deine Liste zu starten:" → "Neu hier? Tippe auf ein paar, um deine Liste zu starten:" (added comma before "um" clause).
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (722 keys)** ✓
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (all 14 suites, 370+ tests, preflight CLEAR) ✓
+- Decision / result: Both grammar errors corrected. MISSING:0 and GREEN confirmed. Ready for Kaito re-verify + downstream gate.
+- Commits / SHAs: a3e9c72 (grammar fixes).
+- Still open / next: @Kaito re-verify; @Hugo re-GREEN if tip moved; @Akashi re-SAFE if published files changed; @Osefe final go to ship Media Log v2.
