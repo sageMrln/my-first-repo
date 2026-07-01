@@ -411,6 +411,19 @@
   #installBody .ib-note{font-size:12.5px;color:var(--txt-dim);margin-top:10px;line-height:1.5}
   #installBody .ib-now{display:block;width:100%;margin:4px 0 4px;background:linear-gradient(180deg,#22e9ff,#00b8d4);color:#03121a;
     border:0;border-radius:11px;font-family:'Orbitron',sans-serif;font-weight:800;font-size:15px;letter-spacing:.03em;padding:14px;cursor:pointer;box-shadow:0 0 18px rgba(0,229,255,.45)}
+  /* SAVE SAFETY — amber warning variant of the install banner + modal zones + lock escape hatch */
+  .install-banner.warn{ border-color:var(--amber); border-left:3px solid var(--amber);
+    background:linear-gradient(180deg, rgba(255,181,71,.10), rgba(255,181,71,.03));
+    box-shadow:0 0 18px rgba(255,181,71,.16); animation:none }
+  .install-banner.warn .ib-text b{ color:var(--amber) }
+  .install-banner.warn .ib-icon{ color:var(--amber) }
+  .ss-zone{ border:1px solid var(--line); border-radius:12px; padding:12px 13px; margin:10px 0; background:rgba(8,19,31,.5) }
+  .ss-zone .ss-h{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:.03em; color:#eaffff; margin-bottom:8px }
+  .ss-url{ font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--cyan); word-break:break-all; background:#08131f; border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:8px; user-select:all }
+  .lockcard .lk-openlink{ display:block; width:100%; margin-top:14px; background:transparent; border:1px solid var(--cyan-dim); border-radius:10px; color:var(--cyan); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer }
+  .lockcard .lk-savehelp{ margin-top:10px; text-align:left }
+  .lockcard .lk-savehelp-url{ font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--cyan); word-break:break-all; background:#08131f; border:1px solid var(--line); border-radius:8px; padding:8px 10px; user-select:all }
+  .lockcard .lk-savehelp-copy{ margin-top:8px; width:100%; background:linear-gradient(180deg,var(--cyan),var(--cyan-dim)); color:#04222a; border:none; border-radius:9px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; padding:9px; cursor:pointer }
   /* install guides that flank the lock card (wide) / stack below it (phones) */
   .lk-guide{width:100%;max-width:238px;flex:0 0 auto;border:1px solid var(--line);border-radius:14px;background:rgba(8,19,31,.66);padding:14px 16px;box-shadow:0 0 16px rgba(0,0,0,.25)}
   .lk-guide-h{font-family:'Share Tech Mono';font-size:12px;letter-spacing:.05em;color:var(--cyan);margin-bottom:9px}
@@ -711,6 +724,15 @@
     <button class="lk-btn" id="lkBtn" data-i18n="Unlock">Unlock</button>
     <div class="lk-status" id="lkStatus"></div>
     <div class="lk-foot" data-i18n="Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.">Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.</div>
+    <button class="lk-openlink" id="lkOpenSave" type="button" data-i18n="↗ Open in browser · Copy link · Install">↗ Open in browser · Copy link · Install</button>
+    <div class="lk-savehelp" id="lkSaveHelp" style="display:none">
+      <div class="lk-savehelp-url" id="lkSaveUrl"></div>
+      <button class="lk-savehelp-copy" id="lkSaveCopy" type="button">📋 <span data-i18n="Copy link">Copy link</span></button>
+      <ol class="lk-guide-steps" style="margin-top:10px">
+        <li data-i18n="If you opened this inside another app, tap its ⋯ menu.">If you opened this inside another app, tap its ⋯ menu.</li>
+        <li data-i18n="Choose “Open in browser” (Safari/Chrome) — then your data saves.">Choose “Open in browser” (Safari/Chrome) — then your data saves.</li>
+      </ol>
+    </div>
   </div>
   <div class="lk-guide ios" id="lkGuideIos">
     <div class="lk-guide-h">🍏 <b data-i18n="Add to iPhone">Add to iPhone</b></div>
@@ -874,6 +896,13 @@
 
 <div class="wrap">
 
+  <!-- SAVE SAFETY: loud warning when this browser won't persist data (in-app browser / private mode / ephemeral file context) -->
+  <div id="saveSafetyBanner" class="install-banner warn" style="display:none" role="alert">
+    <div class="ib-icon">⚠</div>
+    <div class="ib-text"><b data-i18n="This browser isn't saving your data">This browser isn't saving your data</b><br><span data-i18n="Anything you add can disappear when you refresh. Install MRLN, open it in your browser, or press Save to keep an updated file.">Anything you add can disappear when you refresh. Install MRLN, open it in your browser, or press Save to keep an updated file.</span></div>
+    <button class="ib-go" id="ssFix" data-i18n="Fix this">Fix this</button>
+    <button class="ib-x" id="ssX" title="Hide" aria-label="Hide">✕</button>
+  </div>
   <!-- INSTALL: big, obvious "get the app" banner — auto-removed once installed -->
   <div id="installBanner" class="install-banner" style="display:none">
     <div class="ib-icon">📲</div>
@@ -883,7 +912,7 @@
   </div>
   <div class="modal-back" id="installBack">
     <div class="modal" style="max-width:400px">
-      <h3>📲 <span data-i18n="Install MRLN">Install MRLN</span></h3>
+      <h3>↗ <span data-i18n="Open &amp; Save MRLN">Open &amp; Save MRLN</span></h3>
       <div id="installBody" style="margin-top:6px"></div>
       <div class="mrow" style="margin-top:16px;justify-content:center"><button class="mcancel" id="installClose" data-i18n="Close">Close</button></div>
     </div>
@@ -921,6 +950,7 @@
     <button class="iconbtn" id="tourBtn" title="Replay the tour" data-i18n="❔ Tour">❔ Tour</button>
     <button class="iconbtn" id="setupBtn" title="Re-run setup / start fresh" data-i18n="⚙ Setup">⚙ Setup</button>
     <button class="iconbtn" id="soundBtn" data-i18n-skip title="Sound on/off">🔊</button>
+    <button class="iconbtn" id="openSaveBtn" title="Open / Save — copy your link, install, or open in your browser" data-i18n="↗ Open / Save">↗ Open / Save</button>
   </div>
 
 
@@ -2019,6 +2049,19 @@
     try{ if(typeof toast==='function') toast(t('Storage is full — export your data to free space.')); }catch(_){ }
     var b=document.getElementById('saveBadge'); if(b){ b.textContent='● storage full — export to free space'; b.style.color='var(--red)'; }
   }
+  // --- SAVE SAFETY: durability detection + fail-loud (Akashi contract). In-app browsers
+  // (social webviews), private mode, and some file:// contexts silently drop localStorage on
+  // reload. We warn on ANY negative signal and always surface the escape hatch — never claim
+  // durability. Pure UI/guard: no new figure, no network, no poison. ---
+  var IN_APP_BROWSER = (function(){ try{ return /FBAN|FBAV|FB_IAB|Instagram|Messenger|\bLine\/|Snapchat|TikTok|musical_ly|Bytedance|\bTwitter\b|Pinterest|WhatsApp|LinkedInApp|\bGSA\b|MicroMessenger/i.test(navigator.userAgent||''); }catch(_){ return false; } })();
+  var _durabilityWarned=false;
+  function _canonLink(){ return 'https://sagemrln.github.io/my-first-repo/' + ((typeof STATE==='object'&&STATE&&STATE.fid)?('#'+STATE.fid):''); }
+  function _warnNotDurable(){            // fail loud: this browser isn't keeping data
+    if(_durabilityWarned) return; _durabilityWarned=true;
+    var el=document.getElementById('saveSafetyBanner');
+    if(el && el.getAttribute('data-dismissed')!=='1') el.style.display='';
+    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● not saving — open in your browser'; b.style.color='var(--red)'; }
+  }
   function _saveReplacer(k,v){
     // A food photo is dropped from localStorage ONLY once its bytes are confirmed in IndexedDB
     // (entry.hasPhoto). Until then the inline copy stays put as a zero-loss fallback — a failed
@@ -2033,10 +2076,19 @@
       if(bt){ bt.textContent='● try mode — press Save to keep your file'; bt.style.color='var(--amber)'; }
       return;
     }
-    try{ localStorage.setItem(STORE_KEY, JSON.stringify(STATE, _saveReplacer)); }
-    catch(e){ if(e && (e.name==='QuotaExceededError'||e.code===22||e.code===1014)) _warnStorageFull(); }
+    var _stuck=false;
+    try{
+      var _json = JSON.stringify(STATE, _saveReplacer);
+      localStorage.setItem(STORE_KEY, _json);
+      _stuck = (localStorage.getItem(STORE_KEY) === _json);   // read-back verify: catch a SILENT no-op write (Akashi signal b)
+    }
+    catch(e){
+      if(e && (e.name==='QuotaExceededError'||e.code===22||e.code===1014)) _warnStorageFull();
+      else _warnNotDurable();                                 // any OTHER throw = not persisting; fail loud (never swallow)
+    }
+    if(!_stuck && !_quotaWarned) _warnNotDurable();           // wrote but didn't stick = ephemeral storage
     var b=document.getElementById('saveBadge');
-    if(b && !_quotaWarned){ b.textContent='● unsaved — auto-saved locally'; b.style.color='var(--amber)'; }
+    if(b && !_quotaWarned && !_durabilityWarned){ b.textContent='● unsaved — auto-saved locally'; b.style.color='var(--amber)'; }
   }
   // One-time migration + hydrate for food photos. Legacy entries carry an inline `photo`
   // data URL in localStorage; move those bytes into IndexedDB (then localStorage drops the
@@ -8070,30 +8122,36 @@
     function closeModal(){ if(back) back.classList.remove('show'); }
     function buildModalBody(){
       if(!body) return;
+      var url = (typeof _canonLink==='function') ? _canonLink() : (location.origin+location.pathname);
+      var h = '';
+      // Z1 — COPY LINK (always; the guaranteed escape hatch — works even in a dead webview)
+      h += '<div class="ss-zone"><div class="ss-h">'+t('Your link')+'</div>'
+         + '<div class="ss-url" id="ssUrl">'+esc(url)+'</div>'
+         + '<button class="ib-now" id="ssCopy">📋 '+t('Copy link')+'</button>'
+         + '<div class="ib-note">'+t('Paste this in Safari or Chrome to open MRLN where your data is safe.')+'</div></div>';
+      // Z2 — INSTALL (always)
+      h += '<div class="ss-zone"><div class="ss-h">'+t('Install MRLN — opens like an app, keeps your data.')+'</div>';
       if(window.__canInstall()){
-        body.innerHTML = '<div class="ib-note">'+t('One tap — your browser does the rest.')+'</div>'+
-          '<button class="ib-now" id="ibNow">⬇ '+t('Install now')+'</button>';
-        var n=document.getElementById('ibNow'); if(n) n.addEventListener('click', function(){ if(!window.__triggerInstall()){ /* fall through */ } setTimeout(function(){ if(installed()){ closeModal(); } }, 800); });
-        return;
-      }
-      var steps;
-      if(isIOS() && !iosSafari()){
-        body.innerHTML = '<div class="ib-note">'+t('On iPhone, installing only works in Safari. Open this page in Safari, then tap Install again.')+'</div>';
-        return;
-      }
-      if(isIOS()){
-        steps = [ t('Tap the Share button ⬆️ at the bottom of Safari.'),
-                  t('Scroll down and tap “Add to Home Screen.”'),
-                  t('Tap “Add” — the MRLN icon lands on your home screen.') ];
-      } else if(isAndroid()){
-        steps = [ t('Tap the ⋮ menu (top-right of Chrome).'),
-                  t('Tap “Install app” (or “Add to Home screen”).'),
-                  t('Tap “Install” — MRLN lands on your home screen.') ];
+        h += '<div class="ib-note">'+t('One tap — your browser does the rest.')+'</div>'
+           + '<button class="ib-now" id="ibNow">⬇ '+t('Install now')+'</button>';
+      } else if(isIOS() && !iosSafari()){
+        h += '<div class="ib-note">'+t('On iPhone, installing only works in Safari. Open this page in Safari, then tap Install again.')+'</div>';
       } else {
-        steps = [ t('Click the install icon in the address bar (right side).'),
-                  t('Click “Install.”') ];
+        var steps = isIOS() ? [ t('Tap the Share button ⬆️ at the bottom of Safari.'), t('Scroll down and tap “Add to Home Screen.”'), t('Tap “Add” — the MRLN icon lands on your home screen.') ]
+                  : isAndroid() ? [ t('Tap the ⋮ menu (top-right of Chrome).'), t('Tap “Install app” (or “Add to Home screen”).'), t('Tap “Install” — MRLN lands on your home screen.') ]
+                  : [ t('Click the install icon in the address bar (right side).'), t('Click “Install.”') ];
+        h += '<ol>'+steps.map(function(s){ return '<li>'+esc(s)+'</li>'; }).join('')+'</ol>';
       }
-      body.innerHTML = '<ol>'+steps.map(function(s){ return '<li>'+s+'</li>'; }).join('')+'</ol>';
+      h += '</div>';
+      // Z3 — OPEN IN BROWSER (in-app browser only)
+      if(typeof IN_APP_BROWSER!=='undefined' && IN_APP_BROWSER){
+        h += '<div class="ss-zone"><div class="ss-h">'+t('Open in your browser')+'</div>'
+           + '<div class="ib-note">'+t('This page is inside another app. To save your data, open it in your browser:')+'</div>'
+           + '<ol class="lk-guide-steps"><li>'+t('Tap the ⋯ menu (top-right).')+'</li><li>'+t('Tap “Open in browser” (or “Open in Safari/Chrome”).')+'</li></ol></div>';
+      }
+      body.innerHTML = h;
+      var cp=document.getElementById('ssCopy'); if(cp) cp.addEventListener('click', function(){ if(window.__copyLink) window.__copyLink(url, cp); });
+      var n=document.getElementById('ibNow'); if(n) n.addEventListener('click', function(){ if(!window.__triggerInstall()){ /* fall through */ } setTimeout(function(){ if(installed()){ closeModal(); } }, 800); });
     }
     function openModal(){ buildModalBody(); if(back) back.classList.add('show'); }
     function refreshInstallUI(){ if(!banner) return; banner.style.display = canShow() ? '' : 'none'; if(back && back.classList.contains('show')) buildModalBody(); }
@@ -8106,6 +8164,24 @@
     refreshInstallUI();
     window.__pwaInstalled=installed;
     window.__openInstall=openModal;
+  })();
+  /* SAVE SAFETY — copy-link helper + boot detection + always-accessible escape-hatch wiring */
+  window.__copyLink=function(url, btn){
+    var orig = btn ? btn.textContent : '';
+    function done(){ if(btn){ btn.textContent='✓ '+t('Copied'); setTimeout(function(){ btn.textContent=orig; },1500); } }
+    function fbk(){ try{ var ta=document.createElement('textarea'); ta.value=url; ta.style.position='fixed'; ta.style.top='-1000px'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); }catch(_){ } }
+    try{ if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done, fbk); return; } }catch(_){}
+    fbk();
+  };
+  (function saveSafetyWire(){
+    function probeOk(){ try{ var k='__mrln_probe'; localStorage.setItem(k,'1'); var ok=localStorage.getItem(k)==='1'; localStorage.removeItem(k); return ok; }catch(_){ return false; } }
+    if(!probeOk() || IN_APP_BROWSER){ try{ _warnNotDurable(); }catch(_){ } }   // warn on any negative signal at boot
+    var fix=document.getElementById('ssFix'); if(fix) fix.addEventListener('click', function(){ if(window.__openInstall) window.__openInstall(); });
+    var x=document.getElementById('ssX'); if(x) x.addEventListener('click', function(){ var el=document.getElementById('saveSafetyBanner'); if(el){ el.style.display='none'; el.setAttribute('data-dismissed','1'); } });   // session-only; re-arms on reload
+    var os=document.getElementById('openSaveBtn'); if(os) os.addEventListener('click', function(){ if(window.__openInstall) window.__openInstall(); });
+    var lo=document.getElementById('lkOpenSave'), lh=document.getElementById('lkSaveHelp');
+    if(lo && lh){ lo.addEventListener('click', function(){ var open=(lh.style.display!=='none'&&lh.style.display!==''); lh.style.display=open?'none':'block'; var u=document.getElementById('lkSaveUrl'); if(u) u.textContent=_canonLink(); }); }
+    var lc=document.getElementById('lkSaveCopy'); if(lc) lc.addEventListener('click', function(){ window.__copyLink(_canonLink(), lc); });
   })();
 </script>
 <script>
