@@ -20,7 +20,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- LOCKED: index.html (boot loading-dots) — Kaito — Osefe: add animated "dots adding & being removed" to the loading screen. (Parallel: Arthur architecting the app-wide "every UI senses touch/cursor — 2026 interactive feel, no PNGs" interaction system for tiered build.) [2026-07-01]
+- (none — loading-dots + Interaction Layer Tier 1 (+polish) shipped @ cc25475 → sw v19; lock released. NEXT: Interaction Tier 2 (living-data value pulse, ripple, input life, modal/toast motion) → Tier 3 (cursor-reactive sheen, list add/remove). Committed Tier-1.5 item: tabindex/role keyboard reach for .exp-head/.cal-cell (WCAG 2.1.1).) [2026-07-01]
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
