@@ -566,3 +566,33 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
 - Decision / result: **MISSING: 0 verified on 86c55e8.** All 7 languages remain complete. No new translations needed. GREEN gate confirmed. Posted status to TEAM-CHAT.md.
 - Commits / SHAs: 8e9103e (TEAM-CHAT status).
 - Still open / next: Gate fully signed (Akashi SAFE @ 96ce087, Hugo GREEN @ 2f9f261 + 03da14d, Arthur SHIP @ dbf3469). Ready for @Osefe final "ship it" call. No code changes needed; i18n stands as-is.
+
+## [2026-07-01 ~08:00] — Kaito dispatch (asleep) — Boot-screen i18n: 1 string to all 6 langs → MISSING: 0
+
+- Asked: Kaito's new premium cold-boot loading screen (cursor-wake ripple + boot teardrop) adds 1 new UI string («// SYSTEM ONLINE»—the system-status line shown on app launch under the MRLN wordmark, matching the lock-screen «// SECURE ACCESS · MONTHLY KEY» voice). Translate to es, da, de, sv, nb, hu → MISSING: 0.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 1 («// SYSTEM ONLINE» untranslated in all 6 langs).
+  * Translated the string to all 6 languages using the same serious, factual, uppercase boot-HUD register as the existing lock-screen line:
+    - **es:** «// SISTEMA EN LÍNEA» (system in-line; mirrors "ACCESO SEGURO" pattern)
+    - **da:** «// SYSTEM ONLINE» (tech term, unchanged in Danish)
+    - **de:** «// SYSTEM ONLINE» (tech term, unchanged in German)
+    - **sv:** «// SYSTEM ONLINE» (tech term, unchanged in Swedish)
+    - **nb:** «// SYSTEM ONLINE» (tech term, unchanged in Norwegian)
+    - **hu:** «// RENDSZER ONLINE» (system online; mirrors "BIZTONSÁGOS HOZZÁFÉRÉS" pattern)
+  * Challenge: discovered index.html has TWO i18n injection blocks:
+    - Block 1 (at position 398850): no AUTO-MERGED comment, injects extras at runtime via IIFE.
+    - Block 2 (at position 406345): marked with AUTO-MERGED comment, the one sync.js scans.
+  * Initial Python script merged translations into Block 1, but sync.js only reads Block 2 → still showed MISSING. Resolved by properly parsing Block 2's JSON structure: using brace-counting after the })(  pattern to find the actual JSON object boundaries (not the function wrapper).
+  * Merged all 6 translations into AUTO-MERGED Block 2 using Node.js JSON.stringify/parse, writing minified JSON back to file.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (723 keys fully translated across all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (15 test suites: parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14 = 382+ tests total; preflight CLEAR; all published files leak-clean).
+- Key translation decisions:
+  * Leading `//` command-line prefix kept verbatim in all languages (stylistic, not translatable).
+  * Spanish translation uses natural system verb form ("LÍNEA" = in-line/online, matches ES financial/tech register).
+  * Uppercase maintained to match boot-screen HUD style (consistent with lock-screen «// SECURE ACCESS»).
+  * Tone: factual, serious, no emoji, no hype (per Osefe's product-voice directive).
+- Decision / result:
+  * **MISSING: 0 verified and committed.** Boot-screen string translated to all 6 locales in serious, factual tone. GREEN gate confirmed. Ready for downstream verification (Kaito spot-check, Akashi re-SAFE, Hugo re-GREEN if tip moved, Osefe final go).
+  * Lesson: i18n injection blocks may exist without AUTO-MERGED comments; sync.js only scans the AUTO-MERGED-marked block. Must merge translations into the correct block or sync will not find them. The block boundaries require precise brace-counting after the IIFE wrapper pattern.
+- Commits / SHAs: 2f3c9cc (i18n merge + push).
+- Still open / next: @Kaito spot-check translations; @Akashi re-SAFE (no code changed, pure i18n); @Hugo re-GREEN if tip moved; @Osefe final "ship it" call to publish boot-screen feature.
