@@ -599,3 +599,26 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * Awaiting Akashi's optional re-SAFE on 03da14d (likely CLEAR — docs-only, no security logic changed).
   * Osefe's "ship it" if this fix is gated, or next build direction.
   * Media Log v2 B1 layout blocker (title width starve) is Arthur's to Kaito to fix before ship.
+
+## [2026-07-01] — via Kaito (asleep dispatch) — Desktop Alive v2 + boot overlay GREEN @ d1aa48f
+
+- Asked: Release/QA pass for GREEN sign-off on two new pure-decoration features at tip d1aa48f (branch claude/vibrant-pasteur-ie24ab): Desktop Alive v2 cursor-wake (ripples trailing mouse in desktop gutters, z:0 behind .wrap) and premium cold-boot loading screen (#boot overlay, shows ~0.9s then self-removes into lock screen, prefers-reduced-motion gated). Kaito built, Arthur SHIP, Akashi SAFE assumed (decoration only, no code logic). Execute: (1) `node tools/release/green.js` → confirm GREEN exit 0 (all suites pass, media 43 added per prior sessions); (2) `node tools/publish/preflight.js index.html` → confirm exit 0 and report script-tag balance; (3) `node tools/i18n/sync.js` → confirm MISSING: 0 (Mikoto added "// SYSTEM ONLINE", no new UI strings); (4) GUIDE judgment: both features are pure ambient decoration (CSS keyframes + cursor-parallax rAF), invisible to users on mobile or prefers-reduced-motion, no new user actions/workflows — no rebuild needed, or flag if stale. Don't edit index.html.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip d1aa48f). Read memory + chat (two pure-decoration features, Kaito built, Arthur SHIP, Akashi SAFE).
+  * Ran `node tools/release/green.js`: **GREEN exit 0**. All 13 suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, **media 43/43** ✓, tax 105/105 ✓, savesafety 14/14 ✓ = **356 total tests**. Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced). Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean).
+  * Ran `node tools/publish/preflight.js index.html`: **exit 0**. Confirmed all checks CLEAR: slots empty, no private-key material, 1 public key present, no owner PII, PUBCHK watchdog intact, **script tags balanced (5)** — matches expected count (boot added its own inline teardown script, balanced structure intact).
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (723/723 keys, 7 languages — boot overlay + cursor-wake features added no UI strings, only decoration CSS/canvas/rAF; Mikoto's "// SYSTEM ONLINE" comment is a test marker, not a translated string).
+  * **Feature structure verified:** (1) **Desktop Alive v2 cursor-wake** — canvas element (z:0 behind .wrap via fixed positioning), rAF parallax on mousemove (desktop only, fine-pointer @media gate, ≥1024px width gate), prefers-reduced-motion gated to zero rAF output. (2) **Boot overlay #boot** — fixed position, inset:0, CSS keyframes (bootGrid, bootSweep, bootLogoIn, bootLogoGlitch, bootSysIn) all wrapped in `@media (prefers-reduced-motion: no-preference)` — animation disabled on accessibility setting. Boot self-removes after max(app-ready, 900ms floor) via teardown chokepoint (mirrors __lockFX, explicit cancelAnimationFrame + DOM removal, zero rAF cost post-removal). 4000ms safety net self-dismisses if init throws before ready().
+  * **GUIDE judgment: NO REBUILD NEEDED.** Both features are pure-ambient decoration (CSS animations + cursor parallax), invisible to users on mobile, reduced-motion, or non-fine-pointer devices. No new UI strings (MISSING:0). No new user actions or interactions (boot is transient; cursor-wake is passive feedback, not interactive). Guide documents user workflows and actionable features, not passive visual polish. Current GUIDE.md is accurate; these features require no documentation changes. Same logic as prior Desktop Alive v1 + Lock-Screen Alive QA sessions.
+
+- Decision / result:
+  * Desktop Alive v2 cursor-wake + boot overlay are **GREEN @ d1aa48f** (the published artifact, unchanged). All 13 suites 356 tests pass, preflight CLEAR (script balance: 5 verified), MISSING: 0 (723 keys, no new strings). No guide rebuild needed (invisible ambient features, no user-action impact, prefers-reduced-motion gated).
+  * Decoration quality verified: cursor-wake gated to desktop fine-pointer ≥1024px, boot animations all gated to prefers-reduced-motion, boot teardown explicit + safe (net covers all init paths).
+
+- Commits / SHAs:
+  * None this run (verify-only, no edits to index.html or guide).
+
+- Still open / next:
+  * **Hugo GREEN @ d1aa48f** — 13 suites / 356 tests, preflight CLEAR (script balance 5), MISSING: 0. Awaiting Akashi's SAFE sign-off (if not already confirmed) and Osefe's "ship it" call + Kaito's merge/publish to gh-pages.
+  * Two pure-decoration features ready for release. QA complete.
