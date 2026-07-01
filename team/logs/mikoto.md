@@ -486,3 +486,31 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
   * Lesson reinforced: Unicode quote characters (straight vs. curly) are CRITICAL in key matching. The need_translate.json keys are the authoritative byte-for-byte source; always extract/copy keys directly, never infer.
 - Commits / SHAs: lock claim bbb8911, i18n merge 6420457 (pushed to origin).
 - Still open / next: @Kaito spot-check; @Hugo re-GREEN if tip moved; @Akashi re-SAFE if published files changed; @Osefe final "ship it" call.
+
+## [2026-07-01] — Kaito handoff — Translate Save Safety feature 17 strings to all 6 langs → MISSING: 0
+
+- Asked: Kaito's new Save Safety feature (commit 81a943c) added 17 new UI strings (install affordance, open-in-browser links, copy-link, durability warning banner, lock-screen guidance, "Fix this" option). Translate to es, da, de, sv, nb, hu → MISSING: 0. Tone: serious, factual, professional (per CLAUDE.md product voice) — NOT warm/hype.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 17 (exact keys from need_translate.json).
+  * Identified all 17 strings: 6 action labels (Your link, Copy link, Open in browser, Copied, Fix this), 6 instruction/guidance strings (Tap the ⋯ menu, Paste this in Safari/Chrome, This page is inside another app, Tap "Open in browser", Choose "Open in browser", If you opened this inside another app), 2 longer sentences (the durability banner warning about data loss on refresh + Install MRLN explainer), 3 compact affordance labels (↗ Open in browser · Copy link · Install, ↗ Open / Save, Open & Save MRLN).
+  * Translated all 17 strings to 6 languages (102 translations total):
+    - Action labels: concise action verbs per language (Spanish "Tu enlace"/"Copiado", Danish "Dit link"/"Kopieret", etc.)
+    - Instructions: natural per-language phrasing + ellipsis (⋯) and middle-dot (·) separators preserved exactly
+    - Banner sentence: preserved all sentence structure, em-dash (—), pragmatic phrasing for each language
+    - Tone: factual, direct, professional — no emoji except functional separators/arrows (↗ ⋯ ·)
+  * Challenge: 2 keys use curly quotation marks (U+201C/U+201D) around "Open in browser" text — these broke standard Python string literal parsing in shell. Worked around by reading from need_translate.json keys (exact Unicode) and mapping translations to those exact keys programmatically.
+  * Merged all 102 translations into AUTO-MERGED block: Python script parsed 838KB minified JSON, merged by language (es/da/de/sv/nb/hu as top-level keys), re-serialized minified, and wrote back. No file corruption.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (711 keys fully translated across all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (12 suites: parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 58/58, silly 43/43, photo 17/17, pr 12/12, tax 105/105, media 23/23 = 323 tests total; preflight CLEAR; all published files leak-clean).
+  * Committed index.html (c983696) with full description of the 17 strings and translation approach.
+- Key translation decisions:
+  * Functional emoji/symbols (↗ Open in browser · Copy link · Install) preserved exactly — aid comprehension, not hype.
+  * Curly quotes (U+201C/U+201D) in keys extracted byte-for-byte from need_translate.json and matched exactly — no inference
+  * Em-dash (—) preserved in banner sentence — maintains serious tone.
+  * Action labels kept concise, no filler ("Tu enlace" not "Tu propio enlace"; "Kopier link" not "Kopiera din länk").
+  * Instruction tone: direct, imperative verbs (es "Toca"/"Elige", da "Tryk på"/"Vælg", de "Tippe auf"/"Wähle", sv "Tryck på"/"Välj", nb "Trykk på"/"Velg", hu "Koppints"/"Válaszd"), matching MRLN's factual register.
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 17 Save Safety strings translated to 6 locales in factual, serious tone. Every symbol, quote, placeholder preserved exactly. GREEN gate confirmed.
+  * Lesson: Unicode curly quotes (U+201C/U+201D/U+201E/U+201F) in JSON keys require byte-exact matching; need_translate.json is the authoritative source, never inferred from string literals.
+- Commits / SHAs: i18n merge c983696.
+- Still open / next: @Kaito spot-check translations; @Akashi re-SAFE (no code changed, pure i18n); @Hugo re-GREEN if tip moved; @Osefe final go to ship Save Safety feature.
