@@ -12,7 +12,7 @@ It travels through git, so everyone sees it after a pull.
 
 ## 📌 STATE (glance here first — keep current)
 - **Live (gh-pages):** `c4b4aad` — …Desktop Alive, Lock-Screen Alive, + **Save Safety** (fail-loud when the browser won't persist data: autosave read-back verify + boot canary probe + in-app-browser UA sniff → loud amber banner; always-accessible ↗ Open/Save escape hatch — Copy link · Install · Open-in-browser — in localebar + lock screen; fixes silent localStorage loss in in-app browsers/private mode), sw **v15**.
-- **Gate:** clear — **Save Safety SHIPPED** (Akashi SAFE · Hugo GREEN · Arthur SHIP · Mikoto MISSING:0 @ 28e7d4f; deploy diff = signed artifact; sw v15; browser smoke 8/8 incl. silent-no-op-write fires banner + normal persistence regression; 12 suites/323). **Roadmap:** ~~1) Media Log✓~~ ~~2) Smart Onboarding✓~~ ~~3) Desktop Alive✓~~ ~~3b) Lock-Screen Alive✓~~ ~~3c) Save Safety✓~~ → **Media Log v2 (Osefe: link-out to IMDb/Google + Film/Show/Game flip + genre + seed — NEXT)** → 4) Wave 2 (CJK infra + fr/it) → 5) Wave 3 (zh/ja/ko). · **Locks:** none · **Pending:** none · Gate now **13 suites / 337** (added committed save-safety regression guard, 14 cases)
+- **Gate:** clear — **Save Safety SHIPPED** (Akashi SAFE · Hugo GREEN · Arthur SHIP · Mikoto MISSING:0 @ 28e7d4f; deploy diff = signed artifact; sw v15; browser smoke 8/8 incl. silent-no-op-write fires banner + normal persistence regression; 12 suites/323). **Roadmap:** ~~1) Media Log✓~~ ~~2) Smart Onboarding✓~~ ~~3) Desktop Alive✓~~ ~~3b) Lock-Screen Alive✓~~ ~~3c) Save Safety✓~~ → **Media Log v2 (IN PROGRESS — Osefe: DIRECT IMDb link-out per entry + Film/Show/Game flip + genre + seed)** → **Desktop Alive v2 cursor-wake (queued — Osefe: cyan water ripples trailing the mouse in the dark side gutters, desktop-only)** → 4) Wave 2 (CJK infra + fr/it) → 5) Wave 3 (zh/ja/ko). · **Locks:** Kaito — Media Log v2 + cursor-wake (index.html) · **Pending:** none · Gate **13 suites / 337**
 - **Needs Osefe:** nothing blocking. QUEUED: (a) optional **2026 tax-year refresh** across all 12 countries (current-year vs filing-year — not all 2026 brackets legislated yet); (b) **Wave 2** = CJK/i18n+font infra (Akashi design `5cef16c`) + **fr/it** language packs; (c) **Wave 3** = zh/ja/ko packs. German `de` already live.
 - **Open threads / parked:** Assistant calories-left intent; answerData Playwright test; Option-2 embedding model; HU phrasing polish; Tier 1 A+C; Tier 2 I/J/K/L; monetization/Stripe arch; marketing video v2; prune orphaned old-emoji i18n keys; PR cardio import partial-write robustness (Akashi optional); strength-render esc hardening (Akashi optional, pre-existing); stray stash@{0}.
 
@@ -20,7 +20,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- (board clear — Save Safety shipped @ c4b4aad / sw v15)
+- LOCKED: index.html (Media Log v2, then Desktop Alive v2 cursor-wake) — Kaito — v2: Film/Show/Game flip+filter, genre, direct IMDb link-out per entry, getting-started seed; then desktop cursor-wake (cyan water ripples trailing the mouse in the dark side gutters) — [2026-07-01]
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
