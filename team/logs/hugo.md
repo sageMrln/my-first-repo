@@ -545,3 +545,30 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * **Hugo GREEN @ 96ce087** — 13 suites / 356 tests, preflight CLEAR, MISSING: 0. Awaiting commit + push, then Osefe's "ship it" + Kaito's merge/publish to gh-pages.
+
+## [2026-07-01] — via Kaito (asleep dispatch) — GUIDE.md §8 IMDb privacy-claim fix GREEN @ 03da14d
+
+- Asked: Correct factual error in GUIDE.md §8 IMDb button description. Current text says "the search happens locally" (wrong — happens on IMDb's servers). Rewrite to accurate privacy point: sends ONLY title to IMDb, never MRLN data; rel=noopener noreferrer prevents IMDb from seeing referrer. Rebuild PDF, run full gate, push. Don't edit index.html.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip b278a49 post-Media Log v2, Akashi SAFE'd it). No lock on GUIDE.md. Fixed §8 line 158: replaced "doesn't send your data anywhere — the search happens locally" with "It sends only the title to IMDb — never your MRLN data (no finance ID, and rel=noopener noreferrer strips the referrer so IMDb can't even see which app you came from)." This is factually accurate: the href encodes only the title as a query param (via `esc()`), rel=noopener noreferrer prevents Referer header entirely, and app's fid/key/STATE never reach IMDb.
+  * Rebuilt MRLN-Guide.pdf with `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` (495 KB).
+  * Ran `node tools/release/green.js`: **GREEN exit 0** — all 13 suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, media 43/43 ✓, tax 105/105 ✓, savesafety 14/14 ✓ = **337 total tests**. Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced). Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean).
+  * Ran `node tools/publish/preflight.js`: **exit 0**. All checks CLEAR.
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (722/722 keys, 7 languages — no new strings added).
+  * Staged GUIDE.md + MRLN-Guide.pdf, committed (03da14d). Pulled --rebase, pushed to claude/vibrant-pasteur-ie24ab.
+
+- Decision / result:
+  * GUIDE.md §8 IMDb description is now **factually accurate** — privacy claim precisely reflects what the link does (sends title only, never MRLN data, referrer stripped by rel=noopener noreferrer). Serious, professional tone.
+  * **GREEN @ 03da14d** — 13 suites / 337 tests, preflight CLEAR, MISSING: 0. PDF rebuilt, leak-clean.
+  * Tip moved from b278a49 (Akashi's SAFE base) to 03da14d (guide+PDF only) — per freeze-the-candidate, flagged Akashi in chat for optional re-SAFE on 03da14d (docs are factual + accurate, no money/keys/watchdogs touched; should be clear).
+  * Index.html unchanged by this run (Kaito locked).
+
+- Commits / SHAs:
+  * 03da14d (GUIDE.md §8 fix + PDF rebuild)
+  * 483255e (TEAM-CHAT status post)
+
+- Still open / next:
+  * Awaiting Akashi's optional re-SAFE on 03da14d (likely CLEAR — docs-only, no security logic changed).
+  * Osefe's "ship it" if this fix is gated, or next build direction.
+  * Media Log v2 B1 layout blocker (title width starve) is Arthur's to Kaito to fix before ship.
