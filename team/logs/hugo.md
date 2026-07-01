@@ -177,6 +177,33 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Commits / SHAs: lock claim + `ecf5209` (guide+PDF) + GREEN chat post.
 - Still open / next: (1) Akashi re-sign SAFE on ecf5209 → then Osefe ship call. (2) §1 pricing rewrite still pending Osefe's monetization model. (3) PR #3 watcher armed (hourly cron).
 
+## [2026-07-01] — via Kaito (asleep dispatch) — Media Log v2 GUIDE.md privacy overclaim fix GREEN @ af8ca27
+
+- Asked: Akashi withheld SAFE on Media Log v2 (tip ~4d47a96) because GUIDE.md §8 has a privacy overclaim: line 166 says "Nothing ever leaves your device" as an absolute bolded statement, but line 158 documents the ↗ IMDb button that deliberately sends the user's title off-device when tapped. These contradict. Fix the overclaim on line 166 to match app behavior accurately, without introducing other contradictions elsewhere in §8. Use Akashi's suggested wording (adapt as fit, keep serious tone): "Your Media Log data stays on your device — it never syncs or uploads on its own" (the IMDb button is the one exception, and only when you tap it: it sends just the title, nothing else). Rebuild PDF. Confirm GREEN exit 0 + MISSING:0. Commit, pull --rebase, push. Post GREEN with exact SHA + new wording.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (read memory + chat to understand context; Akashi's SAFE blocked on the overclaim).
+  * Reviewed GUIDE.md §8 (lines 150–166): Found the contradiction exactly as Akashi described. Line 158 documents IMDb button sending title to IMDb when tapped (accurate). Line 166 claims "Nothing ever leaves your device." as an unqualified bolded absolute (inaccurate and contradicts line 158). No other absolutes elsewhere in §8 that would conflict with the fix.
+  * **Fixed line 166** (exact edit): replaced "Nothing ever leaves your device." with "Your Media Log data stays on your device — it never syncs or uploads on its own" + added inline callout: "(the ↗ IMDb button is the one exception, and only when you tap it: it sends just the title, nothing else)". The corrected wording is factually accurate to app behavior (stored data never auto-syncs; IMDb link is user-initiated exception; sends title only, never MRLN data). Serious, professional tone, consistent with MRLN's voice.
+  * Rebuilt PDF: `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 495 KB (successful rebuild).
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0** — all 13 suites passed (parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, media 43/43 ✓, savesafety 14/14 ✓ = **356 total tests**), preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced), leak scan clean ✓ (GUIDE.md scanned, manifest/sw/team-chat clean; PDF derives from GUIDE.md).
+  * Ran i18n: `node tools/i18n/sync.js` → **MISSING: 0** (722 keys, 7 languages — guide fix added no new UI strings, only documentation text).
+  * Staged GUIDE.md + MRLN-Guide.pdf, committed (af8ca27). Pulled --rebase, pushed to `claude/vibrant-pasteur-ie24ab`.
+  * Posted GREEN status to TEAM-CHAT.md under Akashi's blocking note, naming the exact tip af8ca27 and the corrected wording, flagging for Akashi re-SAFE on the new tip.
+
+- Decision / result:
+  * **GREEN @ af8ca27** — all 13 suites (356 tests) pass, preflight CLEAR, MISSING: 0. GUIDE.md §8 privacy claim is now accurate and consistent: no overclaim, no other contradictions. PDF rebuilt, leak-clean.
+  * Tip moved from ~4d47a96 (starting state) to af8ca27 (guide fix commit); per freeze-the-candidate rule, Akashi should re-SAFE on the new tip (code side unchanged, only guide wording; should be clear).
+
+- Commits / SHAs:
+  * af8ca27 (GUIDE.md §8 line 166 fix + PDF rebuild)
+  * 6b11ac7 (TEAM-CHAT.md status post)
+
+- Still open / next:
+  * Awaiting Akashi re-SAFE on af8ca27 (likely CLEAR — docs-only, privacy claim now accurate, no code/data/figures touched).
+  * Then Osefe's final "ship it" and Kaito's merge/publish to gh-pages.
+  * Media Log v2 + all signed-off features ready for release once gate clears.
+
 ## [2026-06-29 HH:MM] — via Kaito (asleep dispatch) — Arthur E accordion stagger fix GREEN @ 5e04ee3
 - Asked: Re-confirm GREEN on commit `5e04ee3` (Arthur E fix: accordion stagger gated to transient `just-opened` class — CSS/JS-only, no new strings, no number/data-path changes). Run `node tools/release/green.js` (expect exit 0: all 6 suites 92 tests, preflight CLEAR, published files leak-clean) and `node tools/i18n/sync.js` (expect MISSING: 0). No guide rebuild needed (invisible motion change). If RED, report exactly which suite + output.
 - Did / found / thought: Pulled `claude/vibrant-pasteur-ie24ab` (at tip `5e04ee3`), read memory + chat. Ran `node tools/release/green.js`: **GREEN exit 0** — all 6 suites passed (parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, transfer 27/27 ✓ = **92 total**), preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced), leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean). Ran `node tools/i18n/sync.js`: **MISSING: 0** (559/559 keys, 7 languages — motion fix added NO new strings). Arthur's accordion stagger is pure CSS/JS (transient class gates animation, no UI text, no data paths) — per task, NO guide rebuild needed for invisible motion polish. **Verdict: motion-only, no guide action required.**
