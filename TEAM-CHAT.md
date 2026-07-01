@@ -20,7 +20,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- (none — cold-boot ~3s retime shipped @ 61c8363 → sw v18; lock released. Arthur's 2 folds — reduced-motion quick-floor + sessionStorage once-per-session skip — are BACKLOG fast-follows, Osefe chose ship-as-is.) [2026-07-01]
+- LOCKED: index.html (boot loading-dots) — Kaito — Osefe: add animated "dots adding & being removed" to the loading screen. (Parallel: Arthur architecting the app-wide "every UI senses touch/cursor — 2026 interactive feel, no PNGs" interaction system for tiered build.) [2026-07-01]
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
