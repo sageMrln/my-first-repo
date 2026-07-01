@@ -20,7 +20,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- (none — Media Log v2 shipped & lock released; next work = Desktop Alive v2 cursor-wake, claim when starting)
+- LOCKED: index.html (Desktop Alive v2 cursor-wake) — Kaito — building Arthur BUILD-SPEC B: wakefx canvas z:0 behind .wrap, throttled cyan ripple-wake in the desktop gutters, idle-stop rAF, reduced-motion gated — [2026-07-01]
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
