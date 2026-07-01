@@ -672,3 +672,21 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * **Hugo GREEN @ 61c8363** — 13 suites / 356 tests, parse guard GREEN, preflight CLEAR, MISSING: 0. Timing change ready for publish. Awaiting Osefe's "ship it" + Kaito's merge to gh-pages.
+
+## [2026-07-01] — via Kaito (asleep dispatch) — Interaction Layer Tier 1 GREEN @ c4bc7e6
+- Asked: Release/QA pass for GREEN sign-off on Interaction Layer Tier 1 (boot loading dots f2c7302 + interaction-layer Tier 1 c4bc7e6). Pure-CSS presentation — no strings, no logic, no guide impact. Execute: (1) git pull --rebase, note exact tip SHA; (2) run `node tools/release/green.js` → confirm exit 0, step 0 HTML-parse guard passes, all 13 suites green (356 tests); (3) run `node tools/test/html_parse_test.js` → passes; (4) run `node tools/publish/preflight.js index.html` → CLEAR; (5) run `node tools/i18n/sync.js` → MISSING:0; (6) no guide rebuild needed (pure motion polish); (7) append log, post GREEN to TEAM-CHAT, commit + push.
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip c4bc7e6). Read memory + chat (Interaction Layer Tier 1 — every tappable senses touch + cursor, pure CSS presentation).
+  * Ran `node tools/release/green.js`: **GREEN exit 0**. Step 0 parse guard passes (3 script blocks all syntactically valid), then all 13 test suites: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓ = **356 total tests**. Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, script tags balanced (5)). Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean; PDF derives from GUIDE.md).
+  * Ran `node tools/test/html_parse_test.js` directly: **exit 0** ✓. All 3 script blocks parse (app script is syntactically valid).
+  * Ran `node tools/publish/preflight.js index.html`: **exit 0 CLEAR** ✓. All checks pass: slots empty, 1 public key present, no private-key material, no owner PII, PUBCHK watchdog intact, script tags balanced (5).
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (723/723 keys, 7 languages — Interaction Layer Tier 1 added no UI strings, pure CSS + touch/cursor event handlers, no text).
+  * **No guide change needed.** Interaction Layer Tier 1 is invisible ambient motion-polish (every tap target senses finger/cursor + applies micro-feedback: ripple, scale, glow). Pure CSS + JS event binding; no new UI, no new actions, no capability change. Guide is accurate as-is.
+  * **Tip SHA confirmed:** c4bc7e6 (commit hash: `c4bc7e6a7a5c6e966627043e24a3824ed917d743`, message: "feat(ui): interaction layer Tier 1 — every tappable senses touch + cursor (Arthur)").
+- Decision / result:
+  * **GREEN @ c4bc7e6** — all 13 suites (356 tests) pass. HTML parse guard passes (step 0). Preflight CLEAR (script balance verified: 5). MISSING: 0 (723 keys). Interaction Layer Tier 1 (boot loading dots + touch/cursor feedback) is verified GREEN. No guide update needed (motion-only, no user-facing features added).
+  * Pure-CSS presentation ready. Timing change (boot 900ms→3s, now reverted to interaction polish) is isolated, low-impact.
+- Commits / SHAs:
+  * c4bc7e6 (Interaction Layer Tier 1 — current tip, verified GREEN).
+- Still open / next:
+  * **Hugo GREEN @ c4bc7e6** — 13 suites / 356 tests, parse guard GREEN, preflight CLEAR, MISSING: 0. Interaction Layer Tier 1 ready for publish. Awaiting Osefe's "ship it" + Kaito's merge to gh-pages.
