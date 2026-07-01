@@ -20,7 +20,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- LOCKED: index.html (cold-boot re-time) — Kaito — Osefe directive: slow the loading screen to ~3s (floor 900→3000ms) + retime the choreography to fill it + add a living pulse during the hold. [2026-07-01]
+- (none — cold-boot ~3s retime shipped @ 61c8363 → sw v18; lock released. Arthur's 2 folds — reduced-motion quick-floor + sessionStorage once-per-session skip — are BACKLOG fast-follows, Osefe chose ship-as-is.) [2026-07-01]
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
