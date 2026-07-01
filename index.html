@@ -424,6 +424,7 @@
   .lockcard .lk-savehelp{ margin-top:10px; text-align:left }
   .lockcard .lk-savehelp-url{ font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--cyan); word-break:break-all; background:#08131f; border:1px solid var(--line); border-radius:8px; padding:8px 10px; user-select:all }
   .lockcard .lk-savehelp-copy{ margin-top:8px; width:100%; background:linear-gradient(180deg,var(--cyan),var(--cyan-dim)); color:#04222a; border:none; border-radius:9px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; padding:9px; cursor:pointer }
+  #openSaveBtn{ min-height:44px; padding:9px 12px }   /* THE recovery affordance — honest 44px touch target (Arthur) */
   /* install guides that flank the lock card (wide) / stack below it (phones) */
   .lk-guide{width:100%;max-width:238px;flex:0 0 auto;border:1px solid var(--line);border-radius:14px;background:rgba(8,19,31,.66);padding:14px 16px;box-shadow:0 0 16px rgba(0,0,0,.25)}
   .lk-guide-h{font-family:'Share Tech Mono';font-size:12px;letter-spacing:.05em;color:var(--cyan);margin-bottom:9px}
@@ -8147,7 +8148,7 @@
       if(typeof IN_APP_BROWSER!=='undefined' && IN_APP_BROWSER){
         h += '<div class="ss-zone"><div class="ss-h">'+t('Open in your browser')+'</div>'
            + '<div class="ib-note">'+t('This page is inside another app. To save your data, open it in your browser:')+'</div>'
-           + '<ol class="lk-guide-steps"><li>'+t('Tap the ⋯ menu (top-right).')+'</li><li>'+t('Tap “Open in browser” (or “Open in Safari/Chrome”).')+'</li></ol></div>';
+           + '<ol class="lk-guide-steps"><li>'+esc(t('Tap the ⋯ menu (top-right).'))+'</li><li>'+esc(t('Tap “Open in browser” (or “Open in Safari/Chrome”).'))+'</li></ol></div>';
       }
       body.innerHTML = h;
       var cp=document.getElementById('ssCopy'); if(cp) cp.addEventListener('click', function(){ if(window.__copyLink) window.__copyLink(url, cp); });
