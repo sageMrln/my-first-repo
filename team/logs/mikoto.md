@@ -596,3 +596,22 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
   * Lesson: i18n injection blocks may exist without AUTO-MERGED comments; sync.js only scans the AUTO-MERGED-marked block. Must merge translations into the correct block or sync will not find them. The block boundaries require precise brace-counting after the IIFE wrapper pattern.
 - Commits / SHAs: 2f3c9cc (i18n merge + push).
 - Still open / next: @Kaito spot-check translations; @Akashi re-SAFE (no code changed, pure i18n); @Hugo re-GREEN if tip moved; @Osefe final "ship it" call to publish boot-screen feature.
+
+## [2026-07-01 ~00:30] — Kaito dispatch (asleep) — re-verify i18n on cursor-wake + cold-boot tip
+
+- Asked: Kaito reported a brace-syntax break in my earlier merge (commit 2f3c9cc; stray `}` in the AUTO-MERGED IIFE closing) that made the whole app dead (window.LOCK/STATE/MEDIALOG undefined). He fixed it at c5f92bb. Now verify on the current tip: (a) MISSING:0; (b) html_parse_test.js passes (page syntax is valid); (c) green.js GREEN; (d) spot-check Spanish "SISTEMA EN LÍNEA" and Hungarian "RENDSZER ONLINE" are still present.
+- Did / found:
+  * `git pull --rebase` — tip is `c5f92bb3266b4e9dba4ca6790c1af46a8c5a07cc`.
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0** (723 fully translated keys across all 7 languages). No strings lost; the AUTO-MERGED block brace-fix didn't affect translations themselves.
+  * Spot-checked: `grep -o "SISTEMA EN LÍNEA"` ✓ (binary match), `grep -o "RENDSZER ONLINE"` ✓ (binary match), `grep -o "// SYSTEM ONLINE"` ✓ (matched literal).
+  * Ran `node tools/test/html_parse_test.js` → **✓ all 3 script blocks parse** (app script is syntactically valid). The brace-fix worked — IIFE now closes correctly.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (full gate: parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 27/27, photo 17/17, PR 12/12, tax 105/105, media 43/43, onboarding 10/10, save-safety 14/14 = 13 suites / 356 assertions; preflight CLEAR; all published files leak-scan clean).
+  * Posted status to TEAM-CHAT.md MESSAGES.
+- Decision / result:
+  * **MISSING: 0** confirmed on tip c5f92bb.
+  * **HTML parses** confirmed — no syntax breaks.
+  * **GREEN** confirmed — all 13 test suites pass.
+  * **Translations survived the brace-fix intact** — spot-check passed for es/hu/en.
+- Lesson: after editing the AUTO-MERGED block, **always run `html_parse_test.js` (or the full `green.js`)** — `sync.js MISSING:0` does NOT catch a syntax break in the merge block itself. The minified JSON serialization can be valid (curly braces matched) but a typo in the IIFE closing (`};` → `}};` or similar) breaks the whole script. Guard is now committed (`tools/test/html_parse_test.js`, step 0 of green.js), so future AUTO-MERGED edits will catch this class automatically.
+- Commits / SHAs: tip verified c5f92bb; TEAM-CHAT update 38ffb10.
+- Still open / next: Gate awaits @Kaito's final merge/publish. i18n side is clean. No action items.
