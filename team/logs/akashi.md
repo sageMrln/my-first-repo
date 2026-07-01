@@ -1906,3 +1906,16 @@ Entry format:
 - Still open: nothing security-side. Gate (steps 7–11): Mikoto MISSING:0 @ c983696 done, my SAFE @ b4afa69 posted;
   needs Hugo GREEN on THIS tip + Osefe's explicit "ship it" (sleep-mode: NO auto-publish). If the tip moves index.html,
   I re-sign.
+
+## [2026-07-01] — via Kaito (asleep) — RE-SIGN: Save Safety tip moved b4afa69 → `28e7d4f`
+- Asked: re-sign SAFE on the moved tip per freeze-the-candidate. Kaito/Arthur say the ONLY delta is two polish nits: (1) new CSS `#openSaveBtn{min-height:44px;padding:9px 12px}` touch target, (2) the two Z3 open-in-browser step strings wrapped in `esc(t(...))`. Verify exactly those two, confirm security-neutral/positive, post SAFE @ 28e7d4f; STOP + flag if anything else.
+- Did / found (ran the diff myself, did NOT trust the description):
+  - `git diff --stat b4afa69 28e7d4f`: index.html (3 ±, +2/-1), TEAM-CHAT.md, three log files (akashi/arthur/hugo). Non-index files = chat + memory logs, NOT published artifacts.
+  - `git diff b4afa69 28e7d4f -- index.html` = EXACTLY the two claimed hunks, nothing else:
+    1. @425 ADD `#openSaveBtn{ min-height:44px; padding:9px 12px }` — pure CSS touch-target on the recovery button. No logic/data/network/listener.
+    2. @8148 buildModalBody Z3 (IN_APP_BROWSER branch): the two `<li>` step strings changed from `t('…')` to `esc(t('…'))`. `esc` = the existing HTML-escape helper (@1973, &/</>/" → entities). Both strings are STATIC i18n literals (no user/MODEL/STATE data) → esc is defense-in-depth PARITY, strictly security-positive, cannot regress. `body.innerHTML=h` sink unchanged; wrapping its inputs in esc only hardens it.
+  - SECURITY-NEUTRAL-OR-POSITIVE ✓: no money/parser/applyChange/export/exportBlank/watchdog line touched; no fetch/eval/new src/network added; no new i18n string (both already in dict). CSS is cosmetic; esc() is a hardening delta.
+  - INVARIANTS on the tip (verified, not assumed): __sys 27==27, __sys.token() 14==14, PUBCHK 4047293148 ×1, PUB_B64 ×3 — all IDENTICAL to my b4afa69 baseline. #__ownerKeySrc empty (@1871), #hud-state empty (@1867) — confirmed byte-empty via cat -A. sw.js/manifest UNTOUCHED (numstat empty).
+- VERDICT: **SAFE @ 28e7d4f.** Everything I cleared at b4afa69 holds; the only index.html delta is a cosmetic 44px CSS rule + esc()-parity on two static Z3 strings — security-neutral-or-positive, no logic/data/network change. Posted SAFE @ 28e7d4f to TEAM-CHAT.
+- Commits / SHAs reviewed: b4afa69 (prior SAFE) → 28e7d4f (re-signed tip). Read-only; no lock taken.
+- Still open: nothing security-side. Gate (steps 7–11): my SAFE @ 28e7d4f stands; needs Hugo GREEN on THIS same tip + Mikoto MISSING:0 on this tip (no new strings → trivially holds) + Osefe's explicit "ship it" (sleep-mode: NO auto-publish). If the tip moves again, I re-sign.
