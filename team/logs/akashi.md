@@ -2055,3 +2055,42 @@ Entry format:
 - VERDICT: **SAFE @ cc25475.** Pure CSS presentation (press-cancel/hover/focus-visible/transitions), motion+desktop gated; zero JS/state/network/storage/money surface → correctly un-poisoned; watchdogs byte-identical; slots empty; app parses; GREEN/CLEAR. NO security edit required.
 - Commits / SHAs reviewed: cc25475 (tip), baseline c4bc7e6 (my prior SAFE). Read-only, NO lock, NO edits to app code. Posted SAFE @ cc25475 to TEAM-CHAT.
 - Still open: Gate (steps 7–11): needs Hugo GREEN + Mikoto MISSING:0 on THIS tip (no new string → trivial), then Osefe's explicit "ship it" (sleep-mode: NO auto-publish). If the tip moves index.html, I re-sign. BACKLOG still open: Google-Fonts @import off the render-blocking critical path.
+
+## [2026-07-01] — via Kaito (asleep, step 10) — REVIEW: Interaction Tier 2 + 3 (`b4a7523`)
+- Asked: SAFE-review Tier 2+3 — CSS motion + two new JS IIFEs (liveVal value-pulse, cardSheen
+  cursor glare) + a one-line toast class. Critical worry: liveVal observes the elements that DISPLAY
+  the owner's MONEY figures — confirm it's a read-to-compare ONLY, never stores/logs/transmits/exposes
+  the value. Confirm cardSheen reads only pointer coords, watchdogs intact, run gate.
+- Did / found (read full diff cc25475..HEAD, grepped added lines, ran the gate — not on faith):
+  - SCOPE: index.html +72 (CSS motion block @727-756 + 2 JS IIFEs @8305-8344 + toast className line
+    @8077) + sw.js v18→v19 (VERSION string cache-flush, from prior commit 38c19e4 folded into range).
+    No parser/applyChange/finance/export/manifest edit.
+  - liveVal READ-TO-COMPARE ONLY ✓ (the critical one): MutationObserver on SEL='.hero-num, .bignum,
+    .calc-out, .stat .val'. Callback reads el.textContent → compares now!==last (last = a CLOSURE var,
+    transient in-memory, never persisted/networked) → if both non-empty & !=='—' calls pulse(el) which
+    only removes/re-adds the CSS class 'val-pulse' (+ void offsetWidth reflow). el.__lv=1 is a de-dupe
+    marker (value 1, NOT the money). Grepped ALL added lines for fetch/XMLHttpRequest/postMessage/
+    localStorage/sessionStorage/eval/innerHTML/new Function/.src=/JSON.stringify/dataset/setItem/
+    location.(href|search|hash) → ZERO hits. The money figures never leave the DOM; a class toggle is
+    not a leak. Class changes aren't observed (only childList/characterData/subtree) → pulse can't
+    self-trigger (matches the comment). First population (— → value) is skipped by the dash guard.
+  - cardSheen POINTER-ONLY ✓: pointermove (passive) → e.target.closest('.card') + getBoundingClientRect
+    → mx/my = clientX/Y as % → card.style.setProperty('--mx'/'--my'). rAF-coalesced (1 write/frame),
+    desktop-gated (hover:hover+pointer:fine+min-width:1024+no-preference), mouse-only. No state/money/
+    key read, no network, no DOM injection. toast: one cosmetic d.className='mrln-toast' for enter anim
+    (fresh div, no prior class clobbered; inline cssText untouched).
+  - ANTI-TAMPER INTACT ✓: pulsing/observing a poisoned value element does NOT weaken the watchdog —
+    the poison is the token() multiplier inside GRAND/leftOver/itemMonthly (the COMPUTATION), not the
+    rendered DOM text; liveVal never reads/writes that path. No new figure introduced → no new poison
+    needed. __sys count IDENTICAL parent cc25475 vs HEAD (27==27); PUBCHK(4047293148 ×2) + PUB_B64(×3)
+    present; <script> tag count 5==5 (parent==HEAD → no smuggled script block); #hud-state (@2056) +
+    #__ownerKeySrc (@2060) byte-empty (both parent & HEAD).
+  - Ran node tools/test/html_parse_test.js → 3/3 script blocks parse. node tools/release/green.js →
+    GREEN exit 0 (356 tests; preflight CLEAR — slots empty, 1 public key, no PII, PUBCHK, 5 scripts
+    balanced; GUIDE/manifest/sw/team-chat clean). node tools/publish/preflight.js index.html → CLEAR exit 0.
+- Verdict: SAFE @ b4a7523. Money-figure observer is read-to-compare-and-toggle-a-class ONLY — it does
+  NOT exfiltrate (no fetch/storage/postMessage/dataset/serialize of the value); cardSheen is pointer-only;
+  watchdogs byte-intact; no new poison required.
+- Commits / SHAs reviewed: b4a7523 (tip). If index.html moves, I re-sign.
+- Still open: nothing security-side. Gate: Hugo GREEN + Mikoto MISSING:0 already posted @ b4a7523; my
+  SAFE now in. Awaiting Osefe's explicit "ship it" (sleep-mode: no auto-publish).
