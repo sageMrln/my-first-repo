@@ -119,6 +119,18 @@
     color:#eaffff; text-shadow:var(--glow); opacity:1; position:relative; }
   #boot .boot-sys{ font-family:'Share Tech Mono'; text-transform:uppercase; color:var(--cyan);
     letter-spacing:.28em; font-size:clamp(10px,2.6vw,12.5px); opacity:.85; }
+  /* loading dots — cyan dots add (1→2→3) and clear, looping, like a machine working. Fade in with
+     the system line and animate through the 3s hold. Motion-gated; hidden for reduced-motion. */
+  #boot .boot-dots{ display:flex; gap:8px; margin-top:5px; opacity:0; }
+  #boot .boot-dots span{ width:5px; height:5px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px rgba(0,229,255,.5); opacity:.18; }
+  @media (prefers-reduced-motion: no-preference){
+    #boot .boot-dots{ animation:bootDotsIn 450ms ease-out 1850ms forwards; }
+    #boot .boot-dots span{ animation:bootDot 1.4s ease-in-out infinite; }
+    #boot .boot-dots span:nth-child(2){ animation-delay:.24s; }
+    #boot .boot-dots span:nth-child(3){ animation-delay:.48s; }
+  }
+  @keyframes bootDotsIn{ from{opacity:0} to{opacity:1} }
+  @keyframes bootDot{ 0%{opacity:.18;transform:translateY(0)} 25%{opacity:1;transform:translateY(-2px)} 60%{opacity:.18;transform:translateY(0)} 100%{opacity:.18;transform:translateY(0)} }
   #boot.boot-out{ transition:opacity 260ms ease-out; opacity:0; }
   /* Retimed to a deliberate ~3s cold-boot (Osefe: it flashed by unseen). Composition unfolds over
      ~2.3s, then a LIVING hold — the wordmark glow-breathes and the system line pulses like a machine
@@ -200,6 +212,41 @@
   .tab.active .ix{color:#04121a}
   .tab:focus-visible,.btn:focus-visible,.scen-btn:focus-visible{outline:2px solid var(--lime);outline-offset:2px;box-shadow:0 0 0 4px rgba(124,255,178,.12)}  /* Arthur F — focus glow */
   .tab:active{transform:translateY(0) scale(.97)}   /* Arthur D — press squeeze */
+
+  /* ===== INTERACTION LAYER — Tier 1 (Arthur): every tappable senses touch + cursor. Press feedback
+     on ALL controls (touch + mouse, <100ms), desktop-gated hover, focus-visible rings. Transform/
+     filter/opacity only (GPU). Press magnitude scales INVERSE to size — chips squeeze more, large
+     surfaces "push in" via brightness with NO translate (so a scroll-drag never reads as a bounce).
+     All motion prefers-reduced-motion:no-preference gated. Pure presentation — no JS, no strings. ===== */
+  @media (prefers-reduced-motion: no-preference){
+    /* shared transition so press + hover actually animate (covers the common animated props, not
+       `all` → no layout thrash). Standardizes interaction feel across every control. */
+    .item-row,.sub-item,.exp-head,.cal-cell,.catsw,.cal-nav button,.localebar .iconbtn,
+    .savebtn,.savefab,.chattoggle,.lk-btn,.modal-actions button,.medSeedChip,.chip{
+      transition:transform .1s cubic-bezier(.2,0,0,1), filter .1s ease, box-shadow .14s ease,
+        border-color .14s ease, background .14s ease, color .14s ease; }
+    /* 1a — universal PRESS. Large surfaces push in (no translate); small controls squeeze. */
+    .item-row:active,.sub-item:active,.exp-head:active,.cal-cell:active{ transform:scale(.99); filter:brightness(1.07); }
+    .catsw:active,.cal-nav button:active,.localebar .iconbtn:active,.savebtn:active,.savefab:active,
+    .chattoggle:active,.lk-btn:active,.modal-actions button:active,.medSeedChip:active,.chip:active{ transform:scale(.95); filter:brightness(1.06); }
+  }
+  /* 1b — desktop HOVER, gated (hover:hover)+(pointer:fine) → zero mobile cost, no sticky-hover.
+     Rows/surfaces brighten (they do NOT lift — lifting a list row reads as jitter); small buttons brighten. */
+  @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion: no-preference){
+    .item-row:hover{ border-color:var(--cyan-dim); background:linear-gradient(180deg,rgba(0,229,255,.05),var(--panel)); }
+    .sub-item:hover{ border-color:var(--cyan-dim); }
+    /* .exp-head / .cal-cell hovers live in the Tier-1 POLISH block below (they must come after the
+       base component rules to win) */
+    .localebar .iconbtn:hover,.savefab:hover,.chattoggle:hover,.medSeedChip:hover{ filter:brightness(1.1); }
+  }
+  /* 1c — focus-visible rings on controls that had none (keyboard a11y). Inputs/selects/textareas keep
+     their existing cyan focus glow (not overridden here). Div surfaces get the ring for when they
+     become keyboard-reachable (tabindex is a Tier-1 follow-up). */
+  .item-row:focus-visible,.sub-item:focus-visible,.exp-head:focus-visible,.cal-cell:focus-visible,
+  .catsw:focus-visible,.cal-nav button:focus-visible,.localebar .iconbtn:focus-visible,
+  .savebtn:focus-visible,.savefab:focus-visible,.chattoggle:focus-visible,.lk-btn:focus-visible,
+  .modal-actions button:focus-visible,.medSeedChip:focus-visible{
+    outline:2px solid var(--lime); outline-offset:2px; box-shadow:0 0 0 4px rgba(124,255,178,.14); }
   /* keep page scrolling free + make taps snappy (no 300ms double-tap-zoom delay) */
   .tab{touch-action:manipulation}
   /* per-tab colour shade (double-tap a tab to set) */
@@ -649,6 +696,34 @@
   .modal-actions .mok.danger{background:linear-gradient(180deg,#ff5c7c,#b22a45);border-color:#ff5c7c;color:#fff}
   .modal-actions button:hover{transform:translateY(-1px)}
 
+  /* ===== INTERACTION LAYER — Tier 1 POLISH (Arthur re-review F1/F2/F4/F5). Placed AFTER the base
+     component styles so these WIN by source order / matching specificity. Fixes the desktop press
+     that pre-existing hover-translates were defeating, adds controls missed in the first pass, and
+     makes the row/cell hovers win instead of sitting inert. Pure CSS, motion-gated. ===== */
+  @media (prefers-reduced-motion: no-preference){
+    /* F1 — cancel the hover-lift on mouse-press so the squeeze reads on DESKTOP too (mirrors .tab) */
+    .catsw:active{ transform:translateY(0) scale(.95); filter:brightness(1.06); }
+    .savebar .savebtn:active{ transform:translateY(0) scale(.95); filter:brightness(1.06); }
+    .lockcard .lk-btn:active{ transform:translateY(0) scale(.95); filter:brightness(1.06); }
+    .modal-actions button:active{ transform:translateY(0) scale(.95); filter:brightness(1.06); }
+    /* F2 — controls missed from the first pass (give them a transition + press) */
+    .loantoggle{ transition:transform .1s cubic-bezier(.2,0,0,1), filter .1s ease, border-color .14s ease, background .14s ease; }
+    .loantoggle:active{ transform:scale(.99); filter:brightness(1.07); }
+    .chatx,.check li .box{ transition:transform .1s cubic-bezier(.2,0,0,1), filter .1s ease; }
+    .chatx:active{ transform:scale(.95); filter:brightness(1.06); }
+    .check li .box:active{ transform:scale(.9); filter:brightness(1.06); }
+    /* F4 — .exp-head base transition is background-only, so its press snapped; add transform/filter */
+    .exp-head{ transition:background .15s ease, transform .1s cubic-bezier(.2,0,0,1), filter .1s ease; }
+  }
+  /* F4/F5 — hovers that now WIN (were overridden by later base rules), desktop-gated */
+  @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion: no-preference){
+    .exp-head:hover{ background:linear-gradient(180deg,rgba(0,229,255,.12),transparent); }
+    .cal-cell:hover{ border-color:var(--cyan); box-shadow:inset 0 0 0 1px var(--cyan-dim); }
+    .chip:hover{ filter:brightness(1.1); }
+  }
+  /* F5 — .chip focus-visible parity */
+  .chip:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; box-shadow:0 0 0 4px rgba(124,255,178,.14); }
+
   /* ===================== ONBOARDING WIZARD ===================== */
   #onboard{position:fixed;inset:0;z-index:95000;display:none;align-items:center;justify-content:center;padding:18px;
     background:radial-gradient(1000px 600px at 50% -10%, rgba(0,229,255,.10), transparent 60%), rgba(3,7,14,.92);overflow-y:auto}
@@ -749,6 +824,7 @@
 <div id="boot" aria-hidden="true">
   <div class="boot-logo">MRLN</div>
   <div class="boot-sys" data-i18n="// SYSTEM ONLINE">// SYSTEM ONLINE</div>
+  <div class="boot-dots" aria-hidden="true"><span></span><span></span><span></span></div>
 </div>
 <script>
 /* Boot teardown chokepoint — mirrors __lockFX. Exits on max(app-ready, 900ms floor), then REMOVES #boot
