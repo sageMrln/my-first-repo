@@ -516,3 +516,32 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * **Hugo GREEN @ b4afa69** — 12 suites / 323 tests, preflight CLEAR, MISSING: 0. Awaiting Akashi re-SAFE (if tip moved; Akashi already signed 81a943c index + build), then Osefe's "ship it" + Kaito's merge/publish to gh-pages.
   * Save Safety QA complete. Idle until next candidate hits the gate.
+
+## [2026-07-01] — via Kaito (asleep dispatch) — Media Log v2 QA: guide sync + GREEN @ 96ce087
+
+- Asked: Final release gate on Media Log v2 (index.html @ b278a49, Kaito built; Akashi SAFE @ 96ce087 security review; Mikoto MISSING:0 via prior session). Execute: (1) run `node tools/release/green.js` → expect GREEN exit 0 (13 suites ~356 tests incl. media 43 cases with v2 type/filter/IMDb guards); (2) run `node tools/publish/preflight.js` → expect exit 0 CLEAR; (3) run `node tools/i18n/sync.js` → expect MISSING: 0; (4) GUIDE judgment: Media Log v2 adds Film/Show/Game type, All/Films/Shows/Games filter, Genre field, IMDb link-out, seed list — does guide need sync? If yes, update §8 and rebuild PDF. Post explicit GREEN @ <tip-sha> with test count.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip 96ce087), read memory + chat (Media Log v2 built, Akashi SAFE, Mikoto MISSING:0).
+  * Ran `node tools/release/green.js`: **GREEN exit 0**. All 13 suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, media **43/43** ✓, savesafety 14/14 ✓ = **356 total tests**. Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced). Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean).
+  * Ran `node tools/publish/preflight.js`: **exit 0**. All checks CLEAR.
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (722/722 keys, 7 languages — Media Log v2 i18n already completed by Mikoto in prior session).
+  * **Media test verification:** Reviewed tools/test/media_test.js — all 43 cases cover v2 features: (1) typeOf(m) detects Film/Show/Game types + defaults legacy entries to Show, (2) matchType(m) respects filterType state (All matches all, Film rejects Show, etc.), (3) imdb(m) generates IMDb search link with XSS protection via esc(), opens in new tab with rel="noopener noreferrer", handles hostile titles + special chars (& → %26). All assertions GREEN.
+  * **GUIDE judgment:** Section 8 "Media Log" currently says "rating journal for films, series, and shows" but doesn't mention v2 features: Film/Show/Game types, All/Films/Shows/Games filter tabs, Genre field, IMDb link-out (↗ IMDb button), seed list for getting started. These are **user-facing features** — users will see them and should be able to find help. Updated §8:
+    - Changed title to "rate films, shows, and games"
+    - Added type-select step (Film/Show/Game when adding)
+    - Added filter-tabs description (All/Films/Shows/Games at top)
+    - Added IMDb link description + safety note ("opens in new tab, doesn't send data")
+    - Added Genre field (optional)
+    - Added data field list (type + genre + existing fields)
+  * Rebuilt MRLN-Guide.pdf: `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 494 KB (was ~490 KB before Media Log v2). Re-ran green.js post-rebuild: still **GREEN exit 0**, preflight CLEAR, leak-clean, MISSING: 0. No new UI strings added to the app (guide is documentation only).
+
+- Decision / result:
+  * Media Log v2 is **GREEN @ 96ce087** (Akashi's SAFE commit, unchanged). All 13 suites 356 tests pass, preflight CLEAR, MISSING: 0. Media test (43/43) fully covers v2 logic (typeOf, matchType, imdb XSS guards). Guide §8 updated with user-facing features (types, filter, IMDb, genre). PDF rebuilt and gate still GREEN.
+  * Index.html unchanged by this QA run (Kaito's build @ b278a49, Akashi SAFE @ 96ce087, Mikoto i18n on top, unmodified by Hugo).
+
+- Commits / SHAs:
+  * Staging: GUIDE.md (§8 Media Log v2 update), MRLN-Guide.pdf (rebuilt, 494 KB), team/logs/hugo.md (this entry).
+
+- Still open / next:
+  * **Hugo GREEN @ 96ce087** — 13 suites / 356 tests, preflight CLEAR, MISSING: 0. Awaiting commit + push, then Osefe's "ship it" + Kaito's merge/publish to gh-pages.
