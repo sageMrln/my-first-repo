@@ -163,7 +163,7 @@ MRLN's Media Log is a personal **rating journal for films, series, shows, and ga
 - **Search** — search by title or comment; matches highlight in both lists.
 - **Share** — tap the share button to copy your ranked list (top 20) as plain text — paste it anywhere. Formatted as a numbered list: `1. Title  9.4`, etc.
 
-**Data:** Rating, comment, type, genre, date added, date rated, and title — all stored locally. **Nothing ever leaves your device.** Your Media Log doesn't transfer in the quick clipboard move (because it's personal opinion, not data you might need on another phone), but you can manually export/import it via the photos path if you want a backup on a USB stick or cloud drive.
+**Data:** Rating, comment, type, genre, date added, date rated, and title — all stored locally. **Your Media Log data stays on your device — it never syncs or uploads on its own** (the ↗ IMDb button is the one exception, and only when you tap it: it sends just the title, nothing else). Your Media Log doesn't transfer in the quick clipboard move (because it's personal opinion, not data you might need on another phone), but you can manually export/import it via the photos path if you want a backup on a USB stick or cloud drive.
 
 ---
 
