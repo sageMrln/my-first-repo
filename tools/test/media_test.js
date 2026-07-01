@@ -37,18 +37,29 @@ try {
   const itemsFn = fnMatch('function items()');
   const watchedFn = fnMatch('function watched()');
   const rankedFn = fnMatch('function ranked()');
+  // v2: film/show/game typing, type filter, IMDb link-out
+  const typeOfFn = fnMatch('function typeOf(m)');
+  const matchTypeFn = fnMatch('function matchType(m)');
+  const imdbFn = fnMatch('function imdb(m)');
+  const escFn = fnMatch('function esc(s)'); // live esc() — imdb() depends on it (no copy drift)
 
   // Build test harness
   const harness = `
     var STATE = { media: [] };
-    
+    var filterType = 'all';                 // MEDIALOG filter state (matchType reads it)
+    function t(s){ return s; }              // i18n passthrough (subLine/labels not under test here)
+
     // Pure functions from MEDIALOG
     ${itemsFn}
     ${watchedFn}
     ${rankedFn}
     ${clampFn}
     ${fmtRFn}
-    
+    ${escFn}
+    ${typeOfFn}
+    ${matchTypeFn}
+    ${imdbFn}
+
     // Run tests
     var pass = 0, fail = 0;
     
@@ -135,6 +146,47 @@ try {
     test('ranked() handles missing rating', r.length, 2);
     test('ranked() sorts missing rating to end', r[0].title, 'Normal');
     
+    // ---- v2: film/show/game typing ----
+    // typeOf: only 'film' and 'game' pass through; everything else (incl. legacy no-type) → 'show'
+    test('typeOf(film) = film', typeOf({ type: 'film' }), 'film');
+    test('typeOf(game) = game', typeOf({ type: 'game' }), 'game');
+    test('typeOf(show) = show', typeOf({ type: 'show' }), 'show');
+    test('typeOf legacy no-type defaults to show', typeOf({ title: 'Old Entry' }), 'show');
+    test('typeOf garbage type defaults to show', typeOf({ type: 'movie' }), 'show');
+
+    // matchType honours the active filterType (defaults to all → everything matches)
+    filterType = 'all';
+    test('filter=all matches a film', matchType({ type: 'film' }), true);
+    test('filter=all matches a game', matchType({ type: 'game' }), true);
+    filterType = 'game';
+    test('filter=game matches only games', matchType({ type: 'game' }), true);
+    test('filter=game rejects a film', matchType({ type: 'film' }), false);
+    test('filter=game rejects legacy show', matchType({ title: 'Old' }), false);
+    filterType = 'film';
+    test('filter=film matches films', matchType({ type: 'film' }), true);
+    test('filter=film rejects shows', matchType({ type: 'show' }), false);
+    filterType = 'all'; // reset
+
+    // ---- v2: IMDb link-out (Akashi's safe outbound pattern) ----
+    var link = imdb({ title: 'Dune' });
+    test('imdb href points at imdb find with encoded title',
+      link.indexOf('href="https://www.imdb.com/find/?q=Dune"') >= 0, true);
+    test('imdb opens a new tab', link.indexOf('target="_blank"') >= 0, true);
+    test('imdb has rel=noopener noreferrer (no referer/fid leak)',
+      link.indexOf('rel="noopener noreferrer"') >= 0, true);
+    test('imdb label is static, not the raw title',
+      link.indexOf('IMDb') >= 0 && link.indexOf('>Dune<') < 0, true);
+    // injection safety: a hostile title must be percent-encoded in the query AND esc'd in the attr,
+    // never breaking out to inject markup (this is THE reason we route through encodeURIComponent+esc)
+    var hostile = imdb({ title: '"><img src=x onerror=alert(1)>' });
+    test('hostile title is percent-encoded in href', hostile.indexOf('%22%3E%3Cimg') >= 0, true);
+    test('hostile title injects no <img> tag', hostile.indexOf('<img') < 0, true);
+    // encodeURIComponent must survive esc() without double-mangling ('&' in title stays one param)
+    var amp = imdb({ title: 'Tom & Jerry' });
+    test('title with & is encoded to %26 (single query param)', amp.indexOf('q=Tom%20%26%20Jerry') >= 0, true);
+    // missing title must not throw and yields an empty query
+    test('missing title yields empty query, no crash', imdb({}).indexOf('find/?q="') >= 0, true);
+
     // Summary
     console.log('\\n\\n=== Media Log Test Results ===');
     console.log(pass + ' passed, ' + fail + ' failed');
