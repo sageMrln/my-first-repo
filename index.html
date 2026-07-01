@@ -235,9 +235,9 @@
   @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion: no-preference){
     .item-row:hover{ border-color:var(--cyan-dim); background:linear-gradient(180deg,rgba(0,229,255,.05),var(--panel)); }
     .sub-item:hover{ border-color:var(--cyan-dim); }
-    .exp-head:hover{ background:linear-gradient(180deg,rgba(0,229,255,.11),transparent); }
-    .cal-cell:hover{ border-color:var(--cyan); box-shadow:inset 0 0 0 1px var(--cyan-dim); }
-    .localebar .iconbtn:hover,.savebtn:hover,.savefab:hover,.chattoggle:hover,.lk-btn:hover,.modal-actions button:hover,.medSeedChip:hover{ filter:brightness(1.1); }
+    /* .exp-head / .cal-cell hovers live in the Tier-1 POLISH block below (they must come after the
+       base component rules to win) */
+    .localebar .iconbtn:hover,.savefab:hover,.chattoggle:hover,.medSeedChip:hover{ filter:brightness(1.1); }
   }
   /* 1c — focus-visible rings on controls that had none (keyboard a11y). Inputs/selects/textareas keep
      their existing cyan focus glow (not overridden here). Div surfaces get the ring for when they
@@ -695,6 +695,34 @@
   .modal-actions .mok{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:#04222a;border-color:var(--cyan)}
   .modal-actions .mok.danger{background:linear-gradient(180deg,#ff5c7c,#b22a45);border-color:#ff5c7c;color:#fff}
   .modal-actions button:hover{transform:translateY(-1px)}
+
+  /* ===== INTERACTION LAYER — Tier 1 POLISH (Arthur re-review F1/F2/F4/F5). Placed AFTER the base
+     component styles so these WIN by source order / matching specificity. Fixes the desktop press
+     that pre-existing hover-translates were defeating, adds controls missed in the first pass, and
+     makes the row/cell hovers win instead of sitting inert. Pure CSS, motion-gated. ===== */
+  @media (prefers-reduced-motion: no-preference){
+    /* F1 — cancel the hover-lift on mouse-press so the squeeze reads on DESKTOP too (mirrors .tab) */
+    .catsw:active{ transform:translateY(0) scale(.95); filter:brightness(1.06); }
+    .savebar .savebtn:active{ transform:translateY(0) scale(.95); filter:brightness(1.06); }
+    .lockcard .lk-btn:active{ transform:translateY(0) scale(.95); filter:brightness(1.06); }
+    .modal-actions button:active{ transform:translateY(0) scale(.95); filter:brightness(1.06); }
+    /* F2 — controls missed from the first pass (give them a transition + press) */
+    .loantoggle{ transition:transform .1s cubic-bezier(.2,0,0,1), filter .1s ease, border-color .14s ease, background .14s ease; }
+    .loantoggle:active{ transform:scale(.99); filter:brightness(1.07); }
+    .chatx,.check li .box{ transition:transform .1s cubic-bezier(.2,0,0,1), filter .1s ease; }
+    .chatx:active{ transform:scale(.95); filter:brightness(1.06); }
+    .check li .box:active{ transform:scale(.9); filter:brightness(1.06); }
+    /* F4 — .exp-head base transition is background-only, so its press snapped; add transform/filter */
+    .exp-head{ transition:background .15s ease, transform .1s cubic-bezier(.2,0,0,1), filter .1s ease; }
+  }
+  /* F4/F5 — hovers that now WIN (were overridden by later base rules), desktop-gated */
+  @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion: no-preference){
+    .exp-head:hover{ background:linear-gradient(180deg,rgba(0,229,255,.12),transparent); }
+    .cal-cell:hover{ border-color:var(--cyan); box-shadow:inset 0 0 0 1px var(--cyan-dim); }
+    .chip:hover{ filter:brightness(1.1); }
+  }
+  /* F5 — .chip focus-visible parity */
+  .chip:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; box-shadow:0 0 0 4px rgba(124,255,178,.14); }
 
   /* ===================== ONBOARDING WIZARD ===================== */
   #onboard{position:fixed;inset:0;z-index:95000;display:none;align-items:center;justify-content:center;padding:18px;
