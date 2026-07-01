@@ -690,3 +690,43 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * c4bc7e6 (Interaction Layer Tier 1 — current tip, verified GREEN).
 - Still open / next:
   * **Hugo GREEN @ c4bc7e6** — 13 suites / 356 tests, parse guard GREEN, preflight CLEAR, MISSING: 0. Interaction Layer Tier 1 ready for publish. Awaiting Osefe's "ship it" + Kaito's merge to gh-pages.
+
+## [2026-07-01] — via Kaito (asleep dispatch) — Arthur Tier 1 polish GREEN @ cc25475
+
+- Asked: Re-GREEN on current tip cc25475 (Arthur Tier 1 polish: CSS/JS-only, no new strings, no number/data-path changes). Run `node tools/release/green.js` and confirm exit 0: all 13 suites (parser 21 · assistant 16 · streak 4 · sound 7 · reorder 7 · onboarding 10 · transfer 58 · silly 43 · photo_store 17 · pr 12 · tax 105 · media 43 · savesafety 14 = 356 tests), parse guard GREEN (step 0), preflight CLEAR, every published file leak-clean. Also run `node tools/i18n/sync.js` and confirm MISSING: 0. This is docs-untouched, index.html-only motion change — GUIDE.md does NOT need a §-sync for invisible motion polish. Do NOT edit index.html. If anything is RED, report exactly which suite + output. Append log entry, post GREEN to TEAM-CHAT, commit, pull --rebase, push.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip cc25475). Read memory + chat (Tier 1 pure-CSS polish from Arthur, no new strings, no logic).
+  * **Ran `node tools/release/green.js`:** **GREEN exit 0**. Step 0 parse guard passes (3 script blocks all syntactically valid ✓). All 13 test suites passed:
+    - parser 21/21 ✓
+    - assistant 16/16 ✓
+    - streak 4/4 ✓
+    - sound 7/7 ✓
+    - reorder 7/7 ✓
+    - onboarding 10/10 ✓
+    - transfer 58/58 ✓
+    - silly 43/43 ✓
+    - photo_store 17/17 ✓
+    - pr 12/12 ✓
+    - tax 105/105 ✓
+    - media 43/43 ✓
+    - savesafety 14/14 ✓
+    - **Total: 356 tests**
+  * Preflight CLEAR ✓ (slots empty, 1 public key present, no PII, PUBCHK intact, script tags balanced (5)).
+  * Leak scan clean ✓ (GUIDE.md, manifest.webmanifest, sw.js, team-chat.html all clean; PDF binary derives from GUIDE.md).
+  * **Ran `node tools/test/html_parse_test.js` directly:** **exit 0** ✓. All 3 script blocks parse (app script is syntactically valid).
+  * **Ran `node tools/publish/preflight.js index.html`:** **exit 0 CLEAR** ✓. All 7 checks pass: slots empty, no private-key material, 1 public key present, no owner PII, PUBCHK watchdog intact, script tags balanced (5).
+  * **Ran `node tools/i18n/sync.js`:** **MISSING: 0** (723/723 keys, 7 languages — Tier 1 motion polish added no UI strings, pure CSS/motion changes).
+  * **No guide rebuild needed.** Arthur's Tier 1 motion polish is pure-ambient CSS/JS feedback (press-cancel desktop hover conflicts + missed controls F1/F2/F4/F5). Invisible to users on mobile or non-desktop, no new UI actions or workflows. Guide documents user-actionable features, not invisible motion polish. GUIDE.md is accurate as-is.
+  * **Tip SHA confirmed:** cc25475 (commit hash: `cc254753b4d144f72314883a63547114a24bcaff`, message: "fix(ui): Tier 1 polish — press-cancel desktop hover conflicts + missed controls (Arthur F1/F2/F4/F5)").
+
+- Decision / result:
+  * **GREEN @ cc25475** — all 13 suites (356 tests) pass. HTML parse guard passes (step 0). Preflight CLEAR (script balance verified). MISSING: 0 (723 keys). Arthur's Tier 1 motion polish (pure CSS, no logic, no strings) is verified GREEN. No guide update needed (invisible motion, no user-action impact).
+  * Pure-CSS polish ready. Motion-only changes isolated, low-impact.
+  * Posted GREEN to TEAM-CHAT under Pending against cc25475.
+
+- Commits / SHAs:
+  * cc25475 (Arthur Tier 1 polish — current tip, verified GREEN).
+
+- Still open / next:
+  * **Hugo GREEN @ cc25475** — 13 suites / 356 tests, parse guard GREEN, preflight CLEAR, MISSING: 0. Tier 1 polish ready for publish. Awaiting Akashi's SAFE + Mikoto MISSING:0 re-confirm (tip moved from c4bc7e6 → cc25475, docs unchanged so likely CLEAR) and Osefe's "ship it" + Kaito's merge to gh-pages.
