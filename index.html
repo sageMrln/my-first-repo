@@ -120,17 +120,22 @@
   #boot .boot-sys{ font-family:'Share Tech Mono'; text-transform:uppercase; color:var(--cyan);
     letter-spacing:.28em; font-size:clamp(10px,2.6vw,12.5px); opacity:.85; }
   #boot.boot-out{ transition:opacity 260ms ease-out; opacity:0; }
+  /* Retimed to a deliberate ~3s cold-boot (Osefe: it flashed by unseen). Composition unfolds over
+     ~2.3s, then a LIVING hold — the wordmark glow-breathes and the system line pulses like a machine
+     standing by — until the __bootFX floor (3000ms) fades it out. Not a frozen card. */
   @media (prefers-reduced-motion: no-preference){
-    #boot::before{ animation:bootGrid 620ms cubic-bezier(.22,1,.36,1) 60ms both; }
-    #boot::after{ animation:bootSweep 720ms cubic-bezier(.4,0,.2,1) 240ms both; }
-    #boot .boot-logo{ animation:bootLogoIn 520ms cubic-bezier(.22,1,.36,1) 380ms both, bootLogoGlitch 420ms steps(2) 380ms 1; }
-    #boot .boot-sys{ animation:bootSysIn 400ms ease-out 720ms both; }
+    #boot::before{ animation:bootGrid 900ms cubic-bezier(.22,1,.36,1) 120ms both; }
+    #boot::after{ animation:bootSweep 1700ms cubic-bezier(.4,0,.2,1) 500ms both; }
+    #boot .boot-logo{ animation:bootLogoIn 1000ms cubic-bezier(.22,1,.36,1) 900ms both, bootLogoGlitch 560ms steps(2) 900ms 1, bootLogoBreath 2.4s ease-in-out 1900ms infinite; }
+    #boot .boot-sys{ animation:bootSysIn 600ms ease-out 1750ms both, bootSysPulse 1.5s ease-in-out 2350ms infinite; }
   }
   @keyframes bootGrid{ from{opacity:0;transform:scale(1.04)} to{opacity:1;transform:scale(1)} }
-  @keyframes bootSweep{ 0%{opacity:0;transform:translateY(0)} 12%{opacity:1} 100%{opacity:0;transform:translateY(70vh)} }
+  @keyframes bootSweep{ 0%{opacity:0;transform:translateY(0)} 10%{opacity:1} 100%{opacity:0;transform:translateY(82vh)} }
   @keyframes bootLogoIn{ from{opacity:0;filter:blur(6px);letter-spacing:.34em} to{opacity:1;filter:blur(0);letter-spacing:.16em} }
   @keyframes bootLogoGlitch{ 0%{clip-path:inset(0 0 62% 0);transform:translateX(-2px)} 50%{clip-path:inset(48% 0 20% 0);transform:translateX(2px)} 100%{clip-path:inset(0 0 0 0);transform:none} }
+  @keyframes bootLogoBreath{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.22)} }
   @keyframes bootSysIn{ from{opacity:0;transform:translateY(4px)} to{opacity:.85;transform:none} }
+  @keyframes bootSysPulse{ 0%,100%{opacity:.85} 50%{opacity:.5} }
 
   .wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:26px 16px 80px}
 
@@ -751,7 +756,7 @@
    before ready() is called, so the boot can never strand the user. Own parse-time script → net covers all
    init. Uses performance.now() (ms since page-load origin) so the floor measures from first paint, not
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
-window.__bootFX=(function(){var done=false,MIN=900,FADE=260;
+window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
     var gone=function(){if(el&&el.parentNode)el.parentNode.removeChild(el);};
