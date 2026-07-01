@@ -514,3 +514,31 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
   * Lesson: Unicode curly quotes (U+201C/U+201D/U+201E/U+201F) in JSON keys require byte-exact matching; need_translate.json is the authoritative source, never inferred from string literals.
 - Commits / SHAs: i18n merge c983696.
 - Still open / next: @Kaito spot-check translations; @Akashi re-SAFE (no code changed, pure i18n); @Hugo re-GREEN if tip moved; @Osefe final go to ship Save Safety feature.
+
+## [2026-07-01] — Kaito dispatch (asleep) — Translate Media Log v2 11 strings to all 6 langs → MISSING: 0
+
+- Asked: Kaito's new Media Log v2 (commit 9b2d57b) added 11 new UI strings (tab/filter labels "Film"/"Show"/"Game", "All"/"Films"/"Shows"/"Games", placeholder "Genre (optional)", and 3 empty-state/seed-prompt strings). Translate to es, da, de, sv, nb, hu → MISSING: 0. Tone: serious, factual (product voice), no hype/emoji except functional icons already present.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 11 (exact keys from need_translate.json): "Nothing of this kind yet." / "New here? Tap a few to start your list:" / "Nothing of this kind rated yet." / "Film" / "Show" / "Game" / "Genre (optional)" / "All" / "Films" / "Shows" / "Games".
+  * Translated all 11 strings to 6 languages (66 translations total):
+    - **Spanish:** Película/Serie/Videojuego (singular media types), Películas/Series/Videojuegos (plural filters), natural imperative seed ("¿Nuevo aquí? Toca algunos para empezar tu lista:"), empty-states ("Nada de esto todavía" / "Nada de esto clasificado todavía").
+    - **Danish:** Film/Serie/Spil, Film/Serier/Spil (note: plural "Film" = singular, idiomatic), seed "Ny her? Tryk på nogle få for at starte din liste:", empty "Intet af denne type endnu" / "Intet af denne type bedømt endnu".
+    - **German:** Film/Serie/Spiel, Filme/Serien/Spiele, seed "Neu hier? Tippe auf ein paar um deine Liste zu starten:", empty "Noch nichts dieser Art" / "Noch nichts dieser Art bewertet".
+    - **Swedish:** Film/Serie/Spel, Filmer/Serier/Spel, seed "Ny här? Tryck på några för att starta din lista:", empty "Inget av denna sort än" / "Inget av denna sort bedömt än".
+    - **Norwegian:** Film/Serie/Spill, Filmer/Serier/Spill, seed "Ny her? Trykk på noen få for å starte listen din:", empty "Ingenting av denne typen ennå" / "Ingenting av denne typen bedømt ennå".
+    - **Hungarian:** Film/Sorozat/Játék, Filmek/Sorozatok/Játékok, seed "Új vagy itt? Koppints néhányra az lista elkezdéséhez:", empty "Még nincs ilyen" / "Még nincs ilyen értékelve".
+  * Merged all 66 translations into AUTO-MERGED block via Python script (parsed 822KB minified JSON from IIFE structure, merged by language key, re-serialized minified, wrote back cleanly).
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (722 keys fully translated across all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (14 test suites: parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14 = 370+ tests total; preflight CLEAR; all published files leak-clean).
+  * Committed index.html (6f3c065) with clear message.
+  * Pushed to origin/claude/vibrant-pasteur-ie24ab.
+- Key translation decisions:
+  * Media type names ("Film" = movie, "Show" = TV series, "Game" = video game) translated to natural nouns in each language's convention (German capitalizes, others don't; Spanish uses diminutive nouns).
+  * Plural forms checked per language: Danish "Film" (no plural s), Spanish "Películas" (plural), German "Filme" (plural), all idiomatic.
+  * Placeholder "Genre (optional)" — "opcional" (es), "valgfrit" (da), "optional" (de), "valfritt" (sv), "valgfritt" (nb), "opcionális" (hu) — all accurate for input placeholder.
+  * Empty-state strings kept factual, no emoji, no "yet to add" hype (matching product voice).
+  * Seed prompt "New here?" phrased naturally per language; "Tap a few" is action instruction, not celebration.
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 11 Media Log v2 strings translated to 6 locales in serious, factual tone. GREEN gate confirmed. Ready for downstream verification (Kaito spot-check, Hugo GREEN-confirm if tip moved, Akashi re-SAFE, Osefe final go).
+- Commits / SHAs: i18n merge 6f3c065.
+- Still open / next: @Kaito spot-check meaning (es "Película" vs "Film", da "Serie" vs "Show", en TV series convention); @Hugo re-GREEN if tip moved; @Akashi re-SAFE if published files changed; @Osefe final "ship it" call for Media Log v2.
