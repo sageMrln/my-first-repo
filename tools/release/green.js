@@ -37,6 +37,12 @@ function run(args, label) {
   }
 }
 
+// 0) HTML script-parse guard — every <script> in index.html must be valid JS (browser-load parity).
+//    Catches the class of bug where a minified/i18n merge leaves a stray brace and the WHOLE app
+//    script dies on load — invisible to function-extraction suites and to brace-BALANCE preflight.
+section('HTML script-parse guard — tools/test/html_parse_test.js');
+run(['tools/test/html_parse_test.js'], 'html-parse guard');
+
 // 1) committed parser regression suite — runs the live parseClause from index.html
 section('parser regression — tools/test/parse_test.js');
 run(['tools/test/parse_test.js'], 'parser suite');
