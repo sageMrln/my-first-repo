@@ -99,6 +99,39 @@
      fine-pointer + motion-ok only (JS-gated); no paint cost otherwise. Pure decoration, no data. */
   #wakefx{ position:fixed; inset:0; z-index:0; pointer-events:none; display:block; }
 
+  /* ===== Premium cold-boot (Arthur BUILD-SPEC) — a ~900ms CSS-only "machine powering on" beat that
+     fades directly INTO the lock screen (the boot itself is CANVAS-FREE → one canvas total, the lock's
+     #lkfx). Reuses the lock's exact 40px grid + wordmark + "//" system-line so it reads as ONE continuous
+     power-on that reveals the gate. The BASE rules below are the END state, so reduced-motion users see a
+     calm static boot card; the five animations run ONLY under no-preference with `both` fill (pre-delay
+     frame shows the hidden start state → no flash). Zero data / network / canvas. ===== */
+  #boot{ position:fixed; inset:0; z-index:100001; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:14px; background:var(--bg); pointer-events:none;
+    padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom)); }
+  #boot::before{ content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:linear-gradient(rgba(0,229,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.05) 1px,transparent 1px);
+    background-size:40px 40px;
+    -webkit-mask-image:radial-gradient(120% 90% at 50% 42%,transparent 0%,transparent 20%,#000 78%);
+    mask-image:radial-gradient(120% 90% at 50% 42%,transparent 0%,transparent 20%,#000 78%); opacity:1; }
+  #boot::after{ content:""; position:absolute; left:0; right:0; top:0; height:2px; pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(0,229,255,.55),transparent); box-shadow:0 0 18px rgba(0,229,255,.4); opacity:0; }
+  #boot .boot-logo{ font-family:'Orbitron'; font-weight:900; font-size:clamp(30px,9vw,44px); letter-spacing:.16em;
+    color:#eaffff; text-shadow:var(--glow); opacity:1; position:relative; }
+  #boot .boot-sys{ font-family:'Share Tech Mono'; text-transform:uppercase; color:var(--cyan);
+    letter-spacing:.28em; font-size:clamp(10px,2.6vw,12.5px); opacity:.85; }
+  #boot.boot-out{ transition:opacity 260ms ease-out; opacity:0; }
+  @media (prefers-reduced-motion: no-preference){
+    #boot::before{ animation:bootGrid 620ms cubic-bezier(.22,1,.36,1) 60ms both; }
+    #boot::after{ animation:bootSweep 720ms cubic-bezier(.4,0,.2,1) 240ms both; }
+    #boot .boot-logo{ animation:bootLogoIn 520ms cubic-bezier(.22,1,.36,1) 380ms both, bootLogoGlitch 420ms steps(2) 380ms 1; }
+    #boot .boot-sys{ animation:bootSysIn 400ms ease-out 720ms both; }
+  }
+  @keyframes bootGrid{ from{opacity:0;transform:scale(1.04)} to{opacity:1;transform:scale(1)} }
+  @keyframes bootSweep{ 0%{opacity:0;transform:translateY(0)} 12%{opacity:1} 100%{opacity:0;transform:translateY(70vh)} }
+  @keyframes bootLogoIn{ from{opacity:0;filter:blur(6px);letter-spacing:.34em} to{opacity:1;filter:blur(0);letter-spacing:.16em} }
+  @keyframes bootLogoGlitch{ 0%{clip-path:inset(0 0 62% 0);transform:translateX(-2px)} 50%{clip-path:inset(48% 0 20% 0);transform:translateX(2px)} 100%{clip-path:inset(0 0 0 0);transform:none} }
+  @keyframes bootSysIn{ from{opacity:0;transform:translateY(4px)} to{opacity:.85;transform:none} }
+
   .wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:26px 16px 80px}
 
   /* HEADER */
@@ -705,6 +738,28 @@
 </style>
 </head>
 <body>
+
+<!-- PREMIUM COLD-BOOT (Arthur BUILD-SPEC) — canvas-free ~900ms power-on that fades into the lock screen.
+     Static markup so it paints on frame 1 with no flash; its teardown lives in the parse-time script below. -->
+<div id="boot" aria-hidden="true">
+  <div class="boot-logo">MRLN</div>
+  <div class="boot-sys" data-i18n="// SYSTEM ONLINE">// SYSTEM ONLINE</div>
+</div>
+<script>
+/* Boot teardown chokepoint — mirrors __lockFX. Exits on max(app-ready, 900ms floor), then REMOVES #boot
+   from the DOM (zero rAF/paint/listener after). A 4000ms safety net self-dismisses if init ever throws
+   before ready() is called, so the boot can never strand the user. Own parse-time script → net covers all
+   init. Uses performance.now() (ms since page-load origin) so the floor measures from first paint, not
+   from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
+window.__bootFX=(function(){var done=false,MIN=900,FADE=260;
+  function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
+  function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
+    var gone=function(){if(el&&el.parentNode)el.parentNode.removeChild(el);};
+    el.addEventListener('transitionend',gone,{once:true});setTimeout(gone,FADE+90);/* reduced-motion has no transition → no transitionend; timeout removes it */}
+  function ready(){if(done)return;done=true;setTimeout(kill,Math.max(0,MIN-nowMs()));}
+  setTimeout(function(){if(!done)ready();},4000);
+  return {ready:ready};})();
+</script>
 
 <!-- ACCESS LOCK (signed monthly key; verified entirely in this browser) -->
 <div id="lockScreen">
@@ -5236,6 +5291,8 @@
   LOCK.boot();
   /* start the living field if we loaded locked (a saved valid key auto-unlocks async → unlock()→stop()) */
   if(window.__lockFX){ try{ var __ls=document.getElementById('lockScreen'); if(__ls && !__ls.classList.contains('unlocked')) window.__lockFX.start(); }catch(_){ } }
+  /* dismiss the premium cold-boot once the app is up — exits on max(here, 900ms floor), never adds delay */
+  if(window.__bootFX){ try{ window.__bootFX.ready(); }catch(_){ } }
   // App-like feel: block pinch-zoom so MRLN doesn't behave like a zoomable web page.
   // iOS Safari ignores user-scalable=no in the browser, so kill its pinch gestures
   // directly (these events are multi-touch pinch/rotate only — single-finger
