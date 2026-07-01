@@ -730,3 +730,42 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * **Hugo GREEN @ cc25475** — 13 suites / 356 tests, parse guard GREEN, preflight CLEAR, MISSING: 0. Tier 1 polish ready for publish. Awaiting Akashi's SAFE + Mikoto MISSING:0 re-confirm (tip moved from c4bc7e6 → cc25475, docs unchanged so likely CLEAR) and Osefe's "ship it" + Kaito's merge to gh-pages.
+
+## [2026-07-01] — via Kaito (asleep dispatch) — Interaction Tier 2 + 3 GREEN @ b4a7523
+
+- Asked: Release/QA pass for GREEN sign-off on Interaction Layer Tier 2 + 3 at commit b4a7523 (branch claude/vibrant-pasteur-ie24ab): living-data value pulse (mounts re-render, numeric change triggers ripple in HUD), input focus life (text input glow + scale on focus), modal/toast enter motion (backdrop + content stagger + fade-in), cursor-reactive card sheen (desktop hover parallax on card faces). Pure CSS + two small JS IIFEs (liveVal ripple, cardSheen parallax). No new UI strings, no logic changes, no guide impact. Execute: (1) git pull --rebase; note exact tip SHA. (2) run `node tools/release/green.js` → exit 0, step-0 HTML-parse guard passes (this matters — new JS was added; confirm the app still parses), all 13 suites green. (3) run `node tools/test/html_parse_test.js` → passes. (4) run `node tools/publish/preflight.js index.html` → CLEAR; run `node tools/i18n/sync.js` → MISSING:0. (5) No guide change. Do NOT edit index.html. Append log, post GREEN to TEAM-CHAT, commit, pull --rebase, push. Report: GREEN/RED, exact tip SHA, parse guard + suites pass.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip b4a7523, already up to date). Read memory + chat (Interaction Layer Tier 2 + 3 — pure-CSS motion + two small JS IIFEs, no strings).
+  * **Ran `node tools/release/green.js`:** **GREEN exit 0**. Step 0 parse guard passes first (3 script blocks all syntactically valid ✓). Then all 13 test suites:
+    - parser 21/21 ✓
+    - assistant 16/16 ✓
+    - streak 4/4 ✓
+    - sound 7/7 ✓
+    - reorder 7/7 ✓
+    - onboarding 10/10 ✓
+    - transfer 58/58 ✓
+    - silly 43/43 ✓
+    - photo_store 17/17 ✓
+    - pr 12/12 ✓
+    - tax 105/105 ✓
+    - media 43/43 ✓
+    - savesafety 14/14 ✓
+    - **Total: 356 tests**
+  * Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, script tags balanced (5)).
+  * Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean; PDF derives from GUIDE.md).
+  * **Ran `node tools/test/html_parse_test.js` directly:** **exit 0** ✓. All 3 script blocks parse (app script is syntactically valid). Guards browser-parity errors: the new liveVal + cardSheen IIFEs are syntactically sound.
+  * **Ran `node tools/publish/preflight.js index.html`:** **exit 0 CLEAR** ✓. All checks pass: slots empty, no private-key material, 1 public key present, no owner PII, PUBCHK watchdog intact, **script tags balanced (5)**.
+  * **Ran `node tools/i18n/sync.js`:** **MISSING: 0** (723/723 keys, 7 languages — Tier 2 + 3 motion effects added no UI strings, pure CSS/JS animations and effects).
+  * **No guide change needed.** Interaction Layer Tier 2 + 3 is pure-ambient CSS motion + cursor parallax (desktop-only, fine-pointer gated, prefers-reduced-motion gated, + input focus effects). No new UI actions or workflows. Guide documents user actions, not passive motion polish. GUIDE.md is accurate as-is.
+  * **Tip SHA confirmed:** b4a7523 (commit hash: `b4a75232483c8c330f8dc828c71a9d80352dd497`).
+
+- Decision / result:
+  * **GREEN @ b4a7523** — all 13 suites (356 tests) pass. HTML parse guard passes (step 0). Preflight CLEAR (script balance verified: 5). MISSING: 0 (723 keys). Interaction Layer Tier 2 + 3 (living-data value pulse, input focus life, modal/toast enter motion, cursor-reactive card sheen) verified GREEN. No guide update needed (motion-only, no user-action impact).
+  * New JS IIFEs (liveVal ripple, cardSheen parallax) are syntactically sound (parse guard verifies). All published files clean.
+
+- Commits / SHAs:
+  * b4a7523 (Interaction Layer Tier 2 + 3 — current tip, verified GREEN).
+
+- Still open / next:
+  * **Hugo GREEN @ b4a7523** — 13 suites / 356 tests, parse guard GREEN, preflight CLEAR, MISSING: 0. Interaction Layer Tier 2 + 3 motion effects ready for publish. Awaiting Akashi's SAFE (if not already confirmed on index.html logic) and Osefe's "ship it" + Kaito's merge to gh-pages.
