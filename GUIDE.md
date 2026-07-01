@@ -155,7 +155,7 @@ MRLN's Media Log is a personal **rating journal for films, series, shows, and ga
 
 - **Add** — type a title and choose its type: **Film**, **Show**, or **Game**. Add an optional **Genre** (e.g. "Sci-Fi", "Drama"). It goes to your "To-watch" queue.
 - **Filter by type** — tabs at the top let you view **All**, just **Films**, just **Shows**, or just **Games**. Your filter stays while you browse.
-- **IMDb link** — each entry has a **↗ IMDb** button that opens IMDb in a new tab, pre-filled with the title (opens in browser, doesn't send your data anywhere — the search happens locally).
+- **IMDb link** — each entry has a **↗ IMDb** button that opens IMDb in a new browser tab with the title pre-filled. It sends only the title to IMDb — never your MRLN data (no finance ID, and rel=noopener noreferrer strips the referrer so IMDb can't even see which app you came from).
 - **Rate** — open an entry and rate it 1–10 in **0.1-step increments** (e.g. 8.4, 7.6, 9.0). The rating is locked to [1, 10] with one decimal place.
 - **Comment** — add a private note (spoilers welcome — it's yours alone). Comments stay on your device.
 - **Auto-ranked** — your watched entries sort **by rating descending** — highest-rated at the top, ties broken alphabetically. To-watch entries stay in a separate list.
