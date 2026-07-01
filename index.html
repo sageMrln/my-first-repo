@@ -212,6 +212,41 @@
   .tab.active .ix{color:#04121a}
   .tab:focus-visible,.btn:focus-visible,.scen-btn:focus-visible{outline:2px solid var(--lime);outline-offset:2px;box-shadow:0 0 0 4px rgba(124,255,178,.12)}  /* Arthur F — focus glow */
   .tab:active{transform:translateY(0) scale(.97)}   /* Arthur D — press squeeze */
+
+  /* ===== INTERACTION LAYER — Tier 1 (Arthur): every tappable senses touch + cursor. Press feedback
+     on ALL controls (touch + mouse, <100ms), desktop-gated hover, focus-visible rings. Transform/
+     filter/opacity only (GPU). Press magnitude scales INVERSE to size — chips squeeze more, large
+     surfaces "push in" via brightness with NO translate (so a scroll-drag never reads as a bounce).
+     All motion prefers-reduced-motion:no-preference gated. Pure presentation — no JS, no strings. ===== */
+  @media (prefers-reduced-motion: no-preference){
+    /* shared transition so press + hover actually animate (covers the common animated props, not
+       `all` → no layout thrash). Standardizes interaction feel across every control. */
+    .item-row,.sub-item,.exp-head,.cal-cell,.catsw,.cal-nav button,.localebar .iconbtn,
+    .savebtn,.savefab,.chattoggle,.lk-btn,.modal-actions button,.medSeedChip,.chip{
+      transition:transform .1s cubic-bezier(.2,0,0,1), filter .1s ease, box-shadow .14s ease,
+        border-color .14s ease, background .14s ease, color .14s ease; }
+    /* 1a — universal PRESS. Large surfaces push in (no translate); small controls squeeze. */
+    .item-row:active,.sub-item:active,.exp-head:active,.cal-cell:active{ transform:scale(.99); filter:brightness(1.07); }
+    .catsw:active,.cal-nav button:active,.localebar .iconbtn:active,.savebtn:active,.savefab:active,
+    .chattoggle:active,.lk-btn:active,.modal-actions button:active,.medSeedChip:active,.chip:active{ transform:scale(.95); filter:brightness(1.06); }
+  }
+  /* 1b — desktop HOVER, gated (hover:hover)+(pointer:fine) → zero mobile cost, no sticky-hover.
+     Rows/surfaces brighten (they do NOT lift — lifting a list row reads as jitter); small buttons brighten. */
+  @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion: no-preference){
+    .item-row:hover{ border-color:var(--cyan-dim); background:linear-gradient(180deg,rgba(0,229,255,.05),var(--panel)); }
+    .sub-item:hover{ border-color:var(--cyan-dim); }
+    .exp-head:hover{ background:linear-gradient(180deg,rgba(0,229,255,.11),transparent); }
+    .cal-cell:hover{ border-color:var(--cyan); box-shadow:inset 0 0 0 1px var(--cyan-dim); }
+    .localebar .iconbtn:hover,.savebtn:hover,.savefab:hover,.chattoggle:hover,.lk-btn:hover,.modal-actions button:hover,.medSeedChip:hover{ filter:brightness(1.1); }
+  }
+  /* 1c — focus-visible rings on controls that had none (keyboard a11y). Inputs/selects/textareas keep
+     their existing cyan focus glow (not overridden here). Div surfaces get the ring for when they
+     become keyboard-reachable (tabindex is a Tier-1 follow-up). */
+  .item-row:focus-visible,.sub-item:focus-visible,.exp-head:focus-visible,.cal-cell:focus-visible,
+  .catsw:focus-visible,.cal-nav button:focus-visible,.localebar .iconbtn:focus-visible,
+  .savebtn:focus-visible,.savefab:focus-visible,.chattoggle:focus-visible,.lk-btn:focus-visible,
+  .modal-actions button:focus-visible,.medSeedChip:focus-visible{
+    outline:2px solid var(--lime); outline-offset:2px; box-shadow:0 0 0 4px rgba(124,255,178,.14); }
   /* keep page scrolling free + make taps snappy (no 300ms double-tap-zoom delay) */
   .tab{touch-action:manipulation}
   /* per-tab colour shade (double-tap a tab to set) */
