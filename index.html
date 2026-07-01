@@ -94,6 +94,11 @@
     .card:hover{ transform:translateY(-2px); box-shadow:0 6px 22px rgba(0,229,255,.10), var(--glow); }
   }
 
+  /* Desktop Alive v2 — cursor-wake canvas. Full-viewport, BEHIND .wrap (z:0 < .wrap z:1) so the
+     centered content occludes the middle → ripples read only in the dark side gutters. Desktop
+     fine-pointer + motion-ok only (JS-gated); no paint cost otherwise. Pure decoration, no data. */
+  #wakefx{ position:fixed; inset:0; z-index:0; pointer-events:none; display:block; }
+
   .wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:26px 16px 80px}
 
   /* HEADER */
@@ -894,6 +899,8 @@
     <button class="wskip" id="wSkip">Skip setup — I'll fill things in myself</button>
   </div>
 </div>
+
+<canvas id="wakefx" aria-hidden="true"></canvas>
 
 <div class="wrap">
 
@@ -8134,6 +8141,50 @@
         if(e.pointerType && e.pointerType!=='mouse') return;
         tx=(e.clientX/window.innerWidth)-0.5; ty=(e.clientY/window.innerHeight)-0.5;
         if(!raf) raf=requestAnimationFrame(apply);
+      }, {passive:true});
+    }catch(_){}
+  })();
+
+  /* Desktop Alive v2 — cursor-wake. Cyan water ripples trail the mouse; the centered .wrap (z:1)
+     occludes the middle so they read only in the dark side gutters. Desktop fine-pointer + motion-ok
+     ONLY (no listener/canvas paint otherwise → zero phone/reduced-motion cost). rAF runs only while
+     ripples are alive and cancels when the last dies (re-arms on the next move) → idle = zero cost.
+     Pure pointer read: no data, no network, no storage. Physics per Arthur BUILD-SPEC B. */
+  (function cursorWake(){
+    try{
+      var ok = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine) and (min-width:1024px)').matches
+               && window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+      if(!ok) return;
+      var cv=document.getElementById('wakefx'); if(!cv) return;
+      var ctx=cv.getContext&&cv.getContext('2d'); if(!ctx) return;
+      var dpr=Math.min(window.devicePixelRatio||1, 2), W=0, H=0;
+      function size(){ W=window.innerWidth; H=window.innerHeight; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); }
+      size();
+      var rz; window.addEventListener('resize', function(){ clearTimeout(rz); rz=setTimeout(size,150); }, {passive:true});
+
+      var rings=[], MAX=60, raf=0, lastX=0, lastY=0, lastT=0, primed=false;
+      function spawn(x,y){ if(rings.length>=MAX) rings.shift(); rings.push({x:x,y:y,r:6}); }
+      function frame(){
+        raf=0; ctx.clearRect(0,0,W,H); ctx.globalCompositeOperation='lighter';
+        for(var i=rings.length-1;i>=0;i--){ var g=rings[i]; g.r+=1.6;
+          var p=(g.r-6)/40; if(p>=1){ rings.splice(i,1); continue; }              // ring dies at r=46
+          var a=0.42*(1-p);                                                       // alpha 0.42 → 0 linear
+          ctx.beginPath(); ctx.lineWidth=1.4-0.9*p;                               // 1.4px → 0.5px
+          ctx.strokeStyle='rgba(0,229,255,'+a.toFixed(3)+')';                     // --cyan, additive
+          ctx.arc(g.x,g.y,g.r,0,6.2832); ctx.stroke();
+        }
+        ctx.globalCompositeOperation='source-over';
+        if(rings.length) raf=requestAnimationFrame(frame); else ctx.clearRect(0,0,W,H);
+      }
+      window.addEventListener('pointermove', function(e){
+        if(e.pointerType && e.pointerType!=='mouse') return;                       // mouse only
+        var x=e.clientX, y=e.clientY, now=e.timeStamp||0;
+        if(!primed){ primed=true; lastX=x; lastY=y; lastT=now; return; }
+        var dx=x-lastX, dy=y-lastY, dist=Math.sqrt(dx*dx+dy*dy);
+        if(now-lastT>=45 || dist>=22){                                            // spawn by time OR distance → a wake, not dots
+          spawn(x,y); lastX=x; lastY=y; lastT=now;
+          if(!raf) raf=requestAnimationFrame(frame);
+        }
       }, {passive:true});
     }catch(_){}
   })();
