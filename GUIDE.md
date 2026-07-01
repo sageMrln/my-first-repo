@@ -147,13 +147,15 @@ A built-in notes app (like iPhone Notes) — title + body, autosaved, private.
 
 ---
 
-## 8. Media Log — rate films and shows
+## 8. Media Log — rate films, shows, and games
 
-MRLN's Media Log is a personal **rating journal for films, series, and shows** — not a social network, just a ranked list of what you've watched and what you think.
+MRLN's Media Log is a personal **rating journal for films, series, shows, and games** — not a social network, just a ranked list of what you've watched/played and what you think.
 
 **How it works:**
 
-- **Add** — type a film or show name and it goes to your "To-watch" queue.
+- **Add** — type a title and choose its type: **Film**, **Show**, or **Game**. Add an optional **Genre** (e.g. "Sci-Fi", "Drama"). It goes to your "To-watch" queue.
+- **Filter by type** — tabs at the top let you view **All**, just **Films**, just **Shows**, or just **Games**. Your filter stays while you browse.
+- **IMDb link** — each entry has a **↗ IMDb** button that opens IMDb in a new browser tab with the title pre-filled. It sends only the title to IMDb — never your MRLN data (no finance ID, and rel=noopener noreferrer strips the referrer so IMDb can't even see which app you came from).
 - **Rate** — open an entry and rate it 1–10 in **0.1-step increments** (e.g. 8.4, 7.6, 9.0). The rating is locked to [1, 10] with one decimal place.
 - **Comment** — add a private note (spoilers welcome — it's yours alone). Comments stay on your device.
 - **Auto-ranked** — your watched entries sort **by rating descending** — highest-rated at the top, ties broken alphabetically. To-watch entries stay in a separate list.
@@ -161,7 +163,7 @@ MRLN's Media Log is a personal **rating journal for films, series, and shows** �
 - **Search** — search by title or comment; matches highlight in both lists.
 - **Share** — tap the share button to copy your ranked list (top 20) as plain text — paste it anywhere. Formatted as a numbered list: `1. Title  9.4`, etc.
 
-**Data:** Rating, comment, date added, date rated, and title — all stored locally. **Nothing ever leaves your device.** Your Media Log doesn't transfer in the quick clipboard move (because it's personal opinion, not data you might need on another phone), but you can manually export/import it via the photos path if you want a backup on a USB stick or cloud drive.
+**Data:** Rating, comment, type, genre, date added, date rated, and title — all stored locally. **Your Media Log data stays on your device — it never syncs or uploads on its own** (the ↗ IMDb button is the one exception, and only when you tap it: it sends just the title, nothing else). Your Media Log doesn't transfer in the quick clipboard move (because it's personal opinion, not data you might need on another phone), but you can manually export/import it via the photos path if you want a backup on a USB stick or cloud drive.
 
 ---
 
