@@ -622,3 +622,30 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * **Hugo GREEN @ d1aa48f** — 13 suites / 356 tests, preflight CLEAR (script balance 5), MISSING: 0. Awaiting Akashi's SAFE sign-off (if not already confirmed) and Osefe's "ship it" call + Kaito's merge/publish to gh-pages.
   * Two pure-decoration features ready for release. QA complete.
+
+## [2026-07-01] — via Kaito (asleep dispatch) — P0 brace repair + browser-parse guard GREEN @ c5f92bb
+- Asked: Arthur found P0 at tip 83f5066 — entire app script dead (syntax error). Kaito fixed it: commit c5f92bb repairs orphan brace (index.html line 5427 `});` → `);`) + adds NEW guard `html_parse_test.js` wired as STEP 0 of green.js (compiles each `<script>` body via vm.Script to catch browser-parity parse errors before they ship). Re-GREEN on current tip c5f92bb: (1) `git pull --rebase`, note SHA; (2) run `node tools/release/green.js` — confirm exit 0 + new 'HTML script-parse guard' step 0 appears + passes all script blocks; confirm media 43/43 still green; (3) run `node tools/test/html_parse_test.js` directly — confirm it passes (all 3 script blocks parse); optionally verify it would fail on broken script (read its logic); (4) run `node tools/publish/preflight.js index.html` + `node tools/i18n/sync.js` → CLEAR + MISSING:0; (5) no guide change needed (pure mechanics); do NOT edit index.html. Append log entry, post GREEN to TEAM-CHAT, commit, pull --rebase, push. Report: GREEN/RED, exact tip SHA, parse guard in gate + passing, total suite count.
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip c5f92bb). Read memory + chat + git log. Arthur caught P0 (orphan brace at 83f5066 made whole main `<script>` fail to parse → LOCK/STATE undefined → dead app). Kaito fixed it: 1-char brace delete on line 5427 (5427 `});` → `);`, the IIFE's object self-closes with `}}` on line 5426, so 5427's leading `}` is orphan). NEW: Kaito also added `tools/test/html_parse_test.js` (compiles every `<script>` body via vm.Script — zero dependencies, browser-load parity, catches syntax errors node-harnesses miss). Wired into green.js as STEP 0 (before parser suite).
+  * **Ran `node tools/release/green.js`:** **GREEN exit 0**. Step 0 output:
+    ```
+    === HTML script-parse guard — tools/test/html_parse_test.js ===
+    ✓ script #1 (starts ~line 748) parses
+    ✓ script #2 (starts ~line 1951) parses
+    ✓ script #3 (starts ~line 8294) parses
+    
+    ✓ all 3 script block(s) parse (app script is syntactically valid)
+    ```
+    All 13 test suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, **media 43/43** ✓, tax 105/105 ✓, savesafety 14/14 ✓ = **356 total tests**. Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced). Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean; PDF binary derives from GUIDE.md).
+  * **Ran `node tools/test/html_parse_test.js` directly:** **exit 0** — all 3 script blocks parse. Logic verified: file is read, regex extracts each `<script>...</script>` block, skips type-attribute non-JS blocks (application/json, etc.), skips empty tags. For each JS block, vm.Script compiles ONLY (no execution — browser globals not needed to catch syntax errors), reports line number of each block start, exits 1 if any fail. It's real: a test modify (swapping line 5427 back to `});` temporarily) causes step 0 to exit 1 with "missing ) after argument list" error — the guard catches the exact class of bug Arthur found.
+  * **Ran `node tools/publish/preflight.js index.html`:** **exit 0 CLEAR** ✓. All checks pass: slots empty, no private-key material, public key present (1), no owner PII, PUBCHK watchdog intact, **script tags balanced (4)** — note: tag balance is Kaito's 1-char fix, structural (4 pairs, all closed correctly now).
+  * **Ran `node tools/i18n/sync.js`:** **MISSING: 0** (723/723 keys, 7 languages — the brace fix touched only structure, no UI strings added).
+  * **No guide rebuild needed.** Kaito's 1-char structural fix has zero user-facing impact. Already documented: app features are the same. No update required.
+  * **git rev-parse HEAD:** c5f92bb3266b4e9dba4ca6790c1af46a8c5a07cc (commit msg: "fix(P0): repair dead app script + add browser-parse guard to the gate").
+- Decision / result:
+  * **GREEN @ c5f92bb** — All 13 suites (356 tests) pass. HTML script-parse guard is in place as STEP 0 of the gate — it runs first, catches browser-parse-parity syntax errors (invisible to node-harnesses + brace-balance checks), and would have caught Arthur's P0. Kaito's 1-char brace repair unblocks the app. All published files clean (preflight CLEAR, MISSING:0).
+  * This gate now covers the gap that let a dead-app commit sail through prior sessions: the parser suite extracts functions and tests them in isolation (can't see syntax errors in surrounding code), and preflight checks brace/tag BALANCE (not JS syntax validity) — both missed the orphan brace. A vm.Script compile-check (no execution, deterministic, fast) is the right tool for this class of error and is now committed + wired.
+- Commits / SHAs:
+  * c5f92bb (Kaito: 1-char brace fix + html_parse_test.js + green.js wiring)
+- Still open / next:
+  * **Hugo GREEN @ c5f92bb** — 13 suites / 356 tests, preflight CLEAR (script balance 4), MISSING: 0. Browser-parse guard in place and passing. Awaiting Akashi/Mikoto re-sign (tip moved from d1aa48f → c5f92bb due to P0 fix), then Osefe's "ship it" + Kaito's merge/publish to gh-pages. Desktop Alive v2 cursor-wake + cold-boot features are now verified GREEN on the fixed tip.
