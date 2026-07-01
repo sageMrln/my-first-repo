@@ -486,3 +486,25 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * **Hugo GREEN @ aa7430f** — 12 suites / 323 tests, preflight CLEAR, MISSING: 0. Awaiting Akashi re-SAFE on aa7430f and Osefe ship call + Kaito's gh-pages push.
+
+## [2026-07-01] — via Kaito (asleep dispatch) — Save Safety whole-app durability fix GREEN @ b4afa69
+
+- Asked: Save Safety (Kaito item: localStorage read-back verify + fail-loud amber banner + always-accessible open-in-browser affordance for ephemeral/private-mode contexts). Akashi SAFE (no new figures, no network, no money cost), Mikoto MISSING:0 (17 UI strings all 6 non-English langs fully translated). Execute final release gate: (1) run `node tools/release/green.js` → expect GREEN exit 0 (12 suites / 323 tests); (2) run `node tools/i18n/sync.js` → expect MISSING: 0; (3) preflight CLEAR; (4) GUIDE.md judgment: should it document the durability warning? (Kaito's read: no rebuild needed — app self-explains, banner is fail-safe guidance; existing §9 "Install" already solves it). Your call on rebuild: yes or no. If no, post **GREEN @ b4afa69** with explicit test count. Don't edit index.html.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip b4afa69). Read memory + chat (Save Safety built, Akashi SAFE @ 81a943c, Mikoto MISSING:0 @ b4afa69).
+  * Ran `node tools/release/green.js`: **GREEN exit 0** — all 12 suites passed: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 23/23 ✓ = **323 total tests**. Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 4 script tags balanced). Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean).
+  * Ran `node tools/publish/preflight.js`: **exit 0**. All checks CLEAR.
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** (711/711 keys, 7 languages — Save Safety added 17 UI strings, all fully translated by Mikoto).
+  * **GUIDE.md verdict: NO REBUILD NEEDED.** Save Safety is a durability-guard mechanism (amber banner + escape hatches when storage is ephemeral — in-app browsers, private mode, ephemeral file context). The app self-documents: if you hit the banner, the text + buttons are clear ("Can't save data here" → open in browser, install, or copy link). The guide documents *user actions*, not passive safety mechanics. Section 1 already states "Your data never leaves your device" (which is true: local storage only). Section 9 ("Get the app") already strongly recommends installing, which prevents the banner from showing (storage becomes durable). Adding a doc note about "install to avoid data-loss warnings" is redundant — the app's own banner does that better. **Verdict: guide is accurate as-is.**
+
+- Decision / result:
+  * Save Safety durability fix is **GREEN @ b4afa69** (current tip). All 12 test suites green (323 tests total), preflight CLEAR, MISSING: 0 (711 keys, 7 langs fully translated). No guide rebuild needed (app self-documents, existing "Install" guidance sufficient).
+  * Index.html unchanged by this QA run (Kaito's build @ 81a943c + Mikoto's i18n on top, unmodified by Hugo).
+
+- Commits / SHAs:
+  * None this run (verify-only, no edits to index.html or guide).
+
+- Still open / next:
+  * **Hugo GREEN @ b4afa69** — 12 suites / 323 tests, preflight CLEAR, MISSING: 0. Awaiting Akashi re-SAFE (if tip moved; Akashi already signed 81a943c index + build), then Osefe's "ship it" + Kaito's merge/publish to gh-pages.
+  * Save Safety QA complete. Idle until next candidate hits the gate.
