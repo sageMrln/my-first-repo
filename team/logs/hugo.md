@@ -649,3 +649,26 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * c5f92bb (Kaito: 1-char brace fix + html_parse_test.js + green.js wiring)
 - Still open / next:
   * **Hugo GREEN @ c5f92bb** — 13 suites / 356 tests, preflight CLEAR (script balance 4), MISSING: 0. Browser-parse guard in place and passing. Awaiting Akashi/Mikoto re-sign (tip moved from d1aa48f → c5f92bb due to P0 fix), then Osefe's "ship it" + Kaito's merge/publish to gh-pages. Desktop Alive v2 cursor-wake + cold-boot features are now verified GREEN on the fixed tip.
+
+## [2026-07-01] — via Kaito (asleep dispatch) — Osefe cold-boot timing (~3s) GREEN re-sign @ 61c8363
+
+- Asked: Re-GREEN on current tip 61c8363 (Osefe's cold-boot loading screen timing tweak: boot floor 900→3000ms + retimed CSS animations + 2 new decorative keyframes). Timing-only change (no strings, no logic, no guide impact). Execute: (1) git pull --rebase; note exact tip SHA; (2) run `node tools/release/green.js` → confirm exit 0, step 0 HTML-parse guard passes (all <script> blocks parse), all suites green; (3) run `node tools/test/html_parse_test.js` directly → passes; (4) run `node tools/publish/preflight.js index.html` → CLEAR; run `node tools/i18n/sync.js` → MISSING:0; (5) no guide change (pure timing tweak). Append log entry, post GREEN to TEAM-CHAT, commit + push.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (already at tip `61c8363`, no fast-forward needed — this is current).
+  * **Ran `node tools/release/green.js`:** **GREEN exit 0**. Parse guard passes first (3 script blocks all syntactically valid), then all 13 test suites: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓ = **356 total tests**. Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, script tags balanced (5)). Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean; PDF derives from GUIDE.md).
+  * **Ran `node tools/test/html_parse_test.js` directly:** **exit 0** ✓. All 3 script blocks parse (app script is syntactically valid). Guards browser-parity errors: parse + compiles via vm.Script, catches syntax issues before shipping.
+  * **Ran `node tools/publish/preflight.js index.html`:** **exit 0 CLEAR** ✓. All 7 checks pass: slots empty, no private-key material, 1 public key present, no owner PII, PUBCHK watchdog intact, **script tags balanced (5)** — the timing change (boot overlay + animations) is structurally sound, no tag imbalance.
+  * **Ran `node tools/i18n/sync.js`:** **MISSING: 0** (723/723 keys, 7 languages — timing/animation tweak added no new UI strings, pure CSS/timing changes).
+  * **No guide change needed.** Osefe's timing tweak is a pure animation delay + duration update (900ms floor → 3s boot floor, keyframes retimed to match). No feature, no new user action, no capability change. Existing GUIDE.md is accurate.
+  * **Tip SHA confirmed:** 61c8363 (commit hash: `61c83631df7b8d30ce41ca5dbddddc601b87aca8`).
+
+- Decision / result:
+  * **GREEN @ 61c8363** — all 13 suites (356 tests) pass. HTML parse guard passes (step 0). Preflight CLEAR (script balance verified). MISSING: 0 (723 keys). Osefe's cold-boot timing change (900ms→3s boot floor + retimed animations + 2 new keyframes) is verified GREEN. No guide update needed (timing-only, no user-facing features added).
+  * Gate is ready. Timing change is isolated to #boot CSS/keyframes (no app logic touched, no money/keys/watchdogs involved).
+
+- Commits / SHAs:
+  * 61c8363 (Osefe's cold-boot timing tweak — current tip, verified GREEN).
+
+- Still open / next:
+  * **Hugo GREEN @ 61c8363** — 13 suites / 356 tests, parse guard GREEN, preflight CLEAR, MISSING: 0. Timing change ready for publish. Awaiting Osefe's "ship it" + Kaito's merge to gh-pages.
