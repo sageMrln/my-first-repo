@@ -724,6 +724,36 @@
   /* F5 — .chip focus-visible parity */
   .chip:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; box-shadow:0 0 0 4px rgba(124,255,178,.14); }
 
+  /* ===== INTERACTION LAYER — Tier 2 + 3 (Arthur): living data, input life, modal/toast motion,
+     cursor-reactive card sheen. JS hooks: liveVal (value pulse) + cardSheen (pointer glare).
+     All prefers-reduced-motion:no-preference gated; sheen additionally desktop-gated. No data. ===== */
+  /* 2b — LIVING DATA: a value element pulses when its rendered text actually changes (scale only,
+     so it never fights the hero number's ambient hudGlowPulse which animates filter). */
+  @media (prefers-reduced-motion: no-preference){ .val-pulse{ animation:valPulse .5s cubic-bezier(.22,1,.36,1); } }
+  @keyframes valPulse{ 0%{transform:scale(1)} 26%{transform:scale(1.08)} 100%{transform:scale(1)} }
+  /* 2a — INPUT LIFE: smooth focus + a cyan ring on inputs that had NO focus style (the scoped
+     .field/.wiz/.lockcard/.localebar glows have higher specificity → keep priority). */
+  @media (prefers-reduced-motion: no-preference){ input,textarea,select{ transition:box-shadow .18s ease, border-color .18s ease; } }
+  input:focus,textarea:focus,select:focus{ outline:none; box-shadow:0 0 0 3px rgba(0,229,255,.14); }
+  /* 2c — MODAL enter motion (class-based .show) */
+  @media (prefers-reduced-motion: no-preference){
+    .modal-back.show{ animation:modalBackIn .18s ease; }
+    .modal-back.show .modal{ animation:modalIn .24s cubic-bezier(.22,1,.36,1); }
+  }
+  @keyframes modalBackIn{ from{opacity:0} to{opacity:1} }
+  @keyframes modalIn{ from{opacity:0; transform:translateY(12px) scale(.975)} to{opacity:1; transform:none} }
+  /* 2d — TOAST enter motion (preserves the translateX(-50%) centering) */
+  @media (prefers-reduced-motion: no-preference){ .mrln-toast{ animation:toastIn .28s cubic-bezier(.22,1,.36,1); } }
+  @keyframes toastIn{ from{opacity:0; transform:translateX(-50%) translateY(-12px)} to{opacity:1; transform:translateX(-50%) translateY(0)} }
+  /* 3a — CURSOR-REACTIVE CARD SHEEN: a cyan glare tracks the pointer across a card (desktop only).
+     Low-alpha radial → rides harmlessly over content (only lightens the dark areas). */
+  .card::before{ content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:0;
+    opacity:0; transition:opacity .3s ease;
+    background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%), rgba(0,229,255,.10), transparent 62%); }
+  @media (hover:hover) and (pointer:fine) and (min-width:1024px) and (prefers-reduced-motion: no-preference){
+    .card:hover::before{ opacity:1; }
+  }
+
   /* ===================== ONBOARDING WIZARD ===================== */
   #onboard{position:fixed;inset:0;z-index:95000;display:none;align-items:center;justify-content:center;padding:18px;
     background:radial-gradient(1000px 600px at 50% -10%, rgba(0,229,255,.10), transparent 60%), rgba(3,7,14,.92);overflow-y:auto}
@@ -8044,7 +8074,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // ---- reminders ----
   function toast(msg){
     var d=document.createElement('div'); d.style.cssText='position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:98000;max-width:90vw;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--cyan);border-radius:12px;padding:12px 16px;color:#eaffff;font-weight:700;box-shadow:var(--glow);font-size:14px';
-    d.textContent=msg; document.body.appendChild(d); setTimeout(function(){ d.style.transition='opacity .5s'; d.style.opacity='0'; setTimeout(function(){ d.remove(); }, 600); }, 5000);
+    d.className='mrln-toast'; d.textContent=msg; document.body.appendChild(d); setTimeout(function(){ d.style.transition='opacity .5s'; d.style.opacity='0'; setTimeout(function(){ d.remove(); }, 600); }, 5000);
   }
   // notification permission + branded delivery (via the service worker when present,
   // so it shows like a real app notification with the MRLN icon; page Notification
@@ -8270,6 +8300,46 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         }
       }, {passive:true});
     }catch(_){}
+  })();
+
+  /* Tier 2b — living data. Pulse a value element when its RENDERED TEXT actually changes (string
+     compare, no number parsing). MutationObserver watches the value nodes; the pulse toggles a CLASS
+     (not text) so it can never re-trigger itself. First population (— → value) does not pulse.
+     Reduced-motion → no observer, no cost. Pure read of the DOM's own text. */
+  (function liveVal(){
+    try{
+      if(!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: no-preference)').matches)) return;
+      if(!window.MutationObserver) return;
+      var SEL='.hero-num, .bignum, .calc-out, .stat .val';
+      function pulse(el){ el.classList.remove('val-pulse'); void el.offsetWidth; el.classList.add('val-pulse'); }
+      function watch(el){ if(el.__lv) return; el.__lv=1; var last=el.textContent;
+        var mo=new MutationObserver(function(){ var now=el.textContent;
+          if(now!==last){ var tn=now.trim(), tl=last.trim();
+            if(tn!=='' && tn!=='—' && tl!=='' && tl!=='—') pulse(el); last=now; } });
+        mo.observe(el,{childList:true,characterData:true,subtree:true}); }
+      function scan(){ try{ var n=document.querySelectorAll(SEL); for(var i=0;i<n.length;i++) watch(n[i]); }catch(_){ } }
+      scan(); setTimeout(scan,1800); setTimeout(scan,5000);
+    }catch(_){ }
+  })();
+
+  /* Tier 3a — cursor-reactive card sheen. A cyan glare (the .card::before radial) follows the pointer
+     across whatever card the mouse is over. Desktop fine-pointer + motion-ok ONLY → no listener/paint
+     otherwise. rAF-coalesced to one DOM write per frame. Pure pointer read: no data, no network. */
+  (function cardSheen(){
+    try{
+      var ok = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine) and (min-width:1024px)').matches
+               && window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+      if(!ok) return;
+      var raf=0, card=null, mx='50', my='50';
+      function apply(){ raf=0; if(card){ card.style.setProperty('--mx',mx+'%'); card.style.setProperty('--my',my+'%'); } }
+      window.addEventListener('pointermove', function(e){
+        if(e.pointerType && e.pointerType!=='mouse') return;
+        card = (e.target && e.target.closest) ? e.target.closest('.card') : null;
+        if(card){ var r=card.getBoundingClientRect();
+          mx=(((e.clientX-r.left)/r.width)*100).toFixed(1); my=(((e.clientY-r.top)/r.height)*100).toFixed(1);
+          if(!raf) raf=requestAnimationFrame(apply); }
+      }, {passive:true});
+    }catch(_){ }
   })();
 
   (function initPWA(){
