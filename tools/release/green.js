@@ -98,6 +98,9 @@ run(['tools/test/tax_test.js'], 'tax suite');
 section('Media Log (rating/ranking/calibration) — tools/test/media_test.js');
 run(['tools/test/media_test.js'], 'media suite');
 
+section('Save Safety (durability fail-loud + detection) — tools/test/savesafety_test.js');
+run(['tools/test/savesafety_test.js'], 'save-safety suite');
+
 // 12) deep pre-publish guard on the app itself
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
