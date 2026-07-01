@@ -1856,3 +1856,53 @@ Entry format:
 - Verdict: DESIGN delivered, build-ready, honest about limits (I explicitly told Kaito to ship "we can't guarantee this browser saves — here's your link + install" over a false "all good"). No code touched (Kaito owns index.html + holds the lock). Nothing gated.
 - Commits / SHAs: this log + TEAM-CHAT design post only. App tip unchanged (Lock-Screen Alive already SHIPPED live ab0c4ae / sw v14 per chat; lock board = Kaito holds index.html for Save Safety @ line 23).
 - Still open: SAFE-review the REAL wired build later — (a) autosave catch fires _warnStorageFull on ANY throw + post-write read-back verify, (b) canary + UA signal + durability banner, (c) copy-link = canonical+own-fid only, fid never in path/query, (d) escape hatch is target=_blank rel=noopener + share + clipboard (NO intent://), (e) canary key not owner data + no new network, (f) __sys count unchanged (pure UI/storage-guard, no new figure → no poison needed). Sleep-mode: NO auto-publish without Osefe's go.
+
+## [2026-07-01] — via Kaito (asleep, step 4+10) — REAL-CODE SAFE: Save Safety WIRED build @ `b4afa69`
+- Asked: SAFE-review the WIRED Save Safety build (my own design from `e643e1b`). Verify the real diff matches
+  my contract on 7 points; fix DIRECTLY if a hole, else post SAFE @ b4afa69. Osefe already lost data once → airtight.
+- BASELINE: parent of the feature = 81a943c^. `git diff 81a943c^..b4afa69` = index.html (+102/-26) + TEAM-CHAT
+  + mikoto.md (log). 1.7MB diff is ~all i18n dict noise; the REAL functional delta is ~120 lines (CSS banner/zone/
+  lock-hatch styles + saveSafetyBanner DOM + lock #lkSaveHelp inline reveal + localebar #openSaveBtn + autosave
+  read-back/fail-loud + IN_APP_BROWSER/_canonLink/_warnNotDurable + buildModalBody 3-zone rewrite + __copyLink +
+  saveSafetyWire boot IIFE). sw.js/manifest UNTOUCHED (numstat empty for both).
+- 1. READ-BACK VERIFY + ANY-THROW FAIL-LOUD ✓ (autosave @2072-2092): `_stuck=(getItem===_json)` after setItem
+  catches a SILENT no-op write; catch branches quota→_warnStorageFull, ELSE→_warnNotDurable (any non-quota throw,
+  never swallowed); `if(!_stuck && !_quotaWarned) _warnNotDurable()` catches wrote-but-didn't-stick. Double-warn
+  guarded: on quota, _quotaWarned=true so the post-catch !_quotaWarned is false (no clobber); _durabilityWarned
+  latch makes _warnNotDurable idempotent. Badge line gated on !_quotaWarned && !_durabilityWarned so the amber
+  "auto-saved locally" can't overwrite the red "not saving". The @2037 silent-loss gap that bit Osefe is closed.
+- 2. COPY LINK = CANONICAL HOST + OWN FID IN FRAGMENT ONLY ✓: `_canonLink()` @2058 =
+  'https://sagemrln.github.io/my-first-repo/' + (STATE.fid?('#'+fid):''). Fid is the customer's OWN opaque file id
+  (already in their address bar / qrLink / mintLink / manifest start_url). NEVER path/query (browsers don't send
+  fragment to servers), NEVER a figure/key. Grepped every _canonLink use — all fragment.
+- 3. NO intent:// ✓ (0 hits on tip). Escape hatches: copy-link (clipboard API → textarea/execCommand fallback,
+  @8169), install STEPS (existing buildModalBody flow), open-in-browser INSTRUCTIONS (Z3, IN_APP_BROWSER only) —
+  no forced scheme, no target=_blank window.open even. Safe set exactly as I specced; risky intent:// rejected.
+- 4. CANARY `__mrln_probe` ✓ (@8177): setItem('1')→getItem==='1'→removeItem, immediate. Holds only '1', never
+  owner data. No collision with the 4 real LS keys: financeHudState(STORE_KEY @2006), mrln_access_key(@4871/STORE),
+  mrln_i18n_audit(@5623), mrln_team(@8198). Distinct namespace.
+- 5. NO IDB MIRROR / NO NETWORK / NO NEW FIGURE → NO POISON ✓: grepped the +lines for fetch/XHR/eval/new Function/
+  indexedDB./WebSocket/EventSource → ZERO. No money math added → no new poison site needed. __sys count 27==27,
+  __sys.token() 14==14 IDENTICAL baseline vs tip → no watchdog weakened/removed. (Correctly held IDB out — same-fate
+  store for the ephemeral-webview failure mode = false comfort, per my design R5.)
+- 6. CURTAIN INTACT ✓ (the load-bearing privacy check): lock hatch is a SELF-CONTAINED INLINE reveal inside
+  .lockcard — #lkSaveHelp (@728, display:none) toggled by #lkOpenSave (@727) to block/none; it does NOT open the
+  shared .modal-back (which is z-90000, BELOW the lock overlay z-100000 → would be hidden anyway). Shows ONLY
+  _canonLink() (into #lkSaveUrl via .textContent @8183) + two generic i18n steps ("open in browser"). NO MODEL/
+  STATE/figure. Nothing app-content bleeds through the opaque overlay; the hatch itself is part of the lockcard,
+  above the curtain, textContent-only (no injection).
+- 7. NO PRIVATE DATA IN BANNER/MODAL/LOCK ✓: #saveSafetyBanner (@900) is generic warning copy only; modal URL is
+  esc()'d (@132, buildModalBody h += esc(url)); lock/lockhatch textContent-only. #__ownerKeySrc empty (@1870),
+  #hud-state empty (@1866). PUBCHK 4047293148 ×1, PUB_B64 ×3, no SW/manifest change → export/exportBlank untouched.
+- GATE: node tools/release/green.js → GREEN exit 0 (parser 21/21, tax 105/105, media 23/23 + all 12 suites/323;
+  preflight CLEAR — slots empty, no private key, 1 public key, no PII, PUBCHK, 4 scripts balanced; GUIDE/manifest/
+  sw/team-chat leak-clean). node tools/i18n/sync.js → MISSING:0 (711/711, Mikoto's c983696 done).
+- VERDICT: **SAFE @ b4afa69.** Every contract point implemented correctly; the silent-loss gap is genuinely closed
+  (read-back + any-throw fail-loud); copy-link is canonical+own-fid fragment only (no figure/key, no path/query);
+  no intent://, no network, no IDB mirror, no new poison; watchdogs held (27/14); curtain intact (inline lock hatch,
+  no modal, no bleed); no private data in any new surface. No DIRECT security fix required — the build is clean.
+- Commits / SHAs reviewed: b4afa69 (tip), baseline 81a943c^. Read-only review, no lock taken. Posted SAFE @ b4afa69
+  to TEAM-CHAT.
+- Still open: nothing security-side. Gate (steps 7–11): Mikoto MISSING:0 @ c983696 done, my SAFE @ b4afa69 posted;
+  needs Hugo GREEN on THIS tip + Osefe's explicit "ship it" (sleep-mode: NO auto-publish). If the tip moves index.html,
+  I re-sign.
