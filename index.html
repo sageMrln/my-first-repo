@@ -8421,13 +8421,18 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(!window.MutationObserver) return;
       var SEL='.hero-num, .bignum, .calc-out, .stat .val';
       function pulse(el){ el.classList.remove('val-pulse'); void el.offsetWidth; el.classList.add('val-pulse'); }
+      // countUp sets _cuAnimating on the DESCENDANT value span (#ovLeft / heroLeftVal), but this
+      // observer watches the CONTAINER (.bignum / .hero-num) — so the guard must be descendant-aware,
+      // or count-up's per-frame writes re-fire valPulse every frame (Arthur: ~108 reflows/render).
+      function cuBusy(node){ if(node._cuAnimating) return true;
+        var d=node.getElementsByTagName?node.getElementsByTagName('*'):[]; for(var i=0;i<d.length;i++){ if(d[i]._cuAnimating) return true; } return false; }
       function watch(el){ if(el.__lv) return; el.__lv=1; var last=el.textContent;
         var mo=new MutationObserver(function(){ var now=el.textContent;
           if(now!==last){ var tn=now.trim(), tl=last.trim();
-            // A3 guard: while countUp() is tweening this element, its per-frame text writes must NOT
-            // re-fire the pulse (it would strobe). Pulse fires ONCE when count-up starts (below), then
-            // the number settles — pulse + count-up compose. _cuAnimating is set by countUp.
-            if(!el._cuAnimating && tn!=='' && tn!=='—' && tl!=='' && tl!=='—') pulse(el); last=now; } });
+            // A3 guard: while countUp() is tweening this element (or a descendant), its per-frame text
+            // writes must NOT re-fire the pulse (it would strobe / storm reflows). Pulse fires ONCE
+            // when count-up starts, then the number settles — pulse + count-up compose.
+            if(!cuBusy(el) && tn!=='' && tn!=='—' && tl!=='' && tl!=='—') pulse(el); last=now; } });
         mo.observe(el,{childList:true,characterData:true,subtree:true}); }
       function scan(){ try{ var n=document.querySelectorAll(SEL); for(var i=0;i<n.length;i++) watch(n[i]); }catch(_){ } }
       scan(); setTimeout(scan,1800); setTimeout(scan,5000);
