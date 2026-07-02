@@ -20,7 +20,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- (none — Interaction Tier 2 + 3a shipped @ b4a7523 → sw v20; lock released. NEXT WAVE (deferred, build right): tap ripple (2e), button glint (3b), list add/remove (3c — needs stable per-row render identity + Akashi), + Arthur's input-focus consistency polish (scope outline:none to :not(:focus-visible)).) [2026-07-01]
+- LOCKED: index.html (font self-hosting = optimization pass) — Kaito — Osefe: "optimization". Replacing the render-blocking Google Fonts @import (line 16, the 13s-hang class + Google ping + offline-fonts gap) with embedded self-hosted woff2 @font-face (latin+latin-ext, ~184KB base64, leak-regex-checked clean). Akashi's backlogged item, now built. (Parallel read-only: Akashi full-surface security audit · Arthur futurism-wave spec — Osefe directive.) [2026-07-02]
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
