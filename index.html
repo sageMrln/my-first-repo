@@ -6002,6 +6002,27 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], foodLog:foodLogLite, media:STATE.media||[], tax:STATE.tax||{}, savingsBoxes:STATE.savingsBoxes||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
     return 'MRLNDATA-' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));   // UTF-8 safe (emoji/names)
   }
+  // SECURITY (Akashi): imported data (MRLNDATA code / master-file hud-state) is UNTRUSTED.
+  // Every object .id and every calendar key is interpolated RAW into data-* attributes, and
+  // a few numeric fields (PR wt/reps, food-log totals) render RAW into markup, so a crafted
+  // import could smuggle HTML/JS (stored XSS -> access-key + data theft; there is no CSP to
+  // contain it). We coerce structural ids to a safe charset ([\w-], safe in EVERY HTML
+  // context and a no-op for real uid() values) and force the raw-rendered numeric fields to
+  // Numbers. Content strings (name/title/text/comment/label/day/genre/ex) are deliberately
+  // left untouched: they legitimately contain < > & " and are esc()'d at every render site.
+  function _sid(x){ return String(x==null?'':x).replace(/[^\w-]/g,'').slice(0,64); }
+  function _inum(x){ var n=Number(x); return isFinite(n)?n:0; }
+  function _sanitizeIngested(){
+    function fixIds(arr){ if(Array.isArray(arr)) arr.forEach(function(o){ if(o && typeof o==='object' && 'id' in o) o.id=_sid(o.id); }); }
+    fixIds(STATE.workouts); fixIds(STATE.notes); fixIds(STATE.media); fixIds(STATE.reminders); fixIds(STATE.savingsBoxes);
+    if(Array.isArray(STATE.prs)) STATE.prs.forEach(function(pr){ if(!pr||typeof pr!=='object') return; if('id' in pr) pr.id=_sid(pr.id); pr.wt=_inum(pr.wt); pr.reps=_inum(pr.reps); pr.dist=_inum(pr.dist); pr.secs=_inum(pr.secs); });
+    if(Array.isArray(STATE.foodLog)) STATE.foodLog.forEach(function(e){ if(!e||typeof e!=='object') return; if('id' in e) e.id=_sid(e.id); if(e.total&&typeof e.total==='object'){ e.total.kcal=_inum(e.total.kcal); e.total.p=_inum(e.total.p); e.total.c=_inum(e.total.c); e.total.f=_inum(e.total.f); } });
+    if(MODEL && Array.isArray(MODEL.groups)) MODEL.groups.forEach(function(g){ if(!g||typeof g!=='object') return; if('id' in g) g.id=_sid(g.id); fixIds(g.items); });
+    if(STATE.calendar && typeof STATE.calendar==='object'){ Object.keys(STATE.calendar).forEach(function(k){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(k)){ delete STATE.calendar[k]; return; }        // key renders raw in data-date -> drop non-dates
+      if(Array.isArray(STATE.calendar[k])) STATE.calendar[k].forEach(function(ev){ if(ev&&typeof ev==='object' && 'id' in ev) ev.id=_sid(ev.id); });
+    }); }
+  }
   // Apply a parsed data object (from a MRLNDATA code OR a master file's embedded
   // state — same field names). NEVER imports the owner signing key; that lives in
   // #__ownerKeySrc and is ignored here, so minting stays off on the importing device.
@@ -6017,6 +6038,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(d.missionsDone) STATE.missionsDone=d.missionsDone;
     if(d.prefs) STATE.prefs=Object.assign({}, STATE.prefs, d.prefs);
     if(d.showKlarna) STATE.showKlarna=true;
+    _sanitizeIngested();                                // SECURITY: neutralise smuggled markup in imported ids/keys/numeric fields before any render
     STATE.fresh=false; STATE.demo=false;
     if(typeof applyCleanModeClass==='function') applyCleanModeClass();
     if(typeof revealKlarnaIfEnabled==='function') revealKlarnaIfEnabled();
