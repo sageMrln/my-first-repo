@@ -2127,3 +2127,34 @@ Entry format:
 - VERDICT: **SAFE @ 7bb7009.** Fonts inert + no-leak (backlog item resolved), my XSS fix intact + locked by a live-extracting 25-case guard, countUp re-formats the same gated value with no exfil + can't surface a bogus number on tamper, vibrate is a benign gesture-gated haptic, ripple is pointer-only; watchdogs byte-identical, slots empty, gate GREEN/CLEAR. NO security edit required.
 - Commits / SHAs reviewed: 7bb7009 (tip), baseline 9d2ec15. Read-only, NO lock, NO edits to app code (log + TEAM-CHAT only). Posted SAFE @ 7bb7009 to TEAM-CHAT.
 - Still open: nothing security-side. Gate (steps 7–11): needs Mikoto MISSING:0 + Hugo GREEN on 7bb7009, then Osefe's explicit "ship it" (sleep-mode: NO auto-publish). If tip moves index.html, I re-sign. BACKLOG: @import self-host is now DONE (drop from backlog); CSP meta still parked.
+
+## [2026-07-02] — via Kaito — RE-SAFE: liveVal descendant-aware guard (`30f3caf`)
+- Asked: quick re-SAFE after Kaito folded Arthur's Wave-A redline at 30f3caf (on top of my
+  already-SAFE 7bb7009 batch). Verify diff is ONLY the liveVal guard fix; watchdogs byte-
+  identical; run green + preflight.
+- Did / found (read `git diff 7bb7009 HEAD -- index.html`, ran both gates — not on faith):
+  - DELTA is EXACTLY the liveVal observer guard @__bootFX ~8424: adds `cuBusy(node)` helper
+    (reads node._cuAnimating, else iterates node.getElementsByTagName('*') and returns true if
+    any descendant has _cuAnimating) + swaps the A3 guard `!el._cuAnimating` → `!cuBusy(el)`,
+    plus updated comments. countUp sets _cuAnimating on the DESCENDANT value span (#ovLeft/
+    heroLeftVal) while the observer watches the CONTAINER (.bignum/.hero-num) → without descendant
+    awareness count-up's per-frame writes re-fired the pulse (~108 reflows/render, Arthur). Fix
+    is correct + minimal.
+  - PURE JS DOM-FLAG READ ✓ — cuBusy only reads a boolean property set by countUp and walks
+    descendants. No fetch/XHR/eval/innerHTML/new Function/document.write/.src=, no storage, no
+    money-figure read (the observer is display-only decoration — pulses an existing value node,
+    reads/writes NO amount for logic). Zero new security surface. No sw.js/manifest/parser/
+    applyChange/export/i18n touch. No new strings.
+  - WATCHDOGS BYTE-IDENTICAL ✓ — parent(7bb7009) vs HEAD marker counts all equal: PUBCHK
+    4047293148 (1==1), PUB_B64 (3==3), __sys.token( (12==12), __sys. (24==24), __ownerKeySrc
+    (7==7), hud-state (1==1). #__ownerKeySrc byte-empty @2117, #hud-state byte-empty @2113.
+    The one-hunk guard fix touches no watchdog/slot/poison. No poison needed (display decoration,
+    no money math added).
+  - Ran node tools/release/green.js → GREEN exit 0 (14 suites: parser 21/21, assistant 16/16 +
+    silly 43/43, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, photo
+    17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, import_sanitize 25/25, html-parse
+    3/3; preflight CLEAR; all published files clean). node tools/publish/preflight.js index.html →
+    CLEAR exit 0 (slots empty · no private key · 1 public key · no PII · PUBCHK · 5 balanced scripts).
+- Verdict: SAFE @ 30f3caf. JS-guard-only, no security surface, watchdogs byte-identical, gates green.
+- Commits / SHAs reviewed: 30f3caf (current tip). If tip moves index.html, I re-sign.
+- Still open: nothing security-side. Sleep-mode: no auto-publish — needs Osefe's explicit go.
