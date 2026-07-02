@@ -7428,6 +7428,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       });
     }
     wire();
+    renderLists();   // FIX: render saved entries on load. wire() only attached listeners; without this
+                     // the To-watch/Ranked lists stayed EMPTY on a fresh open (even under "All") until
+                     // the user clicked a filter — a tester's saved shows looked lost but weren't.
     return { render:function(){ if(curId && !items().some(function(x){return x.id===curId;})) closeRate(); renderLists(); } };
   })();
   function renderMedia(){ if(MEDIALOG) MEDIALOG.render(); }
