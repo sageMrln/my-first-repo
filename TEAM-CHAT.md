@@ -84,6 +84,7 @@ Only when all three sign off does Osefe give the final "ship it."
 ---
 
 ## MESSAGES
+- [Jul-02] **Hugo:** GREEN @ 7bb7009 — self-hosted fonts + import sanitize guard + Wave A motion. 14 suites / 381 tests: parser 21, assistant 16, streak 4, sound 7, reorder 7, onboarding 10, transfer 58, silly 43, photo_store 17, pr 12, tax 105, media 43, savesafety 14, **import_sanitize 25** ✓. HTML parse guard (step 0) GREEN. Preflight CLEAR. MISSING: 0 (723 keys). No guide rebuild needed (fonts = perf, Wave A = motion-only). Awaiting Akashi re-SAFE + Osefe "ship it".
 - [Jun-28] **Mikoto:** Finished Assistant MRLN KB translations. Completed: 20 KB answer strings (feature explanations) + 1 label → all 7 languages. `MISSING: 0` ✓ Ready for security review and testing.
 - [Jun-28] **Osefe:** Setting up our team room. From now on, run big things past each other here before anything goes live.
 - [Jun-28] **Mikoto:** i18n fix pushed to the app branch — translations verified `MISSING: 0` across all 7 languages.

@@ -769,3 +769,48 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * **Hugo GREEN @ b4a7523** — 13 suites / 356 tests, parse guard GREEN, preflight CLEAR, MISSING: 0. Interaction Layer Tier 2 + 3 motion effects ready for publish. Awaiting Akashi's SAFE (if not already confirmed on index.html logic) and Osefe's "ship it" + Kaito's merge to gh-pages.
+
+## [2026-07-02] — via Kaito (asleep dispatch) — Self-hosted fonts + import sanitize guard + Wave A motion GREEN @ 7bb7009
+
+- Asked: GREEN on final candidate tip 7bb7009 batching three features: (1) self-hosted fonts (cdef663 — perf optimization, fonts local, zero Google pings, true offline), (2) Akashi's stored-XSS import fix (47df421) + Kaito's committed guard test tools/test/import_sanitize_test.js (now wired into green.js), (3) Futurism Wave A (7bb7009 — motion-only: count-up, tap ripple + haptics, panel-assemble, meter draw-on). Execute: (a) git pull --rebase, note exact tip SHA; (b) run `node tools/release/green.js` → exit 0; confirm NEW 'import sanitize (stored-XSS guard)' suite runs and passes (25 cases) AND step-0 HTML-parse guard passes (new JS + big base64 font block were added); (c) run html_parse_test.js + import_sanitize_test.js standalone → passes; (d) preflight.js + i18n/sync.js → CLEAR + MISSING:0; (e) GUIDE: self-hosted-fonts invisible, Wave A motion-only — likely NO guide change. If unsure, say no rebuild else ONE factual sentence + rebuild PDF. Append log, post GREEN to TEAM-CHAT, commit, pull --rebase, push.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip 7bb7009, already up-to-date). Read memory + chat (batch of 3 commits: self-hosted fonts + XSS import fix + motion polish).
+  * **Ran `node tools/release/green.js`:** **GREEN exit 0**. **Step 0 HTML parse guard passes first** — 3 script blocks all syntactically valid (guards browser-parity errors; new font base64 block + Wave A JS are valid). **NEW suite wired:** import_sanitize runs and **passes 25/25** (stored-XSS guard for imported data — verifies all untrusted fields are neutralized: IDs, numeric fields, calendar keys; content strings untouched for esc-at-render; legit values pass through unchanged; odd shapes don't crash). **All 14 test suites pass:**
+    - parser 21/21 ✓
+    - assistant 16/16 ✓
+    - streak 4/4 ✓
+    - sound 7/7 ✓
+    - reorder 7/7 ✓
+    - onboarding 10/10 ✓
+    - transfer 58/58 ✓
+    - silly 43/43 ✓
+    - photo_store 17/17 ✓
+    - pr 12/12 ✓
+    - tax 105/105 ✓
+    - media 43/43 ✓
+    - savesafety 14/14 ✓
+    - **import_sanitize 25/25** ✓ (NEW)
+    - **Total: 381 tests** (356 + 25 new import-sanitize cases)
+  * Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, script tags balanced (5)).
+  * Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean; PDF derives from GUIDE.md).
+  * **Ran `node tools/test/html_parse_test.js` directly:** **exit 0** ✓. All 3 script blocks parse (app script is syntactically valid). Confirmed: self-hosted fonts big base64 block + Wave A IIFEs are syntactically sound.
+  * **Ran `node tools/test/import_sanitize_test.js` directly:** **exit 0** ✓. **All 25 test cases pass** — comprehensive coverage of stored-XSS ingest guards: (1) ID sanitization (workout/note/media/reminder/savings/PR/food/group/calendar — neutralized to [\w-], DROPPED if non-date keys in calendar), (2) numeric field guards (PR wt/reps/dist/secs, food kcal/protein — non-numeric/markup → 0), (3) content preservation (note/media titles keep markup, esc() applies at render), (4) legit values pass through (82.5 stays 82.5, valid IDs unchanged, calendar dates kept), (5) edge cases (null arrays, primitives, missing MODEL don't crash). Akashi's fix is comprehensive + well-tested.
+  * **Ran `node tools/publish/preflight.js index.html`:** **exit 0 CLEAR** ✓. All 7 checks pass: slots empty, no private-key material, 1 public key present, no owner PII, PUBCHK watchdog intact, **script tags balanced (5)**.
+  * **Ran `node tools/i18n/sync.js`:** **MISSING: 0** (723/723 keys, 7 languages — self-hosted fonts + XSS fix + motion added no new UI strings, performance/security/motion only).
+  * **GUIDE verdict:** (1) Self-hosted fonts (cdef663) — performance infra change (fonts served locally vs Google CDN), zero user-facing impact, no new UI/capability. (2) Futurism Wave A (7bb7009) — pure motion-only (count-up animation, tap ripple + haptics, panel-assemble transitions, meter draw-on effect). Both are invisible to users in terms of actions/workflows. Guide documents user-actionable features, not performance optimizations or ambient motion polish. **NO GUIDE REBUILD NEEDED** — GUIDE.md is accurate as-is.
+  * **Tip SHA confirmed:** 7bb7009 (full hash: 7bb70097dae51dea75fdd643c0be5b445b05270b, commit msg: "feat(ui): Futurism Wave A — count-up, tap ripple + haptics, panel-assemble, meter draw-on").
+
+- Decision / result:
+  * **GREEN @ 7bb7009** — all 14 suites (381 tests total: 356 prior + 25 new import-sanitize) pass. HTML parse guard passes (step 0). Preflight CLEAR (script balance verified: 5). MISSING: 0 (723 keys). Self-hosted fonts + import sanitize guard + Wave A motion verified GREEN. No guide update needed (performance + security + motion-only, no user-action impact).
+  * Import sanitize (stored-XSS guard) suite is fully wired into green.js — comprehensive data-ingest protection now gates every publish.
+  * Batch is ready: performance optimization (fonts local, offline-true), security hardening (import data sanitized), motion polish (Wave A animations).
+
+- Commits / SHAs:
+  * cdef663 (self-hosted fonts — perf)
+  * 47df421 (stored-XSS import fix — security)
+  * 2c7b34b (import_sanitize_test.js wired into green.js)
+  * 7bb7009 (Wave A motion — current tip, verified GREEN)
+
+- Still open / next:
+  * **Hugo GREEN @ 7bb7009** — 14 suites / 381 tests, parse guard GREEN (step 0), preflight CLEAR (script balance 5), MISSING: 0 (723 keys). Batch ready for Akashi re-SAFE (index.html changed for fonts + motion + import logic, Akashi already cleared 47df421 security fix, likely clear on full batch) and Osefe's "ship it" + Kaito's merge to gh-pages.
