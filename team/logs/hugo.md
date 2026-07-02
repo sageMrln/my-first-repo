@@ -814,3 +814,25 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * **Hugo GREEN @ 7bb7009** — 14 suites / 381 tests, parse guard GREEN (step 0), preflight CLEAR (script balance 5), MISSING: 0 (723 keys). Batch ready for Akashi re-SAFE (index.html changed for fonts + motion + import logic, Akashi already cleared 47df421 security fix, likely clear on full batch) and Osefe's "ship it" + Kaito's merge to gh-pages.
+
+## [2026-07-02] — via Kaito (asleep dispatch) — Wave-A redline fold + descendant-aware guard GREEN @ 30f3caf
+- Asked: Tip advanced to 30f3caf (Kaito folded Arthur's one Wave-A redline: descendant-aware count-up/pulse guard in liveVal). Pure JS, no strings, no guide. Re-GREEN on current tip: `node tools/release/green.js` → exit 0 (all suites green, parse guard step 0, import-sanitize 25/25). `node tools/test/html_parse_test.js` → passes. `node tools/publish/preflight.js index.html` → CLEAR. `node tools/i18n/sync.js` → MISSING:0. No guide change. Append log, post GREEN to TEAM-CHAT Pending (exact SHA), commit, pull --rebase, push. Report: GREEN/RED, exact tip SHA, parse guard + import-sanitize + total test count.
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (already current tip 30f3caf). Read memory + chat (prior batch 7bb7009 GREEN posted, wave-A redline fold is new tip).
+  * **Ran `node tools/release/green.js`:** **GREEN exit 0** — all 14 suites passed:
+    * Parser step 0 (HTML parse guard): **✓ all 3 script blocks parse** (syntactically valid app script)
+    * Import sanitize: **25/25** (stored-XSS guard: id neutralization, numeric type coercion, content strings preserved)
+    * Suites: parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓ = **382 total tests** (14 suites)
+    * Preflight: ✓ CLEAR (slots empty, 1 public key, no PII, PUBCHK intact, 5 script tags balanced)
+    * Leak scan: ✓ clean (GUIDE.md, manifest, sw.js, team-chat, PDF clean)
+  * **Ran `node tools/test/html_parse_test.js`:** **✓ all 3 script blocks parse** (syntactically valid).
+  * **Ran `node tools/publish/preflight.js index.html`:** **✓ CLEAR to publish** (slots empty, 1 public key, no PII, PUBCHK intact, 5 script tags balanced).
+  * **Ran `node tools/i18n/sync.js`:** **MISSING: 0** (723/723 keys, 7 languages — wave-A redline is pure JS motion, added no UI strings).
+  * **GUIDE verdict:** Wave-A redline is descendant-aware count-up/pulse guard in liveVal — pure motion polish (performance guard on animation). Invisible to user actions/workflows. **NO GUIDE REBUILD NEEDED** — GUIDE.md accurate as-is.
+  * **Exact tip SHA:** 30f3caf849fbad9faf752f15be112984e52f7999 (full hash verified).
+- Decision / result:
+  * **GREEN @ 30f3caf** — 14 suites / 382 tests total. HTML parse guard (step 0) ✓. Import-sanitize ✓ (25/25). Preflight ✓ CLEAR (5 script tags). MISSING: 0 (723 keys, 7 languages). Wave-A redline (descendant-aware guard) verified GREEN — motion optimization only, no feature/string changes, guide accurate as-is.
+- Commits / SHAs:
+  * 30f3caf (Wave-A redline fold: descendant-aware count-up/pulse guard in liveVal — current tip, verified GREEN)
+- Still open / next:
+  * Awaiting Akashi re-SAFE on 30f3caf (pure JS motion, no data/keys/numbers touched, should be clear) and Osefe's "ship it" + Kaito's merge/publish to gh-pages.
