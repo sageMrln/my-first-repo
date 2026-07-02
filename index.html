@@ -4564,7 +4564,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   }
   function renderDayModal(){
     if(!selDate) return;
-    var t=document.getElementById('dayMTitle'); if(t) t.textContent='📅 '+prettyDate(selDate);
+    var ttl=document.getElementById('dayMTitle'); if(ttl) ttl.textContent='📅 '+prettyDate(selDate);   // was `var t` — shadowed the global t() translate fn → threw on every day-modal open (Arthur P1)
     var host=document.getElementById('dayMList'); if(!host) return;
     var p=parseKey(selDate), evs=eventsOn(p.y,p.m,p.d);
     host.innerHTML = evs.length ? evs.map(function(e){
