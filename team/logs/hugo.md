@@ -914,3 +914,37 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * Awaiting Akashi re-SAFE on 422eb29 (pure JS fix, no security/data paths touched, should be clear) and Osefe's "ship it" + Kaito's merge/publish to gh-pages.
+
+## [2026-07-02] — via Kaito (asleep dispatch) — Final v22 candidate re-GREEN @ a4ba0b8
+- Asked: Re-GREEN on tip a4ba0b8 (final v22 candidate batch: Discord Save-Safety detection + calendar day-modal fix + Media-Log render-on-load fix + B6/B7. Last commit adds one renderLists() init call, pure JS, no strings, no guide impact). Execute: (a) git pull --rebase; note exact tip SHA; (b) run `node tools/release/green.js` → exit 0 (all suites green, parse guard passes, savesafety 14/14, import-sanitize 25/25, media 43/43); (c) run `node tools/test/html_parse_test.js` → passes; (d) `node tools/publish/preflight.js index.html` → CLEAR; `node tools/i18n/sync.js` → MISSING:0; (e) no guide change (pure JS, no strings). Append log, post GREEN to TEAM-CHAT Pending (exact SHA), commit, pull --rebase, push.
+- Did / found / thought:
+  * Pulled (already at a4ba0b8). Read memory + chat (Prior tips verified GREEN, new tip a4ba0b8 adds Media render-on-load fix).
+  * **Ran `node tools/release/green.js`:** **GREEN exit 0**. Step 0 HTML parse guard passes (all 3 script blocks syntactically valid). **All 15 test suites passed:**
+    - parser 21/21 ✓
+    - assistant 16/16 ✓
+    - streak 4/4 ✓
+    - sound 7/7 ✓
+    - reorder 7/7 ✓
+    - onboarding 10/10 ✓
+    - transfer 58/58 ✓
+    - silly 43/43 ✓
+    - photo_store 17/17 ✓
+    - pr 12/12 ✓
+    - tax 105/105 ✓
+    - media 43/43 ✓ (includes render-on-load guard)
+    - **savesafety 14/14** ✓ (Discord/Slack/Telegram detection verified)
+    - **import_sanitize 25/25** ✓ (XSS guard verified)
+    - **= 382 total tests** (15 suites)
+  * Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 5 script tags balanced).
+  * Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean; PDF derives from GUIDE.md).
+  * **Ran `node tools/test/html_parse_test.js`:** **✓ all 3 script blocks parse** (syntactically valid).
+  * **Ran `node tools/publish/preflight.js index.html`:** **✓ CLEAR to publish** (all 7 checks pass).
+  * **Ran `node tools/i18n/sync.js`:** **MISSING: 0** (723/723 keys, 7 languages — Media render-on-load + B6/B7 CSS/a11y added no UI strings, pure JS/CSS polish only).
+  * **GUIDE verdict:** Media render-on-load fix (renderLists() init) is invisible to users — resilience only, no feature change. B6 (chat entrance CSS) + B7 (keyboard-reach a11y) are interaction polish — no new user actions. **NO GUIDE REBUILD NEEDED** — GUIDE.md accurate as-is.
+  * **Exact tip SHA confirmed:** a4ba0b8dd4f1a1e4c7989f473316ac0fbb8fd838 (full hash).
+- Decision / result:
+  * **GREEN @ a4ba0b8** — 15 suites / 382 tests total. HTML parse guard ✓. Savesafety ✓ (14/14). Import-sanitize ✓ (25/25). Media ✓ (43/43). Preflight ✓ CLEAR. MISSING: 0 (723 keys, 7 languages). Final v22 candidate verified GREEN.
+- Commits / SHAs:
+  * a4ba0b8dd4f1a1e4c7989f473316ac0fbb8fd838 (Final v22: Discord detection + calendar fix + Media render-on-load + B6/B7 polish — verified GREEN)
+- Still open / next:
+  * Awaiting Akashi re-SAFE on a4ba0b8 (index.html changed for Discord + calendar + Media + B6/B7; Akashi should re-sign) and Osefe's "ship it" + Kaito's merge/publish to gh-pages.
