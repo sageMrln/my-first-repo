@@ -20,7 +20,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- LOCKED: index.html (Futurism Wave B — visual slice) — Kaito — building B3 button glint · B4 scroll-reveal · B5 overscroll glow · B6 chat entrance (lower-risk, mostly CSS + small JS). Parallel read-only: Arthur build-ready specs for B1 list add/remove · B2 savings ring · B7 keyboard-reach a11y (the complex/riskier items). [2026-07-02]
+- LOCKED: index.html (HOTFIX — Discord in-app-browser detection) — Kaito — tester lost Media Log entries silently: distribution is via DISCORD, whose in-app browser wipes localStorage on close, but Save Safety's IN_APP_BROWSER sniff didn't include Discord → no warning fired. Added Discord|Slack|Telegram to the sniff (+ savesafety_test cases). Priority over Wave B. Wave B (B6/B7 built @ 633b765; B1/B2/B4 per Arthur spec ca39e6e) resumes after. [2026-07-02]
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —

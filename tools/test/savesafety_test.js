@@ -93,7 +93,13 @@ if (m){
     'Mozilla/5.0 (Linux; Android) [FBAN/FB4A;FBAV/1.0]',
     'Mozilla/5.0 (iPhone) Snapchat/12.0',
     'Mozilla/5.0 (Linux; Android) musical_ly_2023 TikTok',
-    'Mozilla/5.0 (iPhone) MicroMessenger/8.0'
+    'Mozilla/5.0 (iPhone) MicroMessenger/8.0',
+    // DISCORD is the app's distribution channel — its in-app browser wipes localStorage on close.
+    // A tester lost Media Log entries here with NO warning because Discord wasn't detected. Guard it.
+    'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/119 Mobile Safari/537.36 Discord/196306 Android/13',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Discord/196306',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/537.36 Slack/4.35 Chrome/120',
+    'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/119 Mobile Safari/537.36 Telegram'
   ];
   const normals = [
     'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0) AppleWebKit/605.1.15 Version/16.0 Mobile/15E148 Safari/604.1',

@@ -2304,7 +2304,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // (social webviews), private mode, and some file:// contexts silently drop localStorage on
   // reload. We warn on ANY negative signal and always surface the escape hatch — never claim
   // durability. Pure UI/guard: no new figure, no network, no poison. ---
-  var IN_APP_BROWSER = (function(){ try{ return /FBAN|FBAV|FB_IAB|Instagram|Messenger|\bLine\/|Snapchat|TikTok|musical_ly|Bytedance|\bTwitter\b|Pinterest|WhatsApp|LinkedInApp|\bGSA\b|MicroMessenger/i.test(navigator.userAgent||''); }catch(_){ return false; } })();
+  // Distribution is via DISCORD (keys handed out there) → testers open the link in Discord's in-app
+  // browser, where localStorage is wiped on webview close → data silently vanishes on reopen. Discord
+  // (+ Slack/Telegram, same ephemeral class) MUST be detected so Save Safety warns + shows the
+  // open-in-browser/install escape hatch. Real Chrome/Safari UAs don't match these tokens.
+  var IN_APP_BROWSER = (function(){ try{ return /FBAN|FBAV|FB_IAB|Instagram|Messenger|\bLine\/|Snapchat|TikTok|musical_ly|Bytedance|\bTwitter\b|Pinterest|WhatsApp|LinkedInApp|\bGSA\b|MicroMessenger|Discord|Slack|Telegram/i.test(navigator.userAgent||''); }catch(_){ return false; } })();
   var _durabilityWarned=false;
   function _canonLink(){ return 'https://sagemrln.github.io/my-first-repo/' + ((typeof STATE==='object'&&STATE&&STATE.fid)?('#'+STATE.fid):''); }
   function _warnNotDurable(){            // fail loud: this browser isn't keeping data
