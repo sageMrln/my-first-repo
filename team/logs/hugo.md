@@ -876,3 +876,41 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * **Hugo GREEN @ e976932** — 15 suites / 382 tests, parse guard GREEN, preflight CLEAR (5 script tags), MISSING: 0 (723 keys). Save-Safety + Wave B ready for Akashi re-SAFE (if needed; index.html changed for detection + CSS/a11y, Akashi should confirm detection is safe) and Osefe's "ship it" + Kaito's merge/publish to gh-pages.
+
+## [2026-07-02] — via Kaito (asleep dispatch) — Calendar day-modal fix (var t shadowing) re-GREEN @ 422eb29
+- Asked: Re-GREEN on tip 422eb29 (calendar day-modal P1 fix folded into v22 batch: local `var t` shadowed global translate `t()`, renamed to `ttl`). Execute: (a) git pull --rebase, note exact tip SHA; (b) run `node tools/release/green.js` → exit 0; confirm savesafety 14/14 (Discord cases), import-sanitize 25/25, all suites green; (c) run html_parse_test.js → passes; (d) preflight.js + i18n/sync.js → CLEAR + MISSING:0; (e) no guide change (pure JS one-liner, no strings). Append log, post GREEN to TEAM-CHAT Pending (exact SHA), commit, pull --rebase, push. Report: GREEN/RED, exact SHA, all suites, test count.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip 422eb29). Read memory + chat (Wave A redline + Save-Safety hotfix + B6/B7 already complete; new tip adds calendar fix).
+  * **Ran `node tools/release/green.js`:** **GREEN exit 0**. Step 0 HTML parse guard passes (all 3 script blocks syntactically valid). **All 15 test suites pass:**
+    - parser 21/21 ✓
+    - assistant 16/16 ✓
+    - streak 4/4 ✓
+    - sound 7/7 ✓
+    - reorder 7/7 ✓
+    - onboarding 10/10 ✓
+    - transfer 58/58 ✓
+    - silly 43/43 ✓
+    - photo_store 17/17 ✓
+    - pr 12/12 ✓
+    - tax 105/105 ✓
+    - media 43/43 ✓
+    - **savesafety 14/14** ✓ (Discord/Slack/Telegram in-app-browser detection verified)
+    - **import_sanitize 25/25** ✓ (stored-XSS guard: id neutralization, numeric coercion, content strings safe)
+    - **Total: 382 tests** (15 suites)
+  * Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 5 script tags balanced).
+  * Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean; PDF derives from GUIDE.md).
+  * **Ran `node tools/test/html_parse_test.js`:** **✓ all 3 script blocks parse** (syntactically valid).
+  * **Ran `node tools/publish/preflight.js index.html`:** **✓ CLEAR to publish**.
+  * **Ran `node tools/i18n/sync.js`:** **MISSING: 0** (723/723 keys, 7 languages — calendar fix is pure JS rename, added no UI strings).
+  * **GUIDE verdict:** Calendar day-modal fix is var t → ttl rename (JS scope fix only). No new features, no user-visible workflow changes, no strings added. **NO GUIDE REBUILD NEEDED** — GUIDE.md accurate as-is.
+  * **Exact tip SHA confirmed:** 422eb29cde7ec60983ab7a93ff53239137634b60 (full hash verified, commit msg: "fix(calendar): day modal never opened — local var t shadowed the global t() (Arthur P1)").
+
+- Decision / result:
+  * **GREEN @ 422eb29** — 15 suites / 382 tests total. HTML parse guard (step 0) ✓. Savesafety ✓ (14/14, Discord hotfix verified). Import-sanitize ✓ (25/25, XSS guard verified). Preflight ✓ CLEAR (5 script tags balanced). MISSING: 0 (723 keys, 7 languages). Calendar day-modal fix verified GREEN — pure JS scope fix, no UI strings, no guide impact.
+
+- Commits / SHAs:
+  * 422eb29 (Calendar day-modal fix: var t → ttl shadowing — current tip, verified GREEN)
+
+- Still open / next:
+  * Awaiting Akashi re-SAFE on 422eb29 (pure JS fix, no security/data paths touched, should be clear) and Osefe's "ship it" + Kaito's merge/publish to gh-pages.
