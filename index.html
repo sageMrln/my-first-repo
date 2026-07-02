@@ -474,7 +474,11 @@
   .savefab:hover{filter:brightness(1.1)}
   .chattoggle{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--cyan-dim);background:var(--panel2);color:var(--cyan);padding:10px 16px;border-radius:12px;cursor:pointer;transition:all .15s}
   .chattoggle:hover{border-color:var(--cyan);box-shadow:var(--glow);color:#eaffff}
-  .chatwidget{width:340px;max-width:calc(100vw - 36px);max-height:72vh;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 14px 44px rgba(0,0,0,.55);text-align:left}
+  .chatwidget{width:340px;max-width:calc(100vw - 36px);max-height:72vh;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 14px 44px rgba(0,0,0,.55);text-align:left;transform-origin:bottom right}
+  /* B6 — chat entrance: the assistant widget scales+rises in each time it's shown (display none→block
+     re-triggers the animation), mirroring the modal 2c motion instead of snapping open. */
+  @media (prefers-reduced-motion: no-preference){ .chatwidget{ animation:chatIn 200ms cubic-bezier(.22,1,.36,1) } }
+  @keyframes chatIn{ from{opacity:0; transform:scale(.96) translateY(8px)} to{opacity:1; transform:none} }
   .chathead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);font-family:'Orbitron';font-weight:700;font-size:13px;color:#eaffff;position:sticky;top:0;background:var(--panel2);z-index:1}
   .chatx{background:none;border:none;color:var(--txt-dim);font-size:15px;cursor:pointer;line-height:1;padding:2px 4px}
   .chatx:hover{color:var(--red)}
@@ -2771,7 +2775,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       }).join('');
       var isOpen = firstRender ? (gi===0) : !!openNames[(g.icon + ' ' + t(g.name))];
       html += '<div class="exp-group' + (isOpen ? ' open' : '') + '">' +
-        '<div class="exp-head"><span class="gname"><span class="ico"></span>' + g.icon + ' ' + t(g.name) + '</span>' +
+        '<div class="exp-head" tabindex="0" role="button" aria-expanded="false"><span class="gname"><span class="ico"></span>' + g.icon + ' ' + t(g.name) + '</span>' +
         '<span><span class="gtot">~' + fmtN(groupTotal(g)) + ' ' + curInfo().sym + '/mo</span><span class="arrow">▸</span></span></div>' +
         '<div class="exp-body"><table>' + rows + '</table></div></div>';
     });
@@ -2780,9 +2784,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     document.getElementById('expMonth').innerHTML = '~' + fmtN(GRAND) + '<small> ' + sym + '</small>';
     document.getElementById('expYear').innerHTML  = '~' + fmtN(GRAND * 12) + '<small> ' + sym + '</small>';
     host.querySelectorAll('.exp-head').forEach(function(h){
+      var grp0=h.closest('.exp-group'); h.setAttribute('aria-expanded', grp0 && grp0.classList.contains('open') ? 'true':'false');  // B7 — reflect state each render
       h.addEventListener('click', function(){
         var grp=h.closest('.exp-group'); var opening=!grp.classList.contains('open');
         grp.classList.toggle('open');
+        h.setAttribute('aria-expanded', opening ? 'true':'false');   // B7 — announce state on toggle
         if(opening){
           // Arthur E — stagger only on the OPEN gesture (transient class), so an
           // innerHTML rebuild from an unrelated number change can't re-fire it.
@@ -4542,7 +4548,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var preview = evs.slice(0,2).map(function(e){ return '<div class="ev">' + (e.recurring?'🔁 ':'• ') + esc(e.text) + '</div>'; }).join('');
       var more = evs.length>2 ? '<div class="more">'+tf('+{n} more',{n:(evs.length-2)})+'</div>' : '';
       var dot = evs.length ? '<span class="cal-dot"></span>' : '';
-      cells += '<div class="' + cls + '" data-date="' + key + '">' + dot +
+      cells += '<div class="' + cls + '" data-date="' + key + '" tabindex="0" role="button">' + dot +
         '<div class="dnum">' + d + '</div>' + preview + more + '</div>';
     }
     grid.innerHTML = cells;
@@ -8486,6 +8492,19 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
           setTimeout(function(){ if(s.parentNode) s.parentNode.removeChild(s); }, 700);   // fallback cleanup
         }catch(_){ }
       }, {passive:true});
+    }catch(_){ }
+  })();
+
+  /* B7 — keyboard reach (WCAG 2.1.1). The click-only .exp-head / .cal-cell divs now carry
+     tabindex+role=button; this fires their EXISTING click handler on Enter/Space (Space preventDefault
+     stops the page scroll). Delegated once; reuses the real handlers so behaviour can't drift. */
+  (function kbdActivate(){
+    try{
+      document.addEventListener('keydown', function(e){
+        if(e.key!=='Enter' && e.key!==' ' && e.key!=='Spacebar') return;
+        var el=e.target; if(!el || !el.matches) return;
+        if(el.matches('.exp-head[role="button"], .cal-cell[data-date][role="button"]')){ e.preventDefault(); el.click(); }
+      });
     }catch(_){ }
   })();
 
