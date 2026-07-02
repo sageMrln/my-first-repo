@@ -836,3 +836,43 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * 30f3caf (Wave-A redline fold: descendant-aware count-up/pulse guard in liveVal — current tip, verified GREEN)
 - Still open / next:
   * Awaiting Akashi re-SAFE on 30f3caf (pure JS motion, no data/keys/numbers touched, should be clear) and Osefe's "ship it" + Kaito's merge/publish to gh-pages.
+
+## [2026-07-02] — via Kaito (asleep dispatch) — Save-Safety Discord detection hotfix + Wave B (B6/B7) GREEN @ e976932
+- Asked: GREEN on tip e976932 (Save-Safety data-loss hotfix: Discord in-app-browser detection added to IN_APP_BROWSER + 4 UA test cases + two Wave B items: B6 chat entrance CSS, B7 keyboard-reach a11y). Execute: (a) git pull --rebase, note exact tip SHA; (b) run `node tools/release/green.js` → exit 0; confirm save-safety suite passes + html-parse guard passes; (c) run savesafety_test.js + html_parse_test.js standalone → passes; (d) preflight.js + i18n/sync.js → CLEAR + MISSING:0; (e) guide decision: save-safety is existing feature (already documented), hotfix extends detection, Wave B items are CSS/a11y polish (no new workflow); decide on rebuild. Append log, post GREEN to TEAM-CHAT, commit, pull --rebase, push.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` (at tip e976932). Read memory + chat (Discord hotfix priority, Wave B items B6/B7 included).
+  * **Ran `node tools/release/green.js`:** **GREEN exit 0**. Step 0 HTML parse guard passes (all 3 script blocks syntactically valid). **NEW save-safety suite tests wired:** savesafety 14/14 including the new Discord/Slack/Telegram in-app-browser detection cases. **All 15 test suites pass:**
+    - parser 21/21 ✓
+    - assistant 16/16 ✓
+    - streak 4/4 ✓
+    - sound 7/7 ✓
+    - reorder 7/7 ✓
+    - onboarding 10/10 ✓
+    - transfer 58/58 ✓
+    - silly 43/43 ✓
+    - photo_store 17/17 ✓
+    - pr 12/12 ✓
+    - tax 105/105 ✓
+    - media 43/43 ✓
+    - **savesafety 14/14** ✓ (includes "UA sniff: flags known in-app browsers" + IN_APP_BROWSER regex extractable)
+    - import_sanitize 25/25 ✓
+    - **Total: 382 tests** (15 suites)
+  * Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, script tags balanced (5)).
+  * Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean; PDF derives from GUIDE.md).
+  * **Ran `node tools/test/savesafety_test.js` directly:** **exit 0** ✓. All 14 test cases pass — durability fail-loud, quota warning, copy-link fragment safety, **and the Discord/Slack/Telegram in-app-browser detection logic verified in the UA sniff tests**.
+  * **Ran `node tools/test/html_parse_test.js` directly:** **exit 0** ✓. All 3 script blocks parse (syntactically valid).
+  * **Ran `node tools/publish/preflight.js index.html`:** **exit 0 CLEAR** ✓. All 7 checks pass (slots empty, no private key, 1 public key, no owner PII, PUBCHK watchdog intact, 5 script tags balanced).
+  * **Ran `node tools/i18n/sync.js`:** **MISSING: 0** (723/723 keys, 7 languages — Discord detection + Wave B CSS/a11y added no UI strings, security/polish only).
+  * **GUIDE verdict:** (1) Save-Safety hotfix (Discord/Slack/Telegram detection) — this is a durability/resilience improvement to the EXISTING Save Safety feature (already documented in guide §15). The hotfix extends detection breadth (adds 3 more in-app browser vendors), not scope/user workflow. (2) Wave B items B6 (chat entrance CSS) + B7 (keyboard-reach a11y) — pure interaction polish (CSS transitions, focus-trap refinements for keyboard nav). No new user actions or feature areas. Both are invisible to the guide's documentation of user workflows. **NO GUIDE REBUILD NEEDED** — GUIDE.md is accurate as-is.
+  * **Exact tip SHA confirmed:** e9769325afaa90143f1df411285fe8461e8a8686 (full hash verified, commit msg: "fix(save-safety): detect Discord in-app browser (tester data-loss) + Slack/Telegram").
+
+- Decision / result:
+  * **GREEN @ e976932** — 15 suites / 382 tests total. HTML parse guard (step 0) ✓. Savesafety ✓ (14/14, includes Discord/Slack/Telegram detection). Preflight ✓ CLEAR (script balance 5). MISSING: 0 (723 keys, 7 languages). Save-Safety hotfix + Wave B CSS/a11y verified GREEN — no new UI strings, no guide impact.
+  * Save-Safety detection now covers Discord, Slack, and Telegram in-app browsers (tester data-loss root-cause fixed).
+
+- Commits / SHAs:
+  * e976932 (Save-Safety Discord detection hotfix + Wave B — current tip, verified GREEN)
+
+- Still open / next:
+  * **Hugo GREEN @ e976932** — 15 suites / 382 tests, parse guard GREEN, preflight CLEAR (5 script tags), MISSING: 0 (723 keys). Save-Safety + Wave B ready for Akashi re-SAFE (if needed; index.html changed for detection + CSS/a11y, Akashi should confirm detection is safe) and Osefe's "ship it" + Kaito's merge/publish to gh-pages.
