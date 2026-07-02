@@ -759,7 +759,11 @@
   /* 2a — INPUT LIFE: smooth focus + a cyan ring on inputs that had NO focus style (the scoped
      .field/.wiz/.lockcard/.localebar glows have higher specificity → keep priority). */
   @media (prefers-reduced-motion: no-preference){ input,textarea,select{ transition:box-shadow .18s ease, border-color .18s ease; } }
-  input:focus,textarea:focus,select:focus{ outline:none; box-shadow:0 0 0 3px rgba(0,229,255,.14); }
+  /* A6 — mouse-focus keeps the clean cyan ring; KEYBOARD focus keeps the unified lime outline like
+     every other control (outline reset scoped to :not(:focus-visible) — Arthur's Tier-2 redline). */
+  input:focus,textarea:focus,select:focus{ box-shadow:0 0 0 3px rgba(0,229,255,.14); }
+  input:focus:not(:focus-visible),textarea:focus:not(:focus-visible),select:focus:not(:focus-visible){ outline:none; }
+  input:focus-visible,textarea:focus-visible,select:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; }
   /* 2c — MODAL enter motion (class-based .show) */
   @media (prefers-reduced-motion: no-preference){
     .modal-back.show{ animation:modalBackIn .18s ease; }
@@ -778,6 +782,34 @@
   @media (hover:hover) and (pointer:fine) and (min-width:1024px) and (prefers-reduced-motion: no-preference){
     .card:hover::before{ opacity:1; }
   }
+
+  /* ===== FUTURISM WAVE A (Arthur) — ripple, panel-assemble, meter draw-on. One-shot GPU motion,
+     all under no-preference; the JS companions (ripple/haptic/count-up) early-return under reduce. ===== */
+  /* A1 — tap ripple: a clean cyan scan ring from the press point; span removed on animationend. */
+  .rip-host{ position:relative; overflow:hidden; }
+  .ripple{ position:absolute; width:24px; height:24px; border-radius:50%; pointer-events:none; z-index:1;
+    background:radial-gradient(circle, rgba(0,229,255,.35), rgba(0,229,255,.12) 60%, transparent 70%); }
+  @media (prefers-reduced-motion: no-preference){ .ripple{ animation:rippleGo 460ms cubic-bezier(.22,1,.36,1) forwards; } }
+  @keyframes rippleGo{ from{transform:translate(-50%,-50%) scale(0); opacity:.55} to{transform:translate(-50%,-50%) scale(9); opacity:0} }
+  /* A5 — panel-ASSEMBLE: keep the directional slide on the container; cards materialize card-by-card
+     like a HUD powering on. 40ms steps, capped at 8 children (9th+ snaps → dense panels stay fast). */
+  @media (prefers-reduced-motion: no-preference){
+    .panel.show>.card{ animation:assembleIn 260ms cubic-bezier(.22,1,.36,1) both; }
+    .panel.show>.card:nth-child(2){ animation-delay:40ms }
+    .panel.show>.card:nth-child(3){ animation-delay:80ms }
+    .panel.show>.card:nth-child(4){ animation-delay:120ms }
+    .panel.show>.card:nth-child(5){ animation-delay:160ms }
+    .panel.show>.card:nth-child(6){ animation-delay:200ms }
+    .panel.show>.card:nth-child(7){ animation-delay:240ms }
+    .panel.show>.card:nth-child(8){ animation-delay:280ms }
+    .panel.show>.card:nth-child(n+9){ animation:none }
+  }
+  @keyframes assembleIn{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none} }
+  /* A4 — meter draw-on: bars fill from zero on creation (GPU scaleX; the width layout stays static). */
+  @media (prefers-reduced-motion: no-preference){
+    .meter > span{ transform-origin:left; animation:meterDraw 700ms cubic-bezier(.22,1,.36,1); }
+  }
+  @keyframes meterDraw{ from{transform:scaleX(0)} }
 
   /* ===================== ONBOARDING WIZARD ===================== */
   #onboard{position:fixed;inset:0;z-index:95000;display:none;align-items:center;justify-content:center;padding:18px;
@@ -2762,10 +2794,39 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     });
   }
 
+  /* Wave A3 — number count-up (the signature move; deferred item A, now solved). Animates the DISPLAY
+     from the current on-screen value to a target, landing EXACTLY on fmtN(to) (the poison-gated value
+     the sink already computed — reads/adds no figure). Locale-agnostic parse: fmtN rounds to an
+     INTEGER, so stripping every non-[0-9-] char removes all grouping separators safely. rAF only
+     during the tween (cancels on complete → no perpetual loop). Sets _cuAnimating so the 2b observer
+     pulses ONCE at the start, then count-up settles. Reduced-motion → lands instantly.
+     (Hoisted declaration, defined before renderDerived/setHeroLeftover so it's ready at first boot.) */
+  function countUp(el, to){
+    try{
+      if(!el || typeof fmtN!=='function' || isNaN(to)){ if(el) el.textContent=fmtN(to); return; }
+      to = Math.round(to);
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var start = parseInt(String(el.textContent).replace(/[^0-9-]/g,''),10); if(isNaN(start)) start=0;
+      if(reduce || start===to || Math.abs(to-start)/Math.max(Math.abs(to),1) < 0.02){ el.textContent=fmtN(to); el._cuVal=to; return; }
+      if(el._cuRAF) cancelAnimationFrame(el._cuRAF);
+      var dur=420, t0=(window.performance&&performance.now)?performance.now():0;
+      el._cuAnimating=true;
+      function ease(p){ p=1-p; return 1-p*p*p; }                       // expo-out (matches --ease-out feel)
+      function step(now){
+        var p=Math.min(1,(now-t0)/dur), cur=Math.round(start+(to-start)*ease(p));
+        el.textContent=fmtN(cur);
+        if(p<1){ el._cuRAF=requestAnimationFrame(step); }
+        else { el.textContent=fmtN(to); el._cuVal=to; el._cuRAF=0; el._cuAnimating=false; }
+      }
+      el._cuRAF=requestAnimationFrame(step);
+    }catch(_){ if(el) try{ el.textContent=fmtN(to); }catch(e){} }
+  }
+  try{ window.countUp = countUp; }catch(_){ }                          // expose for later modules / tests
+
   /* ---------- OVERVIEW derived numbers ---------- */
   function renderDerived(){
     function set(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; }
-    set('ovLeft',    fmtN(leftOver(MODEL.income.avg)));
+    (function(){ var e=document.getElementById('ovLeft'); if(e) countUp(e, leftOver(MODEL.income.avg)); })();  // A3 — number-only, currency in sibling span
     set('ovComfort', '~' + fmt(comfort(MODEL.income.avg)));
     set('ovWorst',   '+' + fmt(leftOver(MODEL.income.low)));
     set('vdWorst',   '+' + fmtN(leftOver(MODEL.income.low)) + ' ✅');
@@ -2782,7 +2843,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     el.className = 'hero-num' + (cls ? ' '+cls : '');
     // Arthur H#2 — don't lean on red alone for negative: word it ("SHORT 2,500"), so
     // it reads for colourblind users and a 9-year-old, not just by colour.
-    v.textContent = lo < 0 ? (t('SHORT') + ' ' + fmtN(Math.abs(lo))) : fmtN(lo);
+    if(lo < 0){ v.textContent = t('SHORT') + ' ' + fmtN(Math.abs(lo)); v._cuVal=null; }   // "SHORT n" isn't a clean count-up target
+    else countUp(v, lo);                                                                   // A3 — the hero leftover spins up
   }
   renderExpenses();
   renderDerived();
@@ -8362,7 +8424,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       function watch(el){ if(el.__lv) return; el.__lv=1; var last=el.textContent;
         var mo=new MutationObserver(function(){ var now=el.textContent;
           if(now!==last){ var tn=now.trim(), tl=last.trim();
-            if(tn!=='' && tn!=='—' && tl!=='' && tl!=='—') pulse(el); last=now; } });
+            // A3 guard: while countUp() is tweening this element, its per-frame text writes must NOT
+            // re-fire the pulse (it would strobe). Pulse fires ONCE when count-up starts (below), then
+            // the number settles — pulse + count-up compose. _cuAnimating is set by countUp.
+            if(!el._cuAnimating && tn!=='' && tn!=='—' && tl!=='' && tl!=='—') pulse(el); last=now; } });
         mo.observe(el,{childList:true,characterData:true,subtree:true}); }
       function scan(){ try{ var n=document.querySelectorAll(SEL); for(var i=0;i<n.length;i++) watch(n[i]); }catch(_){ } }
       scan(); setTimeout(scan,1800); setTimeout(scan,5000);
@@ -8385,6 +8450,36 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         if(card){ var r=card.getBoundingClientRect();
           mx=(((e.clientX-r.left)/r.width)*100).toFixed(1); my=(((e.clientY-r.top)/r.height)*100).toFixed(1);
           if(!raf) raf=requestAnimationFrame(apply); }
+      }, {passive:true});
+    }catch(_){ }
+  })();
+
+  /* Wave A1/A2 — tap ripple + haptic tick. ONE delegated pointerdown: spawn a cyan ripple at the
+     press point inside the pressed control, and fire an 8ms haptic on PRIMARY controls only (the
+     mobile answer to hover). pointerdown IS the required user-gesture for vibrate; iOS Safari lacks
+     the API and silently no-ops. Both gate off under reduced-motion. Pure DOM decoration, no data. */
+  (function tapFeedback(){
+    try{
+      var motionOk = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      var RIP='.btn,.tab,.scen-btn,.item-row,.exp-head,.cal-cell,.chattoggle,.medSeedChip,[data-ripple]';
+      var HAP='.btn,.tab,.scen-btn,.savebtn,.chattoggle';
+      window.addEventListener('pointerdown', function(e){
+        if(e.button!=null && e.button!==0) return;                     // primary press only
+        var t=e.target && e.target.closest ? e.target.closest(RIP) : null;
+        if(!t) return;
+        if(navigator.vibrate && motionOk && t.closest(HAP)){ try{ navigator.vibrate(8); }catch(_){ } }
+        if(!motionOk) return;                                          // reduced-motion: no ripple
+        try{
+          var r=t.getBoundingClientRect(); if(!r.width) return;
+          t.classList.add('rip-host');
+          var s=document.createElement('span'); s.className='ripple';
+          var d=Math.max(r.width,r.height)*0.5;                        // base 24px scales to cover
+          s.style.left=(e.clientX-r.left)+'px'; s.style.top=(e.clientY-r.top)+'px';
+          s.style.width=s.style.height=(d)+'px';
+          s.addEventListener('animationend', function(){ if(s.parentNode) s.parentNode.removeChild(s); });
+          t.appendChild(s);
+          setTimeout(function(){ if(s.parentNode) s.parentNode.removeChild(s); }, 700);   // fallback cleanup
+        }catch(_){ }
       }, {passive:true});
     }catch(_){ }
   })();
