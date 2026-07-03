@@ -4,7 +4,7 @@
    - Cache-first for static assets (icons/manifest) that rarely change.
    - Full offline fallback to the cached app when there's no network.
    Bump VERSION only to force-flush old caches (e.g. when the asset list changes). */
-var VERSION = 'v22';
+var VERSION = 'v23';
 var CACHE = 'mrln-' + VERSION;
 var CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
@@ -39,6 +39,15 @@ self.addEventListener('fetch', function(e){
       })
     );
   }
+});
+
+/* Version handshake + update control for the app's build tag.
+   - 'mrln-version'      → reply with the active SW VERSION (Settings shows app-build vs SW).
+   - 'mrln-skip-waiting' → activate a freshly-installed worker now (the "Update ready" tap). */
+self.addEventListener('message', function(e){
+  var d = e.data;
+  if(d === 'mrln-skip-waiting'){ self.skipWaiting(); return; }
+  if(d === 'mrln-version' && e.source && e.source.postMessage){ e.source.postMessage({ mrlnSwVersion: VERSION }); }
 });
 
 /* Reminders: tapping a MRLN notification focuses the open app (or opens it). */
