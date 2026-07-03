@@ -344,6 +344,12 @@
   .meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));border-radius:7px;position:relative}
   .meter.lime > span{background:linear-gradient(90deg,#2f8f5e,var(--lime))}
   .meter.amber > span{background:linear-gradient(90deg,#9a6a1c,var(--amber))}
+  /* Budget summary — per-category share bars (biggest cost reads at a glance) */
+  .bud-bars{ margin:2px 0 14px; display:flex; flex-direction:column; gap:11px }
+  .bud-bar-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px }
+  .bud-bar-lbl{ font-family:'Rajdhani',sans-serif; font-weight:600; font-size:13.5px; color:var(--txt) }
+  .bud-bar-val{ font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--txt-dim); white-space:nowrap }
+  .bud-bar-val small{ color:var(--cyan); font-size:11px }
   .meterlbl{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin-top:4px}
 
   ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px}
@@ -1292,12 +1298,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   <nav class="tabs" id="tabs">
     <button class="tab active" data-p="overview"><span class="ix">01</span>Overview</button>
     <button class="tab" data-p="income"><span class="ix">02</span>Income</button>
-    <button class="tab" data-p="expenses"><span class="ix">03</span>Expenses</button>
+    <button class="tab" data-p="expenses"><span class="ix">03</span>Budget</button>
     <button class="tab" data-p="loan"><span class="ix">04</span>Loan</button>
     <button class="tab" data-p="flow"><span class="ix">05</span>Cash Flow</button>
     <button class="tab" data-p="rule"><span class="ix">06</span>Savings</button>
     <button class="tab" data-p="checklist"><span class="ix">08</span>Checklist</button>
-    <button class="tab" data-p="subs"><span class="ix">09</span>Subscriptions</button>
     <button class="tab" data-p="klarna" style="display:none"><span class="ix">10</span>Klarna Float</button>
     <button class="tab" data-p="gym"><span class="ix">11</span>Gym Plan</button>
     <button class="tab" data-p="food"><span class="ix">12</span>Food Log</button>
@@ -1371,22 +1376,45 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
   <!-- 03 EXPENSES -->
   <section class="panel" id="expenses">
+    <!-- Budget summary — the glance -->
     <div class="card">
-      <h2>Expense Breakdown</h2>
-      <div class="desc">Every recurring cost you have, grouped by type. Tap any group to open it. This view is read-only — items marked as "varies" are left out of the total.</div>
-      <div class="note" id="expEditHint" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-color:var(--cyan-dim)">
-        <span>✎ To add, edit a price, or delete any item or category, head to the Subscriptions tab.</span>
-        <button class="btn" id="goManageBtn" style="padding:6px 12px;font-size:12px">Edit items →</button>
+      <h2 data-i18n="Your Budget">Your Budget</h2>
+      <div class="desc" data-i18n="Every recurring cost in one place — add, edit or remove any of them and every tab updates together. Items marked “varies” aren’t counted.">Every recurring cost in one place — add, edit or remove any of them and every tab updates together. Items marked “varies” aren’t counted.</div>
+      <div class="subtotal" style="margin-bottom:16px">
+        <div class="stat avg"><div class="lbl">Total / month</div><div class="val"><span id="expMonth">—</span><small class="ccySuffix"> kr</small></div></div>
+        <div class="stat high"><div class="lbl">Total / year</div><div class="val"><span id="expYear">—</span><small class="ccySuffix"> kr</small></div></div>
       </div>
+      <div class="bud-bars" id="budgetBars"></div>
+      <div class="note" data-i18n="This monthly total is the single source of truth — your Cash Flow simulator and Savings projection both build on it.">This monthly total is the single source of truth — your Cash Flow simulator and Savings projection both build on it.</div>
+    </div>
 
-      <div class="subtotal" style="margin-bottom:18px">
-        <div class="stat avg"><div class="lbl">Total / month</div><div class="val" id="expMonth">—<small class="ccySuffix"> kr</small></div></div>
-        <div class="stat high"><div class="lbl">Total / year</div><div class="val" id="expYear">—<small class="ccySuffix"> kr</small></div></div>
+    <!-- Add a cost -->
+    <div class="card" data-collapse data-collapsed>
+      <h2 data-i18n="Add a cost">Add a cost</h2>
+      <div class="desc" data-i18n="Add anything new to a category. It updates your live numbers everywhere — grand total, cash-flow simulator and savings projection all recompute instantly.">Add anything new to a category. It updates your live numbers everywhere — grand total, cash-flow simulator and savings projection all recompute instantly.</div>
+      <div class="form-row">
+        <div class="field"><label data-i18n="Name">Name</label><input id="addName" placeholder="e.g. Spotify"></div>
+        <div class="field"><label data-i18n="Category">Category</label><select id="addCat"></select></div>
       </div>
+      <div class="form-row">
+        <div class="field"><label>Cost (<span class="ccyLbl">kr</span>)</label><input id="addCost" type="number" min="0" step="1" placeholder="99"></div>
+        <div class="field"><label data-i18n="Billing">Billing</label><select id="addFreq"><option value="monthly" data-i18n="Monthly">Monthly</option><option value="quarterly" data-i18n="Quarterly">Quarterly</option><option value="yearly" data-i18n="Yearly">Yearly</option></select></div>
+      </div>
+      <div class="field"><label data-i18n="Note (optional)">Note (optional)</label><input id="addNote" placeholder="What it’s for / why you keep it"></div>
+      <button class="btn" id="addBtn" data-i18n="+ Add to my finances">+ Add to my finances</button>
+      <div id="addMsg" class="note" style="display:none"></div>
+    </div>
 
-      <div id="expGroups"><!-- rendered from MODEL --></div>
-
-      <div class="note">This grand total is the single source of truth: the Cash Flow simulator and the Savings projection both subtract your total monthly costs from your income. Change a number anywhere and every tab updates together.</div>
+    <!-- Your costs — show AND edit in one place -->
+    <div class="card">
+      <h2 data-i18n="Your costs">Your costs</h2>
+      <div class="desc" data-i18n="Every cost in your model, grouped by category. Edit a price or billing, or delete any item — base or added — and your live numbers recompute instantly. Add or remove whole categories at the bottom.">Every cost in your model, grouped by category. Edit a price or billing, or delete any item — base or added — and your live numbers recompute instantly. Add or remove whole categories at the bottom.</div>
+      <div id="customList"></div>
+      <div class="form-row" style="margin-top:14px">
+        <div class="field"><label data-i18n="New category name">New category name</label><input id="newCatName" placeholder="e.g. Pets"></div>
+        <div class="field"><label data-i18n="Icon (emoji)">Icon (emoji)</label><input id="newCatIcon" placeholder="🐾" maxlength="2"></div>
+      </div>
+      <button class="btn ghost" id="addCatBtn" data-i18n="+ Add category">+ Add category</button>
     </div>
   </section>
 
@@ -1543,46 +1571,6 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2>Your Personalized Plan</h2>
       <div class="desc">Ranked for <b>your</b> situation — the top one matters most. Tap a box when it's done; the plan updates itself as your numbers change.</div>
       <ul class="check" id="checklist-list"></ul>
-    </div>
-  </section>
-
-  <!-- 09 SUBSCRIPTIONS -->
-  <section class="panel" id="subs">
-    <div class="card" data-collapse data-collapsed>
-      <h2>Add a Subscription / Recurring Cost</h2>
-      <div class="desc">Add anything new to an existing category. It updates your <b>live</b> numbers everywhere — grand total, cash-flow simulator and the savings projection all recompute instantly.</div>
-      <div class="form-row">
-        <div class="field"><label>Name</label><input id="addName" placeholder="e.g. Spotify"></div>
-        <div class="field"><label>Category</label><select id="addCat"></select></div>
-      </div>
-      <div class="form-row">
-        <div class="field"><label>Cost (<span class="ccyLbl">kr</span>)</label><input id="addCost" type="number" min="0" step="1" placeholder="99"></div>
-        <div class="field"><label>Billing</label><select id="addFreq"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="yearly">Yearly</option></select></div>
-      </div>
-      <div class="field"><label>Note (optional)</label><input id="addNote" placeholder="What it's for / why you keep it"></div>
-      <button class="btn" id="addBtn">+ Add to my finances</button>
-      <div id="addMsg" class="note" style="display:none"></div>
-    </div>
-
-    <div class="card" data-collapse data-collapsed>
-      <h2>Manage Items &amp; Categories</h2>
-      <div class="desc">Every cost in your model, grouped by category. <b>Edit a price</b> or <b>delete</b> any item — base or added — and your live numbers recompute instantly. Add or remove whole categories at the bottom.</div>
-      <div id="customList"></div>
-      <div class="form-row" style="margin-top:14px">
-        <div class="field"><label>New category name</label><input id="newCatName" placeholder="e.g. Pets"></div>
-        <div class="field"><label>Icon (emoji)</label><input id="newCatIcon" placeholder="🐾" maxlength="2"></div>
-      </div>
-      <button class="btn ghost" id="addCatBtn">+ Add category</button>
-    </div>
-
-    <div class="card">
-      <h2>Subscription Ledger</h2>
-      <div class="desc">Every recurring cost you have, with what it is and why you keep it. Pulled live from your items — edit any of them in <b>Manage Items</b> above.</div>
-      <div class="subtotal">
-        <div class="stat avg"><div class="lbl">Total / month</div><div class="val" id="ledMonth">—<small> </small></div></div>
-        <div class="stat high"><div class="lbl">Total / year</div><div class="val" id="ledYear">—<small> </small></div></div>
-      </div>
-      <div class="sub-grid" id="subLedger"></div>
     </div>
   </section>
 
@@ -2852,48 +2840,25 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   })();
 
   /* ---------- RENDER EXPENSES FROM MODEL (+ user items) ---------- */
+  // Budget summary — totals + per-category share bars (the glance). The editable itemised list
+  // lives in renderManage() below (#customList). Merged from the old Expenses+Subscriptions tabs.
   function renderExpenses(){
-    var host = document.getElementById('expGroups');
-    if(!host) return;
-    // preserve which groups are open across re-render
-    var openNames = {};
-    host.querySelectorAll('.exp-group.open .gname').forEach(function(n){ openNames[n.textContent.trim()] = true; });
-    var firstRender = host.children.length === 0;
-    var html = '';
-    MODEL.groups.forEach(function(g, gi){
-      var rows = g.items.map(function(it){
-        var val = it.varies ? '~' + t('varies') : '~' + fmtN(itemMonthly(it));
-        var badge = it.custom ? ' <span class="tag now" style="font-size:8px;padding:1px 5px">' + t('ADDED') + '</span>' : '';
-        var freqNote = (it.cost!=null && it.freq && it.freq!=='monthly')
-          ? ' <span class="sub-detail">(' + fmtN(it.cost) + ' ' + curInfo().sym + '/' + (it.freq==='yearly'?'yr':'q') + ')</span>' : '';
-        return '<tr><td>' + esc(t(it.name)) + badge + ' <div class="sub-detail">' + esc(t(it.detail)) + '</div></td>' +
-               '<td class="num">' + val + freqNote + '</td></tr>';
-      }).join('');
-      var isOpen = firstRender ? (gi===0) : !!openNames[(g.icon + ' ' + t(g.name))];
-      html += '<div class="exp-group' + (isOpen ? ' open' : '') + '">' +
-        '<div class="exp-head" tabindex="0" role="button" aria-expanded="false"><span class="gname"><span class="ico"></span>' + g.icon + ' ' + t(g.name) + '</span>' +
-        '<span><span class="gtot">~' + fmtN(groupTotal(g)) + ' ' + curInfo().sym + '/mo</span><span class="arrow">▸</span></span></div>' +
-        '<div class="exp-body"><table>' + rows + '</table></div></div>';
-    });
-    host.innerHTML = html;
     var sym = curInfo().sym;
-    document.getElementById('expMonth').innerHTML = '~' + fmtN(GRAND) + '<small> ' + sym + '</small>';
-    document.getElementById('expYear').innerHTML  = '~' + fmtN(GRAND * 12) + '<small> ' + sym + '</small>';
-    host.querySelectorAll('.exp-head').forEach(function(h){
-      var grp0=h.closest('.exp-group'); h.setAttribute('aria-expanded', grp0 && grp0.classList.contains('open') ? 'true':'false');  // B7 — reflect state each render
-      h.addEventListener('click', function(){
-        var grp=h.closest('.exp-group'); var opening=!grp.classList.contains('open');
-        grp.classList.toggle('open');
-        h.setAttribute('aria-expanded', opening ? 'true':'false');   // B7 — announce state on toggle
-        if(opening){
-          // Arthur E — stagger only on the OPEN gesture (transient class), so an
-          // innerHTML rebuild from an unrelated number change can't re-fire it.
-          grp.classList.add('just-opened');
-          setTimeout(function(){ grp.classList.remove('just-opened'); }, 600);
-          if(typeof MRLN_SFX!=='undefined') MRLN_SFX.panel();   // distinct "unfold" sound on open
-        }
-      });
-    });
+    var mEl=document.getElementById('expMonth'), yEl=document.getElementById('expYear');
+    if(mEl){ if(typeof countUp==='function') countUp(mEl, GRAND); else mEl.textContent='~'+fmtN(GRAND); }
+    if(yEl){ yEl.textContent='~'+fmtN(GRAND*12); }
+    var host=document.getElementById('budgetBars'); if(!host) return;
+    // biggest cost reads at a glance — sorted share bars (a 9-year-old sees "biggest bar = biggest cost")
+    var cats=(MODEL.groups||[]).map(function(g){ return { icon:g.icon, name:g.name, total:groupTotal(g) }; })
+      .filter(function(c){ return c.total>0; }).sort(function(a,b){ return b.total-a.total; });
+    var max=cats.length ? cats[0].total : 0;
+    host.innerHTML = cats.length ? cats.map(function(c){
+      var pct = max>0 ? Math.max(3, Math.round((c.total/max)*100)) : 0;
+      var share = GRAND>0 ? Math.round((c.total/GRAND)*100) : 0;
+      return '<div class="bud-bar"><div class="bud-bar-top"><span class="bud-bar-lbl">'+esc(c.icon+' '+t(c.name))+'</span>'+
+        '<span class="bud-bar-val">'+fmtN(c.total)+' '+sym+' <small>'+share+'%</small></span></div>'+
+        '<div class="meter"><span style="width:'+pct+'%"></span></div></div>';
+    }).join('') : '<div class="empty">'+t('No costs yet — add one below.')+'</div>';
   }
 
   /* Wave A3 — number count-up (the signature move; deferred item A, now solved). Animates the DISPLAY
@@ -8163,7 +8128,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   var TOUR = (function(){
     var STEPS=[
       {sel:'#tabs', text:'<b>Your sections.</b> Scroll these tabs to move around — money, gym &amp; food, calendar, stats and notes. Here are the main ones:'},
-      {sel:'#tabs .tab[data-p="expenses"]', text:'<b>Expenses</b> is your money map. Open it to add or edit any cost — every number updates instantly.'},
+      {sel:'#tabs .tab[data-p="expenses"]', text:'<b>Budget</b> is your money map — every recurring cost in one place. Add or edit any of them and every number updates instantly.'},
       {sel:'#tabs .tab[data-p="gym"]', text:'<b>Gym Plan.</b> Body stats, calorie &amp; macro targets, a shape model — and <b>meal ideas matched to your goal &amp; physique</b>.'},
       {sel:'#tabs .tab[data-p="food"]', text:'<b>Food Log.</b> Snap or type what you ate and get an instant calorie &amp; macro estimate against today’s target.'},
       {sel:'#tabs .tab[data-p="stats"]', text:'<b>Stats &amp; Grades.</b> Your overall S–E grade explained — money, body and income class, with how to climb.'},
