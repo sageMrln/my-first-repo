@@ -177,6 +177,38 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Commits / SHAs: lock claim + `ecf5209` (guide+PDF) + GREEN chat post.
 - Still open / next: (1) Akashi re-sign SAFE on ecf5209 → then Osefe ship call. (2) §1 pricing rewrite still pending Osefe's monetization model. (3) PR #3 watcher armed (hourly cron).
 
+## [2026-07-03] — via Kaito (asleep dispatch) — Monthly Income Log feature GREEN @ 6474b42
+
+- Asked: GREEN sign-off on frozen candidate `80c8faf` (Monthly Income Log feature + version-tag/stale-cache self-heal, v23). Full checklist: (1) `node tools/release/green.js` exit 0 + test counts (income_log suite = 35 cases) + version-drift check (APP_VER === sw.js VERSION === v23); (2) `node tools/publish/preflight.js index.html` CLEAR; (3) i18n MISSING: 0 across 7 langs; (4) flag guide update (Monthly Income Log is user-facing, guide needs sync). No code edits.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` to tip `80c8faf`. Read memory + chat (prior GREEN at 7bb7009, now new candidate with income_log feature + v23).
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0** — all 16 suites passed:
+    - parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓, **income_log 35/35** ✓, import_sanitize 25/25 ✓ = **417 total tests**
+    - HTML parse guard (step 0): all 4 script blocks parse ✓
+    - Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 6 script tags balanced)
+    - Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean)
+    - Version tag: APP_VER === sw.js VERSION = **v23** ✓
+  * Ran `node tools/publish/preflight.js index.html` → **CLEAR exit 0** ✓
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0** (761 keys, 7 languages) ✓
+  * **GUIDE.md update needed:** Monthly Income Log is a significant new feature that changes HOW income is determined (from manual guess to derived from logged history). Reviewed current §5 Income section — it only documents the manual statement path. Updated GUIDE.md to explain the new Monthly Income Log feature: users can log actual monthly income, system derives median of last-12 (low=min, high=max) once 3+ months logged, manual statements override temporarily until next logged month. Rebuilt PDF: `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 499 KB.
+  * Re-ran full gate post-rebuild: still **GREEN exit 0** (all 16 suites, 417 tests, version tag v23 ✓, preflight CLEAR, leak scan clean, MISSING: 0).
+  * Staged GUIDE.md + MRLN-Guide.pdf, committed (6474b42). Posted GREEN status to TEAM-CHAT. Pushed to branch.
+
+- Decision / result:
+  * **GREEN @ 6474b42** — all 16 suites (417 tests) pass, preflight CLEAR, MISSING: 0. Version tag v23 matched. GUIDE.md now documents the Monthly Income Log feature (significant new capability). PDF rebuilt, leak-clean.
+  * Tip moved 80c8faf (candidate) → 6474b42 (guide sync); per freeze-the-candidate rule, Akashi should re-SAFE on the new tip (code side unchanged from 80c8faf, only guide wording + PDF; should be clear).
+
+- Commits / SHAs:
+  * 80c8faf (app candidate — Monthly Income Log feature + v23, pre-review)
+  * 6474b42 (Hugo QA commit — guide sync + PDF rebuild, GREEN)
+  * 6915011 (status post to TEAM-CHAT)
+
+- Still open / next:
+  * Awaiting Akashi re-SAFE on 6474b42 (docs-only change from 80c8faf, code/watchdogs untouched).
+  * Then Osefe's "ship it" + Kaito's merge/publish.
+  * My GREEN sign-off complete. Idle until next candidate.
+
 ## [2026-07-01] — via Kaito (asleep dispatch) — Media Log v2 GUIDE.md privacy overclaim fix GREEN @ af8ca27
 
 - Asked: Akashi withheld SAFE on Media Log v2 (tip ~4d47a96) because GUIDE.md §8 has a privacy overclaim: line 166 says "Nothing ever leaves your device" as an absolute bolded statement, but line 158 documents the ↗ IMDb button that deliberately sends the user's title off-device when tapped. These contradict. Fix the overclaim on line 166 to match app behavior accurately, without introducing other contradictions elsewhere in §8. Use Akashi's suggested wording (adapt as fit, keep serious tone): "Your Media Log data stays on your device — it never syncs or uploads on its own" (the IMDb button is the one exception, and only when you tap it: it sends just the title, nothing else). Rebuild PDF. Confirm GREEN exit 0 + MISSING:0. Commit, pull --rebase, push. Post GREEN with exact SHA + new wording.
