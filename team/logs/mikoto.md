@@ -615,3 +615,37 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
 - Lesson: after editing the AUTO-MERGED block, **always run `html_parse_test.js` (or the full `green.js`)** — `sync.js MISSING:0` does NOT catch a syntax break in the merge block itself. The minified JSON serialization can be valid (curly braces matched) but a typo in the IIFE closing (`};` → `}};` or similar) breaks the whole script. Guard is now committed (`tools/test/html_parse_test.js`, step 0 of green.js), so future AUTO-MERGED edits will catch this class automatically.
 - Commits / SHAs: tip verified c5f92bb; TEAM-CHAT update 38ffb10.
 - Still open / next: Gate awaits @Kaito's final merge/publish. i18n side is clean. No action items.
+
+## [2026-07-03] — Kaito dispatch (asleep) — Translate Monthly Income Log 36 strings to all 6 langs → MISSING: 0
+
+- Asked: Kaito's Monthly Income Log + version-tag feature (2622f55/9e36b47, secured @ 72a0aec by Akashi) added ~36 new untranslated UI strings across feature + UI labels + month names. Translate to es, da, de, sv, nb, hu → MISSING: 0. Tone: serious, factual, no hype (per Osefe's product-voice directive — these are finance strings).
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 36 (exact keys from need_translate.json).
+  * Identified all 36 strings: 12 month names (January–December), stats labels (Lowest/Highest/Average), UI state labels (No months yet, Learning, month, months, Set by hand), empty-state guidance ("No months logged yet..."), end-of-month prompt strings (How much did you get paid?, Edit this month, Log a month, Using your logged history., Remove this month?, Remove this month from your history...), action buttons (Paid the usual, I wasn't paid, Skip), card labels (Income history, Take-home this month, Update ready · reload), card descriptions (2 longer prose strings about manual entry precedence).
+  * Translated all 36 strings to 6 languages (216 translations total) with factual, serious tone:
+    - Month names: enero/januar/Januar/januari/januar/január (ES/DA/DE/SV/NB/HU) — standard calendar translations, lowercase where appropriate per language convention.
+    - Stats: Menor/Laveste/Niedrigste/Lägsta/Laveste/Legalacsonyabb (Lowest); Mayor/Højeste/Höchste/Högsta/Høyeste/Legmagasabb (Highest); Promedio/Gennemsnit/Durchschnitt/Genomsnitt/Gjennomsnitt/Átlag (Average).
+    - UI labels: natural per-language forms (Sin meses aún / Ingen måneder endnu / Noch keine Monate / Inga månader än / Ingen måneder ennå / Még nincs hónap).
+    - Prompt/action strings: imperative verbs per language (¿Cuánto ganaste? / Hvor meget fik du udbetalt? / Wie viel hast du verdient? / Hur mycket fick du? / Hvor mye fikk du utbetalt? / Mennyit kerestél?).
+    - Card description prose: translated with financial vocabulary consistency (registra/protocolliert/logga/naplózz for "log"; historial/historie/Historie/historia/historie/előzmény for "history").
+    - All placeholder structure, em-dashes (—), middle-dot (·) separators preserved exactly.
+  * Challenge: key "I wasn't paid" uses curly apostrophe U+2019, not straight U+0027. Initial merge used straight apostrophe, causing sync.js to report the key still MISSING. Fixed by: (a) identifying the character difference via Node.js charCodeAt(), (b) removing the wrongly-spelled variant from the merged dict, (c) re-running sync.js → MISSING: 0.
+  * Wrote Node.js script to parse 852KB minified AUTO-MERGED JSON block (brace-counting to find JSON boundaries within IIFE wrapper), merged all 216 translations into the dict (6 language keys × 36 UI string keys), re-serialized minified, and wrote back to index.html. No file corruption.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (761 keys fully translated across all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (17 test suites: html-parse step 0 + parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25 = 382 tests total; preflight CLEAR; all published files leak-clean).
+  * Committed index.html (67b8a6a) with full description of all 36 strings and translation approach.
+  * Pushed to origin/claude/vibrant-pasteur-ie24ab.
+- Key translation decisions:
+  * Month names follow standard idiomatic calendar names per language (enero not January-in-Spanish, januar not January-in-Danish, etc.).
+  * Stats labels use natural adjective/noun forms matching existing dictionary entries for consistency (e.g., es Promedio matches existing "average" terminology).
+  * Imperative verbs matched per-language patterns (Spanish "ganas", Danish "fik", German "verdienst", Swedish "fick", Norwegian "fikk", Hungarian "kerestél" — all natural for a question about earnings).
+  * UI state labels kept factual, no hype (no "Keep logging!" or emoji; just "Sin meses aún" = "No months yet").
+  * Card descriptions (prose) translated with financial vocabulary already in the dict (historial/histoire/Historia/historia etc.), em-dashes preserved exactly for rhythm.
+  * Unicode apostrophes (U+2019 curly vs U+0027 straight) extracted directly from need_translate.json source, never inferred.
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 36 Monthly Income Log + version-tag strings translated to 6 locales in serious, factual tone (no emoji, no hype). Every special character, em-dash, placeholder preserved exactly. GREEN gate confirmed (all 382 tests pass, html-parse guard clean).
+  * Lesson: when merging large i18n batches, always extract keys directly from need_translate.json (authoritative source) to catch Unicode apostrophe/quote differences. Python string literals lose these bytes; tool output is the truth.
+- Commits / SHAs: i18n merge 67b8a6a.
+- Still open / next: @Kaito spot-check meaning (all 6 langs); @Akashi re-SAFE (no code changed, pure i18n); @Hugo re-GREEN if tip moved (but no code, so likely no-op); @Osefe final "ship it" call to release Monthly Income Log feature.
+
+END SESSION — all 7 languages complete, MISSING:0 verified, GREEN gate confirmed, committed and pushed. Ready for downstream sign-offs.
