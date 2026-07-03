@@ -956,7 +956,7 @@
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v25';
+window.APP_VER='v26';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
@@ -3386,6 +3386,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     recomputeIncome();          // materialise MODEL.income from history/guess (also migrates old saves)
     recomputeGrand();
     renderExpenses();
+    // Re-draw the Budget item list here too — this runs AFTER the integrity token arms on unlock,
+    // so the per-item prices resolve to real numbers instead of the NaN they show if drawn at boot.
+    // Skipped while an item is being edited so we never wipe out what the user is typing.
+    if(typeof renderManage==='function' && editId==null) renderManage();
     renderDerived();
     if(typeof renderIncomeHistory==='function') renderIncomeHistory();
     if(typeof renderLedger==='function') renderLedger();
