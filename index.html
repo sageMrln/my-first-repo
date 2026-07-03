@@ -3386,6 +3386,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     recomputeIncome();          // materialise MODEL.income from history/guess (also migrates old saves)
     recomputeGrand();
     renderExpenses();
+    // Re-draw the Budget item list here too — this runs AFTER the integrity token arms on unlock,
+    // so the per-item prices resolve to real numbers instead of the NaN they show if drawn at boot.
+    // Skipped while an item is being edited so we never wipe out what the user is typing.
+    if(typeof renderManage==='function' && editId==null) renderManage();
     renderDerived();
     if(typeof renderIncomeHistory==='function') renderIncomeHistory();
     if(typeof renderLedger==='function') renderLedger();
