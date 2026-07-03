@@ -1009,3 +1009,28 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Akashi re-SAFE on df385d8 (guide/PDF only, code untouched from frozen tip 07c00cc) + Kaito to verify byte-identity between tips.
   * Then: Osefe final "ship it" + Kaito's merge/publish to gh-pages.
+
+## [2026-07-03] — via Kaito (asleep dispatch) — Auto-updater v25 + Budget tab sound/flash GREEN @ 1c815f6
+
+- Asked: GREEN sign-off on frozen candidate `1c815f6` (v25 — auto-updater that fixes the recurring stale-cache bug + the Budget tab's sound/flash polish). Full checklist: (1) `node tools/release/green.js` exit 0 + test counts (16 suites, 417 tests incl. income_log 35/35, transfer 58/58); (2) version-drift guard (APP_VER === sw.js VERSION = v25); (3) `node tools/i18n/sync.js` MISSING: 0 across 7 langs; (4) `node tools/publish/preflight.js` CLEAR; (5) GUIDE judgment (auto-updater is invisible plumbing, sound/flash is motion-only — likely no doc change needed; confirm). No code edits.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` to tip `1c815f6`. Read memory + chat (Budget tab v24 shipped, now v25 with auto-updater + sound/flash polish).
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0** — all 16 suites passed:
+    - parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓, **income_log 35/35** ✓, import_sanitize 25/25 ✓ = **417 total tests**
+    - HTML parse guard (step 0): all 4 script blocks parse ✓
+    - Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 6 script tags balanced)
+    - Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean)
+    - Version tag: APP_VER === sw.js VERSION = **v25** ✓
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0** (776 keys, 7 languages — auto-updater + sound/flash added no new UI strings, both invisible/plumbing).
+  * Ran `node tools/publish/preflight.js index.html` → **CLEAR exit 0** ✓. All 7 checks pass (slots empty, 1 public key, no PII, PUBCHK intact, 6 script tags balanced).
+  * **GUIDE judgment:** (1) Auto-updater (version-tag self-heal + sw.js VERSION bump) is invisible plumbing that fixes a recurring stale-cache bug (users see: "update ready" chip on boot → reload → fresh app; background mechanism, no user action added). (2) Budget tab sound/flash polish (rowBorn flash + audio cues on add) is motion-only, already covered by existing §11 Daily Habits "UI Sounds" section (invisible ambient, no new workflow). Both changes have zero user-facing copy/action impact. **NO GUIDE REBUILD NEEDED** — GUIDE.md is accurate as-is.
+
+- Decision / result:
+  * **GREEN @ 1c815f6** — all 16 suites (417 tests) pass. HTML parse guard ✓ (all 4 scripts syntactically valid). Preflight CLEAR ✓ (6 script tags balanced, slots empty, watchdog intact). MISSING: 0 ✓ (776 keys, 7 languages). Version tag v25 matched ✓ (APP_VER === sw.js VERSION). Auto-updater + Budget tab sound/flash verified GREEN. No guide rebuild needed (invisible plumbing + motion-only polish).
+
+- Commits / SHAs:
+  * 1c815f6 (Auto-updater v25 — app candidate, frozen for gate)
+
+- Still open / next:
+  * Hugo GREEN @ 1c815f6 complete. Awaiting Akashi SAFE + Osefe "ship it" + Kaito's merge/publish to gh-pages.
