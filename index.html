@@ -956,7 +956,7 @@
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v24';
+window.APP_VER='v25';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
@@ -8824,6 +8824,22 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ return p ? true : navigator.storage.persist(); }).then(function(granted){ if(granted===false){ var w=document.getElementById('persistWarn'); if(w) w.style.display='block'; } }).catch(function(){}); } }catch(_){}
     // 2) register the offline service worker — secure contexts only (https or localhost; file:// has no SW)
     try{ var sec=(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'); if('serviceWorker' in navigator && sec){ navigator.serviceWorker.register('sw.js').catch(function(){}); } }catch(_){}
+    // 2·AUTO-UPDATE: force an update check on every load, and when a NEWER service worker takes
+    //   control, reload ONCE so a fresh build reaches the device on its own — no manual cache-fight.
+    //   Guards make a reload loop impossible: only reload if a controller already existed (skip the
+    //   first-ever install), and at most once per tab (sessionStorage). Fixes the stale-PWA case
+    //   where an installed app kept serving an old cached version.
+    try{
+      if('serviceWorker' in navigator){
+        var _hadCtrl = !!navigator.serviceWorker.controller;
+        navigator.serviceWorker.addEventListener('controllerchange', function(){
+          if(!_hadCtrl) return;                                       // first install → nothing to refresh to
+          try{ if(sessionStorage.getItem('mrln-swupd')) return; sessionStorage.setItem('mrln-swupd','1'); }catch(_){}
+          try{ location.reload(); }catch(_){}
+        });
+        navigator.serviceWorker.ready.then(function(reg){ try{ reg.update(); }catch(_){} }).catch(function(){});
+      }
+    }catch(_){}
     // 2a) build readout (Change Log ▸ Latest update): app-build always; SW version if it answers.
     //     A mismatch (app HTML newer/older than the active SW) is the fingerprint of a stale cache.
     try{
