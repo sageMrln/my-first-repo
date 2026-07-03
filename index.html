@@ -353,6 +353,47 @@
   /* Budget: rowBorn — a brief lime confirm flash on an added/edited item (motion-gated) */
   @media (prefers-reduced-motion: no-preference){ .item-row.row-flash{ animation:rowBorn 850ms ease-out; } }
   @keyframes rowBorn{ 0%{ background:rgba(124,255,178,.20); box-shadow:inset 0 0 0 1px rgba(124,255,178,.45); } 100%{ background:transparent; box-shadow:none; } }
+  /* ===== Budget "Your costs" — premium two-state (display default / edit toggle) ===== */
+  .bud-head{ display:flex; align-items:center; gap:12px; }
+  .bud-head h2{ margin:0; }
+  .bud-toggle{ margin-left:auto; display:inline-flex; align-items:center; gap:6px; background:transparent; border:1px solid var(--cyan-dim);
+    color:var(--cyan); border-radius:999px; font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.04em; padding:7px 14px; cursor:pointer; transition:background .15s,border-color .15s; }
+  .bud-toggle:hover{ background:rgba(0,229,255,.08); }
+  #expenses.budget-editing .bud-toggle{ background:var(--cyan); color:#04222a; border-color:var(--cyan); font-weight:700; }
+  #customList{ display:flex; flex-direction:column; }
+  .bud-cat{ display:flex; align-items:center; gap:10px; margin:22px 0 6px; }
+  .bud-cat-name{ font-family:'Orbitron',sans-serif; font-weight:700; font-size:13.5px; color:#eaffff; letter-spacing:.02em; }
+  .bud-cat-sub{ margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:12.5px; color:var(--cyan); font-variant-numeric:tabular-nums; }
+  .bud-catdel{ display:none; align-items:center; justify-content:center; width:28px; height:28px; flex:0 0 auto;
+    background:transparent; border:1px solid var(--red); color:var(--red); border-radius:8px; cursor:pointer; font-size:12px; }
+  .item-row{ display:flex; align-items:center; gap:12px; padding:14px 2px; border-bottom:1px solid rgba(255,255,255,.055); }
+  .item-row:last-child{ border-bottom:none; }
+  .ir-main{ min-width:0; flex:1 1 auto; }
+  .ir-name{ font-family:'Rajdhani',sans-serif; font-weight:600; font-size:16px; color:var(--txt); line-height:1.2; overflow:hidden; text-overflow:ellipsis; }
+  .ir-added{ font-family:'Share Tech Mono',monospace; font-size:8px; color:var(--cyan); border:1px solid var(--cyan-dim); border-radius:4px; padding:1px 4px; vertical-align:middle; letter-spacing:.05em; }
+  .ir-until{ display:block; color:var(--txt-dim); font-size:11px; margin-top:3px; letter-spacing:.02em; }
+  .ir-until.ok{ color:var(--lime); }
+  .ir-price{ flex:0 0 auto; text-align:right; white-space:nowrap; }
+  .ir-amt{ font-family:'Orbitron',sans-serif; font-weight:700; font-size:15px; color:#eaffff; font-variant-numeric:tabular-nums; }
+  .ir-amt small{ font-family:'Share Tech Mono',monospace; font-weight:400; font-size:10px; color:var(--txt-dim); }
+  .ir-price > small{ display:block; color:var(--txt-dim); font-size:10px; font-family:'Share Tech Mono',monospace; margin-top:2px; }
+  .ir-varies{ color:var(--txt-dim); font-size:12.5px; font-style:italic; }
+  .ir-skel{ display:inline-block; width:72px; height:15px; border-radius:5px; vertical-align:middle;
+    background:linear-gradient(90deg,rgba(0,229,255,.06),rgba(0,229,255,.20),rgba(0,229,255,.06)); background-size:200% 100%; }
+  @media (prefers-reduced-motion: no-preference){ .ir-skel{ animation:skelShimmer 1.25s ease-in-out infinite; } }
+  @keyframes skelShimmer{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
+  .ir-tools{ display:none; gap:7px; flex:0 0 auto; }
+  .ir-e,.ir-x{ width:36px; height:36px; border-radius:10px; background:transparent; cursor:pointer; font-size:14px; display:inline-flex; align-items:center; justify-content:center; transition:background .15s; }
+  .ir-e{ border:1px solid var(--cyan-dim); color:var(--cyan); } .ir-e:hover{ background:rgba(0,229,255,.10); }
+  .ir-x{ border:1px solid var(--red); color:var(--red); } .ir-x:hover{ background:rgba(255,92,124,.10); }
+  .ir-editfields{ display:flex; gap:8px; margin-top:9px; }
+  .ir-editfields input{ max-width:130px; background:#08111e; border:1px solid var(--cyan); border-radius:9px; color:var(--txt); padding:9px 11px; font-family:'Rajdhani',sans-serif; font-size:16px; }
+  .ir-editfields select{ background:#08111e; border:1px solid var(--line); border-radius:9px; color:var(--txt); padding:9px; }
+  /* EDIT MODE reveals the tools + category-delete + the add surfaces; DISPLAY hides them all */
+  #expenses.budget-editing .ir-tools{ display:flex; }
+  #expenses.budget-editing .bud-catdel{ display:inline-flex; }
+  #expenses:not(.budget-editing) #addCostCard{ display:none; }
+  #expenses:not(.budget-editing) #budCatAdd{ display:none; }
   .meterlbl{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin-top:4px}
 
   ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px}
@@ -1391,8 +1432,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="note" data-i18n="This monthly total is the single source of truth — your Cash Flow simulator and Savings projection both build on it.">This monthly total is the single source of truth — your Cash Flow simulator and Savings projection both build on it.</div>
     </div>
 
-    <!-- Add a cost -->
-    <div class="card" data-collapse data-collapsed>
+    <!-- Add a cost (only shown in Budget edit mode) -->
+    <div class="card" id="addCostCard">
       <h2 data-i18n="Add a cost">Add a cost</h2>
       <div class="desc" data-i18n="Add anything new to a category. It updates your live numbers everywhere — grand total, cash-flow simulator and savings projection all recompute instantly.">Add anything new to a category. It updates your live numbers everywhere — grand total, cash-flow simulator and savings projection all recompute instantly.</div>
       <div class="form-row">
@@ -1408,16 +1449,21 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div id="addMsg" class="note" style="display:none"></div>
     </div>
 
-    <!-- Your costs — show AND edit in one place -->
+    <!-- Your costs — one two-state list: clean display by default, Edit toggle reveals the tools -->
     <div class="card">
-      <h2 data-i18n="Your costs">Your costs</h2>
-      <div class="desc" data-i18n="Every cost in your model, grouped by category. Edit a price or billing, or delete any item — base or added — and your live numbers recompute instantly. Add or remove whole categories at the bottom.">Every cost in your model, grouped by category. Edit a price or billing, or delete any item — base or added — and your live numbers recompute instantly. Add or remove whole categories at the bottom.</div>
-      <div id="customList"></div>
-      <div class="form-row" style="margin-top:14px">
-        <div class="field"><label data-i18n="New category name">New category name</label><input id="newCatName" placeholder="e.g. Pets"></div>
-        <div class="field"><label data-i18n="Icon (emoji)">Icon (emoji)</label><input id="newCatIcon" placeholder="🐾" maxlength="2"></div>
+      <div class="bud-head">
+        <h2 data-i18n="Your costs">Your costs</h2>
+        <button class="bud-toggle" id="budEditToggle" type="button" aria-pressed="false">✎ <span data-i18n="Edit">Edit</span></button>
       </div>
-      <button class="btn ghost" id="addCatBtn" data-i18n="+ Add category">+ Add category</button>
+      <div class="desc" data-i18n="Every recurring cost, grouped by category. Tap Edit to change a price, delete anything, or add a category.">Every recurring cost, grouped by category. Tap Edit to change a price, delete anything, or add a category.</div>
+      <div id="customList"></div>
+      <div id="budCatAdd">
+        <div class="form-row" style="margin-top:14px">
+          <div class="field"><label data-i18n="New category name">New category name</label><input id="newCatName" placeholder="e.g. Pets"></div>
+          <div class="field"><label data-i18n="Icon (emoji)">Icon (emoji)</label><input id="newCatIcon" placeholder="🐾" maxlength="2"></div>
+        </div>
+        <button class="btn ghost" id="addCatBtn" data-i18n="+ Add category">+ Add category</button>
+      </div>
     </div>
   </section>
 
@@ -3705,6 +3751,18 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         budFlashItem(id);                                     // lime flash on the edited row
       }
     });
+    // Budget DISPLAY ⇄ EDIT toggle — flips one class on the panel (no re-render); the tools,
+    // category-delete and add surfaces reveal via CSS. Leaving edit closes any open inline editor.
+    var budToggle = document.getElementById('budEditToggle');
+    if(budToggle) budToggle.addEventListener('click', function(){
+      var panel = document.getElementById('expenses'); if(!panel) return;
+      var on = panel.classList.toggle('budget-editing');
+      budToggle.setAttribute('aria-pressed', on?'true':'false');
+      budToggle.innerHTML = on ? ('✓ '+esc(t('Done'))) : ('✎ '+esc(t('Edit')));
+      if(!on && editId){ editId=null; renderManage(); }     // exiting edit closes the open editor
+      if(typeof MRLN_SFX!=='undefined') MRLN_SFX.panel();
+      try{ if(navigator.vibrate) navigator.vibrate(12); }catch(_){}   // subtle mode-shift haptic
+    });
   })();
 
   // Budget: brief lime "rowBorn" flash on the just-added / just-edited item (renderManage has
@@ -3720,34 +3778,45 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       setTimeout(function(){ if(row) row.classList.remove('row-flash'); }, 900);
     }catch(_){}
   }
+  // Budget "Your costs" — ONE two-state list. Display mode (resting): clean name → price columns,
+  // zero buttons. Edit mode (the #expenses.budget-editing class toggles it): compact ✎/✕ tools +
+  // category delete reveal via CSS, no re-render. isFinite guard → a skeleton shimmer instead of
+  // ever printing "NaN" (the price resolves once the integrity token arms). Arthur 86fe5d8 spec.
   function renderManage(){
     var host = document.getElementById('customList'); if(!host) return;
+    var sym = curInfo().sym;
+    var FQ={monthly:t('Monthly'),quarterly:t('Quarterly'),yearly:t('Yearly')};
+    function priceCell(it){
+      if(it.varies) return '<span class="ir-varies">'+t('varies')+'</span>';
+      var m = itemMonthly(it);
+      if(!isFinite(m)) return '<span class="ir-skel" aria-hidden="true"></span>';   // never print NaN
+      var billed = (it.cost!=null && it.freq && it.freq!=='monthly') ? '<small>'+fmtN(it.cost)+' '+sym+'/'+(it.freq==='yearly'?'yr':'q')+'</small>' : '';
+      return '<span class="ir-amt">'+fmtN(m)+' <small>'+sym+'/'+t('mo')+'</small></span>'+billed;
+    }
     host.innerHTML = MODEL.groups.map(function(g){
-      var head = '<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px">' +
-        '<b style="font-family:\'Orbitron\';font-size:14px;color:#eaffff">' + esc(g.icon + ' ' + t(g.name)) + '</b>' +
-        '<button class="btn danger" data-delcat="' + esc(g.name) + '" style="padding:3px 8px;font-size:11px">✕ ' + t('category') + '</button></div>';
-      var FQ={monthly:t('Monthly'),quarterly:t('Quarterly'),yearly:t('Yearly')};
+      var sub = groupTotal(g);
+      var head = '<div class="bud-cat">'+
+        '<span class="bud-cat-name">'+esc(g.icon+' '+t(g.name))+'</span>'+
+        '<span class="bud-cat-sub">'+(isFinite(sub)?fmtN(sub)+' '+sym:'—')+'</span>'+
+        '<button class="bud-catdel" data-delcat="'+esc(g.name)+'" title="'+esc(t('Delete category'))+'" aria-label="'+esc(t('Delete category'))+'">✕</button></div>';
       var rows = g.items.length ? g.items.map(function(it){
         if(it.id === editId){
-          return '<div class="item-row"><div class="meta" style="flex:1">' + esc(t(it.name)) +
-            '<div style="display:flex;gap:8px;margin-top:6px">' +
-            '<input data-cost="' + it.id + '" type="number" min="0" step="1" value="' + (it.cost!=null?it.cost:Math.round(itemMonthly(it))) + '" style="max-width:120px;background:#08111e;border:1px solid var(--cyan);border-radius:6px;color:var(--txt);padding:6px 8px;font-family:Rajdhani">' +
-            '<select data-freq="' + it.id + '" style="background:#08111e;border:1px solid var(--line);border-radius:6px;color:var(--txt);padding:6px">' +
-            ['monthly','quarterly','yearly'].map(function(f){ return '<option value="'+f+'"'+((it.freq||'monthly')===f?' selected':'')+'>'+FQ[f]+'</option>'; }).join('') +
-            '</select></div></div>' +
-            '<div style="display:flex;flex-direction:column;gap:6px">' +
-            '<button class="btn" data-save="' + it.id + '" style="padding:5px 10px;font-size:12px">' + t('Save') + '</button>' +
-            '<button class="btn ghost" data-cancel="1" style="padding:5px 10px;font-size:12px">' + t('Cancel') + '</button></div></div>';
+          var cur = it.cost!=null ? it.cost : (isFinite(itemMonthly(it))?Math.round(itemMonthly(it)):0);
+          return '<div class="item-row editing-row"><div class="ir-main"><div class="ir-name">'+esc(t(it.name))+'</div>'+
+            '<div class="ir-editfields"><input data-cost="'+it.id+'" type="number" min="0" step="1" inputmode="numeric" value="'+cur+'">'+
+            '<select data-freq="'+it.id+'">'+['monthly','quarterly','yearly'].map(function(f){ return '<option value="'+f+'"'+((it.freq||'monthly')===f?' selected':'')+'>'+FQ[f]+'</option>'; }).join('')+'</select></div></div>'+
+            '<div class="ir-tools"><button class="btn" data-save="'+it.id+'" style="padding:6px 12px;font-size:12px">'+t('Save')+'</button>'+
+            '<button class="btn ghost" data-cancel="1" style="padding:6px 12px;font-size:12px">'+t('Cancel')+'</button></div></div>';
         }
-        var paidOff = it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)) && todayKey() > String(it.until);
-        var sub = it.varies ? t('varies (not counted)') :
-          (it.cost!=null && it.freq && it.freq!=='monthly' ? fmtN(it.cost)+' '+curInfo().sym+'/'+(it.freq==='yearly'?'yr':'q')+' ≈ ' : '') + fmtN(itemMonthly(it)) + ' '+curInfo().sym+'/'+t('mo') +
-          (it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)) ? (paidOff ? ' · ✅ '+t('paid off')+' '+esc(it.until) : ' · 🔁 '+t('until')+' '+esc(it.until)) : '');
-        return '<div class="item-row"><div class="meta">' + esc(t(it.name)) + (it.custom?' <span class="tag now" style="font-size:8px">'+t('ADDED')+'</span>':'') +
-          '<small>' + sub + '</small></div><div style="display:flex;gap:6px">' +
-          (it.varies ? '' : '<button class="btn ghost" data-edit="' + it.id + '" style="padding:5px 10px;font-size:12px">' + t('Edit') + '</button>') +
-          '<button class="btn danger" data-del="' + it.id + '">' + t('Delete') + '</button></div></div>';
-      }).join('') : '<div class="empty">' + t('No items in this category.') + '</div>';
+        var badge = it.custom?' <span class="ir-added">'+t('ADDED')+'</span>':'';
+        var until = (it.until && /^\d{4}-\d{2}-\d{2}$/.test(String(it.until)))
+          ? (todayKey()>String(it.until) ? '<small class="ir-until ok">✅ '+t('paid off')+'</small>' : '<small class="ir-until">🔁 '+t('until')+' '+esc(it.until)+'</small>') : '';
+        return '<div class="item-row"><div class="ir-main"><div class="ir-name">'+esc(t(it.name))+badge+'</div>'+until+'</div>'+
+          '<div class="ir-price">'+priceCell(it)+'</div>'+
+          '<div class="ir-tools">'+
+            (it.varies?'':'<button class="ir-e" data-edit="'+it.id+'" title="'+esc(t('Edit'))+'" aria-label="'+esc(t('Edit'))+'">✎</button>')+
+            '<button class="ir-x" data-del="'+it.id+'" title="'+esc(t('Delete'))+'" aria-label="'+esc(t('Delete'))+'">✕</button></div></div>';
+      }).join('') : '<div class="empty">'+t('No items in this category.')+'</div>';
       return head + rows;
     }).join('');
   }
