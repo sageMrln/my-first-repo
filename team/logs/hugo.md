@@ -1059,3 +1059,33 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * Hugo GREEN @ 51e2d93 complete. Hotfix is clear. Awaiting Akashi SAFE + Osefe "ship it" + Kaito's merge/publish to gh-pages.
+
+## [2026-07-03] — via Kaito (asleep dispatch) — v27 Budget redesign GREEN sign-off @ b481e12
+
+- Asked: GREEN sign-off on frozen candidate `416ac3b` (v27 — premium Budget redesign: "Your costs" list now clean display-by-default with Edit toggle to reveal per-row tools). Full checklist: (1) `node tools/release/green.js` exit 0 + test counts (16 suites); (2) version-drift check (APP_VER v27 === sw.js v27); (3) confirm MISSING: 0 (776/776); (4) preflight CLEAR; (5) flag guide update if needed (Budget tab UX changed).
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab`, verified on tip `416ac3b`. Read memory + chat (prior v23 GREEN at 6474b42).
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0** — all 16 suites passed:
+    - parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓, income_log 35/35 ✓, import_sanitize 25/25 ✓ = **441 total tests**
+    - HTML parse guard: 4/4 script blocks ✓
+    - Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 6 script tags balanced)
+    - Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean)
+    - Version tag: APP_VER === sw.js VERSION = **v27** ✓
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0** (776 keys, 7 languages) ✓
+  * **GUIDE.md update:** Budget tab UX changed from "show + edit together" to "clean read-view with Edit toggle". Updated §4 heading + opening line to match: "Budget opens in a clean read-view; tap Edit to change prices, delete items, or add new costs." Also clarified that per-row tools (delete, change frequency) are accessed via Edit mode. Rebuilt PDF: `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 499 KB.
+  * Re-ran full gate post-rebuild: still **GREEN exit 0** (all 16 suites, 441 tests, version tag v27 ✓, preflight CLEAR, leak scan clean, MISSING: 0).
+  * Staged GUIDE.md + MRLN-Guide.pdf, committed (b481e12).
+
+- Decision / result:
+  * **GREEN @ b481e12** — all 16 suites (441 tests) pass, preflight CLEAR, MISSING: 0. Version tag v27 matched. GUIDE.md now accurately documents the Budget display/edit toggle. PDF rebuilt, leak-clean.
+  * Tip moved 416ac3b (candidate) → b481e12 (guide sync); per freeze-the-candidate rule, Akashi should re-SAFE on the new tip (code side unchanged from 416ac3b, only guide wording + PDF; should be clear).
+
+- Commits / SHAs:
+  * 416ac3b (app candidate — v27 Budget premium redesign, pre-review)
+  * b481e12 (Hugo QA commit — guide sync + PDF rebuild, GREEN)
+
+- Still open / next:
+  * Awaiting Akashi re-SAFE on b481e12 (docs-only change from 416ac3b, code/watchdogs untouched).
+  * Then Osefe's "ship it" + Kaito's merge/publish.
+  * My GREEN sign-off complete. Idle until next candidate.
