@@ -980,3 +980,32 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * a4ba0b8dd4f1a1e4c7989f473316ac0fbb8fd838 (Final v22: Discord detection + calendar fix + Media render-on-load + B6/B7 polish — verified GREEN)
 - Still open / next:
   * Awaiting Akashi re-SAFE on a4ba0b8 (index.html changed for Discord + calendar + Media + B6/B7; Akashi should re-sign) and Osefe's "ship it" + Kaito's merge/publish to gh-pages.
+
+## [2026-07-03] — via Kaito (asleep dispatch) — Budget tab merge GREEN @ df385d8 (v24 frozen candidate)
+
+- Asked: GREEN sign-off on frozen candidate `07c00cc` (v24 — Budget tab merge: old Expenses + Subscriptions tabs unified into one **Budget** tab; Mikoto i18n MISSING:0 already merged). Full gate: (1) `node tools/release/green.js` exit 0 + test counts (income_log 35/35, transfer 58/58, reorder 7/7, onboarding 10/10; 16 suites total = 417 tests) + version v24 check; (2) i18n MISSING: 0 across 7 langs; (3) update GUIDE.md (Budget tab merge docs); (4) preflight CLEAR on all published files.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab` to tip `07c00cc`. Read memory + chat (Tier 0 through v24 Budget tab candidate frozen for gate).
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0** — all 16 suites passed:
+    - parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓, income_log 35/35 ✓, import_sanitize 25/25 ✓ = **417 total tests**
+    - HTML parse guard: 4/4 scripts ✓
+    - Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 6 script tags balanced)
+    - Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat clean)
+    - Version tag: APP_VER === sw.js VERSION = **v24** ✓
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0** (776 keys, 7 languages fully translated) ✓
+  * **GUIDE.md update:** Budget tab is now unified (old Expenses read-only + Subscriptions edit → one Budget tab with summary + add + edit). Updated §3 section from separate "Expenses" + "Subscriptions" to single "Budget — costs at a glance + full edit" describing all three sub-views. Also updated FAQ entry (line 308) to redirect "Can't edit costs" → "Budget tab, scroll to Your Costs". Rebuilt PDF: `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 499 KB.
+  * Re-ran full gate post-rebuild: still **GREEN exit 0** (all 16 suites, 417 tests, version v24 ✓, preflight CLEAR, leak scan clean, MISSING: 0).
+  * Staged GUIDE.md + MRLN-Guide.pdf, committed (df385d8 — guide + PDF, code unchanged from 07c00cc).
+
+- Decision / result:
+  * **GREEN @ df385d8** — all 16 suites (417 tests) pass, preflight CLEAR, MISSING: 0. Version tag v24 matched. GUIDE.md now documents the unified Budget tab (no more separate Expenses/Subscriptions sections). PDF rebuilt, leak-clean.
+  * Tip moved 07c00cc (app candidate) → df385d8 (guide sync); per freeze-the-candidate rule, Akashi should re-SAFE on df385d8 (code unchanged from 07c00cc, only guide wording + PDF — should be clear; Kaito can verify byte-identity of index.html/sw.js between tips if needed).
+
+- Commits / SHAs:
+  * 07c00cc (app candidate — Budget tab merge + v24, pre-review)
+  * df385d8 (Hugo QA commit — guide sync + PDF rebuild, GREEN)
+
+- Still open / next:
+  * Awaiting Akashi re-SAFE on df385d8 (guide/PDF only, code untouched from frozen tip 07c00cc) + Kaito to verify byte-identity between tips.
+  * Then: Osefe final "ship it" + Kaito's merge/publish to gh-pages.
