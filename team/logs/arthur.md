@@ -974,3 +974,74 @@ Kills the app's worst wart: data shown in one tab, editable only in another. ONE
 
 - Specs given: the above, routed to Kaito (owner of index.html; find-xor-fix → he builds, I re-review LIVE per piece). Both build-ready. Build order suggestion: Budget merge first (kills the wart, unblocks daily loop), then Grade card (rides the reach wave).
 - Still open / next: (1) @Kaito builds; I re-review live (watch: Budget read→edit morph has no height-jump + save count-up lands exactly on the new figure + rowDie defers the real mutation; Grade letter-snap lands WITH the count-up + one sound per reveal + export draws zero kr + isFinite-guards under tamper). (2) @Akashi 4 flags above. (3) @Mikoto string set once EN locks. (4) Repoint the 5 subs/Subscriptions deep-links to Budget. (5) Store grade score+tier in the monthly-snapshot record for the "since last month" delta. Read-only, no lock. Branch claude/vibrant-pasteur-ie24ab @ a4ba0b8.
+
+---
+
+## [2026-07-03] — via Kaito (asleep dispatch) — QUALITY-BAR RESET: Budget tab REDESIGN to AAA (Display default · single Edit toggle · in-place morph) + the reusable Display/Edit standard
+- Asked: Osefe called the shipped Budget tab a FAIL (edit-mode was the DEFAULT = a wall of Edit/Delete on every row; "NaN kr/mo" everywhere; a spreadsheet, not premium). New standing bar: "multi-million-dollar app, millions of users all ages, turn creativity UP, everything must feel EXPENSIVE." Redesign Budget fully, mobile-first: DISPLAY is the resting state (clean/calm, name+monthly price, category subtotals, big costs visualised, ZERO edit/delete buttons); ONE Edit toggle reveals edit/delete/add; the mode change MORPHS in place (no reload/teleport); premium at every touch. Make this display↔edit toggle a REUSABLE standard. Concrete implementable redlines. Director-only; Kaito builds + screenshot-verifies premium before ship.
+- I OWN THE MISS: my prior Budget spec put "Edit + Delete" on every read row and called each row "inline-editable (tap→edit)". That IS the wall Kaito faithfully built. Objectivity applies to my own work — this is a real design error, not a build error. Correcting it properly below.
+- Studied / referenced: confirmed `.savebar`/`.chattoggle` are `position:fixed; right:18px; bottom:18px` (@489/500) → **bottom-right is TAKEN by the Assistant; the Budget mode-toggle must NOT live there.** `uiConfirm`@6243 (current delete dialogs) + the bottom-center toast infra@8117 (for the premium undo pattern). renderManage editId-per-row innerHTML swap@3734 = the teleport to REPLACE. Tokens: 8pt grid, `--ease-out:cubic-bezier(.22,1,.36,1)`, `.meter`@343 (share-bars), countUp@2804, tapFeedback ripple+haptic@8457, assembleIn@801, meterDraw A4, IntersectionObserver precedent (B4). Refs (gluttony, named): **iOS large-title→inline-title collapse-on-scroll** (Apple Wallet/Contacts/Reminders — the "hero condenses to a sticky bar" premium move + the top-right "Edit" that every 60-yo already knows); **Copilot/Monarch descending-by-spend category layout + the clean right-aligned tabular money column** (the single strongest "premium finance" signal); **Notion/Linear inline-commit-on-blur** (no per-row Save button = calm); **Things/iOS list-edit control-reveal** (delete slides in, rows don't reload); **undo-toast over confirm-dialog** (Gmail/iOS — premium low-friction safety).
+
+- Found / verdict: **REDESIGN — Budget as two states of ONE never-rebuilt DOM. The whole tab has a resting DISPLAY mode (calm, read-only, a clean money column you can just LOOK at) and an EDIT mode entered by ONE toggle; the difference between them is a class on the panel that CSS transitions — controls pre-exist hidden and reveal in place (a true morph, never innerHTML). The "expensive" is: the hero total spins up, category bars draw in, and — the signature move — entering edit makes each row's controls cascade in top-to-bottom like the interface arming. Row geometry is byte-identical across modes so nothing reflows.**
+
+### CORE ARCHITECTURE (the redline that makes it premium, not a re-render)
+- Render each row ONCE, containing BOTH the display price (text) AND a hidden inline editor (input+freq+delete), plus category tools (+Add / ✕category) hidden. Toggle `#budget.editing` on the panel. CSS reveals/hides the edit affordances via transform/opacity/border transitions. **NEVER call renderManage's editId innerHTML swap for mode changes** — that's the teleport. Re-render ONLY on actual data change (add/delete/commit), and even then animate the delta (count-up / rowBorn / rowDie).
+- **isFinite guard everywhere a number prints:** pre-token-arm or tampered → show a **skeleton shimmer** on the number (a 1.2s cyan shimmer sweep placeholder), NEVER "NaN". When the value resolves (post-arm) → count-up from the skeleton. This turns Kaito's NaN bug into the "expensive loading" continuity Osefe wants. (@Akashi: isFinite→skeleton/"—", never a printed NaN or a forged figure.)
+
+### DISPLAY MODE (resting state — mobile-first, 16px panel padding)
+**1. HERO SUMMARY (top card, the "expensive landing"):**
+- "TOTAL PER MONTH" micro-label (Share Tech Mono 10px, .2em, --txt-dim) + the total (Orbitron 900, clamp(32px,9vw,44px), #eaffff, `countUp` on entry, skeleton until armed). Secondary line: "≈ {yr}/year" (Rajdhani 13px --txt-dim).
+- One context line: "Biggest: {category} · {n} items · {r} renewing soon" (Share Tech Mono 11px). Serious, factual.
+- Top-right: the **Edit pill** (see toggle). 
+**2. CATEGORY SECTIONS (sorted by subtotal DESCENDING — biggest money first, the premium finance convention):**
+- Header: icon (18px) + name (Orbitron 14px #eaffff) LEFT; subtotal (Rajdhani 16px, #eaffff, tabular) RIGHT. margin-top 24px.
+- **Share-bar** directly under header: full-width `.meter`, height 6px, radius 3px, margin-top 8px, width = category % of GRAND, `meterDraw` staggered 60ms on entry. Color ramps by size (biggest = cyan/bright, smaller = cyan-dim) so "where the money goes" reads in one glance. THIS is "big costs visualised," upgraded.
+- Items under it, sorted by cost descending: **row = name (Rajdhani 15px --txt) LEFT · monthly price (Rajdhani 15px 600, #eaffff, tabular-nums) RIGHT.** min-height 48px, padding 12px 0, faint hairline divider (rgba(27,58,92,.35)) between items for the ledger-scan. Optional dim sub-line under the name (Share Tech Mono 10px --txt-dim): "🔁 renews Jul 15" / "≠monthly → {orig}/yr" / amber "🔁 renews in 5 days" if ≤7d. **NO buttons. NO edit/delete. Nothing tappable that looks clickable.** The money column (right-aligned, tabular, identical grouping via fmtN) is the visual spine — that column alone is the premium signal.
+- 24px between a category's last item and the next header. Panel bottom-padding 88px (clear the chat toggle + the sticky Done).
+**3. The clean-read discipline:** one accent (cyan, on bars/subtotals), everything else calm --txt/--txt-dim. No per-item bars (category-level only — bar overload kills calm). Collapsible categories = OPTIONAL enhancement (default expanded — "see ALL your money" is the point); if added, a dim chevron on the header, `panel` sound on expand.
+
+### THE MODE TOGGLE (one control, all ages, thumb-aware, non-colliding)
+- **iOS large-title collapse pattern:** the Edit pill sits top-right of the HERO while it's in view. On scroll, when the hero scrolls off (IntersectionObserver sentinel), a slim **sticky top bar** slides down (height 52px, dark blur bg, bottom hairline): "TOTAL {n}/mo" LEFT + the Edit pill top-RIGHT — so your key number AND the toggle follow you, always same position. Premium + familiar to a 60-yo (top-right "Edit") and legible to a 9-yo.
+- The pill: min 44×44 tap target, ghost cyan "✎ Edit" → on tap becomes filled cyan "✓ Done". Label+icon crossfade + fill animate 200ms.
+- **Thumb reach on EXIT:** in edit mode, ALSO render a large "✓ Done" bar after the last category (full-width, 48px) so exiting never requires scrolling back to the top — enter is a deliberate top action, exit is always thumb-reachable. Considered asymmetry, not clutter.
+
+### EDIT MODE (entered, never default) — THE MORPH
+- Toggle `#budget.editing`. What reveals, IN PLACE (no reload):
+  - Each row's price TEXT gains input chrome — a border + inset bg fade in around it (`transition: background .2s, border-color .2s`) so the number becomes an editable field WITHOUT moving. Freq chip + a "✕" delete slide in from the right (`translateX(10px)→0` + opacity, `.24s var(--ease-out)`).
+  - **The cascade (the expensive beat):** rows reveal their controls top-to-bottom, `transition-delay: calc(var(--i) * 34ms)` (var --i = row index, CAP at 10 → 11th+ snap so a 40-item budget never lags). Reads as "the interface is arming."
+  - Category headers reveal "+ Add item" + "✕ category". A global "+ New category" appears at the end. The sticky bar's total stays live.
+- **Inline commit on BLUR — no per-row Save/Cancel buttons** (that was half the wall). Change a price, tap away → it commits. On a committed change: the price `countUp`s old→new in place + a `rowBorn` lime flash + the category subtotal AND hero total recompute with count-up + `save` sound + haptic. Cause→effect, alive, zero button clutter.
+- **Add item:** tap "+ Add item" on a category → a blank edit-row `rowBorn`s at the top of that category, name+price auto-focused (A6 ring). `save` sound on commit.
+- **Delete:** "✕" → `rowDie` leave (translateX(12px)+opacity+collapse 260ms) → defer the real mutation (B1) → **a 5s bottom toast "Deleted {name} · Undo"** (reuse toast@8117), NOT a uiConfirm dialog. Undo restores the item+index. Premium, low-friction, safe for a 9-yo's mis-tap. `remove` down-whoosh on delete; soft `tick` on undo. (Category delete KEEPS uiConfirm — deleting a whole category with N items is heavy enough to warrant the confirm.)
+- **Exit (Done):** remove `.editing` → controls slide back out (translateX(10px)+opacity0), input chrome fades off, ~180ms, snappier reverse (no long stagger). Rows return to the calm read. `tap` (soft) sound.
+
+### SOUND MAP (MRLN_SFX)
+- Enter edit → `panel` (rising unfold, "tools arming") + ONE firmer haptic `navigator.vibrate(12)` to mark the mode shift. Exit/Done → `tap` (soft settle).
+- Price commit (blur w/ change) → `save` + count-up + lime flash. Add → `save` + rowBorn. Delete → `remove` + rowDie; Undo → `tick`.
+- Category expand (if collapsible) → `panel`. All the `.btn`/pill controls inherit tapFeedback ripple + 8ms haptic. (Adding a cost is NOT `coin` — coin stays income-only; adding a bill isn't "good news".)
+
+### PREMIUM AT EVERY TOUCH
+- **Desktop hover:** DISPLAY rows have no buttons → hover = a faint full-row bg lift (rgba(0,229,255,.05), .15s) so the cursor feels sensed WITHOUT implying a false click; the Edit pill gets the full hover-glow; category headers (if collapsible) a clearer hover. EDIT rows: hover raises the delete ✕ + input affordances; inputs use the A6 cyan focus ring.
+- **Mobile:** the mode toggle, add, delete, commit all fire the 8ms tapFeedback haptic; mode-enter fires the 12ms mark. Generous 48px rhythm = thumb-legible for all ages.
+- **Entrance continuity:** tab open → cards assembleIn, hero total count-up, category bars meterDraw in sequence = "expensive as I scroll," continuous from the boot screen.
+
+### REDUCED-MOTION
+- Global wildcard kills assembleIn/cascade/meterDraw/count-up-tween/rowBorn/rowDie/shimmer → display shows instantly, edit mode toggles instantly (class flip, controls just present), numbers land, bars at target, add/delete instant, skeleton → static "—" until armed then the value (no tween). Fully usable, dignified. Sounds still fire (separate toggle).
+
+### THE REUSABLE STANDARD — "MRLN Display/Edit surface" (point cluttered tabs at this)
+Codified rules, so this isn't a one-off:
+1. **Resting state carries ZERO edit/delete/destructive controls** — read-only, calm, the data is the hero.
+2. **ONE clearly-labeled mode toggle**, same position every time (top-right, collapsing to a sticky bar on scroll; never bottom-right — the Assistant owns it).
+3. **Controls pre-exist in the DOM and reveal via a panel class + CSS transition** — NEVER an innerHTML swap for a mode change (that's the teleport that kills "expensive").
+4. **Row geometry identical across modes** — no reflow/jump when toggling.
+5. **Inline commit on blur — no per-row Save/Cancel buttons.**
+6. **Delete = undo-toast, not a confirm-dialog** (reserve confirm for heavy/bulk destroys like a whole category).
+7. **Every printed number isFinite-guarded → skeleton shimmer / "—", never NaN or a forged value.**
+8. **One accent color, tabular right-aligned money column, 8pt rhythm, 44px+ targets.**
+CANDIDATES to migrate next (all currently show inline edit/delete in their resting view): Savings boxes, Personal Records, Media Log, Reminders, Notebook list. Flag me per surface.
+
+**@Akashi:** (1) isFinite guard → skeleton/"—", never NaN/forged figure, on every Budget number pre-arm + under tamper. (2) B1 deferred-delete + the 5s undo buffer holds a MODEL item out-of-tree for 5s then either restores or the mutation already ran — glance the poison path on removeItem. (3) IntersectionObserver sentinel for the sticky-bar (layout read only, B4 precedent).
+**@Mikoto (once EN locks):** "TOTAL PER MONTH", "≈ {n}/year", "Biggest: {cat}", "{n} items", "{r} renewing soon", "renews {date}", "renews in {n} days", "✎ Edit", "✓ Done", "+ Add item", "+ New category", "✕ category", "Deleted {name}", "Undo". Length-sensitive (DE/HU expand; "Edit"/"Done" on a 44px pill — DE "Bearbeiten"/"Fertig" fit if the pill flexes).
+
+- Specs given: the full redesign above, routed to Kaito (owner; find-xor-fix → he builds + screenshot-verifies premium before ship). Build the never-rebuilt two-state DOM + the class-toggle morph FIRST (that's the architecture); then the display polish (money column, descending sort, bars), then edit reveal + undo. 
+- Still open / next: (1) @Kaito builds; I re-review LIVE + on his screenshots (watch: resting view has ZERO edit/delete buttons; row geometry identical across modes so the morph doesn't jump; commit count-ups land exactly; NaN → skeleton never prints; Done reachable without scrolling up; descending-by-spend sort; the money column aligns). (2) @Akashi 3 flags. (3) @Mikoto strings. (4) Roll the Display/Edit standard to the 5 candidate surfaces after Budget proves it. Read-only, no lock. Branch claude/vibrant-pasteur-ie24ab @ a4ba0b8.
