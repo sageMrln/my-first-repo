@@ -21,7 +21,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- LOCKED: index.html — Kaito — BUILD: Budget tab (merge Expenses 03 + Subscriptions 09 → one show+edit tab, per Arthur fa61279 redlines) then Grade card. — 2026-07-03
+- LOCKED: index.html — Kaito — Budget tab merge FUNCTIONAL CORE done @ 96ea38a (browser-verified, gate-GREEN; Subs tab removed, one show+edit Budget tab). IN PROGRESS: Arthur motion/sound polish → Grade card → cleanups → then Akashi/Mikoto/Hugo sign-off. — 2026-07-03
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
