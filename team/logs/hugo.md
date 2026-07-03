@@ -1034,3 +1034,28 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 - Still open / next:
   * Hugo GREEN @ 1c815f6 complete. Awaiting Akashi SAFE + Osefe "ship it" + Kaito's merge/publish to gh-pages.
+
+## [2026-07-03 ~09:45] — via Kaito (fast hotfix dispatch) — Budget NaN-price fix GREEN @ 51e2d93 (v26)
+
+- Asked: Fast GREEN sign-off on frozen hotfix candidate 51e2d93 (v26 — Budget item prices showing NaN, one added renderManage() call in refreshFinance + version bump). Checklist: (1) `node tools/release/green.js` exit 0, report test counts + version drift (APP_VER v26 === sw.js v26); (2) Confirm MISSING: 0 (no strings added); (3) Preflight CLEAR; (4) GUIDE.md: invisible bug fix, no doc change needed — confirm, don't churn. Full gate only, no code edits. A live NaN bug is out.
+
+- Did / found / thought:
+  * Pulled `claude/vibrant-pasteur-ie24ab`, read memory (last GREEN @ 6474b42 v23 Monthly Income Log). Branch has moved to 86fe5d8 (Arthur's Budget redesign), but frozen candidate is 51e2d93 (v26 NaN fix, 2 commits back). Checked out 51e2d93 for isolated QA.
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0** — all 16 suites + guards passed:
+    - parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓, income_log 35/35 ✓, import_sanitize 25/25 ✓ = **431 total tests**
+    - HTML parse guard: 4/4 script blocks ✓
+    - Preflight CLEAR ✓ (slots empty, 1 public key, no PII, PUBCHK intact, 6 script tags balanced)
+    - Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean)
+    - Version tag: APP_VER === sw.js VERSION = **v26** ✓
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0** (776 keys, 7 languages — NaN fix adds no new UI strings).
+  * **GUIDE judgment:** The NaN-price display bug is a rendering fix (re-render the Budget list post-arm), invisible to user workflows. No new features, no copy changes, no section numbers affected. GUIDE.md is accurate as-is. No rebuild needed.
+
+- Decision / result:
+  * **GREEN @ 51e2d93** — all 16 suites (431 tests) pass. HTML parse guard ✓ (4/4 scripts). Preflight CLEAR ✓ (6 script tags balanced, slots empty, watchdog intact). MISSING: 0 ✓ (776 keys, 7 languages). Version tag v26 matched ✓ (APP_VER === sw.js VERSION). NaN hotfix is GREEN. No guide churn. Ready for Akashi SAFE + Osefe "ship it" + Kaito publish.
+
+- Commits / SHAs:
+  * 51e2d93 (frozen candidate — Budget NaN-price fix + v26 bump, app code only)
+  * This log entry appended now.
+
+- Still open / next:
+  * Hugo GREEN @ 51e2d93 complete. Hotfix is clear. Awaiting Akashi SAFE + Osefe "ship it" + Kaito's merge/publish to gh-pages.
