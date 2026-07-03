@@ -93,10 +93,10 @@ An offline **estimate** of your income tax, adapting to your country/region:
 - Always unofficial — verify with your tax authority. Numbers stay on your device.
 
 ### Budget — *costs at a glance + full edit*
-A unified view of every recurring cost in one place — show + edit together.
+A unified view of every recurring cost in one place. Budget opens in a clean read-view; tap Edit to change prices, delete items, or add new costs.
 - **Budget Summary** — your total monthly and yearly costs, grouped by category with visual share bars (biggest costs visible at a glance). "Varies" items are left out of the total.
 - **Add a Cost** — add any new recurring expense to any category. Your live numbers update everywhere (grand total, cash-flow simulator, savings projection all recompute instantly).
-- **Your Costs** — every recurring cost, grouped by category. Edit a price, change billing frequency (monthly / quarterly / yearly), or delete **any** item (base or added), and add/remove whole categories. All live numbers recompute as you change them.
+- **Your Costs** — every recurring cost, grouped by category. In Edit mode, you can change a price, billing frequency (monthly / quarterly / yearly), delete **any** item (base or added), and add/remove whole categories. All live numbers recompute as you change them.
 
 ### Loan & Debt
 Track a loan payment, amount, and (optional) interest rate; toggle whether it counts in your monthly math.
