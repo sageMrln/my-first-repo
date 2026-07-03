@@ -350,6 +350,9 @@
   .bud-bar-lbl{ font-family:'Rajdhani',sans-serif; font-weight:600; font-size:13.5px; color:var(--txt) }
   .bud-bar-val{ font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--txt-dim); white-space:nowrap }
   .bud-bar-val small{ color:var(--cyan); font-size:11px }
+  /* Budget: rowBorn — a brief lime confirm flash on an added/edited item (motion-gated) */
+  @media (prefers-reduced-motion: no-preference){ .item-row.row-flash{ animation:rowBorn 850ms ease-out; } }
+  @keyframes rowBorn{ 0%{ background:rgba(124,255,178,.20); box-shadow:inset 0 0 0 1px rgba(124,255,178,.45); } 100%{ background:transparent; box-shadow:none; } }
   .meterlbl{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin-top:4px}
 
   ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px}
@@ -3668,7 +3671,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         msg.style.display='block'; msg.style.color='var(--red)';
         msg.textContent='Enter a name and a valid cost (0 or more).'; return;
       }
-      addItem(name, cat, cost, freq, note);
+      var _newIt = addItem(name, cat, cost, freq, note);
+      if(typeof MRLN_SFX!=='undefined') MRLN_SFX.save();      // Budget: added a cost
+      budFlashItem(_newIt && _newIt.id);                      // lime rowBorn flash on the new row
       document.getElementById('addName').value=''; document.getElementById('addCost').value=''; document.getElementById('addNote').value='';
       msg.style.display='block'; msg.style.color='var(--lime)';
       msg.textContent='Added "'+name+'". Monthly total is now '+fmtN(GRAND)+' '+curInfo().sym+' — all simulators updated.';
@@ -3676,15 +3681,15 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var addCatBtn = document.getElementById('addCatBtn');
     if(addCatBtn) addCatBtn.addEventListener('click', function(){
       var n = document.getElementById('newCatName').value, ic = document.getElementById('newCatIcon').value;
-      if(addCategory(n, ic)){ document.getElementById('newCatName').value=''; document.getElementById('newCatIcon').value=''; }
+      if(addCategory(n, ic)){ document.getElementById('newCatName').value=''; document.getElementById('newCatIcon').value=''; if(typeof MRLN_SFX!=='undefined') MRLN_SFX.save(); }
     });
     var list = document.getElementById('customList');
     if(list) list.addEventListener('click', function(e){
       var t = e.target;
-      var del = t.closest('[data-del]');     if(del){ var did=del.getAttribute('data-del'); var df=findItem(did); uiConfirm({title:'🗑️ Delete item?', message:'Delete <b>'+esc(df?df.it.name:'this item')+'</b> from your finances? This can’t be undone.'}, function(){ removeItem(did); }); return; }
-      var ed  = t.closest('[data-edit]');    if(ed){ editId = ed.getAttribute('data-edit'); renderManage(); return; }
+      var del = t.closest('[data-del]');     if(del){ var did=del.getAttribute('data-del'); var df=findItem(did); uiConfirm({title:'🗑️ Delete item?', message:'Delete <b>'+esc(df?df.it.name:'this item')+'</b> from your finances? This can’t be undone.'}, function(){ removeItem(did); if(typeof MRLN_SFX!=='undefined') MRLN_SFX.remove(); }); return; }
+      var ed  = t.closest('[data-edit]');    if(ed){ editId = ed.getAttribute('data-edit'); if(typeof MRLN_SFX!=='undefined') MRLN_SFX.tap(); renderManage(); return; }
       var ca  = t.closest('[data-cancel]');  if(ca){ editId = null; renderManage(); return; }
-      var dc  = t.closest('[data-delcat]');  if(dc){ var cn=dc.getAttribute('data-delcat'); var cg=MODEL.groups.filter(function(x){return x.name===cn;})[0]; uiConfirm({title:'🗑️ Delete category?', message:'Delete <b>'+esc(cn)+'</b> and its '+(cg?cg.items.length:0)+' item(s)? This can’t be undone.'}, function(){ removeCategory(cn); }); return; }
+      var dc  = t.closest('[data-delcat]');  if(dc){ var cn=dc.getAttribute('data-delcat'); var cg=MODEL.groups.filter(function(x){return x.name===cn;})[0]; uiConfirm({title:'🗑️ Delete category?', message:'Delete <b>'+esc(cn)+'</b> and its '+(cg?cg.items.length:0)+' item(s)? This can’t be undone.'}, function(){ removeCategory(cn); if(typeof MRLN_SFX!=='undefined') MRLN_SFX.remove(); }); return; }
       var sv  = t.closest('[data-save]');
       if(sv){
         var id = sv.getAttribute('data-save');
@@ -3692,10 +3697,25 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var c = parseFloat(costEl.value);
         if(!(c>=0) || isNaN(c)){ costEl.style.borderColor='var(--red)'; return; }
         editId = null; updateItemPrice(id, c, freqEl.value);
+        if(typeof MRLN_SFX!=='undefined') MRLN_SFX.save();    // Budget: saved a price edit
+        budFlashItem(id);                                     // lime flash on the edited row
       }
     });
   })();
 
+  // Budget: brief lime "rowBorn" flash on the just-added / just-edited item (renderManage has
+  // already re-rendered by the time this runs, so we locate the row by its id). Pure decoration.
+  function budFlashItem(id){
+    if(!id) return;
+    try{
+      var host=document.getElementById('customList'); if(!host) return;
+      var btn=host.querySelector('[data-del="'+id+'"], [data-edit="'+id+'"]');
+      var row=btn && btn.closest('.item-row'); if(!row) return;
+      row.classList.remove('row-flash'); void row.offsetWidth;   // restart the animation if repeated
+      row.classList.add('row-flash');
+      setTimeout(function(){ if(row) row.classList.remove('row-flash'); }, 900);
+    }catch(_){}
+  }
   function renderManage(){
     var host = document.getElementById('customList'); if(!host) return;
     host.innerHTML = MODEL.groups.map(function(g){
