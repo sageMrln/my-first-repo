@@ -107,6 +107,12 @@ run(['tools/test/media_test.js'], 'media suite');
 section('Save Safety (durability fail-loud + detection) — tools/test/savesafety_test.js');
 run(['tools/test/savesafety_test.js'], 'save-safety suite');
 
+// committed Monthly Income Log guard — the DERIVED low/typical/high engine that now drives the
+// whole finance model. Locks the median math, the last-12 window, the >=3-month threshold, the
+// manual-override-until-next-log precedence, de-dupe, and old-save migration.
+section('Monthly Income Log (derive + precedence) — tools/test/income_log_test.js');
+run(['tools/test/income_log_test.js'], 'income-log suite');
+
 // committed import-sanitize guard — locks Akashi's stored-XSS fix (imported ids/keys/numerics
 // are neutralized at the applyImportedData chokepoint; legit data passes through unchanged)
 section('import sanitize (stored-XSS guard) — tools/test/import_sanitize_test.js');
@@ -135,6 +141,20 @@ PUBLISHED_TEXT.forEach(function (f) {
   else console.log('  ✓ ' + f + ' clean');
 });
 console.log('  · MRLN-Guide.pdf derives from GUIDE.md (scanned above); binary — not text-scanned here.');
+
+// 14) version-drift guard — the visible build tag (index.html APP_VER) MUST equal sw.js VERSION,
+//     or a device can't be told which build it runs and the "update ready" signal misfires.
+section('version tag — index.html APP_VER === sw.js VERSION');
+try {
+  const idx = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
+  const av = (idx.match(/APP_VER\s*=\s*'([^']+)'/) || [])[1];
+  const sv = (sw.match(/VERSION\s*=\s*'([^']+)'/) || [])[1];
+  if (!av) { console.log('  ✗ APP_VER not found in index.html'); failed = true; }
+  else if (!sv) { console.log('  ✗ VERSION not found in sw.js'); failed = true; }
+  else if (av !== sv) { console.log('  ✗ drift: index.html APP_VER=' + av + ' but sw.js VERSION=' + sv); failed = true; }
+  else console.log('  ✓ build tag matches sw.js (' + av + ')');
+} catch (e) { console.log('  ✗ version check errored: ' + e.message); failed = true; }
 
 section('VERDICT');
 console.log(failed

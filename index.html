@@ -211,6 +211,22 @@
   .stat.low .val{color:var(--amber)}
   .stat.avg .val{color:var(--cyan)}
   .stat.high .val{color:var(--lime)}
+  /* Income history — 4-stat strip, hand-drawn monthly bars, editable month list */
+  .ih-strip{grid-template-columns:repeat(4,1fr);margin-top:16px}
+  .ih-strip .stat.mean .val{color:var(--txt)}
+  .ih-chart{margin-top:16px;overflow-x:auto}
+  .ih-chart svg{display:block;max-width:100%}
+  .ih-bar{cursor:pointer;transition:opacity .15s}
+  .ih-bar:hover{opacity:.82}
+  .ih-list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+  .ih-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:linear-gradient(180deg,var(--panel2),var(--panel))}
+  .ih-row .ih-mo{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--txt-dim);letter-spacing:.05em;min-width:104px}
+  .ih-row .ih-amt{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;margin-left:auto}
+  .ih-row .ih-amt.est{opacity:.62;font-style:italic}
+  .ih-row .ih-e,.ih-row .ih-x{background:transparent;border:none;color:var(--txt-dim);cursor:pointer;font-size:14px;padding:4px 6px;min-width:30px}
+  .ih-row .ih-e:hover{color:var(--cyan)} .ih-row .ih-x:hover{color:var(--red)}
+  .ih-empty{color:var(--txt-dim);font-size:13px;padding:8px 0}
+  @media(max-width:720px){.ih-strip{grid-template-columns:repeat(2,1fr)}}
   /* Arthur H — hero number: the leftover is the app's single most important figure, so it leads the header */
   .hero{margin-top:18px}
   .hero-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--txt-dim);text-transform:uppercase}
@@ -1039,6 +1055,23 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   </div>
 </div>
 
+<!-- INCOME MONTH ENTRY — the end-of-month prompt + add/edit a logged month -->
+<div class="modal-back" id="incBack">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:400px">
+    <h3 id="incTitle">How much did you get paid?</h3>
+    <div class="mwarn" id="incSub" style="background:transparent;border:none;padding:0;margin:-6px 0 12px;font-family:'Share Tech Mono',monospace;letter-spacing:.06em;color:var(--cyan)"></div>
+    <label for="incAmt" style="display:block;font-size:12px;color:var(--txt-dim);margin-bottom:6px" data-i18n="Take-home this month (after tax)">Take-home this month (after tax)</label>
+    <input id="incAmt" type="number" inputmode="numeric" min="0" step="1" placeholder="0" style="width:100%;margin-bottom:14px">
+    <div class="modal-actions" style="flex-wrap:wrap;gap:8px;justify-content:flex-end">
+      <button class="btn ghost" id="incUsual" style="display:none">✓ <span data-i18n="Paid the usual">Paid the usual</span> (<span class="incUsualN">—</span>)</button>
+      <button class="btn ghost" id="incZero" style="display:none" data-i18n="I wasn’t paid">I wasn’t paid</button>
+      <button class="mcancel" id="incSkip" style="display:none" data-i18n="Skip">Skip</button>
+      <button class="mcancel" id="incCancel" data-i18n="Cancel">Cancel</button>
+      <button class="mok" id="incSave" data-i18n="Save">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- CATEGORY OPTIONS — double-tap a tab to hold (pin) it + set its colour shade -->
 <div class="modal-back" id="catBack">
   <div class="modal" role="dialog" aria-modal="true" style="max-width:380px">
@@ -1313,6 +1346,19 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <span>✎ To change your income, use Assistant MRLN — just type it plainly, like "I earn 18000 a month".</span>
         <button class="btn" id="incQuickBtn" style="padding:6px 12px;font-size:12px">💬 Update income →</button>
       </div>
+    </div>
+
+    <div class="card" id="incomeHistory">
+      <h2>📈 <span data-i18n="Income history">Income history</span> <span class="tag now" id="incHistState" style="font-size:11px">—</span></h2>
+      <div class="desc" data-i18n="Log what you actually get paid each month and MRLN sets your low, typical and high from the real numbers — no bank connection, everything stays on your device.">Log what you actually get paid each month and MRLN sets your low, typical and high from the real numbers — no bank connection, everything stays on your device.</div>
+      <div class="ih-strip status" id="incHistStrip"></div>
+      <div class="ih-chart" id="incHistChart"></div>
+      <div class="note ih-manual" id="incHistManual" style="display:none;border-color:var(--cyan-dim);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span data-i18n="These figures are set by hand — they override your history until you log next month.">These figures are set by hand — they override your history until you log next month.</span>
+        <button class="btn" id="incUseHistBtn" style="padding:6px 12px;font-size:12px">📈 <span data-i18n="Use my history">Use my history</span></button>
+      </div>
+      <div class="ih-list" id="incHistList"></div>
+      <button class="btn ghost" id="incAddMonthBtn" style="margin-top:10px">＋ <span data-i18n="Log a month">Log a month</span></button>
     </div>
 
     <div class="card" id="taxHelper">
@@ -2239,6 +2285,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(from===to) return;
     function cv(n){ return Math.round(convAmount(n, from, to)); }
     if(MODEL && MODEL.income){ ['low','avg','high'].forEach(function(k){ if(typeof MODEL.income[k]==='number') MODEL.income[k]=cv(MODEL.income[k]); }); }
+    if(MODEL && MODEL.incomeGuess){ ['low','avg','high'].forEach(function(k){ if(typeof MODEL.incomeGuess[k]==='number') MODEL.incomeGuess[k]=cv(MODEL.incomeGuess[k]); }); }
+    if(MODEL && Array.isArray(MODEL.incomeLog)) MODEL.incomeLog.forEach(function(e){ if(e && typeof e.amt==='number') e.amt=cv(e.amt); });
     if(MODEL && typeof MODEL.loanPayment==='number') MODEL.loanPayment=cv(MODEL.loanPayment);
     if(MODEL && typeof MODEL.savingsMatch==='number') MODEL.savingsMatch=cv(MODEL.savingsMatch);
     if(MODEL && MODEL.loan && typeof MODEL.loan.amount==='number') MODEL.loan.amount=cv(MODEL.loan.amount);
@@ -2298,7 +2346,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], media:[], tax:{}, savingsBoxes:[], showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], media:[], tax:{}, savingsBoxes:[], incomeAsk:{}, showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -2547,7 +2595,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // categories ready to fill. No personal data baked in.
   function blankModel(){
     return {
-      income:{ low:0, avg:0, high:0 }, loanPayment:0, savingsMatch:0, extraSaveRate:0.30,
+      income:{ low:0, avg:0, high:0 }, incomeGuess:{ low:0, avg:0, high:0 }, incomeGuessTs:0, incomeLog:[],
+      loanPayment:0, savingsMatch:0, extraSaveRate:0.30,
       profile:{ age:'', employer:'', name:'', location:'', birthday:'' },
       groups:[
         { id:'g'+uid(), icon:'🏠', name:'Housing',       items:[] },
@@ -3366,9 +3415,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   })();
 
   function refreshFinance(){
+    recomputeIncome();          // materialise MODEL.income from history/guess (also migrates old saves)
     recomputeGrand();
     renderExpenses();
     renderDerived();
+    if(typeof renderIncomeHistory==='function') renderIncomeHistory();
     if(typeof renderLedger==='function') renderLedger();
     if(typeof renderLoan==='function') renderLoan();
     var c2 = document.getElementById('cfOut2'); if(c2) c2.textContent = '− ' + fmt(GRAND);
@@ -3734,7 +3785,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function setIncome(key, value){
     if(['low','avg','high'].indexOf(key) < 0) return;
     var _up = Number(value) > (MODEL.income[key]||0);   // income going up → reward sound
-    MODEL.income[key] = Number(value);
+    // A manual statement ("income is now X") seeds the guess from the CURRENT effective triple
+    // (so changing 'avg' keeps whatever low/high are live), stamps it fresh, and recompute makes
+    // it win over history until the next real month is logged. Read sites still read MODEL.income.
+    MODEL.incomeGuess = { low:(MODEL.income.low||0), avg:(MODEL.income.avg||0), high:(MODEL.income.high||0) };
+    MODEL.incomeGuess[key] = Number(value)||0;
+    MODEL.incomeGuessTs = Date.now();
+    recomputeIncome();
     if(_up && typeof MRLN_SFX!=='undefined') MRLN_SFX.coin();
     logChange('set-income', key + ' → ' + fmtN(value) + ' ' + curInfo().sym);
     if(window.rebuildScenarios) window.rebuildScenarios();
@@ -3742,6 +3799,187 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   }
   function setLoanPayment(value){ MODEL.loanPayment = Number(value); logChange('set-loan-payment', fmtN(value)+' '+curInfo().sym+'/mo'); refreshFinance(); }
   function setSavingsMatch(value){ MODEL.savingsMatch = Number(value); logChange('set-savings-match', fmtN(value)+' '+curInfo().sym+'/mo'); refreshFinance(); }
+
+  /* ================= MONTHLY INCOME LOG — real months drive low/typical/high =================
+     The app's whole finance model reads MODEL.income {low,avg,high}. Historically those were a
+     GUESS (onboarding, or a synthetic ±10% spread). This turns them into figures DERIVED from
+     the months the user actually logs. Nothing that reads MODEL.income changes — recomputeIncome()
+     MATERIALISES the effective triple (kept in MODEL.income) from, in priority order:
+       1) a FRESH manual statement (onboarding / "income is now X") newer than the latest logged
+          month — honoured until reality updates it (logging a newer month supersedes it);
+       2) DERIVED-from-history once ≥3 months are logged — typical = MEDIAN (resists one freak
+          bonus/missed cheque), low = min, high = max, over the last 12 months;
+       3) otherwise the user's guess.
+     The log lives on MODEL (not STATE) so it persists and travels with every export via cfg:MODEL
+     for free; _sanitizeIngested() neutralises it on import. (Engineering note vs Arthur's spec:
+     materialise into MODEL.income rather than wrapping every read site in resolveIncome() — same
+     behaviour, no risk of missing a read.) */
+  var INCOME_MIN_MONTHS = 3, INCOME_WINDOW = 12;
+  function ymNow(){ var d=new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1); }
+  function ymPrev(ym){ var p=String(ym).split('-'), y=+p[0], m=(+p[1])-1; if(m<1){ m=12; y--; } return y+'-'+pad2(m); }
+  function ymValid(ym){ return /^\d{4}-(0[1-9]|1[0-2])$/.test(String(ym)); }
+  function ymMonthName(ym){ if(!ymValid(ym)) return String(ym||''); var mo=+String(ym).split('-')[1];
+    var names=[t('January'),t('February'),t('March'),t('April'),t('May'),t('June'),t('July'),t('August'),t('September'),t('October'),t('November'),t('December')];
+    return names[mo-1]||('' + ym); }
+  function ymLabel(ym){ if(!ymValid(ym)) return String(ym||''); return ymMonthName(ym)+' '+String(ym).split('-')[0]; }
+  function incomeEntries(){ return (MODEL.incomeLog||[]).filter(function(e){ return e && ymValid(e.ym); })
+    .slice().sort(function(a,b){ return a.ym<b.ym?-1:(a.ym>b.ym?1:0); }); }
+  function _median(a){ if(!a.length) return 0; var s=a.slice().sort(function(x,y){ return x-y; }), m=Math.floor(s.length/2);
+    return s.length%2 ? s[m] : Math.round((s[m-1]+s[m])/2); }
+  // Derived stats from the last INCOME_WINDOW logged months — null until INCOME_MIN_MONTHS exist.
+  function deriveIncome(){ var e=incomeEntries(); if(e.length < INCOME_MIN_MONTHS) return null;
+    var win=e.slice(-INCOME_WINDOW).map(function(x){ return Math.max(0, Number(x.amt)||0); });
+    var sum=win.reduce(function(s,x){ return s+x; }, 0);
+    return { low:Math.min.apply(null,win), avg:_median(win), high:Math.max.apply(null,win),
+             mean:Math.round(sum/win.length), n:e.length, window:win.length }; }
+  // Materialise MODEL.income (the triple everything reads). Also migrates older saves in place.
+  function recomputeIncome(){
+    if(!MODEL) return;
+    if(!MODEL.income || typeof MODEL.income!=='object') MODEL.income={ low:0, avg:0, high:0 };
+    if(!MODEL.incomeGuess || typeof MODEL.incomeGuess!=='object')
+      MODEL.incomeGuess={ low:MODEL.income.low||0, avg:MODEL.income.avg||0, high:MODEL.income.high||0 };   // migrate: old guess = current income
+    if(MODEL.incomeGuessTs==null) MODEL.incomeGuessTs=0;
+    if(!Array.isArray(MODEL.incomeLog)) MODEL.incomeLog=[];
+    var e=incomeEntries();
+    var lastTs=0; e.forEach(function(x){ var ts=Number(x.ts)||0; if(ts>lastTs) lastTs=ts; });
+    var derived=deriveIncome();
+    var eff;
+    if(MODEL.incomeGuessTs > lastTs && (Number(MODEL.incomeGuess.avg)||0) > 0) eff=MODEL.incomeGuess;   // fresh manual statement
+    else if(derived) eff={ low:derived.low, avg:derived.avg, high:derived.high };                       // history takes over at ≥3
+    else eff=MODEL.incomeGuess;                                                                          // still learning
+    MODEL.income={ low:Number(eff.low)||0, avg:Number(eff.avg)||0, high:Number(eff.high)||0 };
+  }
+  // Is history now driving the numbers (vs a guess / a fresh manual override)?
+  function incomeIsDerived(){ var d=deriveIncome(); if(!d) return false; var e=incomeEntries(), lastTs=0;
+    e.forEach(function(x){ var ts=Number(x.ts)||0; if(ts>lastTs) lastTs=ts; });
+    return !((MODEL.incomeGuessTs||0) > lastTs && (Number(MODEL.incomeGuess.avg)||0) > 0); }
+  // Add / replace a month, then propagate. est=true means the user tapped "paid the usual".
+  function logIncomeMonth(ym, amt, est){
+    if(!ymValid(ym)) return;
+    if(!Array.isArray(MODEL.incomeLog)) MODEL.incomeLog=[];
+    var a=Math.max(0, Math.round(Number(amt)||0)), i=-1;
+    MODEL.incomeLog.forEach(function(e,ix){ if(e && e.ym===ym) i=ix; });
+    var rec={ ym:ym, amt:a, ts:Date.now(), est:!!est };
+    if(i>=0) MODEL.incomeLog[i]=rec; else MODEL.incomeLog.push(rec);
+    recomputeIncome();
+    logChange('income-month', ymLabel(ym)+' → '+fmtN(a)+' '+curInfo().sym);
+    if(window.rebuildScenarios) window.rebuildScenarios();
+    refreshFinance(); autosave();
+  }
+  function deleteIncomeMonth(ym){
+    MODEL.incomeLog=(MODEL.incomeLog||[]).filter(function(e){ return !(e && e.ym===ym); });
+    recomputeIncome();
+    if(window.rebuildScenarios) window.rebuildScenarios();
+    refreshFinance(); autosave();
+  }
+  // "Use my history" escape — drop any fresh-manual override so derived wins immediately.
+  function incomeUseHistory(){ MODEL.incomeGuessTs=0; recomputeIncome();
+    if(window.rebuildScenarios) window.rebuildScenarios(); refreshFinance(); autosave(); }
+  function incomeMonthLogged(ym){ return (MODEL.incomeLog||[]).some(function(e){ return e && e.ym===ym; }); }
+
+  /* -------- Income history: strip + hand-drawn monthly bars + editable month list -------- */
+  function incomeChartSVG(){
+    var e=incomeEntries().slice(-INCOME_WINDOW); if(!e.length) return '';
+    var H=100, pad=10, bw=22, gap=13;
+    var vals=e.map(function(x){ return Math.max(0,Number(x.amt)||0); });
+    var max=Math.max.apply(null, vals)||1, med=_median(vals);
+    var x=pad, bars='';
+    e.forEach(function(en){ var v=Math.max(0,Number(en.amt)||0), h=Math.max(2,(v/max)*(H-2*pad)), y=H-pad-h;
+      bars+='<rect class="ih-bar" data-ihbar="'+esc(en.ym)+'" tabindex="0" role="button" x="'+x+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'" rx="3" fill="var(--cyan)" opacity="'+(en.est?0.42:0.85)+'"><title>'+esc(ymLabel(en.ym)+': '+fmt(v))+'</title></rect>';
+      x+=bw+gap; });
+    var totalW=Math.max(x-gap+pad, pad*2+bw);
+    var medY=(H-pad-(med/max)*(H-2*pad)).toFixed(1);
+    var line='<line x1="'+pad+'" y1="'+medY+'" x2="'+(totalW-pad)+'" y2="'+medY+'" stroke="var(--lime)" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"></line>';
+    return '<svg viewBox="0 0 '+totalW+' '+H+'" width="'+totalW+'" height="'+H+'" role="img" aria-label="'+esc(t('Monthly income'))+'">'+line+bars+'</svg>';
+  }
+  function renderIncomeHistory(){
+    var strip=document.getElementById('incHistStrip'); if(!strip) return;   // panel present?
+    var d=deriveIncome(), e=incomeEntries();
+    var lo,ty,hi,mean;
+    if(d){ lo=d.low; ty=d.avg; hi=d.high; mean=d.mean; }
+    else { var g=MODEL.incomeGuess||{low:0,avg:0,high:0}; lo=g.low; ty=g.avg; hi=g.high; mean=null; }
+    function cell(cls,lbl,val){ return '<div class="stat '+cls+'"><div class="lbl">'+esc(lbl)+'</div><div class="val">'+(val==null?'—':fmt(val))+'</div></div>'; }
+    strip.innerHTML=cell('low',t('Lowest'),lo)+cell('avg',t('Typical'),ty)+cell('high',t('Highest'),hi)+cell('mean',t('Average'),mean);
+    // state badge
+    var badge=document.getElementById('incHistState');
+    if(badge){ var s;
+      if(!e.length) s=t('No months yet');
+      else if(e.length<INCOME_MIN_MONTHS) s=t('Learning')+' '+e.length+'/'+INCOME_MIN_MONTHS;
+      else if(incomeIsDerived()) s=e.length+' '+(e.length===1?t('month'):t('months'));
+      else s=t('Set by hand');
+      badge.textContent=s;
+    }
+    // chart
+    var chart=document.getElementById('incHistChart'); if(chart) chart.innerHTML=incomeChartSVG();
+    // manual-override banner (history exists but a hand-set figure is masking it)
+    var man=document.getElementById('incHistManual'); if(man) man.style.display=(d && !incomeIsDerived())?'flex':'none';
+    // editable list — most recent first
+    var list=document.getElementById('incHistList');
+    if(list){
+      if(!e.length){ list.innerHTML='<div class="ih-empty">'+esc(t('No months logged yet. Log a month to start building your real low / typical / high.'))+'</div>'; }
+      else { list.innerHTML=e.slice().reverse().map(function(en){
+        return '<div class="ih-row"><span class="ih-mo">'+esc(ymLabel(en.ym))+'</span>'+
+          '<span class="ih-amt'+(en.est?' est':'')+'">'+fmt(Math.max(0,Number(en.amt)||0))+'</span>'+
+          '<button class="ih-e" data-ihedit="'+esc(en.ym)+'" title="'+esc(t('Edit'))+'" aria-label="'+esc(t('Edit'))+'">✎</button>'+
+          '<button class="ih-x" data-ihdel="'+esc(en.ym)+'" title="'+esc(t('Delete'))+'" aria-label="'+esc(t('Delete'))+'">✕</button></div>';
+      }).join(''); }
+    }
+  }
+
+  /* -------- Income entry modal — logs / edits one month. Also the end-of-month prompt. -------- */
+  var _incTargetYm=null, _incMode='add';
+  function openIncomeEntry(ym, mode){
+    _incTargetYm=ymValid(ym)?ym:ymPrev(ymNow()); _incMode=mode||'add';
+    var back=document.getElementById('incBack'); if(!back) return;
+    var title=document.getElementById('incTitle'), sub=document.getElementById('incSub'),
+        amt=document.getElementById('incAmt'), usual=document.getElementById('incUsual'),
+        zero=document.getElementById('incZero'), skip=document.getElementById('incSkip');
+    if(title) title.textContent = _incMode==='prompt' ? t('How much did you get paid?') : (incomeMonthLogged(_incTargetYm)? t('Edit this month') : t('Log a month'));
+    if(sub) sub.textContent = ymLabel(_incTargetYm);
+    var existing=(MODEL.incomeLog||[]).filter(function(x){ return x&&x.ym===_incTargetYm; })[0];
+    if(amt){ amt.value = existing ? (Math.max(0,Number(existing.amt)||0)) : ''; }
+    // "Paid the usual" uses the current typical; only offered in the on-open prompt when we have one
+    var typ=(MODEL.income&&MODEL.income.avg)||0;
+    if(usual){ if(_incMode==='prompt' && typ>0){ usual.style.display=''; usual.querySelector('.incUsualN').textContent=fmt(typ); } else usual.style.display='none'; }
+    if(zero) zero.style.display = _incMode==='prompt' ? '' : 'none';
+    if(skip) skip.style.display = _incMode==='prompt' ? '' : 'none';
+    back.classList.add('show');
+    setTimeout(function(){ if(amt) amt.focus(); }, 40);
+  }
+  function closeIncomeEntry(){ var back=document.getElementById('incBack'); if(back) back.classList.remove('show'); }
+  function _incClearAsk(){ if(STATE.incomeAsk && STATE.incomeAsk.targetYm===_incTargetYm){ STATE.incomeAsk={}; } }
+  function incomeSaveFromModal(est, amtOverride){
+    var amtEl=document.getElementById('incAmt');
+    var v = (amtOverride!=null) ? amtOverride : (amtEl? Number(amtEl.value) : NaN);
+    if(!isFinite(v) || v<0){ if(amtEl){ amtEl.focus(); } return; }
+    logIncomeMonth(_incTargetYm, v, !!est);
+    _incClearAsk();
+    closeIncomeEntry();
+  }
+  // On-open end-of-month prompt (offline; reuses the app-open slot alongside birthday/briefing).
+  function checkMonthlyIncome(){
+    try{
+      if(STATE.fresh) return;                              // mid-onboarding — don't interrupt
+      var hasJob=!!(MODEL.profile&&MODEL.profile.employer);
+      if(!hasJob && !((MODEL.income&&MODEL.income.avg>0)||(MODEL.incomeGuess&&MODEL.incomeGuess.avg>0))) return;
+      var target=ymPrev(ymNow());                          // the month that just ended
+      if(incomeMonthLogged(target)) return;
+      STATE.incomeAsk=STATE.incomeAsk||{};
+      var ask=STATE.incomeAsk;
+      if(ask.skipYm===target) return;                      // user skipped this month → never re-ask
+      if(ask.targetYm===target && ask.snoozeUntil && Date.now()<ask.snoozeUntil) return;   // snoozed
+      openIncomeEntry(target, 'prompt');
+    }catch(_){}
+  }
+  // Skip / dismiss handling for the prompt: Skip = never again this month; closing = snooze ~2 days (max 2).
+  function incomePromptSkip(){ STATE.incomeAsk={ skipYm:_incTargetYm }; autosave(); closeIncomeEntry(); }
+  function incomePromptSnooze(){
+    if(_incMode!=='prompt'){ closeIncomeEntry(); return; }
+    var ask=STATE.incomeAsk||{}; var n=(ask.targetYm===_incTargetYm ? (ask.snoozeN||0) : 0)+1;
+    if(n>2){ STATE.incomeAsk={ skipYm:_incTargetYm }; }   // stop nagging after a few snoozes
+    else { STATE.incomeAsk={ targetYm:_incTargetYm, snoozeUntil:Date.now()+2*24*3600*1000, snoozeN:n }; }
+    autosave(); closeIncomeEntry();
+  }
 
   /* ---------- GYM / WORKOUTS ---------- */
   (function initGym(){
@@ -6059,6 +6297,31 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     // Change Log → re-open the "What's new" popup
     var wn=document.getElementById('whatsNewBtn');
     if(wn) wn.addEventListener('click', function(){ if(window.__showWhatsNew) window.__showWhatsNew(); });
+    // Income history — add/edit month, use-history, delegated bar/edit/delete, modal actions
+    var addM=document.getElementById('incAddMonthBtn');
+    if(addM) addM.addEventListener('click', function(){
+      var cur=ymNow(), cand=ymPrev(cur), i=0;                    // default to the most recent unlogged month
+      while(i<13 && incomeMonthLogged(cand)){ cand=ymPrev(cand); i++; }
+      openIncomeEntry(cand, 'add');
+    });
+    var useH=document.getElementById('incUseHistBtn');
+    if(useH) useH.addEventListener('click', function(){ incomeUseHistory(); if(typeof toast==='function') toast(t('Using your logged history.')); });
+    var list=document.getElementById('incHistList');
+    if(list) list.addEventListener('click', function(e){
+      var ed=e.target.closest('[data-ihedit]'); if(ed){ openIncomeEntry(ed.getAttribute('data-ihedit'), 'edit'); return; }
+      var dl=e.target.closest('[data-ihdel]'); if(dl){ var ym=dl.getAttribute('data-ihdel');
+        uiConfirm({ title:'🗑️ '+t('Remove this month?'), message:t('Remove this month from your income history? Your low / typical / high will recalculate.') }, function(){ deleteIncomeMonth(ym); }); return; }
+    });
+    var chart=document.getElementById('incHistChart');
+    if(chart) chart.addEventListener('click', function(e){ var b=e.target.closest('[data-ihbar]'); if(b) openIncomeEntry(b.getAttribute('data-ihbar'), 'edit'); });
+    // modal buttons
+    var iSave=document.getElementById('incSave'); if(iSave) iSave.addEventListener('click', function(){ incomeSaveFromModal(false); });
+    var iUsual=document.getElementById('incUsual'); if(iUsual) iUsual.addEventListener('click', function(){ var typ=(MODEL.income&&MODEL.income.avg)||0; incomeSaveFromModal(true, typ); });
+    var iZero=document.getElementById('incZero'); if(iZero) iZero.addEventListener('click', function(){ incomeSaveFromModal(false, 0); });
+    var iSkip=document.getElementById('incSkip'); if(iSkip) iSkip.addEventListener('click', incomePromptSkip);
+    var iCancel=document.getElementById('incCancel'); if(iCancel) iCancel.addEventListener('click', function(){ incomePromptSnooze(); });
+    var iBack=document.getElementById('incBack'); if(iBack) iBack.addEventListener('click', function(e){ if(e.target===iBack) incomePromptSnooze(); });
+    var iAmt=document.getElementById('incAmt'); if(iAmt) iAmt.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); incomeSaveFromModal(false); } });
   })();
 
   /* ===================== NEW-USER MODE / DEMO / RESET ===================== */
@@ -6133,6 +6396,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(Array.isArray(STATE.prs)) STATE.prs.forEach(function(pr){ if(!pr||typeof pr!=='object') return; if('id' in pr) pr.id=_sid(pr.id); pr.wt=_inum(pr.wt); pr.reps=_inum(pr.reps); pr.dist=_inum(pr.dist); pr.secs=_inum(pr.secs); });
     if(Array.isArray(STATE.foodLog)) STATE.foodLog.forEach(function(e){ if(!e||typeof e!=='object') return; if('id' in e) e.id=_sid(e.id); if(e.total&&typeof e.total==='object'){ e.total.kcal=_inum(e.total.kcal); e.total.p=_inum(e.total.p); e.total.c=_inum(e.total.c); e.total.f=_inum(e.total.f); } });
     if(MODEL && Array.isArray(MODEL.groups)) MODEL.groups.forEach(function(g){ if(!g||typeof g!=='object') return; if('id' in g) g.id=_sid(g.id); fixIds(g.items); });
+    // income history: amt renders raw (SVG bar heights + numeric list); ym is interpolated into markup/data-attrs.
+    if(MODEL && Array.isArray(MODEL.incomeLog)) MODEL.incomeLog=MODEL.incomeLog.filter(function(e){ return e && typeof e==='object'; }).map(function(e){
+      return { ym:String(e.ym==null?'':e.ym).replace(/[^\d-]/g,'').slice(0,7), amt:_inum(e.amt), ts:_inum(e.ts), est:!!e.est }; })
+      .filter(function(e){ return /^\d{4}-\d{2}$/.test(e.ym); });
+    if(MODEL && MODEL.incomeGuess && typeof MODEL.incomeGuess==='object'){ ['low','avg','high'].forEach(function(k){ MODEL.incomeGuess[k]=_inum(MODEL.incomeGuess[k]); }); }
+    if(MODEL) MODEL.incomeGuessTs=_inum(MODEL.incomeGuessTs);
     if(STATE.calendar && typeof STATE.calendar==='object'){ Object.keys(STATE.calendar).forEach(function(k){
       if(!/^\d{4}-\d{2}-\d{2}$/.test(k)){ delete STATE.calendar[k]; return; }        // key renders raw in data-date -> drop non-dates
       if(Array.isArray(STATE.calendar[k])) STATE.calendar[k].forEach(function(ev){ if(ev&&typeof ev==='object' && 'id' in ev) ev.id=_sid(ev.id); });
@@ -6836,7 +7105,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   }
   function applyBankImport(res, opts){
     opts=opts||{};
-    if(opts.income && res.incomeMonthly>0){ MODEL.income={ low:Math.round(res.incomeMonthly*0.9), avg:res.incomeMonthly, high:Math.round(res.incomeMonthly*1.1) }; }
+    if(opts.income && res.incomeMonthly>0){ MODEL.incomeGuess={ low:Math.round(res.incomeMonthly*0.9), avg:res.incomeMonthly, high:Math.round(res.incomeMonthly*1.1) }; MODEL.incomeGuessTs=Date.now(); recomputeIncome(); }
     if(opts.expenses){ var base=blankModel().groups, byName={}; base.forEach(function(g){ byName[g.name.toLowerCase()]=g; });
       res.cats.forEach(function(c){ if(c.monthly<=0) return; var g=byName[c.cat.toLowerCase()]; if(!g){ g={id:'g'+uid(),icon:'✦',name:c.cat,items:[]}; base.push(g); byName[c.cat.toLowerCase()]=g; } g.items.push({ id:uid(), name:c.cat+' (bank import)', cost:c.monthly, freq:'monthly', detail:'Imported from bank CSV', custom:true }); });
       MODEL.groups=base; ensureIds(MODEL); }
@@ -7782,9 +8051,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       MODEL.profile={ name:(data.name||'').trim(), age:(data.age||'').toString().trim(), employer:(data.employer||'').trim(), location:(data.country||'').trim(), birthday:(data.birthday||'').trim(), ethnicity:(data.ethnicity||'').trim(), phone:(data.phone||'').trim(), computer:(data.computer||'').trim(), stage:(data.stage||'') };
       if(STATE.body){ STATE.body.ethnicity=MODEL.profile.ethnicity; }   // health thresholds (WHO) read this
       if(typeof syncBirthday==='function') syncBirthday();   // put 🎂 on the calendar
-      // income
+      // income — setup states the guess; history (if any survives a re-run) still reconciles via recomputeIncome
       var avg=Number(data.incomeAvg)||0, low=Number(data.incomeLow)||avg, high=Number(data.incomeHigh)||avg;
-      MODEL.income={ low:low, avg:avg, high:high };
+      MODEL.incomeGuess={ low:low, avg:avg, high:high }; MODEL.incomeGuessTs=Date.now();
+      if(!Array.isArray(MODEL.incomeLog)) MODEL.incomeLog=[];
+      recomputeIncome();
       MODEL.loanPayment=Number(data.loan)||0; MODEL.savingsMatch=Number(data.save)||0;
       // expenses -> fresh category groups (authoritative; avoids duplicates on re-run)
       var base=blankModel().groups, byName={}; base.forEach(function(g){ byName[g.name.toLowerCase()]=g; });
@@ -8003,6 +8274,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(STATE.skippedSetup){ setTimeout(showPersonalizeReminder, 500); return; }
     if(!STATE.tourDone){ setTimeout(function(){ TOUR.start(); }, 500); return; }
     maybeShowUpdatePanel();   // returning, all set up → show the update popup if the build changed
+    // End-of-month income prompt — only once nothing else is on screen (never stack modals)
+    setTimeout(function(){ try{ if(document.querySelector('.modal-back.show')) return; if(typeof checkMonthlyIncome==='function') checkMonthlyIncome(); }catch(_){} }, 1700);
   };
 
   /* ===================== OWNER KEY MAKER =====================
