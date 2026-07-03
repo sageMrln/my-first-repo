@@ -544,6 +544,12 @@
   .lockcard .lk-savehelp-url{ font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--cyan); word-break:break-all; background:#08131f; border:1px solid var(--line); border-radius:8px; padding:8px 10px; user-select:all }
   .lockcard .lk-savehelp-copy{ margin-top:8px; width:100%; background:linear-gradient(180deg,var(--cyan),var(--cyan-dim)); color:#04222a; border:none; border-radius:9px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; padding:9px; cursor:pointer }
   #openSaveBtn{ min-height:44px; padding:9px 12px }   /* THE recovery affordance — honest 44px touch target (Arthur) */
+  /* Build tag — a subtle at-a-glance version so a device serving a stale cache is diagnosable
+     (read it off desktop vs phone). Pure display; the number is set from the single APP_VER const. */
+  .lockcard .lk-ver{ margin-top:16px; font-family:'Share Tech Mono',monospace; font-size:10.5px; letter-spacing:.14em; color:var(--txt-dim); opacity:.6; text-transform:uppercase }
+  .lockcard .lk-ver .lk-upd{ display:none; margin-left:9px; color:var(--cyan); opacity:1; cursor:pointer; border-bottom:1px dotted var(--cyan-dim); padding-bottom:1px }
+  .lockcard .lk-ver.has-upd{ opacity:.9 }
+  .lockcard .lk-ver.has-upd .lk-upd{ display:inline }
   /* install guides that flank the lock card (wide) / stack below it (phones) */
   .lk-guide{width:100%;max-width:238px;flex:0 0 auto;border:1px solid var(--line);border-radius:14px;background:rgba(8,19,31,.66);padding:14px 16px;box-shadow:0 0 16px rgba(0,0,0,.25)}
   .lk-guide-h{font-family:'Share Tech Mono';font-size:12px;letter-spacing:.05em;color:var(--cyan);margin-bottom:9px}
@@ -923,6 +929,9 @@
    before ready() is called, so the boot can never strand the user. Own parse-time script → net covers all
    init. Uses performance.now() (ms since page-load origin) so the floor measures from first paint, not
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
+/* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
+   if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
+window.APP_VER='v22';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
@@ -966,6 +975,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <li data-i18n="Choose “Open in browser” (Safari/Chrome) — then your data saves.">Choose “Open in browser” (Safari/Chrome) — then your data saves.</li>
       </ol>
     </div>
+    <div class="lk-ver" id="lkVer" aria-hidden="true"><span id="lkVerNum">MRLN</span><span class="lk-upd" id="lkVerUpd" role="button" tabindex="0" data-i18n="Update ready · reload">Update ready · reload</span></div>
   </div>
   <div class="lk-guide ios" id="lkGuideIos">
     <div class="lk-guide-h">🍏 <b data-i18n="Add to iPhone">Add to iPhone</b></div>
@@ -984,6 +994,38 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     </ol>
   </div>
 </div>
+<script>
+/* Render the build tag on the lock screen ASAP (own script → shows even if the main app script
+   later throws; a version visible over a dead app is itself a diagnostic). Then watch for a newer
+   service worker: on updatefound → installed while a controller exists, a NEW build is cached and
+   the currently-shown HTML is stale — reveal a subtle "Update ready · reload" affordance the user
+   taps to activate it (no forced reload; network-first already refreshes online, this covers the
+   installed-PWA / offline-launch case that stranded a desktop on an old build). Pure UI + SW plumbing. */
+(function(){
+  var num=document.getElementById('lkVerNum'); if(num) num.textContent='MRLN '+(window.APP_VER||'');
+  if(!('serviceWorker' in navigator)) return;
+  function reveal(worker){
+    var box=document.getElementById('lkVer'), upd=document.getElementById('lkVerUpd'); if(!box||!upd) return;
+    box.classList.add('has-upd');
+    function go(){ try{ if(worker) worker.postMessage('mrln-skip-waiting'); }catch(_){}
+      setTimeout(function(){ try{ location.reload(); }catch(_){}}, 60); }
+    upd.addEventListener('click', go);
+    upd.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } });
+  }
+  try{
+    navigator.serviceWorker.getRegistration().then(function(reg){
+      if(!reg) return;
+      if(reg.waiting && navigator.serviceWorker.controller) reveal(reg.waiting);
+      reg.addEventListener('updatefound', function(){
+        var nw=reg.installing; if(!nw) return;
+        nw.addEventListener('statechange', function(){
+          if(nw.state==='installed' && navigator.serviceWorker.controller) reveal(nw);
+        });
+      });
+    }).catch(function(){});
+  }catch(_){}
+})();
+</script>
 
 <!-- THEMED CONFIRM MODAL (every destructive action routes through this) -->
 <div class="modal-back" id="confirmBack">
@@ -2062,6 +2104,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2>Latest update</h2>
       <div class="desc">See what changed in the version you're on right now.</div>
       <button class="btn ghost" id="whatsNewBtn" style="margin-top:6px">What’s new</button>
+      <div class="desc" id="buildTag" style="margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.06em;opacity:.7">Build <b id="buildApp">—</b></div>
     </div>
     <div class="card">
       <h2>Change Log <span class="tag now" id="logCount">0</span></h2>
@@ -8522,6 +8565,20 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     try{ if(navigator.storage && navigator.storage.persist){ navigator.storage.persisted().then(function(p){ return p ? true : navigator.storage.persist(); }).then(function(granted){ if(granted===false){ var w=document.getElementById('persistWarn'); if(w) w.style.display='block'; } }).catch(function(){}); } }catch(_){}
     // 2) register the offline service worker — secure contexts only (https or localhost; file:// has no SW)
     try{ var sec=(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'); if('serviceWorker' in navigator && sec){ navigator.serviceWorker.register('sw.js').catch(function(){}); } }catch(_){}
+    // 2a) build readout (Change Log ▸ Latest update): app-build always; SW version if it answers.
+    //     A mismatch (app HTML newer/older than the active SW) is the fingerprint of a stale cache.
+    try{
+      var _ba=document.getElementById('buildApp'); if(_ba) _ba.textContent=(window.APP_VER||'—');
+      if('serviceWorker' in navigator && navigator.serviceWorker.controller){
+        var _onMsg=function(ev){ if(ev.data&&ev.data.mrlnSwVersion){ navigator.serviceWorker.removeEventListener('message',_onMsg);
+          var sw=ev.data.mrlnSwVersion, ba=document.getElementById('buildApp'); if(!ba) return;
+          ba.textContent=(window.APP_VER||'—')+' · SW '+sw;
+          if(sw!==window.APP_VER){ var bt=document.getElementById('buildTag'); if(bt){ bt.style.opacity='1'; bt.insertAdjacentHTML('beforeend',' <span style="color:var(--cyan)">— reload to update</span>'); } }
+        }};
+        navigator.serviceWorker.addEventListener('message',_onMsg);
+        navigator.serviceWorker.controller.postMessage('mrln-version');
+      }
+    }catch(_){}
     // 2b) bake the current File ID (#F-XXXX) into the manifest start_url, so an INSTALLED app
     //     re-launches with its File ID intact (otherwise the hash is dropped and file-bound keys fail).
     try{

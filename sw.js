@@ -41,6 +41,15 @@ self.addEventListener('fetch', function(e){
   }
 });
 
+/* Version handshake + update control for the app's build tag.
+   - 'mrln-version'      → reply with the active SW VERSION (Settings shows app-build vs SW).
+   - 'mrln-skip-waiting' → activate a freshly-installed worker now (the "Update ready" tap). */
+self.addEventListener('message', function(e){
+  var d = e.data;
+  if(d === 'mrln-skip-waiting'){ self.skipWaiting(); return; }
+  if(d === 'mrln-version' && e.source && e.source.postMessage){ e.source.postMessage({ mrlnSwVersion: VERSION }); }
+});
+
 /* Reminders: tapping a MRLN notification focuses the open app (or opens it). */
 self.addEventListener('notificationclick', function(e){
   e.notification.close();
