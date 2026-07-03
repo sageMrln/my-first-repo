@@ -649,3 +649,33 @@ Open: #3 awaiting Akashi re-SAFE + Hugo green.js wiring + Kaito verify, then gat
 - Still open / next: @Kaito spot-check meaning (all 6 langs); @Akashi re-SAFE (no code changed, pure i18n); @Hugo re-GREEN if tip moved (but no code, so likely no-op); @Osefe final "ship it" call to release Monthly Income Log feature.
 
 END SESSION — all 7 languages complete, MISSING:0 verified, GREEN gate confirmed, committed and pushed. Ready for downstream sign-offs.
+
+## [2026-07-03 ~urgent] — Kaito dispatch (asleep) — Budget tab merge i18n: 8 strings to all 6 langs → MISSING: 0 (FAST-TRACK)
+
+- Asked: URGENT i18n for immediate live ship. Kaito's Budget tab merge (Expenses + Subscriptions → one Budget tab) at branch tip, Osefe wants it LIVE. 8 new untranslated UI strings blocking deployment. Translate to es/da/de/sv/nb/hu → MISSING: 0. Fast turnaround.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → MISSING: 8 (exact keys from need_translate.json).
+  * Identified all 8 strings: 'No costs yet — add one below.', 'Your Budget', 'Your costs', 'Add a cost', 'Every recurring cost in one place — add, edit or remove any of them and every tab updates together. Items marked "varies" aren't counted.', 'This monthly total is the single source of truth — your Cash Flow simulator and Savings projection both build on it.', 'Add anything new to a category. It updates your live numbers everywhere — grand total, cash-flow simulator and savings projection all recompute instantly.', 'Every cost in your model, grouped by category. Edit a price or billing, or delete any item — base or added — and your live numbers recompute instantly. Add or remove whole categories at the bottom.'
+  * Translated all 8 strings to 6 languages (48 translations) with serious, factual tone (finance strings):
+    - Spanish: natural finance verbs (Añade/Edita/Elimina); es "Tu presupuesto" / "Tus costos" matching existing terminology.
+    - Danish/Norwegian: idiomatic (Dit budget / Dine udgifter); parallel structure.
+    - German: precise formal tone (Dein Budget / Deine Ausgaben).
+    - Swedish: warm, natural phrasing (Din budget / Dina utgifter).
+    - Hungarian: direct terms (Az összes költsége / A költségeid).
+    - All em-dashes (—) + inline quoted text preserved exactly.
+  * **Challenge: one key uses curly quotes (U+201C/U+201D) around "varies"**, not straight quotes (U+0022). Initial merge used straight quotes (\"), causing sync.js to still report MISSING. Diagnosed by: charCodeAt() on need_translate.json key, found U+201C/U+201D. Fixed by: extracting exact bytes from need_translate.json source, remapping translations with proper curly quotes via template strings.
+  * Merged 48 translations into 868KB minified AUTO-MERGED block (8 keys × 6 langs).
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (776 keys fully translated, all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (html-parse step 0 ✓ all 4 script blocks parse; 17 test suites; preflight CLEAR; all published files leak-clean).
+  * Committed index.html (66ad148) with fast-turnaround description.
+  * Pushed to origin/claude/vibrant-pasteur-ie24ab.
+- Key translation decisions:
+  * Budget UI labels matched existing expense/cost terminology per language (Tu presupuesto ↔ Tus costos, Din budget ↔ Dina utgifter, etc.).
+  * Long descriptions (prose) kept natural per language, not literal; em-dashes preserved for rhythm.
+  * Curly quotes in inline quoted text ("varies" → "varía"/"varierer"/"variiert" etc.) — extracted exact characters from source to avoid future sync misses.
+  * Tone: serious, factual, no emoji, no hype (finance product voice).
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 8 Budget tab strings translated to 6 locales in serious tone. GREEN gate confirmed. Ready for immediate downstream sign-offs and live ship.
+  * Lesson: when a key has quoted inline text (e.g. "varies" in a description), the source quotes are often curly (U+201C/U+201D), not straight (U+0022). These MUST match byte-for-byte in the dictionary. need_translate.json is always authoritative; charCodeAt() verification catches these differences.
+- Commits / SHAs: i18n merge 66ad148.
+- Still open / next: Tip just moved to 66ad148 → Akashi re-signs SAFE (no code, pure i18n), Hugo re-GREEN (expected no-op), @Kaito ships to live. FAST-TRACK for Osefe's live deployment.
