@@ -679,3 +679,18 @@ END SESSION — all 7 languages complete, MISSING:0 verified, GREEN gate confirm
   * Lesson: when a key has quoted inline text (e.g. "varies" in a description), the source quotes are often curly (U+201C/U+201D), not straight (U+0022). These MUST match byte-for-byte in the dictionary. need_translate.json is always authoritative; charCodeAt() verification catches these differences.
 - Commits / SHAs: i18n merge 66ad148.
 - Still open / next: Tip just moved to 66ad148 → Akashi re-signs SAFE (no code, pure i18n), Hugo re-GREEN (expected no-op), @Kaito ships to live. FAST-TRACK for Osefe's live deployment.
+
+## [2026-07-03 ~urgent-2] — Kaito dispatch (asleep) — Premium Budget redesign i18n: 2 strings to all 6 langs → MISSING: 0 (FAST-TRACK 2)
+
+- Asked: URGENT i18n for premium Budget redesign (Osefe approved, shipping next). 2 new UI strings on "Your costs" card blocking deployment. Translate to es/da/de/sv/nb/hu → MISSING: 0. Fast turnaround.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → MISSING: 2.
+  * Translated both strings: "Delete category" (button) + "Every recurring cost, grouped by category. Tap Edit..." (card description) to 6 languages (12 translations).
+  * Merged into minified AUTO-MERGED block.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (776 keys, all 7 languages)**.
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (html-parse ✓, all suites, preflight CLEAR).
+  * Committed index.html (a372e33) + pushed.
+- Key translation decisions: Concise action verbs (Eliminar/Slet/Löschen etc.), long description natural per language, serious factual tone.
+- Decision / result: **MISSING: 0 verified.** All 2 premium Budget strings translated to 6 locales. GREEN gate confirmed. Ready for live deployment.
+- Commits / SHAs: i18n merge a372e33.
+- Still open / next: Tip moved to a372e33 → Akashi re-SAFE, Hugo re-GREEN (no-op), @Kaito bumps v27 + ships. FAST-TRACK #2.
