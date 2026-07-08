@@ -12,13 +12,13 @@
  * step (one pass per language) and merge the results back into the AUTO-MERGED
  * block. If this prints "MISSING: 0", the UI is fully translatable.
  *
- * The supported languages are: es, da, de, sv, nb, hu  (en is the source).
+ * The supported languages are: es, da, de, sv, nb, hu, ms  (en is the source).
  */
 const fs = require('fs');
 const path = require('path');
 const HTML = path.resolve(__dirname, '../../index.html');
 const OUT = path.resolve(__dirname, 'need_translate.json');
-const LANGS = ['es', 'da', 'de', 'sv', 'nb', 'hu'];
+const LANGS = ['es', 'da', 'de', 'sv', 'nb', 'hu', 'ms'];
 const src = fs.readFileSync(HTML, 'utf8');
 
 // 1) t('...') / t("...") literal keys
