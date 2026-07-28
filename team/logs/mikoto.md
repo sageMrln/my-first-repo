@@ -749,3 +749,31 @@ END SESSION — all 7 languages complete, MISSING:0 verified, GREEN gate confirm
   * **Render-check passed:** Manual verification of all critical strings confirms proper Malay (no corruptions, no half-English, fluent), ready for Kaito to load in browser and visually confirm user-facing UI is fluent Malay.
 - Commits / SHAs: 66a080b (Malay fix: proper translations, no corruptions).
 - Still open / next: @Kaito browser render-test in Malay (load app, verify on-screen strings are fluent Malay, no corruptions, acceptable UI coverage); if render-check passes, then @Akashi re-SAFE, @Hugo re-GREEN, @Osefe final "ship it". Task complete when Kaito's render-check confirms NO corruptions + acceptable Malay coverage on real UI.
+
+## [2026-07-28] — direct — Legal layer i18n: 10 strings to 6 languages → MISSING: 0
+
+- Asked: Kaito's legal layer (e5e114a) adds 10 new data-i18n UI strings (legal disclaimers + governing version note + microcopy labels). Translate to es, da, de, sv, nb, hu → MISSING: 0. Malay (ms) is parked/hidden — do NOT add ms. Tone: serious, legal register, precise microcopy (not machine translation).
+- Did / found:
+  * Ran `node tools/i18n/sync.js` on e5e114a → confirmed MISSING: 10 (exact keys: "By unlocking, you accept the", "Terms, Privacy Policy and Disclaimer", "Legal", "This English text is the governing version...", 3 disclaimer phrases (financial/tax, medical/nutritional, personal-use), 3 link-label pairs ("Terms · Privacy" / "Terms · Privacy · Disclaimer")).
+  * Translated all 10 strings to 6 languages (60 translations total) with precision for legal register + English accuracy in each language:
+    - Unlock agreement intro: es "Al desbloquear, aceptas" / da "Ved at låse op accepterer du" / de "Durch Entsperren akzeptierst du" / sv "Genom att låsa upp accepterar du" / nb "Ved å låse opp, aksepterer du" / hu "Feloldáskor elfogadod".
+    - Legal document names: es "Términos, Política de privacidad y Descargo" / da "Vilkår, Privatlivspolitik og Ansvarsfraskrivelse" / de "Bedingungen, Datenschutz und Haftungsausschluss" / sv "Villkor, Integritetspolicy och Ansvarsfriskrivning" / nb "Vilkår, Personvernregler og Ansvarsfritak" / hu "Feltételek, Adatvédelmi irányelv és Felelősségkizárás".
+    - Governing version disclaimer: full precision in each language, matching legal document conventions.
+    - Disclaimer microcopy (financial advice, tax advice, medical advice, nutritional advice, personal use): translated to idiomatic legal phrases per language (not literal "not" but natural phrasing of exclusion/limitation per each jurisdiction's convention).
+    - Link labels: "Terms · Privacy" / "Terms · Privacy · Disclaimer" translated per language while preserving middot (·) separator exactly.
+  * Merged all 60 translations into AUTO-MERGED block using Python: parsed minified JSON, merged by language key (es/da/de/sv/nb/hu only; skipped ms per instruction), re-serialized minified, wrote back to index.html.
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 (776 keys fully translated for 6 languages; ms intentionally parked)**.
+  * Ran `node tools/test/html_parse_test.js` → **✓ all 4 script blocks parse** (app syntax valid).
+  * Committed index.html (56037c2).
+  * Pushed to origin/claude/vibrant-pasteur-ie24ab.
+- Key translation decisions:
+  * Legal terms preserved with precision (Términos/Politique de confidentialité/Bedingungen/Villkor/Vilkår/Feltételek — NOT machine-gloss).
+  * Em-dashes (—) preserved exactly (serious tone, not abbreviated).
+  * Link separators (·) preserved exactly in all translations.
+  * Curly quotes/apostrophes exact from source (legal language often uses typographic quotes; no byte-loss in serialization).
+  * Tone: serious, factual, professional legal register in each language (no warmth, no hype — per CLAUDE.md product-voice directive for financial/legal content).
+  * Microcopy accuracy: "not financial advice" is a legal phrase with specific meaning in each language; translated with legal precision, not literal word-for-word.
+- Decision / result:
+  * **MISSING: 0 verified.** All 10 legal-layer strings translated to 6 locales (es/da/de/sv/nb/hu) with legal register precision. HTML parses cleanly. Malay (ms) left intentionally untranslated (parked per user instruction). Ready for @Kaito to integrate + @Akashi re-SAFE + @Hugo GREEN + Osefe ship.
+- Commits / SHAs: 56037c2 (legal i18n merge + push).
+- Still open / next: @Kaito spot-check legal terminology (all 6 langs); @Akashi re-SAFE (no code, pure i18n); @Hugo re-GREEN (expected no-op); @Osefe final "ship it" to publish legal layer + 6-language support.
