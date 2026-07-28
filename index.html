@@ -797,6 +797,33 @@
   .modal-actions .mok.danger{background:linear-gradient(180deg,#ff5c7c,#b22a45);border-color:#ff5c7c;color:#fff}
   .modal-actions button:hover{transform:translateY(-1px)}
 
+  /* ===== LEGAL LAYER — per-section disclaimer footers, lock-screen acceptance line,
+     and the scrollable Terms/Privacy/Disclaimer modal. Deliberately quiet: small, dim,
+     out of the way — informs without distracting. Pure presentation, zero data. ===== */
+  .panel-legal{margin-top:22px;padding-top:11px;border-top:1px solid rgba(255,255,255,.06);
+    font-size:10.5px;line-height:1.5;color:var(--txt-dim);letter-spacing:.02em;text-align:center;opacity:.7}
+  .panel-legal a,.legal-open{color:var(--txt-dim);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+  .panel-legal a:hover,.legal-open:hover{color:var(--cyan)}
+  footer .legal-open{color:var(--txt-dim)}
+  .lockcard .lk-legal{margin-top:13px;font-size:10.5px;line-height:1.5;color:var(--txt-dim);opacity:.82}
+  .lockcard .lk-legal a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+  #legalBack{z-index:100001}   /* above the lock screen (z 100000) so Terms are readable BEFORE unlocking */
+  .modal.legal{max-width:640px;max-height:86vh;display:flex;flex-direction:column;padding:0}
+  .modal.legal .lg-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:17px 20px 13px;border-bottom:1px solid var(--line)}
+  .modal.legal .lg-head h3{margin:0}
+  .modal.legal .lg-close{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:15px;line-height:1;flex:0 0 auto}
+  .modal.legal .lg-close:hover{border-color:var(--cyan);color:#eaffff}
+  .modal.legal .lg-body{overflow-y:auto;padding:18px 20px 22px}
+  .modal.legal .lg-note{font-size:11px;color:var(--txt-dim);margin:0 0 16px;font-style:italic;line-height:1.5}
+  .modal.legal .lg-body h4{font-family:'Rajdhani';font-size:15.5px;color:#eaffff;margin:22px 0 8px;letter-spacing:.02em}
+  .modal.legal .lg-body h4:first-of-type{margin-top:2px}
+  .modal.legal .lg-body h5{font-size:12.5px;color:var(--cyan);margin:13px 0 4px;font-weight:700;letter-spacing:.01em}
+  .modal.legal .lg-body p{font-size:12.5px;line-height:1.6;color:var(--txt);margin:0 0 9px}
+  .modal.legal .lg-body ul{margin:0 0 9px;padding-left:18px}
+  .modal.legal .lg-body li{font-size:12.5px;line-height:1.55;color:var(--txt);margin-bottom:5px}
+  .modal.legal .lg-body b{color:#eaffff}
+  .modal.legal .lg-eff{font-size:11px;color:var(--txt-dim);margin:0 0 6px}
+
   /* ===== INTERACTION LAYER — Tier 1 POLISH (Arthur re-review F1/F2/F4/F5). Placed AFTER the base
      component styles so these WIN by source order / matching specificity. Fixes the desktop press
      that pre-existing hover-translates were defeating, adds controls missed in the first pass, and
@@ -997,7 +1024,7 @@
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v27';
+window.APP_VER='v28';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
@@ -1033,6 +1060,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="lk-status" id="lkStatus"></div>
     <div class="lk-foot" data-i18n="Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.">Your key unlocks the dashboard for the month. Renew in Discord to get next month's key. Your financial data never leaves this device.</div>
     <button class="lk-openlink" id="lkOpenSave" type="button" data-i18n="↗ Open in browser · Copy link · Install">↗ Open in browser · Copy link · Install</button>
+    <div class="lk-legal"><span data-i18n="By unlocking, you accept the">By unlocking, you accept the</span> <a href="#" data-legal data-i18n="Terms, Privacy Policy and Disclaimer">Terms, Privacy Policy and Disclaimer</a>.</div>
     <div class="lk-savehelp" id="lkSaveHelp" style="display:none">
       <div class="lk-savehelp-url" id="lkSaveUrl"></div>
       <button class="lk-savehelp-copy" id="lkSaveCopy" type="button">📋 <span data-i18n="Copy link">Copy link</span></button>
@@ -1101,6 +1129,88 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="modal-actions">
       <button class="mcancel" id="confirmNo">Cancel</button>
       <button class="mok danger" id="confirmYes">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEGAL — Disclaimer · Terms of Service · Privacy Policy (English is the governing text) -->
+<div class="modal-back" id="legalBack">
+  <div class="modal legal" role="dialog" aria-modal="true" aria-label="Legal">
+    <div class="lg-head">
+      <h3>📜 <span data-i18n="Legal">Legal</span></h3>
+      <button class="lg-close" id="legalClose" type="button" aria-label="Close">✕</button>
+    </div>
+    <div class="lg-body" id="legalBody">
+      <p class="lg-note" data-i18n="This English text is the governing version; any translation is for convenience only.">This English text is the governing version; any translation is for convenience only.</p>
+
+      <h4 id="lg-disclaimer">Disclaimer</h4>
+      <p><b>MRLN is an informational self-help tool, not professional advice.</b></p>
+      <ul>
+        <li><b>Not financial advice.</b> All budgets, projections, savings plans, grades, income classes and similar outputs are estimates for general information only, generated from figures you enter. They are not financial, investment, accounting or legal advice, and are not a recommendation to take or avoid any action.</li>
+        <li><b>Not tax advice.</b> The Tax Helper is an unofficial estimate based on simplified brackets and your inputs. It is not tax advice and may be inaccurate or out of date. Always confirm with your tax authority or a qualified adviser before relying on any figure.</li>
+        <li><b>Not medical, nutritional or fitness advice.</b> Calorie and protein targets, body-shape models, meal ideas, weight tracking and workout content are general information only, not medical or dietary advice, and are not a substitute for a doctor, dietitian or qualified professional. Consult a professional before changing your diet, exercise or health routine — especially if you are pregnant, under 18, or have any medical condition. Stop and seek help if you feel unwell.</li>
+        <li><b>No guarantee of accuracy or results.</b> MRLN is provided "as is." We do not warrant that outputs are accurate, complete or current, or that using the app will produce any particular financial or health outcome.</li>
+        <li><b>You are responsible for your decisions.</b> You use MRLN at your own discretion and risk.</li>
+      </ul>
+      <p>Your mandatory rights as a consumer under Danish and EU law are not affected by this notice.</p>
+
+      <h4 id="lg-terms">Terms of Service</h4>
+      <p class="lg-eff">Effective on publish · Provider: Osefe Miradi ("we", "us") · Contact: osefemiradi@gmail.com</p>
+      <h5>1. Acceptance</h5>
+      <p>By installing, unlocking or using MRLN (the "App"), you agree to these Terms, the Privacy Policy and the Disclaimer. If you do not agree, do not use the App.</p>
+      <h5>2. Eligibility</h5>
+      <p>You must be at least 16 years old to use the App. By using it you confirm you meet this requirement.</p>
+      <h5>3. What MRLN is</h5>
+      <p>MRLN is an offline personal-organiser tool that runs on your own device and helps you track money and health information you enter yourself. It is an informational tool only. As set out in the Disclaimer, MRLN does not provide financial, tax, medical, nutritional, fitness or legal advice, and nothing in the App is professional advice.</p>
+      <h5>4. Licence</h5>
+      <p>Subject to these Terms and any valid access key, we grant you a personal, non-exclusive, non-transferable, revocable licence to use the App for your own personal, non-commercial use. Access keys are personal to you; do not share, resell, publish or circumvent them, and do not copy, modify, reverse-engineer or redistribute the App except as permitted by mandatory law.</p>
+      <h5>5. Your data and responsibility</h5>
+      <p>Your information is stored on your own device (see the Privacy Policy). You are responsible for keeping your own backups — the App can export your data at any time. We are not responsible for data lost because a device is lost, broken, wiped, or its storage cleared. You are responsible for the accuracy of what you enter and for how you act on the App's outputs.</p>
+      <h5>6. Payment, keys and refunds</h5>
+      <p>The App may require a paid access key. Payments are handled by a third-party payment provider, whose terms and privacy policy also apply; we do not receive or store your full card details. As an EU consumer you normally have 14 days to withdraw from a purchase of digital content. Where digital content or keys are supplied immediately, you may be asked to consent to immediate supply and to acknowledge that you lose the 14-day withdrawal right once supply begins — this is required for instant delivery. Where that consent is not given, the 14-day right applies. Refund handling follows the payment provider's process and your mandatory statutory rights; contact us and we will help.</p>
+      <h5>7. Acceptable use</h5>
+      <p>Do not use the App unlawfully, to harm others, to attempt to breach or tamper with its integrity or licensing, or in any way that infringes rights or applicable law.</p>
+      <h5>8. "As is" — no warranty</h5>
+      <p>To the maximum extent permitted by law, the App and all its outputs are provided "as is" and "as available," without warranties of any kind (express or implied), including accuracy, fitness for a particular purpose, or non-infringement. Your mandatory statutory consumer guarantees under Danish and EU law are not excluded.</p>
+      <h5>9. Limitation of liability</h5>
+      <p>To the maximum extent permitted by applicable law: the App is an informational tool and you remain solely responsible for your financial and health decisions, and we are not liable for losses arising from your reliance on its estimates or content; we are not liable for indirect, incidental, special, consequential or punitive damages, or for lost profits, data, savings or goodwill; and our total aggregate liability for any claim relating to the App is limited to the amount you paid for it in the 12 months before the claim (or, if you paid nothing, to EUR 50). Nothing in these Terms limits or excludes liability that cannot be limited or excluded by law — including liability for death or personal injury caused by negligence, for fraud, for gross negligence or intentional acts, or your mandatory consumer rights.</p>
+      <h5>10. Changes</h5>
+      <p>We may update the App and these Terms. Material changes take effect when the updated version is published; continued use after that means you accept them.</p>
+      <h5>11. Termination</h5>
+      <p>We may suspend or end your licence if you breach these Terms or misuse access keys. You may stop using the App at any time; you can export your data first.</p>
+      <h5>12. Governing law and disputes</h5>
+      <p>These Terms are governed by the laws of Denmark, without prejudice to the mandatory consumer-protection rights of the country where you live. Disputes are subject to the courts of Denmark, again without removing any mandatory right you have to bring proceedings, or rely on protections, in your home country. EU consumers may also use the EU Online Dispute Resolution platform (ec.europa.eu/consumers/odr).</p>
+      <h5>13. Severability</h5>
+      <p>If any provision is unenforceable, the rest remains in effect.</p>
+      <h5>14. Contact</h5>
+      <p>osefemiradi@gmail.com</p>
+
+      <h4 id="lg-privacy">Privacy Policy</h4>
+      <p class="lg-eff">Effective on publish · Provider: Osefe Miradi · Contact: osefemiradi@gmail.com</p>
+      <p><b>Short version: we don't collect your data. MRLN runs on your device, and the information you enter stays there.</b></p>
+      <h5>1. No account, no server</h5>
+      <p>MRLN has no user accounts and no backend that we operate to receive your content. We do not ask for your name, email or a login to use the App.</p>
+      <h5>2. Where your data lives</h5>
+      <p>Everything you enter — money figures, health data, notes, calendar, media list — is stored locally in your device's browser storage. It is not transmitted to us and we cannot see it. You can export or delete it at any time from within the App.</p>
+      <h5>3. Network use — the honest details</h5>
+      <p>The App is a website / PWA, so some limited network activity is unavoidable or optional. None of it sends your personal money or health data:</p>
+      <ul>
+        <li><b>Loading and updating the App.</b> When you open or update MRLN, your device downloads the App's code from our hosting provider (a static host). Like any website, that host may process standard technical connection data (such as IP address and browser type) to deliver the files; we do not use this to identify you, and it does not include your entered data.</li>
+        <li><b>Features you choose to use.</b> Some optional actions may open the internet — for example an outbound "search this title" link opens a new browser tab to a third-party site. These happen only when you tap them, and carry only what's needed for that action (such as a title you searched), never your financial or health data.</li>
+        <li><b>Payments.</b> If you buy an access key, our third-party payment provider processes the payment under their own privacy policy; we do not receive your full card details.</li>
+      </ul>
+      <h5>4. Access keys</h5>
+      <p>Your access key is verified on your own device. Using it does not report your activity back to us.</p>
+      <h5>5. Cookies / tracking</h5>
+      <p>MRLN does not use advertising or third-party tracking cookies. It uses your browser's local storage only to save your own data and preferences on your device.</p>
+      <h5>6. Children</h5>
+      <p>MRLN is not directed to children under 16 and should not be used by them.</p>
+      <h5>7. Your rights (GDPR)</h5>
+      <p>Because we do not collect or hold your personal data on our systems, there is normally nothing for us to access, correct or erase — your data is in your hands, on your device, and you control it directly (including export and deletion in-app). For any question about this policy, contact us. You also have the right to complain to your local data-protection authority (in Denmark, Datatilsynet).</p>
+      <h5>8. Changes</h5>
+      <p>If this policy changes, the updated version is published in the App.</p>
+      <h5>9. Contact</h5>
+      <p>osefemiradi@gmail.com</p>
     </div>
   </div>
 </div>
@@ -1377,6 +1487,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         </div>
       </div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 02 INCOME -->
@@ -1416,6 +1528,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div id="taxForm"></div>
       <div id="taxOut" style="margin-top:14px"></div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial or tax advice.">Informational estimates — not financial or tax advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 03 EXPENSES -->
@@ -1465,6 +1579,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <button class="btn ghost" id="addCatBtn" data-i18n="+ Add category">+ Add category</button>
       </div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 04 LOAN -->
@@ -1490,6 +1606,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </div>
       <div class="note" id="loanNoteOut" style="display:none"></div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 05 CASH FLOW -->
@@ -1538,6 +1656,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </div>
       <div class="note" style="margin-top:14px" id="growthNote">Any emergency cushion or borrowed money you hold sits separately and isn't counted here — this is money you build on top of it.</div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 06 SAVINGS RULE -->
@@ -1606,6 +1726,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <li data-i18n="A deposit, a car, or just future-you's freedom fund.">A deposit, a car, or just future-you's freedom fund.</li>
       </ul>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 08 CHECKLIST -->
@@ -1621,6 +1743,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc">Ranked for <b>your</b> situation — the top one matters most. Tap a box when it's done; the plan updates itself as your numbers change.</div>
       <ul class="check" id="checklist-list"></ul>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 10 KLARNA FLOAT -->
@@ -1714,6 +1838,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <li><b>Best use:</b> a free bonus tool on top of your real plan — not the foundation of it.</li>
       </ul>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 11 GYM / BODY -->
@@ -1884,6 +2010,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <button class="btn" id="wkAdd">+ Add workout</button>
       <div id="wkList" style="margin-top:14px"><div class="empty">No workouts yet — add your first above.</div></div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational only — not medical or nutritional advice.">Informational only — not medical or nutritional advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- FOOD LOG -->
@@ -1923,6 +2051,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc">Everything you've logged, newest first. Saves with your file and stays on your device.</div>
       <div id="foodHistory" style="margin-top:6px"></div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational only — not medical or nutritional advice.">Informational only — not medical or nutritional advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 12 CALENDAR -->
@@ -1968,6 +2098,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div id="remPerm" style="margin-top:10px"></div>
       <div id="remList" style="margin-top:12px"></div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="For personal use — provided as is.">For personal use — provided as is.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- 13 CHANGE LOG -->
@@ -1977,6 +2109,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc">Every grade, what it means, and exactly <b>why</b> you got it — all from your own numbers. Each comes with a trusted source you can read. Grades run <b>S → E</b>.</div>
       <div id="statsBody"></div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- NOTEBOOK -->
@@ -1999,6 +2133,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <textarea id="noteBody" placeholder="Start writing…" style="width:100%;min-height:260px;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:Rajdhani;font-size:15px;line-height:1.55;resize:vertical"></textarea>
       <div class="note" id="noteMeta" style="margin-top:8px">—</div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="For personal use — provided as is.">For personal use — provided as is.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- MEDIA LOG -->
@@ -2064,6 +2200,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <button class="btn" id="medRateSave" style="width:100%;margin-top:10px" data-i18n="Save rating">Save rating</button>
       </div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="For personal use — provided as is.">For personal use — provided as is.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <!-- CONNECT -->
@@ -2171,6 +2309,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <div id="qrCaption" class="note" style="margin-top:8px;text-align:center"></div>
       </div>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational only — not medical or nutritional advice.">Informational only — not medical or nutritional advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
   <section class="panel" id="log">
@@ -2194,9 +2334,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc">An audit trail of every change ever made — add, edit, delete, export. Stored inside this file and carried into every export, so the full history travels with you. (When this becomes the hosted product, the same log lives on a real server.)</div>
       <table class="logtable"><tbody id="logBody"></tbody></table>
     </div>
+
+    <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
-  <footer>// FINANCE HUD v5 · SELF-SUFFICIENT · free offline assistant · auto-save + export · in-file audit log · not financial advice</footer>
+  <footer>// FINANCE HUD v5 · SELF-SUFFICIENT · free offline assistant · auto-save + export · in-file audit log · not financial or medical advice · <span class="legal-open" data-legal role="button" tabindex="0" data-i18n="Terms · Privacy · Disclaimer">Terms · Privacy · Disclaimer</span></footer>
 </div>
 
 <!-- Floating: quick-update chat (opens above) + save/export -->
@@ -5726,6 +5868,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
           armExpiry(r.payload.exp);                                 // start the live expiry countdown
           if(typeof refreshFinance==='function') refreshFinance();  // recompute now-valid numbers
           setStatus('✓ Unlocked'+(r.payload.exp?(' · valid until '+fmtDate(r.payload.exp)):''),'var(--lime)');
+          try{ if(typeof STATE==='object'&&STATE&&!STATE.legalAccepted){ STATE.legalAccepted={v:'1',ts:Date.now()}; if(typeof autosave==='function') autosave(); } }catch(_){ }  // record consent at the affirmative unlock action (clickwrap)
           setTimeout(function(){ unlock(); if(window.__afterUnlock) window.__afterUnlock(); }, 350);
         } else if(r.reason==='expired'){
           setStatus('✗ This key expired'+(r.payload&&r.payload.exp?(' on '+fmtDate(r.payload.exp)):'')+'. Get a new one in Discord.','var(--red)');
@@ -8279,6 +8422,29 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var sb=document.getElementById('setupBtn'); if(sb) sb.addEventListener('click', function(){
       uiConfirm({ title:'⚙ Re-run setup?', message:'Reopen the setup wizard pre-filled with your current details. Finishing will <b>replace</b> your current income & expenses with what you enter. Nothing is deleted until you finish.', confirmText:'Open setup', danger:false }, function(){ window.WIZOPEN(true); });
     });
+  })();
+  /* legal modal — opens from any [data-legal] trigger (panel footers, lock-screen line,
+     global footer). Scrollable Terms/Privacy/Disclaimer; pure UI, no data. */
+  (function(){
+    var back=document.getElementById('legalBack');
+    if(!back) return;
+    function open(target){
+      back.classList.add('show');
+      var body=document.getElementById('legalBody');
+      if(body){ var el=target&&document.getElementById(target); body.scrollTop = el ? Math.max(el.offsetTop-8,0) : 0; }
+    }
+    function close(){ back.classList.remove('show'); }
+    document.addEventListener('click', function(e){
+      var trig=e.target && e.target.closest && e.target.closest('[data-legal]');
+      if(trig){ e.preventDefault(); open(trig.getAttribute('data-legal-to')); }
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key==='Enter'||e.key===' '){ var t=e.target; if(t&&t.hasAttribute&&t.hasAttribute('data-legal')){ e.preventDefault(); open(t.getAttribute('data-legal-to')); } }
+    });
+    var x=document.getElementById('legalClose'); if(x) x.addEventListener('click', close);
+    back.addEventListener('click', function(e){ if(e.target===back) close(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape' && back.classList.contains('show')) close(); });
+    window.openLegal=open;
   })();
   /* ===================== "WHAT'S NEW" UPDATE POPUP =====================
      A forced, one-time popup shown to returning users whenever they load a
