@@ -122,6 +122,11 @@ run(['tools/test/import_sanitize_test.js'], 'import-sanitize suite');
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
 
+// 12b) guards the TIGHT legal-identity PII exception in preflight (the intended-public
+//      trader name/contact is allowed ONLY inside #legalBack — never a blanket removal)
+section('preflight PII exception guard — tools/test/preflight_pii_test.js');
+run(['tools/test/preflight_pii_test.js'], 'preflight-PII guard');
+
 // 13) leak scan across every OTHER published text file (the "whole surface" rule)
 //     Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
 //     by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
