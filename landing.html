@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MRLN — Your money and health, private and offline</title>
+<meta name="description" content="MRLN keeps your whole financial life and health picture in one calm place that lives only on your phone. No bank connection, no cloud, no account. The numbers you enter stay on your device.">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FBFCFE">
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    /* base / backgrounds */
+    --bg:#FBFCFE; --surface:#FFFFFF; --bg-tint:#F2F7FD; --bg-tint-2:#EAF2FB;
+    /* soft-blue accent family */
+    --blue-50:#EEF5FF; --blue-100:#DBE8FB; --blue-200:#BFD6F5; --blue-300:#93B8EC; --accent:#5B8DEF; --accent-text:#2F6BD8;
+    /* deeper blue for CTAs */
+    --cta:#2F6BD8; --cta-hover:#255BBE; --cta-press:#1E4EA3;
+    /* text */
+    --ink:#0E1C33; --ink-body:#3A4A63; --ink-muted:#566579; --ink-onblue:#FFFFFF;
+    /* neutral structure */
+    --line:#E4EAF2; --line-strong:#CDD7E6; --gray-bg:#F6F8FB;
+    /* warm human touch */
+    --warm:#E9B872;
+    /* shadows (navy-tinted) */
+    --sh-sm:0 1px 2px rgba(16,28,51,.04), 0 1px 3px rgba(16,28,51,.06);
+    --sh-md:0 4px 12px rgba(16,28,51,.06), 0 2px 4px rgba(16,28,51,.04);
+    --sh-lg:0 18px 40px -12px rgba(30,78,163,.18), 0 8px 16px -8px rgba(16,28,51,.08);
+    /* rounding */
+    --r-sm:10px; --r-md:16px; --r-lg:24px; --r-pill:999px;
+    /* spacing scale (8px base) */
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px; --s9:96px; --s10:128px;
+    /* layout */
+    --maxw:1160px; --maxw-text:720px; --gutter:clamp(20px,5vw,40px);
+    /* type families */
+    --serif:ui-serif, Georgia, "Times New Roman", Cambria, serif;
+    --sans:system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  /* ============ RESET / BASE ============ */
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{overflow-x:hidden; max-width:100%}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink-body);
+    font-family:var(--sans); font-size:1rem; line-height:1.65;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  img{max-width:100%; height:auto; display:block}
+  a{color:var(--accent-text); text-decoration:none}
+  a:hover{text-decoration:underline}
+  h1,h2,h3,h4{color:var(--ink); margin:0}
+  p{margin:0}
+  :focus-visible{outline:3px solid rgba(91,141,239,.5); outline-offset:2px; border-radius:4px}
+
+  /* ============ SKIP LINK ============ */
+  .skip{position:absolute; left:-9999px; top:0; background:var(--cta); color:#fff; padding:10px 16px; border-radius:0 0 8px 0; z-index:100; font-weight:600}
+  .skip:focus{left:0; text-decoration:none}
+
+  /* ============ LAYOUT HELPERS ============ */
+  .wrap{max-width:var(--maxw); margin:0 auto; padding-left:var(--gutter); padding-right:var(--gutter)}
+  .section{padding-top:clamp(72px,12vh,140px); padding-bottom:clamp(72px,12vh,140px)}
+  .tint{background:var(--bg-tint)}
+  .eyebrow{
+    font-family:var(--sans); font-size:.8125rem; font-weight:600; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent-text); line-height:1.2; margin:0;
+  }
+  .h2{font-family:var(--serif); font-weight:500; font-size:clamp(2rem,4vw,3rem); letter-spacing:-.015em; line-height:1.1; margin-top:12px}
+  .lead{font-size:clamp(1.0625rem,1.5vw,1.25rem); line-height:1.6; color:var(--ink-body); margin-top:16px; max-width:640px}
+  .center{text-align:center}
+  .center .lead{margin-left:auto; margin-right:auto}
+  .section-head{max-width:var(--maxw-text)}
+  .center .section-head{margin-left:auto; margin-right:auto}
+  .tnum{font-variant-numeric:tabular-nums}
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    font-family:var(--sans); font-weight:600; font-size:1rem; line-height:1;
+    border-radius:var(--r-pill); padding:14px 26px; cursor:pointer; border:1px solid transparent;
+    transition:transform .2s, box-shadow .2s, background-color .2s, border-color .2s; white-space:nowrap;
+  }
+  .btn-primary{background:var(--cta); color:var(--ink-onblue); box-shadow:0 6px 16px -6px rgba(47,107,216,.5)}
+  .btn-primary:hover{background:var(--cta-hover); transform:translateY(-1px); text-decoration:none}
+  .btn-primary:active{background:var(--cta-press); transform:translateY(0)}
+  .btn-ghost{background:transparent; border-color:var(--line-strong); color:var(--ink)}
+  .btn-ghost:hover{background:var(--blue-50); border-color:var(--blue-200); transform:translateY(-1px); text-decoration:none}
+  .btn-sm{padding:10px 18px; font-size:.9375rem}
+  .btn-block{width:100%}
+
+  /* ============ HEADER ============ */
+  .site-header{
+    position:sticky; top:0; z-index:50; height:64px;
+    background:rgba(251,252,254,.8); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid transparent; transition:box-shadow .2s, border-color .2s;
+  }
+  .site-header.scrolled{border-bottom-color:var(--line); box-shadow:var(--sh-sm)}
+  .header-inner{max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); height:64px; display:flex; align-items:center; justify-content:space-between; gap:16px}
+  .brand{display:inline-flex; align-items:center; gap:10px; font-family:var(--sans); font-weight:700; font-size:1.125rem; letter-spacing:.02em; color:var(--ink)}
+  .brand:hover{text-decoration:none}
+  .diamond{width:11px; height:11px; background:var(--blue-300); border-radius:2px; transform:rotate(45deg); display:inline-block; flex:0 0 auto}
+  .nav{display:flex; align-items:center; gap:8px}
+  .nav-links{display:flex; align-items:center; gap:28px; margin-right:20px}
+  .nav-links a{font-weight:600; font-size:.9375rem; color:var(--ink-body)}
+  .nav-links a:hover{color:var(--ink); text-decoration:none}
+  @media (max-width:760px){ .nav-links{display:none} }
+
+  /* ============ HERO ============ */
+  .hero{position:relative; overflow:hidden}
+  .hero::before{
+    content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:radial-gradient(60% 50% at 85% 0%, #EAF2FB 0%, transparent 70%);
+  }
+  .hero .wrap{position:relative; z-index:1}
+  .hero-grid{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:clamp(32px,5vw,64px); align-items:center; padding-top:clamp(48px,8vh,88px); padding-bottom:clamp(56px,10vh,120px)}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr; gap:44px; text-align:left} }
+  .hero-h1{font-family:var(--serif); font-weight:500; font-size:clamp(2.6rem,6vw,4.5rem); letter-spacing:-.02em; line-height:1.05; color:var(--ink); margin-top:16px}
+  .hero-h1 .warm-underline{background:linear-gradient(transparent 72%, rgba(147,184,236,.5) 72%)}
+  .hero-lead{font-size:clamp(1.0625rem,1.5vw,1.25rem); line-height:1.6; color:var(--ink-body); margin-top:24px; max-width:560px}
+  .hero-cta{display:flex; flex-wrap:wrap; gap:14px; margin-top:32px}
+  .trustline{margin-top:24px; font-size:.875rem; color:var(--ink-muted); display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; list-style:none; padding:0}
+  .trustline li{display:inline-flex; align-items:center; gap:12px}
+  .trustline .tl-dot{width:5px; height:5px; border-radius:50%; background:var(--blue-300); display:inline-block; flex:0 0 auto}
+
+  /* ============ DEVICE FRAMES ============ */
+  .browser-frame{border-radius:var(--r-lg); border:1px solid var(--line); background:var(--surface); box-shadow:var(--sh-lg); overflow:hidden}
+  .browser-bar{height:36px; background:var(--gray-bg); border-bottom:1px solid var(--line); display:flex; align-items:center; padding:0 14px; gap:8px}
+  .browser-dots{display:flex; gap:7px}
+  .browser-dots i{width:10px; height:10px; border-radius:50%; background:var(--line-strong); display:block}
+  .browser-url{margin-left:10px; flex:1; max-width:220px; height:20px; border-radius:var(--r-pill); background:var(--surface); border:1px solid var(--line); display:flex; align-items:center; padding:0 12px; font-size:.75rem; color:var(--ink-muted); font-family:var(--sans); letter-spacing:.03em}
+  .browser-screen{display:block; width:100%; aspect-ratio:2880/1800; object-fit:cover; background:var(--gray-bg)}
+  .shot-note{margin-top:12px; font-size:.875rem; color:var(--ink-muted); text-align:center}
+
+  .phone-frame{width:clamp(180px,60vw,236px); margin:0 auto; border-radius:40px; background:var(--ink); padding:10px; box-shadow:var(--sh-lg); position:relative}
+  .phone-frame::after{content:""; position:absolute; inset:2px; border-radius:38px; pointer-events:none; box-shadow:inset 0 1px 1px rgba(255,255,255,.14)}
+  .phone-screen-wrap{border-radius:30px; overflow:hidden; background:#000}
+  .phone-screen{width:100%; aspect-ratio:824/1830; object-fit:cover; display:block}
+
+  /* ============ FEATURE / VALUE CARDS ============ */
+  .card-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:24px; margin-top:48px}
+  .feature-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); padding:28px; box-shadow:var(--sh-sm); transition:transform .2s, box-shadow .2s, border-color .2s}
+  .feature-card:hover{box-shadow:var(--sh-md); border-color:var(--blue-200); background:var(--blue-50)}
+  .icon-well{width:44px; height:44px; border-radius:12px; background:var(--blue-50); display:flex; align-items:center; justify-content:center; font-size:1.375rem; line-height:1; margin-bottom:16px}
+  .feature-card h3{font-family:var(--sans); font-size:clamp(1.125rem,2vw,1.25rem); font-weight:600; letter-spacing:-.01em; line-height:1.25; color:var(--ink)}
+  .feature-card p{margin-top:8px; font-size:.9375rem; color:var(--ink-body); line-height:1.55}
+
+  /* three-up value grid (the hook) is a touch tighter */
+  .value-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+
+  /* ============ PRIVACY ============ */
+  .privacy{background:var(--bg-tint-2); padding-top:clamp(96px,14vh,160px); padding-bottom:clamp(96px,14vh,160px)}
+  .privacy h2{font-family:var(--serif); font-weight:500; font-size:clamp(2rem,4vw,3rem); letter-spacing:-.015em; line-height:1.1}
+  .privacy-tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-top:48px}
+  .privacy-tile{background:var(--surface); border:1px solid var(--blue-100); border-radius:var(--r-md); box-shadow:var(--sh-sm); padding:28px; text-align:left}
+  .privacy-tile .plabel{font-family:var(--serif); font-weight:500; font-size:1.5rem; color:var(--ink); letter-spacing:-.01em}
+  .privacy-tile p{margin-top:10px; font-size:.9375rem; color:var(--ink-body); line-height:1.55}
+  .privacy-quiet{margin-top:40px; font-family:var(--serif); font-style:italic; font-size:1.125rem; color:var(--ink-body)}
+  .privacy-quiet strong{color:var(--ink); font-weight:500; font-style:normal}
+
+  /* ============ SHOWCASE (mobile) ============ */
+  .showcase-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:clamp(32px,5vw,72px); align-items:center; margin-top:8px}
+  @media (max-width:900px){ .showcase-grid{grid-template-columns:1fr; gap:44px} }
+  .showcase-copy .checklist{margin-top:28px; display:grid; gap:14px}
+  .showcase-copy .checklist li{list-style:none; display:flex; gap:12px; align-items:flex-start; color:var(--ink-body); font-size:1rem}
+  .check{flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:var(--blue-50); color:var(--accent-text); display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; margin-top:2px}
+  ul.checklist{padding:0; margin:0}
+
+  /* ============ FRONT DOOR / NARRATIVE ============ */
+  .frontdoor .fd-inner{max-width:var(--maxw-text); margin:0 auto; text-align:center}
+  .frontdoor .fd-note{
+    margin:28px auto 0; font-size:.9375rem; color:var(--ink-muted);
+    border-left:2px solid var(--blue-200); padding-left:16px; max-width:460px; text-align:left;
+  }
+
+  /* ============ PRICING ============ */
+  .price-card{max-width:420px; margin:48px auto 0; background:var(--surface); border:1px solid var(--blue-100); border-radius:var(--r-lg); box-shadow:var(--sh-lg); overflow:hidden; text-align:left}
+  .price-accent{height:4px; background:linear-gradient(90deg, var(--accent), var(--blue-300))}
+  .price-inner{padding:40px}
+  .price-plan{font-size:.8125rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-text)}
+  .price-amount{font-family:var(--serif); font-weight:500; font-size:clamp(2.4rem,5vw,3rem); color:var(--ink); letter-spacing:-.015em; margin-top:14px; line-height:1; display:flex; align-items:baseline; gap:8px}
+  .price-amount .per{font-family:var(--sans); font-size:1rem; font-weight:500; color:var(--ink-muted); letter-spacing:0}
+  .price-year{margin-top:8px; font-size:.9375rem; color:var(--ink-muted)}
+  .price-list{list-style:none; padding:0; margin:26px 0; display:grid; gap:12px}
+  .price-list li{display:flex; gap:12px; align-items:flex-start; font-size:.9375rem; color:var(--ink-body)}
+  .price-note{margin-top:18px; font-size:.8125rem; color:var(--ink-muted); text-align:center}
+
+  /* ============ FAQ ============ */
+  .faq{max-width:var(--maxw-text); margin:48px auto 0; text-align:left}
+  .faq details{border-bottom:1px solid var(--line)}
+  .faq summary{list-style:none; cursor:pointer; padding:22px 0; display:flex; justify-content:space-between; align-items:center; gap:20px; font-weight:600; font-size:clamp(1.0625rem,2vw,1.1875rem); color:var(--ink)}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq .chev{flex:0 0 auto; width:22px; height:22px; color:var(--accent); transition:transform .25s ease}
+  .faq details[open] .chev{transform:rotate(180deg)}
+  .faq .answer{padding:0 0 24px; max-width:640px; color:var(--ink-body); font-size:1rem; line-height:1.65}
+
+  /* ============ CTA BAND ============ */
+  .cta-band{text-align:center}
+
+  /* ============ FOOTER ============ */
+  .site-footer{background:var(--bg-tint); border-top:1px solid var(--line)}
+  .footer-inner{max-width:var(--maxw); margin:0 auto; padding:clamp(56px,8vh,88px) var(--gutter) 40px}
+  .footer-cols{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:40px}
+  @media (max-width:720px){ .footer-cols{grid-template-columns:1fr 1fr; gap:32px} .footer-brand-col{grid-column:1 / -1} }
+  .footer-brand-col .brand{margin-bottom:14px}
+  .footer-desc{font-size:.9375rem; color:var(--ink-body); max-width:300px}
+  .footer-col h4{font-family:var(--sans); font-size:.8125rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-muted); margin:0 0 16px}
+  .footer-col ul{list-style:none; padding:0; margin:0; display:grid; gap:12px}
+  .footer-col a{color:var(--ink-body); font-size:.9375rem}
+  .footer-col a:hover{color:var(--ink)}
+  .footer-legal{margin-top:48px; padding-top:24px; border-top:1px solid var(--line); font-size:.75rem; line-height:1.6; letter-spacing:.005em; color:var(--ink-muted); display:flex; flex-wrap:wrap; gap:4px 10px}
+  .footer-legal .sep{color:var(--line-strong)}
+  .footer-legal strong{color:var(--ink-body); font-weight:600}
+  .footer-legal a{color:var(--ink-muted)}
+  .footer-copy{margin-top:14px; font-size:.75rem; color:var(--ink-muted)}
+
+  /* ============ REVEAL MOTION (progressive enhancement) ============ */
+  /* Default state = fully visible. JS adds .pre-reveal to hide, then .is-in to reveal. */
+  .js .pre-reveal{opacity:0; transform:translateY(16px)}
+  .js .pre-reveal.is-in{opacity:1; transform:translateY(0); transition:opacity .5s cubic-bezier(.22,.61,.36,1), transform .5s cubic-bezier(.22,.61,.36,1)}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important; transition:none!important; scroll-behavior:auto!important}
+    .js .pre-reveal{opacity:1!important; transform:none!important}
+  }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <a href="#top" class="brand" aria-label="MRLN home"><span class="diamond" aria-hidden="true"></span>MRLN</a>
+    <nav class="nav" aria-label="Primary">
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+      <!-- PRIMARY CTA → owner sets Stripe checkout link -->
+      <a class="btn btn-primary btn-sm" href="#" data-checkout="PLACEHOLDER-owner-sets-stripe-link">Get access</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <span id="top"></span>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Private · Offline · One app</p>
+          <h1 class="hero-h1" id="hero-title">Your money and health — on your phone, and <span class="warm-underline">nowhere else</span>.</h1>
+          <p class="hero-lead">MRLN keeps your whole financial life and health picture in one calm place. No bank connection. No cloud. No account. The numbers you enter stay on your device.</p>
+          <div class="hero-cta">
+            <!-- PRIMARY CTA → owner sets Stripe checkout link -->
+            <a class="btn btn-primary" href="#" data-checkout="PLACEHOLDER-owner-sets-stripe-link">Get access</a>
+            <!-- SECONDARY CTA → live app -->
+            <a class="btn btn-ghost" href="https://sagemrln.github.io/my-first-repo/">See the app</a>
+          </div>
+          <ul class="trustline">
+            <li>No bank connection<span class="tl-dot" aria-hidden="true"></span></li>
+            <li>No cloud<span class="tl-dot" aria-hidden="true"></span></li>
+            <li>No account<span class="tl-dot" aria-hidden="true"></span></li>
+            <li>Installs like an app</li>
+          </ul>
+        </div>
+
+        <div class="hero-media pre-reveal">
+          <figure style="margin:0">
+            <div class="browser-frame">
+              <div class="browser-bar" aria-hidden="true">
+                <span class="browser-dots"><i></i><i></i><i></i></span>
+                <span class="browser-url">mrln</span>
+              </div>
+              <img class="browser-screen" src="ov_desktop.png" width="2880" height="1800" loading="eager" decoding="async"
+                   alt="The MRLN Overview screen on desktop: a single dashboard showing budget, income, savings and health at a glance.">
+            </div>
+            <figcaption class="shot-note">Example data — a demo profile named Alex, not a real person.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE HOOK / WHY ============ -->
+  <section class="section tint" id="why" aria-labelledby="why-title">
+    <div class="wrap">
+      <div class="section-head center" style="margin-left:auto;margin-right:auto">
+        <p class="eyebrow">Why MRLN is different</p>
+        <h2 class="h2" id="why-title">Every other app connects to your bank. MRLN connects to nothing.</h2>
+        <p class="lead">Most finance apps link to your accounts and store your data on their servers. MRLN never connects to a bank and never uploads what you enter. There is no server to breach, because there is no server. Privacy is the architecture, not a setting.</p>
+      </div>
+      <div class="card-grid value-grid">
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">🔒</div>
+          <h3>Nothing to connect</h3>
+          <p>No bank login, no linked accounts. You type what you want to track — MRLN does the rest, right on your device.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">📴</div>
+          <h3>Works fully offline</h3>
+          <p>Installs like an app and runs without a connection. Your plan is there on a plane, on the subway, anywhere.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">🧭</div>
+          <h3>One calm picture</h3>
+          <p>Money and health in a single place, not scattered across five apps. Open it and see where you stand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section class="section" id="features" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">One app, your whole picture</p>
+        <h2 class="h2" id="features-title">Money and health, side by side.</h2>
+        <p class="lead">Everything below runs offline on your phone. Nothing to connect, nothing to sync — just open it.</p>
+      </div>
+      <div class="card-grid">
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">📊</div>
+          <h3>Overview</h3>
+          <p>Your whole plan on one screen — budget, income, savings and health, all at a glance.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">🧾</div>
+          <h3>Budget</h3>
+          <p>All your bills and subscriptions in one calm list, so nothing surprises you.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">💼</div>
+          <h3>Income Log</h3>
+          <p>Built for variable and freelance pay. It learns your low, typical and high months.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">🧮</div>
+          <h3>Tax Helper</h3>
+          <p>An offline estimate across 13 countries. An unofficial figure to plan with — not tax advice.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">🏦</div>
+          <h3>Savings &amp; projection</h3>
+          <p>Set a goal and see where you land, month by month, at your real pace.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">🏋️</div>
+          <h3>Gym, Food &amp; Weight</h3>
+          <p>A gym plan, a food log and your weight and records — general health info, not medical advice.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">📅</div>
+          <h3>Calendar, Media &amp; Notebook</h3>
+          <p>Plan dates, log what you watch and read, and keep private notes in one place.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">🎓</div>
+          <h3>Stats &amp; Grades</h3>
+          <p>One clear grade across money, body and income, so you always know where you stand.</p>
+        </div>
+        <div class="feature-card pre-reveal">
+          <div class="icon-well" aria-hidden="true">💬</div>
+          <h3>Assistant MRLN</h3>
+          <p>Talk in plain words and get answers about your own numbers. Runs fully offline.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OVERVIEW SHOWCASE (mobile) ============ -->
+  <section class="section tint" id="showcase" aria-labelledby="showcase-title">
+    <div class="wrap">
+      <div class="showcase-grid">
+        <div class="showcase-copy">
+          <p class="eyebrow">Made for your pocket</p>
+          <h2 class="h2" id="showcase-title">Open it and everything is already there.</h2>
+          <p class="lead">No dashboards to build, no accounts to link. MRLN installs like an app and works with no signal — on a plane, in a basement, anywhere.</p>
+          <ul class="checklist">
+            <li><span class="check" aria-hidden="true">✓</span><span>Works fully offline — installs like an app</span></li>
+            <li><span class="check" aria-hidden="true">✓</span><span>Available in 7 languages</span></li>
+            <li><span class="check" aria-hidden="true">✓</span><span>Instantly clear — designed so anyone can use it</span></li>
+          </ul>
+        </div>
+        <div class="showcase-media pre-reveal">
+          <figure style="margin:0">
+            <div class="phone-frame">
+              <div class="phone-screen-wrap">
+                <img class="phone-screen" src="ov_mobile.png" width="824" height="1830" loading="lazy" decoding="async"
+                     alt="The MRLN Overview screen on a phone, showing the demo profile's budget, income and health summary.">
+              </div>
+            </div>
+            <figcaption class="shot-note">Example data — a demo profile named Alex, not a real person.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRIVACY (signature moment) ============ -->
+  <section class="privacy" id="privacy" aria-labelledby="privacy-title">
+    <div class="wrap center">
+      <div class="section-head" style="margin-left:auto;margin-right:auto">
+        <p class="eyebrow">The signature difference</p>
+        <h2 id="privacy-title">The numbers you enter stay on your device.</h2>
+        <p class="lead">No bank, no cloud, no account. What you type into MRLN is saved on your phone — not on our servers, because there aren't any.</p>
+      </div>
+      <div class="privacy-tiles">
+        <div class="privacy-tile pre-reveal">
+          <div class="plabel">No bank</div>
+          <p>MRLN never links to your bank or reads your transactions. You enter what you want to track.</p>
+        </div>
+        <div class="privacy-tile pre-reveal">
+          <div class="plabel">No cloud</div>
+          <p>Your entries are stored on your device. There's no server holding a copy of your life.</p>
+        </div>
+        <div class="privacy-tile pre-reveal">
+          <div class="plabel">No account</div>
+          <p>No sign-up, no email, no password. Open the app and start — nothing to create.</p>
+        </div>
+      </div>
+      <p class="privacy-quiet"><strong>Privacy is the architecture, not a setting.</strong></p>
+    </div>
+  </section>
+
+  <!-- ============ FRONT DOOR / NARRATIVE ============ -->
+  <section class="section frontdoor" id="app" aria-labelledby="frontdoor-title">
+    <div class="wrap">
+      <div class="fd-inner">
+        <p class="eyebrow">The app itself</p>
+        <h2 class="h2" id="frontdoor-title">A bright front door. A private command center behind it.</h2>
+        <p class="lead" style="margin-left:auto;margin-right:auto">This page is the calm welcome. The app you unlock is a focused, dark workspace for your money and health — everything in reach, nothing shared out.</p>
+        <div class="hero-cta" style="justify-content:center">
+          <!-- SECONDARY CTA → live app -->
+          <a class="btn btn-ghost" href="https://sagemrln.github.io/my-first-repo/">Open MRLN</a>
+        </div>
+        <p class="fd-note">A calm, bright front door. The app itself is your private, dark command center — the light landing and the dark app are one product, two moods.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRICING ============ -->
+  <section class="section tint" id="pricing" aria-labelledby="pricing-title">
+    <div class="wrap center">
+      <div class="section-head" style="margin-left:auto;margin-right:auto">
+        <p class="eyebrow">Pricing</p>
+        <h2 class="h2" id="pricing-title">One simple plan.</h2>
+        <p class="lead">MRLN is a paid app you unlock with an access key. It costs nothing to run — no ads, and your data is never sold, because it never leaves your device.</p>
+      </div>
+
+      <div class="price-card pre-reveal">
+        <div class="price-accent" aria-hidden="true"></div>
+        <div class="price-inner">
+          <div class="price-plan">Access key</div>
+          <!-- owner sets price -->
+          <div class="price-amount tnum"><span data-price="PLACEHOLDER">$—</span><span class="per">/ month</span></div>
+          <!-- owner sets price -->
+          <p class="price-year">or <span class="tnum" data-price-year="PLACEHOLDER">$—</span> / year</p>
+
+          <ul class="price-list">
+            <li><span class="check" aria-hidden="true">✓</span><span>One simple plan — every feature included</span></li>
+            <li><span class="check" aria-hidden="true">✓</span><span>Cancel anytime</span></li>
+            <li><span class="check" aria-hidden="true">✓</span><span>Your data stays yours, on your device</span></li>
+            <li><span class="check" aria-hidden="true">✓</span><span>No ads, never sold</span></li>
+          </ul>
+
+          <!-- PRIMARY CTA → owner sets Stripe checkout link -->
+          <a class="btn btn-primary btn-block" href="#" data-checkout="PLACEHOLDER-owner-sets-stripe-link">Get access</a>
+          <p class="price-note">Secure checkout. You'll receive your access key right after payment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section" id="faq" aria-labelledby="faq-title">
+    <div class="wrap center">
+      <div class="section-head" style="margin-left:auto;margin-right:auto">
+        <p class="eyebrow">Good to know</p>
+        <h2 class="h2" id="faq-title">Questions, answered plainly.</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>Does MRLN connect to my bank?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">No. MRLN never connects to a bank and never reads your transactions. You enter the numbers you want to track, and they stay on your phone.</div>
+        </details>
+        <details>
+          <summary>Where is my data stored?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">The numbers you enter are saved on your device. There's no account and no cloud copy. Loading the app itself uses a static web host, but what you type stays with you.</div>
+        </details>
+        <details>
+          <summary>Does it work offline?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">Yes. MRLN installs like an app and runs with no signal. The Assistant and every feature work fully offline.</div>
+        </details>
+        <details>
+          <summary>Is the Tax Helper official tax advice?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">No. It gives an unofficial estimate across 13 countries to help you plan. It isn't tax advice — check with a professional for anything official.</div>
+        </details>
+        <details>
+          <summary>Are the health features medical advice?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">No. The gym, food and weight tools are for general information and tracking. They're not medical advice — talk to a professional about your health. MRLN is for ages 16 and up.</div>
+        </details>
+        <details>
+          <summary>How much does it cost?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">MRLN is a paid app — you buy an access key, monthly, with a yearly option. There are no ads and your data is never sold. See the pricing above for the current price.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="section cta-band tint" id="get" aria-labelledby="get-title">
+    <div class="wrap center">
+      <div class="section-head" style="margin-left:auto;margin-right:auto">
+        <p class="eyebrow">Ready when you are</p>
+        <h2 class="h2" id="get-title">Your whole picture, in one private place.</h2>
+        <p class="lead">Get your access key, or take a look inside the app first.</p>
+      </div>
+      <div class="hero-cta" style="justify-content:center; margin-top:32px">
+        <!-- PRIMARY CTA → owner sets Stripe checkout link -->
+        <a class="btn btn-primary" href="#" data-checkout="PLACEHOLDER-owner-sets-stripe-link">Get access</a>
+        <!-- SECONDARY CTA → live app -->
+        <a class="btn btn-ghost" href="https://sagemrln.github.io/my-first-repo/">Open MRLN</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-cols">
+      <div class="footer-brand-col">
+        <a href="#top" class="brand"><span class="diamond" aria-hidden="true"></span>MRLN</a>
+        <p class="footer-desc">Your whole financial life and health picture in one calm place that lives only on your phone.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#privacy">Privacy</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="https://sagemrln.github.io/my-first-repo/">Open the app</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <!-- owner sets real legal links (Terms / Privacy Policy / Disclaimer) -->
+        <ul>
+          <li><a href="https://sagemrln.github.io/my-first-repo/">Terms</a></li>
+          <li><a href="https://sagemrln.github.io/my-first-repo/">Privacy Policy</a></li>
+          <li><a href="https://sagemrln.github.io/my-first-repo/">Disclaimer</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-legal">
+      <span>Provider: <strong>Osefe Miradi</strong></span><span class="sep">·</span>
+      <span>Contact: <a href="mailto:Miradiosefe@gmail.com">Miradiosefe@gmail.com</a></span><span class="sep">·</span>
+      <span><strong>16+</strong></span><span class="sep">·</span>
+      <span><strong>Not financial or medical advice.</strong></span><span class="sep">·</span>
+      <span>Tax Helper gives an unofficial estimate, not tax advice.</span>
+    </div>
+    <p class="footer-copy">© <span id="yr">2026</span> MRLN. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    // Progressive enhancement flag
+    document.documentElement.classList.add('js');
+
+    // Sticky header shadow after scroll
+    var header = document.getElementById('siteHeader');
+    var onScroll = function(){
+      if (window.scrollY > 12) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, {passive:true});
+
+    // Current year
+    var yr = document.getElementById('yr');
+    if (yr) yr.textContent = new Date().getFullYear();
+
+    // Reveal-on-scroll (respects reduced motion; visible by default without JS)
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = Array.prototype.slice.call(document.querySelectorAll('.pre-reveal'));
+
+    if (reduce || !('IntersectionObserver' in window)) {
+      reveals.forEach(function(el){ el.classList.add('is-in'); });
+      return;
+    }
+
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          var el = entry.target;
+          var sibs = Array.prototype.slice.call(el.parentNode.querySelectorAll(':scope > .pre-reveal'));
+          var idx = sibs.indexOf(el);
+          el.style.transitionDelay = (idx > -1 ? Math.min(idx,6)*60 : 0) + 'ms';
+          el.classList.add('is-in');
+          io.unobserve(el);
+        }
+      });
+    }, {threshold:0.15});
+
+    reveals.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</body>
+</html>
