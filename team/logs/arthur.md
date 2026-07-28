@@ -1045,3 +1045,16 @@ CANDIDATES to migrate next (all currently show inline edit/delete in their resti
 
 - Specs given: the full redesign above, routed to Kaito (owner; find-xor-fix → he builds + screenshot-verifies premium before ship). Build the never-rebuilt two-state DOM + the class-toggle morph FIRST (that's the architecture); then the display polish (money column, descending sort, bars), then edit reveal + undo. 
 - Still open / next: (1) @Kaito builds; I re-review LIVE + on his screenshots (watch: resting view has ZERO edit/delete buttons; row geometry identical across modes so the morph doesn't jump; commit count-ups land exactly; NaN → skeleton never prints; Done reachable without scrolling up; descending-by-spend sort; the money column aligns). (2) @Akashi 3 flags. (3) @Mikoto strings. (4) Roll the Display/Edit standard to the 5 candidate surfaces after Budget proves it. Read-only, no lock. Branch claude/vibrant-pasteur-ie24ab @ a4ba0b8.
+
+---
+## 2026-07-28 — Landing page review (scratchpad/landing.html, Hilton/premium bar, ages 16-40)
+- **Asked:** review final light landing page vs billion-dollar bar; verdict + mustFix + praise.
+- **Studied/verified:** ran WCAG contrast math on the token palette (python). Findings are measured, not eyeballed.
+- **Found (AA blockers, verified):**
+  1. `--accent #5B8DEF` used as TEXT (eyebrows 13px, inline links) = **3.23:1 white / 3.0:1 on --bg-tint** → FAILS 4.5. Fix: add `--accent-text:#2F6BD8` (4.98:1) for eyebrow labels + links; keep #5B8DEF for decorative/large/borders only.
+  2. `--ink-muted #6B7A93` (footer-legal 12px, shot-note/price-note 14px, trustline) = **4.35 white / 4.04 tint / 3.85 tint2** → FAILS. Fix: darken to `#566579` (5.5:1 on tint).
+  - Passing/good: --ink-body #3A4A63 = 8.98:1; CTA white-on-#2F6BD8 = 4.98:1.
+- **Other findings:** (3) `--warm #E9B872` gold underline is off the "white + soft light-blue" brief and appears exactly once — recommend switch to blue-200 tint or explicit brand keep. (4) off-grid margins: hero-h1 18px / hero-lead 22px / icon-well 18px break the 4/8 scale → 16/24/16. (5) mobile nav (<760px) drops all section links, no replacement — OK for one-page scroll, minor wayfinding loss. (6) non-interactive feature/value cards use -4px hover-lift → false click affordance; soften to bg/border-only. (7) premium lever: system-serif (Georgia) at 4.5rem reads generic vs Hilton bar — a self-hosted (no CDN, offline-safe) display serif woff2 is the single biggest premium upgrade; needs Akashi clearance as a bundled local asset (no recurring cost).
+- **Verdict: POLISH** (2 real AA blockers + palette-brief mismatch; structure/hierarchy/motion/a11y foundation are strong).
+- **Praise:** disciplined token system + 8pt scale + navy-tinted shadow set; strong a11y foundation (skip link, focus-visible, aria-labelledby, reduced-motion global kill, semantic FAQ, aria-hidden decor); excellent body/heading contrast; intentional staggered ease-out reveal w/ progressive enhancement; hero left-aligns on mobile (deliberate, correct); premium whitespace rhythm; editorial serif-display + sans-body pairing.
+- **Still open:** routed to Kaito (owner builds; Arthur re-reviews). Brand decision needed on gold underline. Read-only, no lock. Branch claude/vibrant-pasteur-ie24ab.
