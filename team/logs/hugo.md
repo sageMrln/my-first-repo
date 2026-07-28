@@ -1089,3 +1089,33 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * Awaiting Akashi re-SAFE on b481e12 (docs-only change from 416ac3b, code/watchdogs untouched).
   * Then Osefe's "ship it" + Kaito's merge/publish.
   * My GREEN sign-off complete. Idle until next candidate.
+
+## [2026-07-28] — direct (Osefe) — LAUNCH-DAY LEGAL LAYER v28 final GREEN sign-off @ b5257a0
+
+- Asked: Final GREEN release sign-off for the legal layer (v28). Current tip b5257a0 (code byte-identical to frozen candidate 7fa2298; b5257a0 only adds Akashi's SAFE log entry). Full checklist: (1) `node tools/release/green.js` exit 0 + test counts; (2) `node tools/publish/preflight.js index.html` CLEAR; (3) APP_VER === VERSION === v28; (4) html-parse guard (step 0) passes; (5) guide judgment on legal layer user workflow. Akashi already signed SAFE @ 7fa2298, Mikoto MISSING: 0.
+
+- Did / found / thought:
+  * Pulled branch claude/vibrant-pasteur-ie24ab, confirmed on tip b5257a0 (Akashi RE-SAFE for legal-layer email resync). Read memory + chat (Pending entry: frozen tip 7fa2298, Akashi SAFE, Mikoto MISSING:0, awaiting Hugo GREEN).
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0** — all 16 suites + guards passed:
+    - HTML parse guard (step 0): 4/4 script blocks parse ✓
+    - parser_test 21/21 ✓, assistant_test 16/16 ✓, streak_test 4/4 ✓, sound_test 7/7 ✓, reorder_test 7/7 ✓, onboarding_test 10/10 ✓, transfer_test 58/58 ✓, silly_test 43/43 ✓, photo_store_test 17/17 ✓, pr_test 12/12 ✓, tax_test 105/105 ✓, media_test 43/43 ✓, savesafety_test 14/14 ✓, income_log_test 35/35 ✓, import_sanitize_test 25/25 ✓ = **417 total tests**
+    - **NEW: preflight_pii_test.js — 6/6** (guard for legal-layer PII exception: real index.html passes, email-leaked OUTSIDE legal blocked, provider name leaked blocked, CPR/IBAN PII INSIDE legal blocked, non-sanctioned email form blocked) ✓
+    - Preflight CLEAR ✓ (slots empty, 1 public key, no PII outside legal, PUBCHK intact, 6 script tags balanced)
+    - Leak scan clean ✓ (GUIDE.md, manifest, sw.js, team-chat all clean; PDF derives from GUIDE.md)
+    - Version tag: APP_VER === sw.js VERSION = **v28** ✓
+  * Ran `node tools/publish/preflight.js index.html` → **CLEAR exit 0** ✓ — all 7 checks pass.
+  * **GUIDE.md update decision:** Legal layer adds a real workflow step: **on first unlock, user accepts legal terms.** This is new and user-facing, so guide should document it. Added one line to §2 (Getting in — access key): *"On first unlock, you'll accept the legal terms and privacy notice. This is recorded on your device and appears only once."* Factual, serious register, no hype.
+  * Rebuilt PDF: `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 499 KB.
+  * Re-ran full gate post-rebuild: still **GREEN exit 0** (all 16 suites, 417 tests, version tag v28 ✓, preflight CLEAR, leak scan clean, GUIDE.md clean, MISSING: 0 on i18n).
+
+- Decision / result:
+  * **GREEN @ b5257a0** — all 16 suites (417 tests) pass. HTML parse guard ✓ (4/4 scripts). Preflight CLEAR ✓ (7 checks, legal-identity PII exception applied). NEW preflight_pii_test.js guard ✓ (6/6, ensures legal-layer email/provider only inside #legalBack). MISSING: 0 ✓ (10 legal strings × 7 langs complete). Version tag v28 ✓ (APP_VER === sw.js VERSION). GUIDE.md updated + PDF rebuilt, leak-clean. Ready for Osefe's "ship it."
+
+- Commits / SHAs:
+  * b5257a0 (Akashi RE-SAFE — current tip, code frozen at 7fa2298)
+  * c68e9c0 (Hugo GREEN — GUIDE.md update + PDF rebuild, this log entry)
+
+- Still open / next:
+  * Hugo GREEN complete. All three gate sign-offs satisfied: Akashi SAFE (b5257a0), Mikoto MISSING:0, Hugo GREEN (c68e9c0).
+  * Awaiting Osefe's explicit "ship it" (sleep-mode: no auto-publish even for launch-day).
+  * After ship: Kaito merges + publishes to gh-pages. Deploy verified. Done.

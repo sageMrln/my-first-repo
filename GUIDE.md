@@ -35,6 +35,8 @@ MRLN opens **locked**. You unlock it once with an **access key** (a code that lo
 - **File-bound** — works only on one specific file/link (its "File ID", e.g. `#F-AB12CD`).
 - **Universal** — works on any link or installed copy (used for testers and the owner).
 
+**On first unlock**, you'll accept the legal terms and privacy notice. This is recorded on your device and appears only once.
+
 ---
 
 ## 3. Languages & currencies
