@@ -4880,7 +4880,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     html+='<h2 style="font-size:14px;margin:6px 0 6px">Ingredients</h2><ul style="margin:0 0 12px;padding-left:18px;line-height:1.7;color:var(--txt)">'+
       (m.ing||[]).map(function(i){ return '<li>'+esc(i)+'</li>'; }).join('')+'</ul>';
     html+='<h2 style="font-size:14px;margin:6px 0 6px">Why this fits you</h2><div class="note" style="margin:0 0 12px">'+whyThisFits(m,T)+'</div>';
-    html+='<a class="btn" href="'+yt+'" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">▶ Watch a recipe video</a>';
+    html+='<a class="btn" href="'+yt+'" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none">▶ Watch a recipe video</a>';
     document.getElementById('mealMBody').innerHTML=html;
     back.classList.add('show');
   }

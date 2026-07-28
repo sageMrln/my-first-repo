@@ -3,7 +3,7 @@
  * exception in tools/publish/preflight.js.
  *
  * The legal layer intentionally names the trader "Osefe Miradi" + contact
- * osefemiradi@gmail.com (EU/DK consumer law requires an identifiable trader).
+ * Miradiosefe@gmail.com (EU/DK consumer law requires an identifiable trader).
  * preflight allows those EXACT strings, but ONLY inside the #legalBack legal
  * block. This suite locks that the exception did NOT become a blanket removal:
  *   - the real index.html passes,
@@ -32,11 +32,11 @@ function code(html) {
 
 const cases = [
   ['real index.html passes',                     () => index,                                                                       0],
-  ['email leaked OUTSIDE legal (comment)',        () => index.replace('<body', '<!-- osefemiradi@gmail.com --><body'),               1],
+  ['email leaked OUTSIDE legal (comment)',        () => index.replace('<body', '<!-- Miradiosefe@gmail.com --><body'),               1],
   ['provider name leaked OUTSIDE legal',          () => index.replace('<body', '<!-- Osefe Miradi --><body'),                        1],
-  ['<p>email</p> leaked OUTSIDE legal (by-loc)',  () => index.replace('<footer>', '<p>osefemiradi@gmail.com</p><footer>'),           1],
+  ['<p>email</p> leaked OUTSIDE legal (by-loc)',  () => index.replace('<footer>', '<p>Miradiosefe@gmail.com</p><footer>'),           1],
   ['CPR/IBAN-style PII INSIDE legal still fails', () => index.replace('<h5>14. Contact</h5>', '<h5>14. Contact</h5><p>DK1234567890123</p>'), 1],
-  ['email in non-sanctioned form INSIDE legal',   () => index.replace('<h5>14. Contact</h5>', '<h5>14. Contact osefemiradi@gmail.com</h5>'), 1],
+  ['email in non-sanctioned form INSIDE legal',   () => index.replace('<h5>14. Contact</h5>', '<h5>14. Contact Miradiosefe@gmail.com</h5>'), 1],
 ];
 
 let pass = 0, fail = 0;

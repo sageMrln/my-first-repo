@@ -42,7 +42,7 @@ else fails.push(`expected exactly 1 public key, found ${pub}`);
 
 // --- check 4: owner PII — strict, with a TIGHT legal-identity exception ---
 // EU/DK consumer law REQUIRES a named, identifiable trader + a contact, so the
-// provider name "Osefe Miradi" and the contact "osefemiradi@gmail.com" are
+// provider name "Osefe Miradi" and the contact "Miradiosefe@gmail.com" are
 // intended-public — but ONLY as the provider/contact identity lines inside the
 // #legalBack legal block. We strip ONLY those exact sanctioned strings, and ONLY
 // from inside the legal block, then run the normal PII scan on the result. So the
@@ -52,10 +52,10 @@ else fails.push(`expected exactly 1 public key, found ${pub}`);
 // trips the guard rather than silently passing).
 const PII_RE = /miradi|osefe@|[^a-z]cpr[^a-z]|\bDK\d{8,}\b/gi;
 const LEGAL_ALLOW = [
-  // Terms/Privacy identity line: "… · Provider: Osefe Miradi[ ("we", "us")] · Contact: osefemiradi@gmail.com"
-  /Provider:\s*Osefe Miradi(?:\s*\("we",\s*"us"\))?\s*\u00b7\s*Contact:\s*osefemiradi@gmail\.com/g,
-  // the standalone Contact-section paragraph <p>osefemiradi@gmail.com</p>
-  /<p>\s*osefemiradi@gmail\.com\s*<\/p>/g
+  // Terms/Privacy identity line: "… · Provider: Osefe Miradi[ ("we", "us")] · Contact: Miradiosefe@gmail.com"
+  /Provider:\s*Osefe Miradi(?:\s*\("we",\s*"us"\))?\s*\u00b7\s*Contact:\s*Miradiosefe@gmail\.com/g,
+  // the standalone Contact-section paragraph <p>Miradiosefe@gmail.com</p>
+  /<p>\s*Miradiosefe@gmail\.com\s*<\/p>/g
 ];
 let piiScan = html;
 const legalBlock = html.match(/<div class="modal-back" id="legalBack">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/);
