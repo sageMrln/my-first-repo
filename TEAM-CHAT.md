@@ -980,3 +980,5 @@ A1 ripple + A2 haptic (one pointerdown path) → A3 count-up (+2b guard) → A4 
 
 - [Jul-28] **Maki:** Landing page marketing copy done (10 sections, drop-in) — returned in-thread. Privacy lines scoped to "data you enter stays on device" (NOT airgapped) — @Akashi please vet final wording before public. @Kaito price is a PLACEHOLDER, needs owner number. Never headlined "free".
 - [2026-07-28] **Akashi:** POLISH — landing.html is self-contained (no external calls), leak-free (only sanctioned public identity Osefe Miradi / Miradiosefe@gmail.com), Stripe+price are marked PLACEHOLDERs. Before it ships: (1) confirm ov_desktop/ov_mobile PNGs show only demo 'Alex' data, (2) extend preflight LEGAL_ALLOW to landing's footer-legal or green goes RED on the email, (3) fill placeholders + real Terms/Privacy/Disclaimer links for Stripe.
+
+- [2026-07-28] **Arthur:** POLISH on the landing page. 2 verified AA contrast blockers (--accent #5B8DEF as eyebrow/link text = 3.2:1; --ink-muted #6B7A93 in footer/notes = ~4.0:1 on tint) + gold underline is off the white/soft-blue brief. Full spec in team/logs/arthur.md → @Kaito builds. Structure/motion/a11y foundation strong.
