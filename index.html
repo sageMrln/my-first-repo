@@ -873,7 +873,7 @@
   .modal-actions .mcancel{background:var(--panel2);color:var(--txt)}
   .modal-actions .mcancel:hover{border-color:var(--cyan);color:var(--bright)}
   .modal-actions .mok{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:#04222a;border-color:var(--cyan)}
-  .modal-actions .mok.danger{background:linear-gradient(180deg,#ff5c7c,#b22a45);border-color:#ff5c7c;color:#fff}
+  .modal-actions .mok.danger{background:linear-gradient(180deg,var(--red),#b22a45);border-color:var(--red);color:#fff}
   .modal-actions button:hover{transform:translateY(-1px)}
 
   /* ===== LEGAL LAYER — per-section disclaimer footers, lock-screen acceptance line,
@@ -1323,7 +1323,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="desc" data-i18n="Position in the menu" style="font-size:12.5px;margin:14px 0 8px">Position in the menu</div>
     <div style="display:flex;align-items:center;gap:8px;justify-content:center">
       <button class="btn ghost" id="catPosDown" data-i18n-skip title="Move earlier" style="padding:6px 13px;font-size:15px">◀</button>
-      <input id="catPos" type="number" min="1" inputmode="numeric" data-i18n-skip style="width:66px;text-align:center;background:#08111e;border:1px solid var(--cyan);border-radius:8px;color:var(--txt);font-family:'Share Tech Mono';font-size:16px;padding:7px">
+      <input id="catPos" type="number" min="1" inputmode="numeric" data-i18n-skip style="width:66px;text-align:center;background:var(--field-bg);border:1px solid var(--cyan);border-radius:8px;color:var(--txt);font-family:'Share Tech Mono';font-size:16px;padding:7px">
       <button class="btn ghost" id="catPosUp" data-i18n-skip title="Move later" style="padding:6px 13px;font-size:15px">▶</button>
       <span class="desc" id="catPosOf" data-i18n-skip style="font-size:12px;color:var(--txt-dim)"></span>
     </div>
@@ -2079,7 +2079,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="form-row">
         <div class="field"><label><span class="prStrength" data-i18n="Exercise">Exercise</span><span class="prCardio" style="display:none" data-i18n="Activity">Activity</span></label><input id="prEx" placeholder="e.g. Bench press"></div>
         <div class="field prStrength"><label data-i18n="Weight">Weight</label><input id="prWt" type="number" min="0" step="0.5" placeholder="kg"></div>
-        <div class="field prCardio" style="display:none"><label data-i18n="Distance">Distance</label><div style="display:flex;gap:6px"><input id="prDist" type="number" min="0" step="0.1" placeholder="0.0" style="flex:1;min-width:0"><select id="prUnit" style="flex:0 0 auto;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:0 8px"><option value="km">km</option><option value="mi">mi</option></select></div></div>
+        <div class="field prCardio" style="display:none"><label data-i18n="Distance">Distance</label><div style="display:flex;gap:6px"><input id="prDist" type="number" min="0" step="0.1" placeholder="0.0" style="flex:1;min-width:0"><select id="prUnit" style="flex:0 0 auto;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:0 8px"><option value="km">km</option><option value="mi">mi</option></select></div></div>
       </div>
       <div class="form-row">
         <div class="field prStrength"><label data-i18n="Reps">Reps</label><input id="prReps" type="number" min="1" max="100" placeholder="reps"></div>
@@ -2212,17 +2212,17 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc">Jot anything down — ideas, lists, passwords-hints, anything you don't want to lose. Notes save with your file and stay on your device. Nothing leaves it.</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
         <button class="btn" id="noteNew">＋ New note</button>
-        <input id="noteSearch" placeholder="🔍 Search notes" style="flex:1;min-width:160px;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+        <input id="noteSearch" placeholder="🔍 Search notes" style="flex:1;min-width:160px;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
       </div>
       <div id="noteList"></div>
     </div>
     <div class="card" id="noteEditorCard" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
-        <input id="noteTitle" placeholder="Title" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--line);color:#eaffff;font-family:'Orbitron';font-size:16px;padding:6px 2px">
+        <input id="noteTitle" placeholder="Title" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--bright);font-family:'Orbitron';font-size:16px;padding:6px 2px">
         <button class="btn danger" id="noteDelete" style="padding:6px 11px;font-size:12px">🗑</button>
         <button class="btn ghost" id="noteClose" style="padding:6px 11px;font-size:12px">Done</button>
       </div>
-      <textarea id="noteBody" placeholder="Start writing…" style="width:100%;min-height:260px;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:Rajdhani;font-size:15px;line-height:1.55;resize:vertical"></textarea>
+      <textarea id="noteBody" placeholder="Start writing…" style="width:100%;min-height:260px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:Rajdhani;font-size:15px;line-height:1.55;resize:vertical"></textarea>
       <div class="note" id="noteMeta" style="margin-top:8px">—</div>
     </div>
 
@@ -2235,7 +2235,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2 data-i18n="🎬 Media Log">🎬 Media Log</h2>
       <div class="desc" data-i18n="Every film and show you've seen — rated and auto-ranked, so when someone asks your favourite you have an answer. Private, offline, yours.">Every film and show you've seen — rated and auto-ranked, so when someone asks your favourite you have an answer. Private, offline, yours.</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 8px">
-        <input id="medTitle" data-i18n-ph="Add a film or show…" placeholder="Add a film or show…" style="flex:1;min-width:160px;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+        <input id="medTitle" data-i18n-ph="Add a film or show…" placeholder="Add a film or show…" style="flex:1;min-width:160px;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
         <button class="btn" id="medAdd" data-i18n="＋ Add">＋ Add</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 8px">
@@ -2244,9 +2244,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
           <button type="button" class="btn ghost medTypeBtn" data-mtype="show" style="flex:1;min-height:44px;padding:7px 0" data-i18n="Show">Show</button>
           <button type="button" class="btn ghost medTypeBtn" data-mtype="game" style="flex:1;min-height:44px;padding:7px 0" data-i18n="Game">Game</button>
         </div>
-        <input id="medGenre" data-i18n-ph="Genre (optional)" placeholder="Genre (optional)" style="flex:1;min-width:130px;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+        <input id="medGenre" data-i18n-ph="Genre (optional)" placeholder="Genre (optional)" style="flex:1;min-width:130px;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
       </div>
-      <input id="medSearch" data-i18n-ph="🔍 Search your list" placeholder="🔍 Search your list" style="width:100%;background:#08111e;border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+      <input id="medSearch" data-i18n-ph="🔍 Search your list" placeholder="🔍 Search your list" style="width:100%;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
       <div id="medMsg" class="note" style="display:none;margin-top:8px"></div>
     </div>
 
@@ -2275,7 +2275,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
     <div class="card" id="medRateCard" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
-        <b id="medRateTitle" data-i18n-skip style="font-family:'Orbitron';color:#eaffff;font-size:15px">—</b>
+        <b id="medRateTitle" data-i18n-skip style="font-family:'Orbitron';color:var(--bright);font-size:15px">—</b>
         <button class="btn ghost" id="medRateClose" style="padding:6px 11px;font-size:12px" data-i18n="Cancel">Cancel</button>
       </div>
       <div style="text-align:center;margin:6px 0"><span id="medRateVal" style="font-family:'Orbitron';font-size:40px;color:var(--lime)">—</span><span style="color:var(--txt-dim);font-size:16px"> / 10</span></div>
@@ -2286,9 +2286,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </div>
       <div id="medCompare" style="display:none;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:11px;margin-bottom:10px;font-size:13px"></div>
       <div id="medRateForm">
-        <input id="medRateGenre" data-i18n-ph="Genre (optional)" placeholder="Genre (optional)" style="width:100%;margin-bottom:8px;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px">
+        <input id="medRateGenre" data-i18n-ph="Genre (optional)" placeholder="Genre (optional)" style="width:100%;margin-bottom:8px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px">
         <label class="note" data-i18n="A note to your future self (optional)" style="display:block;margin-bottom:4px">A note to your future self (optional)</label>
-        <textarea id="medComment" data-i18n-ph="Why this score? Note it for your future self." placeholder="Why this score? Note it for your future self." style="width:100%;min-height:70px;background:#08111e;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px;resize:vertical"></textarea>
+        <textarea id="medComment" data-i18n-ph="Why this score? Note it for your future self." placeholder="Why this score? Note it for your future self." style="width:100%;min-height:70px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px;resize:vertical"></textarea>
         <button class="btn" id="medRateSave" style="width:100%;margin-top:10px" data-i18n="Save rating">Save rating</button>
       </div>
     </div>
@@ -2447,11 +2447,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <button class="btn" id="aiSend" style="width:100%" data-i18n="Send">Send</button>
       <div id="aiStatus" class="note" style="display:none;margin-top:8px"></div>
       <div id="aiAnswer" style="display:none;margin-top:12px;border:1px solid var(--cyan-dim);border-radius:10px;padding:12px;background:var(--panel2)">
-        <div style="font-family:'Orbitron';font-weight:700;font-size:13px;color:#eaffff;margin-bottom:6px">🤖 Assistant MRLN</div>
+        <div style="font-family:'Orbitron';font-weight:700;font-size:13px;color:var(--bright);margin-bottom:6px">🤖 Assistant MRLN</div>
         <div id="aiAnswerBody" style="font-size:13px;color:var(--txt);line-height:1.5"></div>
       </div>
       <div id="aiProposal" style="display:none;margin-top:12px;border:1px solid var(--cyan-dim);border-radius:10px;padding:12px;background:var(--panel2)">
-        <div style="font-family:'Orbitron';font-weight:700;font-size:13px;color:#eaffff;margin-bottom:6px">Proposed changes</div>
+        <div style="font-family:'Orbitron';font-weight:700;font-size:13px;color:var(--bright);margin-bottom:6px">Proposed changes</div>
         <div id="aiSummary" style="font-size:13px;color:var(--txt);margin-bottom:8px"></div>
         <div id="aiChanges"></div>
         <div id="aiRec" class="note" style="margin-top:8px"></div>
@@ -3224,15 +3224,15 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var avg = MODEL.income.avg || 0;
     if(avg && inc <= avg*0.85){
       note.textContent = 'A lean month — tighter, but the plan holds if you ease off savings.';
-      outEl.style.color = '#ffb547';
+      outEl.style.color = 'var(--amber)';
     } else if(avg && inc >= avg*1.25){
       note.textContent = 'A strong month — a great time to pay down debt faster or save extra.';
-      outEl.style.color = '#7CFFB2';
+      outEl.style.color = 'var(--lime)';
     } else {
       note.textContent = 'A typical month. Comfortable and manageable.';
-      outEl.style.color = left < 0 ? '#ff5c7c' : '#7CFFB2';
+      outEl.style.color = left < 0 ? 'var(--red)' : 'var(--lime)';
     }
-    document.getElementById('cfFree').style.color = free < 0 ? '#ff5c7c' : '#00e5ff';
+    document.getElementById('cfFree').style.color = free < 0 ? 'var(--red)' : 'var(--cyan)';
   }
   slider.addEventListener('input', updateCF);
   updateCF();
@@ -3451,7 +3451,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var rateBit = (+b.rate>0) ? (' · '+tf('{r}% interest', {r:(+b.rate)})) : '';
       return '<div style="border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:12px;background:#08111e">'+
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'+
-          '<div style="font-size:15px;font-weight:700;color:#eaffff"><span>'+esc(b.icon||'💰')+'</span> <span data-i18n-skip>'+esc(b.name||t('Savings'))+'</span></div>'+
+          '<div style="font-size:15px;font-weight:700;color:var(--bright)"><span>'+esc(b.icon||'💰')+'</span> <span data-i18n-skip>'+esc(b.name||t('Savings'))+'</span></div>'+
           '<div style="flex:none;display:flex;gap:6px">'+
             '<button class="btn ghost sb-add" data-id="'+esc(b.id)+'" style="padding:4px 9px;font-size:12px">+ '+t('Money')+'</button>'+
             '<button class="iconbtn sb-edit" data-id="'+esc(b.id)+'" title="'+t('Edit')+'" style="padding:4px 8px">✎</button>'+
@@ -3581,7 +3581,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       setTxt('klTot', fmt(borrow));
       setTxt('klSurp', fmt(s));
       var afterEl = document.getElementById('klAfter');
-      if(afterEl){ afterEl.textContent = after >= 0 ? fmt(after) : '− ' + fmt(-after); afterEl.style.color = after < 0 ? '#ff5c7c' : ''; }
+      if(afterEl){ afterEl.textContent = after >= 0 ? fmt(after) : '− ' + fmt(-after); afterEl.style.color = after < 0 ? 'var(--red)' : ''; }
       var v = verdict(I);
       var box = document.getElementById('klVerdict');
       if(box){ box.style.borderColor = 'rgb('+v.rgb+')'; box.style.background = 'rgba('+v.rgb+',0.08)'; }
@@ -3593,7 +3593,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var i = b/2, a = s - i, vv = verdict(i);
         return '<tr><td>' + fmtN(b) + ' '+curInfo().sym+'</td>' +
           '<td class="num">' + fmtN(i) + '</td>' +
-          '<td class="num" style="color:' + (a<0 ? '#ff5c7c' : 'var(--cyan)') + '">' + signed(a) + '</td>' +
+          '<td class="num" style="color:' + (a<0 ? 'var(--red)' : 'var(--cyan)') + '">' + signed(a) + '</td>' +
           '<td class="num" style="color:rgb(' + vv.rgb + ')">' + vv.tag + '</td></tr>';
       }).join('');
     }
@@ -4441,9 +4441,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var deltaEl=document.getElementById('calDelta'), weekEl=document.getElementById('calWeek'), vEl=document.getElementById('calVerdict');
     if(c.tdee==null){ if(deltaEl) deltaEl.textContent='—'; if(weekEl) weekEl.textContent='—'; return; }
     var delta=intake-c.tdee;
-    if(deltaEl){ deltaEl.textContent=(delta>=0?'+':'−')+kcal(Math.abs(delta)); deltaEl.style.color = delta<0?'#ffb547':delta>0?'#7CFFB2':'#00e5ff'; }
+    if(deltaEl){ deltaEl.textContent=(delta>=0?'+':'−')+kcal(Math.abs(delta)); deltaEl.style.color = delta<0?'var(--amber)':delta>0?'var(--lime)':'var(--cyan)'; }
     var perWeekKg=delta*7/7700;
-    if(weekEl){ weekEl.textContent=(perWeekKg>=0?'+':'−')+Math.abs(perWeekKg).toFixed(2)+' kg/week'; weekEl.style.color = Math.abs(perWeekKg)>1 ? '#ffb547' : ''; }
+    if(weekEl){ weekEl.textContent=(perWeekKg>=0?'+':'−')+Math.abs(perWeekKg).toFixed(2)+' kg/week'; weekEl.style.color = Math.abs(perWeekKg)>1 ? 'var(--amber)' : ''; }
     if(vEl){
       var v;
       if(intake < c.bmr*0.85 || intake < 1300){ v={t:'⛔ Dangerously low — below what your body needs even at rest. Not safe to sustain; you risk muscle loss, fatigue and worse.', c:'#ff5c7c'}; }
@@ -4692,7 +4692,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       show('.prStrength', prMode==='strength'); show('.prCardio', prMode==='cardio');
       var segs=document.querySelectorAll('.prSeg');
       for(var i=0;i<segs.length;i++){ var on=segs[i].getAttribute('data-prmode')===prMode;
-        segs[i].style.background = on?'var(--cyan-dim)':''; segs[i].style.borderColor = on?'var(--cyan)':''; segs[i].style.color = on?'#eaffff':''; }
+        segs[i].style.background = on?'var(--cyan-dim)':''; segs[i].style.borderColor = on?'var(--cyan)':''; segs[i].style.color = on?'var(--bright)':''; }
       var ex=document.getElementById('prEx'); if(ex) ex.placeholder = t(prMode==='cardio'?'e.g. Running, Rowing':'e.g. Bench press');
     }
     window.__refreshPrMode=function(){ setPrMode(prMode); };   // re-apply labels/placeholder on a live language switch
@@ -5000,10 +5000,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var rows=function(label,std,you,unit){ return '<div class="calc-row"><span>'+label+'</span><b>'+std+unit+(T&&sc.mult!==1?(' · <span style="color:var(--cyan)">'+you+unit+' for you</span>'):'')+'</b></div>'; };
     var html='';
     if(T){
-      if(_mealBest===m){ html+='<div class="note" style="margin:0 0 10px;background:rgba(124,255,178,.12);border:1px solid var(--lime);border-radius:8px;padding:8px 10px;color:#eaffff">✅ <b>Your healthiest pick</b> for this goal — best protein-to-calorie balance of your matching meals, and still genuinely tasty.</div>'; }
+      if(_mealBest===m){ html+='<div class="note" style="margin:0 0 10px;background:rgba(124,255,178,.12);border:1px solid var(--lime);border-radius:8px;padding:8px 10px;color:var(--bright)">✅ <b>Your healthiest pick</b> for this goal — best protein-to-calorie balance of your matching meals, and still genuinely tasty.</div>'; }
       html+='<div class="note" style="margin:0 0 10px">Your serving: <b>'+sc.mult+'×</b> the standard recipe → <b>'+sc.kcal+' kcal</b>, '+sc.p+'g protein, '+sc.c+'g carbs, '+sc.f+'g fat.</div>';
     }
-    html+='<div class="subtotal" style="margin:0 0 12px"><div class="calc-row" style="font-weight:700;color:#eaffff"><span>Standard serving</span><span>'+(T?'Scaled for you':'')+'</span></div>'+
+    html+='<div class="subtotal" style="margin:0 0 12px"><div class="calc-row" style="font-weight:700;color:var(--bright)"><span>Standard serving</span><span>'+(T?'Scaled for you':'')+'</span></div>'+
       rows('Calories', m.kcal, sc.kcal, ' kcal')+rows('Protein', m.p, sc.p, ' g')+rows('Carbs', m.c, sc.c, ' g')+rows('Fat', m.f, sc.f, ' g')+'</div>';
     html+='<h2 style="font-size:14px;margin:6px 0 6px">Ingredients</h2><ul style="margin:0 0 12px;padding-left:18px;line-height:1.7;color:var(--txt)">'+
       (m.ing||[]).map(function(i){ return '<li>'+esc(i)+'</li>'; }).join('')+'</ul>';
@@ -5045,7 +5045,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var bpace=prPace(best.secs, distIn(best));
         var header = bpace ? tf('best {dist} {unit} · {pace}/{unit}',{dist:distIn(best),unit:gu,pace:bpace}) : tf('best {dist} {unit}',{dist:distIn(best),unit:gu});
         html += '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline">'+
-          '<b style="font-family:\'Orbitron\';font-size:14px;color:#eaffff">'+esc(best.ex)+'</b>'+
+          '<b style="font-family:\'Orbitron\';font-size:14px;color:var(--bright)">'+esc(best.ex)+'</b>'+
           '<span style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--lime)">'+esc(header)+'</span></div>';
         html += arr.map(function(p){
           var dv=distIn(p), pc=prPace(p.secs, dv);
@@ -5057,7 +5057,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var sarr=arr.slice().sort(function(a,b){ return epley1rm(b.wt,b.reps)-epley1rm(a.wt,a.reps); });
         var best=sarr[0];
         html += '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline">'+
-          '<b style="font-family:\'Orbitron\';font-size:14px;color:#eaffff">'+esc(best.ex)+'</b>'+
+          '<b style="font-family:\'Orbitron\';font-size:14px;color:var(--bright)">'+esc(best.ex)+'</b>'+
           '<span style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--lime)">best '+best.wt+'kg×'+best.reps+' · ~'+Math.round(epley1rm(best.wt,best.reps))+'kg 1RM</span></div>';
         html += sarr.map(function(p){
           return '<div class="item-row"><div class="meta">'+p.wt+' kg × '+p.reps+(p.id===best.id?' <span class="tag now" style="font-size:8px;padding:1px 5px">PR</span>':'')+
@@ -7176,7 +7176,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         '<div class="calc-row"><span>≈ per month</span><b>'+M(R.net/12)+'</b></div>'+
         '<div class="calc-row"><span>Marginal rate (next kr/€/$)</span><b>'+R.marg+'%</b></div></div>';
       if(R.recon){ var d=R.recon.diff; html+='<div class="note" style="margin-top:12px;'+(d>=0?'color:var(--lime)':'color:var(--amber)')+'">'+(d>=0?('✅ '+tf('Estimated refund')+(R.country==='DK'?' (overskydende skat)':'')+': <b>'+M(d)+'</b>'):('⚠️ '+tf('You may owe')+(R.country==='DK'?' (restskat)':'')+': <b>'+M(-d)+'</b>'))+' — '+tf('withheld')+' '+M(R.recon.withheld)+' '+tf('vs estimated')+' '+M(R.recon.computed)+'.</div>'; }
-      if(R.dk){ html+='<div style="margin-top:14px;background:#08131f;border:1px solid var(--line);border-radius:12px;padding:14px"><b style="font-family:Orbitron;font-size:13px;color:#eaffff">📋 Forskudsopgørelse — suggested entries</b>'+
+      if(R.dk){ html+='<div style="margin-top:14px;background:#08131f;border:1px solid var(--line);border-radius:12px;padding:14px"><b style="font-family:Orbitron;font-size:13px;color:var(--bright)">📋 Forskudsopgørelse — suggested entries</b>'+
         '<div class="calc-row" style="margin-top:8px"><span>Trækprocent</span><b>'+R.dk.traek+' %</b></div>'+
         '<div class="calc-row"><span>Fradrag / month</span><b>'+M(R.dk.fradragMo)+'</b></div>'+
         '<div class="calc-row"><span>Fradrag / 14 days</span><b>'+M(R.dk.fradrag14)+'</b></div>'+
@@ -7187,7 +7187,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var exp=R.gross, lo=Math.max(1000,Math.round(exp*0.3/1000)*1000), hi=Math.round(exp*2/1000)*1000;
         var act=(STATE.tax.actual>=lo && STATE.tax.actual<=hi)?STATE.tax.actual:exp;
         html+='<div style="margin-top:14px;background:#08131f;border:1px solid var(--line);border-radius:12px;padding:14px">'+
-          '<b style="font-family:Orbitron;font-size:13px;color:#eaffff">📊 Over / under-estimate simulator</b>'+
+          '<b style="font-family:Orbitron;font-size:13px;color:var(--bright)">📊 Over / under-estimate simulator</b>'+
           '<div class="note" style="margin:4px 0 10px">Your estimate is <b>'+M(exp)+'</b>. Drag the bar to your <b>actual</b> income to see the year-end refund or bill — and what to update your withholding to.</div>'+
           '<input type="range" id="txSimSlider" min="'+lo+'" max="'+hi+'" step="1000" value="'+act+'" style="width:100%">'+
           '<div id="txSimOut" style="margin-top:8px"></div></div>';
@@ -7662,7 +7662,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
             '<small>'+e.total.kcal+' kcal · P '+e.total.p+'g · C '+e.total.c+'g · F '+e.total.f+'g</small></div></div>'+
             '<button class="btn danger" data-delfood="'+e.id+'" style="padding:5px 10px;font-size:12px;flex:0 0 auto">✕</button></div>';
         }).join('');
-        return '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline"><b style="font-family:Orbitron;font-size:13px;color:#eaffff">'+dayLabel(d)+'</b><small style="color:var(--txt-dim)">'+dt.kcal.toLocaleString('en-GB')+' kcal · '+dt.p+'g protein</small></div>'+rows;
+        return '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline"><b style="font-family:Orbitron;font-size:13px;color:var(--bright)">'+dayLabel(d)+'</b><small style="color:var(--txt-dim)">'+dt.kcal.toLocaleString('en-GB')+' kcal · '+dt.p+'g protein</small></div>'+rows;
       }).join('');
     }
     function del(id){ STATE.foodLog=log().filter(function(e){ return e.id!==id; }); if(MEDIA.supported()) MEDIA.del(id); logChange('food-del','Removed a meal'); autosave(); renderToday(); renderHistory(); }
@@ -7856,7 +7856,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     function subLine(m){ return '<small style="color:var(--txt-dim);font-family:\'Share Tech Mono\';font-size:11px">'+esc(t(TYPE_LABEL[typeOf(m)]))+(m.genre?(' · '+esc(m.genre)):'')+'</small>'; }
     // Akashi's safe outbound pattern: encodeURIComponent(title) + esc(href), static label, noreferrer.
     function imdb(m){ var href='https://www.imdb.com/find/?q='+encodeURIComponent(m.title||''); return '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer" class="btn ghost" data-i18n-skip title="IMDb" style="min-height:36px;display:inline-flex;align-items:center;padding:4px 10px;font-size:11px;flex:0 0 auto;text-decoration:none">↗ IMDb</a>'; }
-    function paintSeg(host, attr, val){ if(!host) return; var b=host.querySelectorAll('button'); for(var i=0;i<b.length;i++){ var on=b[i].getAttribute(attr)===val; b[i].style.background=on?'var(--cyan-dim)':''; b[i].style.borderColor=on?'var(--cyan)':''; b[i].style.color=on?'#eaffff':''; } }
+    function paintSeg(host, attr, val){ if(!host) return; var b=host.querySelectorAll('button'); for(var i=0;i<b.length;i++){ var on=b[i].getAttribute(attr)===val; b[i].style.background=on?'var(--cyan-dim)':''; b[i].style.borderColor=on?'var(--cyan)':''; b[i].style.color=on?'var(--bright)':''; } }
 
     function add(){
       var inp=document.getElementById('medTitle'); if(!inp) return;
@@ -8386,7 +8386,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(document.getElementById('personalizeNag')) return;
     var bar=document.createElement('div'); bar.id='personalizeNag';
     bar.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9000;max-width:92%;background:linear-gradient(135deg,#10243a,#0a1828);border:1px solid var(--cyan,#0ce);border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center;font-family:Rajdhani,sans-serif';
-    bar.innerHTML='<div style="flex:1;min-width:0"><b style="color:#eaffff;font-family:Orbitron,sans-serif;font-size:13px">Finish personalizing</b><div style="color:var(--txt-dim,#9bb);font-size:13px">Your dashboard works, but adding your income, expenses &amp; body stats makes every grade and simulator real.</div></div>'+
+    bar.innerHTML='<div style="flex:1;min-width:0"><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">Finish personalizing</b><div style="color:var(--txt-dim,#9bb);font-size:13px">Your dashboard works, but adding your income, expenses &amp; body stats makes every grade and simulator real.</div></div>'+
       '<button id="nagGo" style="background:var(--cyan,#0ce);color:#021019;border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-family:Orbitron,sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">Finish setup</button>'+
       '<button id="nagX" aria-label="Dismiss" style="background:transparent;color:var(--txt-dim,#9bb);border:0;font-size:20px;cursor:pointer;line-height:1">✕</button>';
     document.body.appendChild(bar);
@@ -8409,9 +8409,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     ];
     var back=document.createElement('div'); back.className='modal-back show'; back.id='guideBack';
     back.style.cssText='position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(2,8,16,.78);padding:16px';
-    var rows=GUIDE.map(function(g){ return '<div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(120,200,255,.1)"><span style="font-size:20px;flex:0 0 26px">'+g[0]+'</span><div><b style="color:#eaffff;font-family:Orbitron,sans-serif;font-size:13px">'+g[1]+'</b><div style="color:var(--txt-dim,#9bb);font-size:13px;margin-top:2px">'+g[2]+'</div></div></div>'; }).join('');
+    var rows=GUIDE.map(function(g){ return '<div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(120,200,255,.1)"><span style="font-size:20px;flex:0 0 26px">'+g[0]+'</span><div><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">'+g[1]+'</b><div style="color:var(--txt-dim,#9bb);font-size:13px;margin-top:2px">'+g[2]+'</div></div></div>'; }).join('');
     back.innerHTML='<div style="background:linear-gradient(160deg,#0c1c2e,#081320);border:1px solid var(--cyan,#0ce);border-radius:16px;max-width:460px;width:100%;max-height:88vh;overflow:auto;padding:20px 20px 16px;box-shadow:0 12px 50px rgba(0,0,0,.6)">'+
-      '<h2 style="font-family:Orbitron,sans-serif;color:#eaffff;font-size:17px;margin:0 0 4px">What\'s in here 🗺️</h2>'+
+      '<h2 style="font-family:Orbitron,sans-serif;color:var(--bright);font-size:17px;margin:0 0 4px">What\'s in here 🗺️</h2>'+
       '<p style="color:var(--txt-dim,#9bb);font-size:13px;margin:0 0 10px">A quick tour of each section so you know where everything lives.</p>'+
       rows+
       '<button id="guideDone" style="margin-top:16px;width:100%;background:var(--cyan,#0ce);color:#021019;border:0;border-radius:10px;padding:12px;font-weight:700;font-family:Orbitron,sans-serif;font-size:13px;cursor:pointer">Got it — show me around</button></div>';
@@ -8667,7 +8667,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var fo=document.getElementById('mintFidOut');
       if(fo){
         fo.innerHTML = '<div style="color:var(--txt-dim);font-size:11px;margin-bottom:3px">🔗 LINK — send this (works on iPhone too), then the key below:</div>'
-          + '<div id="mintLink" style="color:#7CFFB2;word-break:break-all;cursor:pointer;user-select:text">'+esc(link)+'</div>'
+          + '<div id="mintLink" style="color:var(--lime);word-break:break-all;cursor:pointer;user-select:text">'+esc(link)+'</div>'
           + '<div style="color:var(--txt-dim);font-size:11px;margin-top:6px">File ID '+fid+(isNew?' · offline file also downloaded: finance-hud-'+fid+'.html':' · renewal (no new file)')+'</div>';
         var lk=document.getElementById('mintLink'); if(lk) lk.addEventListener('click', function(){ try{ var r=document.createRange(); r.selectNodeContents(lk); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }catch(_){} });
       }
@@ -8773,7 +8773,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     d.style.cssText='position:fixed;inset:0;z-index:97000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(3,7,14,.86)';
     d.innerHTML='<div style="max-width:380px;text-align:center;border:1px solid var(--cyan);border-radius:18px;padding:30px 24px;background:linear-gradient(180deg,rgba(0,229,255,.12),var(--panel2));box-shadow:var(--glow)">'+
       '<div style="font-size:52px;line-height:1">🎂</div>'+
-      '<div style="font-family:\'Orbitron\';font-weight:800;font-size:23px;color:#eaffff;margin-top:10px">Happy Birthday'+(name?(', '+esc(name)):'')+'!</div>'+
+      '<div style="font-family:\'Orbitron\';font-weight:800;font-size:23px;color:var(--bright);margin-top:10px">Happy Birthday'+(name?(', '+esc(name)):'')+'!</div>'+
       (age!=null?'<div style="font-family:\'Orbitron\';font-weight:700;font-size:16px;color:var(--lime);margin-top:10px">⬆ LEVEL UP — you\'re now '+age+'</div>':'<div style="font-size:15px;color:var(--lime);margin-top:10px;font-weight:700">⬆ LEVEL UP!</div>')+
       '<div style="font-size:14px;color:var(--txt);margin-top:12px">Another year stronger. Here\'s to smart money and big gains this year. 💪</div>'+
       '<button class="btn" id="bdayClose" style="margin-top:18px;width:100%">Thanks</button></div>';
