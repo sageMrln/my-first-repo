@@ -122,7 +122,15 @@ run(['tools/test/import_sanitize_test.js'], 'import-sanitize suite');
 section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
 run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
 
-// 12b) guards the TIGHT legal-identity PII exception in preflight (the intended-public
+// 12a) preflight guard on landing.html — static public marketing page (no slots/keys/watchdogs; legal-identity exception for footer contact)
+section('preflight — landing.html (static marketing page, no PII except sanctioned footer contact)');
+run(['tools/publish/preflight.js', 'landing.html'], 'preflight(landing.html)');
+
+// 12b) preflight guard on legal.html — static legal + privacy page (legal-identity exception for provider/contact throughout)
+section('preflight — legal.html (static legal page, legal-identity exception for provider/contact)');
+run(['tools/publish/preflight.js', 'legal.html'], 'preflight(legal.html)');
+
+// 12c) guards the TIGHT legal-identity PII exception in preflight (the intended-public
 //      trader name/contact is allowed ONLY inside #legalBack — never a blanket removal)
 section('preflight PII exception guard — tools/test/preflight_pii_test.js');
 run(['tools/test/preflight_pii_test.js'], 'preflight-PII guard');

@@ -1119,3 +1119,53 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * Hugo GREEN complete. All three gate sign-offs satisfied: Akashi SAFE (b5257a0), Mikoto MISSING:0, Hugo GREEN (c68e9c0).
   * Awaiting Osefe's explicit "ship it" (sleep-mode: no auto-publish even for launch-day).
   * After ship: Kaito merges + publishes to gh-pages. Deploy verified. Done.
+
+## [2026-07-29] — direct (Osefe) — PRODUCTION DEPLOY FINAL GREEN @ e97e08d (v28 + backup-reminder i18n)
+
+- Asked: Final GREEN sign-off for production deploy tonight. Current tip e97e08d. Osefe gave explicit launch go. Two jobs: (1) Close gate-coverage gap: add preflight runs for landing.html + legal.html to green.js (Akashi flagged they weren't tested through preflight yet). (2) Full GREEN on the final tip.
+
+- Did / found / thought:
+  * Pulled branch `claude/vibrant-pasteur-ie24ab`, confirmed on tip e97e08d (backup-reminder i18n completed, MISSING: 0 for 6 active langs; MS parked).
+  * (1) **Gate-coverage fix:** Edited `tools/release/green.js` to add two new preflight runs after index.html preflight (lines 12a/12b): `run(['tools/publish/preflight.js', 'landing.html'])` + `run(['tools/publish/preflight.js', 'legal.html'])`. Preflight.js already has file-aware profiles (isMarketing check @ line 37) with legal-identity PII exception for both marketing + legal pages. Renamed old 12b→12c.
+  * (2) **Full GREEN run:** `node tools/release/green.js` → **GREEN exit 0**.
+    - **HTML parse guard (step 0):** 4/4 script blocks parse ✓
+    - **Parser regression (parse_test.js):** 21/21 ✓
+    - **Assistant MRLN (assistant_test.js):** 16/16 ✓
+    - **Streak engine (streak_test.js):** 4/4 ✓
+    - **Sound engine (sound_test.js):** 7/7 ✓
+    - **Tab reorder (reorder_test.js):** 7/7 ✓
+    - **Smart Onboarding (onboarding_test.js):** 10/10 ✓
+    - **Data-transfer losslessness (transfer_test.js):** 58/58 ✓
+    - **Silly questions (assistant_silly_test.js):** 43/43 ✓
+    - **Photo-storage IndexedDB (photo_store_test.js):** 17/17 ✓
+    - **Personal Records (pr_test.js):** 12/12 ✓
+    - **Tax engine (tax_test.js):** 105/105 ✓
+    - **Media Log (media_test.js):** 43/43 ✓
+    - **Save Safety (savesafety_test.js):** 14/14 ✓
+    - **Monthly Income Log (income_log_test.js):** 35/35 ✓
+    - **Import sanitize (import_sanitize_test.js):** 25/25 ✓
+    - **Total: 417 tests** ✓
+  * **NEW PREFLIGHT CHECKS:**
+    - ✓ **preflight(index.html)** CLEAR (6 checks: slots empty, 1 pub key, no PII, PUBCHK intact, 6 script tags balanced)
+    - ✓ **preflight(landing.html)** CLEAR (4 checks: no hud-state/key, no PII, legal-identity exception applied, 1 script tag balanced) — **NEW, now gated**
+    - ✓ **preflight(legal.html)** CLEAR (4 checks: no hud-state/key, no PII, legal-identity exception applied, 2 script tags balanced) — **NEW, now gated**
+  * **Preflight PII exception guard (preflight_pii_test.js):** 12/12 cases pass ✓ (includes tests on landing.html + legal.html)
+  * **Leak scan (other published files):** All 4 clean ✓
+    - GUIDE.md clean
+    - manifest.webmanifest clean
+    - sw.js clean
+    - team-chat.html clean
+  * **Version tag:** APP_VER v28 === sw.js VERSION v28 ✓
+  * **i18n status:** MISSING: 0 (for 6 active languages; 13 missing in MS/Malay which is intentionally parked) ✓
+
+- Decision / result:
+  * **GREEN @ e97e08d** — all 417 tests pass. HTML parse guard ✓ (4/4 scripts). **NEW gate coverage:** preflight(landing.html) ✓ CLEAR + preflight(legal.html) ✓ CLEAR. Preflight PII exception guard ✓ (12/12). Leak scan ✓ (4/4 files). Version tag v28 ✓. MISSING: 0 (6 active langs) ✓. Ready for production deploy.
+  * **Gate-coverage upgrade:** landing.html + legal.html now tested through preflight on every release (matches index.html coverage). Future edits to either page can't slip past the gate.
+
+- Commits / SHAs:
+  * e97e08d (app tip — backup-reminder i18n complete, v28)
+  * (this log entry + green.js change committed now)
+
+- Still open / next:
+  * Hugo GREEN complete on e97e08d. All gate sign-offs already satisfied (Akashi SAFE + Mikoto MISSING:0 on prior tip). Awaiting Osefe's explicit "ship it" then Kaito's merge/publish to gh-pages.
+
