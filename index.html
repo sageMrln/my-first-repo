@@ -111,6 +111,13 @@
   html[data-layout=standard] .card{ padding:22px 22px; margin-bottom:18px; }
   html[data-layout=standard] .item-row{ padding:16px 2px; }
 
+  /* fix: seal the page background (no white overscroll void) + tame rubber-band scroll */
+  html{ background:var(--bg); overscroll-behavior-y:none; }
+  #lockScreen{ overscroll-behavior:contain; }
+  /* fix: hide the food-photo <img>s until they actually have a src (no broken-image glyph) */
+  #foodPicImg:not([src]), #foodPicImg[src=""],
+  #foodPhotoThumb:not([src]), #foodPhotoThumb[src=""]{ display:none !important; }
+
   *{margin:0;padding:0;box-sizing:border-box}
 
   body{
