@@ -93,6 +93,17 @@ const LEGAL_ALLOW = [
   /contact us at Miradiosefe@gmail\.com/g
 ];
 
+// index.html: the lock-screen renewal-contact sentence, allowed ONLY inside the
+// .lk-foot element. The SAME sanctioned public contact (Miradiosefe@gmail.com) is
+// reused as the "email me to get next month's key" renewal instruction (keys are
+// delivered by email). Anchored to the EXACT phrasing AND scoped to .lk-foot, so a
+// bare/stray Miradiosefe@gmail.com — or ANY other email — in the lock foot or
+// anywhere else still trips PII_RE. Fail-closed: if .lk-foot isn't found nothing is
+// stripped and the phrase would BLOCK (never leak).
+const LOCK_ALLOW = [
+  /Email Miradiosefe@gmail\.com to get next month's key/g
+];
+
 // landing.html / legal.html: sanctioned contact/footer identity forms (context-anchored)
 const CONTACT_ALLOW = [
   // Provider name (bold or plain), optionally followed by ("we", "us") — footer, meta, legal eff-lines
@@ -112,13 +123,23 @@ if (isMarketing) {
   CONTACT_ALLOW.forEach(function (re) { sanitized = sanitized.replace(re, ''); });
   piiScan = sanitized;
 } else {
-  // index-style: strip sanctioned forms ONLY inside the #legalBack block (fail-closed)
-  const legalBlock = html.match(/<div class="modal-back" id="legalBack">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/);
+  // index-style: fail-closed, scoped strips of anchored sanctioned forms only.
+  let sanitized = html;
+  // (a) legal-identity forms — ONLY inside the #legalBack modal block.
+  const legalBlock = sanitized.match(/<div class="modal-back" id="legalBack">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/);
   if (legalBlock) {
-    let sanitized = legalBlock[0];
-    LEGAL_ALLOW.forEach(function (re) { sanitized = sanitized.replace(re, ''); });
-    piiScan = html.replace(legalBlock[0], sanitized);
+    let lb = legalBlock[0];
+    LEGAL_ALLOW.forEach(function (re) { lb = lb.replace(re, ''); });
+    sanitized = sanitized.replace(legalBlock[0], lb);
   }
+  // (b) the renewal-contact sentence — ONLY inside the lock-screen .lk-foot element.
+  const lockFoot = sanitized.match(/<div class="lk-foot"[\s\S]*?<\/div>/);
+  if (lockFoot) {
+    let lf = lockFoot[0];
+    LOCK_ALLOW.forEach(function (re) { lf = lf.replace(re, ''); });
+    sanitized = sanitized.replace(lockFoot[0], lf);
+  }
+  piiScan = sanitized;
 }
 const pii = piiScan.match(PII_RE);
 if (pii) fails.push('possible owner PII: ' + [...new Set(pii)].join(', '));

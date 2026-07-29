@@ -46,6 +46,13 @@ const cases = [
   ['index: <p>email</p> leaked OUTSIDE (by-loc)',  () => ['index.html', index.replace('<footer>', '<p>Miradiosefe@gmail.com</p><footer>')],          1],
   ['index: CPR/IBAN-style INSIDE legal fails',     () => ['index.html', index.replace('<h5>14. Contact</h5>', '<h5>14. Contact</h5><p>DK1234567890123</p>')], 1],
   ['index: email non-sanctioned form INSIDE legal',() => ['index.html', index.replace('<h5>14. Contact</h5>', '<h5>14. Contact Miradiosefe@gmail.com</h5>')], 1],
+  // ---- index.html lock-screen renewal line (.lk-foot exception) ----
+  // The real index.html carries the sanctioned renewal sentence in .lk-foot; 'index: real
+  // passes' above is the positive lock — if LOCK_ALLOW is deleted/weakened it flips to fail.
+  // These two prove the exception stays TIGHT: it is scoped to .lk-foot AND to the exact
+  // phrasing, so the same email in any other form/location still BLOCKS.
+  ['index: renewal phrase OUTSIDE lk-foot still fails', () => ['index.html', index.replace('<body', "<!-- Email Miradiosefe@gmail.com to get next month's key --><body")], 1],
+  ['index: different-form email INSIDE lk-foot fails',  () => ['index.html', index.replace('never leaves this device.', 'never leaves this device. Ping Miradiosefe@gmail.com anytime.')], 1],
   // ---- landing.html / legal.html (static-page contact/footer exception) ----
   ['landing: real passes',                         () => ['landing.html', landing],                                                                  0],
   ['legal: real passes',                           () => ['legal.html', legal],                                                                      0],
