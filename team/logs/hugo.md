@@ -1169,3 +1169,33 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Hugo GREEN complete on e97e08d. All gate sign-offs already satisfied (Akashi SAFE + Mikoto MISSING:0 on prior tip). Awaiting Osefe's explicit "ship it" then Kaito's merge/publish to gh-pages.
 
+## [2026-07-29 ~22:00] — direct (Osefe) — favicon-only re-GREEN @ f0bff4d (v28 production deploy)
+
+- Asked: Fast re-GREEN on the new tip f0bff4d for tonight's production deploy. ONE published-file change: favicon `<link>` tags added to BOTH landing.html + legal.html (two lines each in <head>). No script changes, no strings. Confirm GREEN exit 0 + exact test counts, script balance unchanged, version tags match v28, MISSING:0 for 6 active langs.
+
+- Did / found / thought:
+  * Pulled branch `claude/vibrant-pasteur-ie24ab`, confirmed on tip f0bff4d.
+  * **Change audit:** Verified diff 7e0c8da..f0bff4d against index.html + sw.js (untouched). landing.html + legal.html each received TWO `<link>` tags (icon + apple-touch-icon), both referencing icon-192.png. Zero script tags added (landing still 1 script, legal still 2 scripts).
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0**
+    - **HTML parse guard (step 0):** 4/4 script blocks parse ✓
+    - **All 16 suites pass:** parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓, income_log 35/35 ✓, import_sanitize 25/25 ✓ = **417 total tests**
+    - **Preflight CLEAR on all 3 pages:**
+      - index.html ✓ (6 script tags balanced, slots empty, 1 public key, no PII, PUBCHK intact)
+      - landing.html ✓ (1 script tag balanced — NEW favicon link adds NO scripts; legal-identity exception applied)
+      - legal.html ✓ (2 script tags balanced — NEW favicon links add NO scripts; legal-identity exception applied)
+    - **Preflight PII exception guard:** 12/12 cases ✓ (includes adversarial tests on landing + legal pages)
+    - **Leak scan:** 4/4 files clean ✓ (GUIDE.md, manifest, sw.js, team-chat)
+    - **Version tag:** APP_VER v28 === sw.js VERSION v28 ✓
+  * **Script tag counts verified:** landing=1 (unchanged), legal=2 (unchanged) — favicons are `<link>` elements, not scripts.
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** for 6 active target languages (es/da/de/sv/nb/hu) ✓. The 13 missing entries are all in `ms` (Malay), which is intentionally parked — not a gate failure per protocol.
+
+- Decision / result:
+  * **GREEN @ f0bff4d** — all 417 tests pass. HTML parse guard ✓ (4/4 scripts). Preflight CLEAR ✓ (index.html + landing.html + legal.html, legal-identity PII exception applies). Preflight PII exception guard ✓ (12/12 adversarial cases). Leak scan ✓ (4/4 files clean). Version tag v28 matched ✓. Script tag balance verified unchanged ✓ (landing=1, legal=2). MISSING: 0 (6 active langs) ✓. Favicon-only change touches NO logic, NO data paths, NO i18n strings. Ready for production deploy.
+
+- Commits / SHAs:
+  * f0bff4d (app tip — favicon to landing.html + legal.html, v28)
+  * (this log entry committed now)
+
+- Still open / next:
+  * Hugo GREEN @ f0bff4d complete. All gate sign-offs already satisfied (Akashi SAFE + Mikoto MISSING:0 from prior; no changes to code/i18n). Awaiting Osefe's explicit "ship it" (sleep-mode: no auto-publish) then Kaito's merge/publish to gh-pages.
+
