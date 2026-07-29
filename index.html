@@ -8899,7 +8899,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
   // ---- reminders ----
   function toast(msg){
-    var d=document.createElement('div'); d.style.cssText='position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:98000;max-width:90vw;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--cyan);border-radius:12px;padding:12px 16px;color:#eaffff;font-weight:700;box-shadow:var(--glow);font-size:14px';
+    var d=document.createElement('div'); d.style.cssText='position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:98000;max-width:90vw;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--cyan);border-radius:12px;padding:12px 16px;color:var(--bright);font-weight:700;box-shadow:var(--glow);font-size:14px';
     d.className='mrln-toast'; d.textContent=msg; document.body.appendChild(d); setTimeout(function(){ d.style.transition='opacity .5s'; d.style.opacity='0'; setTimeout(function(){ d.remove(); }, 600); }, 5000);
   }
   // notification permission + branded delivery (via the service worker when present,
