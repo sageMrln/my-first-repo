@@ -2445,3 +2445,10 @@ Entry format:
 - VERDICT: **SAFE @ 546bfcf.** Watchdogs byte-identical; slots empty; the only innerHTML touch is a static color swap; cssVar is read-only color-only; theme migration is whitelist-forced (no injection); pure presentation → no poison needed; gates GREEN/CLEAR. NO security edit required.
 - Commits/SHAs reviewed: 546bfcf (tip), 4a01f78/7ad6aaf/cb561aa (overhaul), baseline ddef4c0. Read-only, NO lock, NO app-code edit (TEAM-CHAT + this log only). Posting SAFE @ 546bfcf to TEAM-CHAT.
 - Still open: gate needs Hugo GREEN @546bfcf (I re-ran green.js → exit 0) + Mikoto MISSING:0 for the 13 theme/layout option names (4a01f78 covers es/da/de/sv/nb/hu — Mikoto confirms), then Osefe's explicit "ship it" (sleep-mode: NO auto-publish). If index/sw/landing/legal/preflight moves, I re-sign.
+
+### [2026-07-29] follow-up — TIP MOVED → RE-SAFE @ `dfd7904`
+- Freeze rule: tip advanced 546bfcf→dfd7904 ("fix(theme): toast text invisible on light themes"). Re-verified the delta myself.
+- Published-byte diff 546bfcf..dfd7904 = index.html ONE line only (toast() builder @8901): `color:#eaffff` → `color:var(--bright)` inside d.style.cssText — makes the greeting/toast readable on the 3 light palettes. `d.textContent=msg` UNCHANGED (still textContent, not innerHTML) → no injection. sw.js/manifest/landing/legal 0 bytes.
+- Watchdogs BYTE-IDENTICAL 546bfcf↔dfd7904: `__sys.token(` 16==16, token( 18==18, __sys 31==31, PUBCHK 2, 4047293148 1, PUB_B64 3, __ownerKeySrc 7, hud-state 6, _ecVerify 2, isArmed 2, isTripped 3. Slots byte-empty; 6 scripts; APP_VER v33===sw v33. No new value/math/network → no poison needed (color token swap only).
+- GATE (ran myself @dfd7904): preflight index CLEAR exit 0; green.js GREEN exit 0.
+- VERDICT: **SAFE @ dfd7904** (index.html at dfd7904 = 546bfcf + the single toast color line). Hugo re-GREEN @dfd7904 (50fc3de). If tip moves index/sw/landing/legal/preflight, I re-sign.
