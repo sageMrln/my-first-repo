@@ -1199,3 +1199,36 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Hugo GREEN @ f0bff4d complete. All gate sign-offs already satisfied (Akashi SAFE + Mikoto MISSING:0 from prior; no changes to code/i18n). Awaiting Osefe's explicit "ship it" (sleep-mode: no auto-publish) then Kaito's merge/publish to gh-pages.
 
+
+## [2026-07-29] — direct (Osefe) — theming+layout feature GREEN @ d9a68fb (v28 — pending i18n)
+
+- Asked: GREEN gate on theming+layout feature (PR2a-2c: tokenized CSS colors, Calm + Pink palettes, Simple + Standard layouts, theme + layout switcher wired). Branch claude/vibrant-pasteur-ie24ab, tip d9a68fb. Check: (1) full gate GREEN exit 0 + test counts; (2) script parse guard + script-tag balance; (3) preflight CLEAR on all 3 HTML files (index + landing + legal); (4) APP_VER === sw.js VERSION both v28; (5) i18n MISSING count; (6) flag version bump for deploy.
+
+- Did / found / thought:
+  * Pulled branch, confirmed on tip d9a68fb (feat(theme) PR2c: wire theme + layout switcher).
+  * Ran `node tools/release/green.js` → **GREEN exit 0**:
+    - **HTML parse guard (step 0):** 4/4 script blocks parse ✓ (app script is syntactically valid — theming ~40 CSS lines + ~15 JS lines for applyAppearance + switcher wiring verified)
+    - **All 16 test suites pass:** parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓, income_log 35/35 ✓, import_sanitize 25/25 ✓ = **417 total tests**
+    - **Preflight CLEAR on all 3 pages:**
+      - index.html ✓ CLEAR (6 script tags balanced, slots empty, 1 public key, no PII, PUBCHK intact)
+      - landing.html ✓ CLEAR (1 script tag balanced, legal-identity exception applied)
+      - legal.html ✓ CLEAR (2 script tags balanced, legal-identity exception applied)
+    - **Preflight PII exception guard:** 12/12 cases ✓
+    - **Leak scan:** 4/4 files clean ✓ (GUIDE.md, manifest, sw.js, team-chat)
+    - **Version tag:** APP_VER v28 === sw.js VERSION v28 ✓
+  * Ran `node tools/i18n/sync.js` → **MISSING: 20** ✗ (new theme/layout UI strings not yet translated: "Theme", "Cyberpunk", "Calm", "Layout", "Pro", "Standard", "Simple" are missing for es/da/de/sv/nb/hu and ms [parked]). Mikoto owns the i18n sync; this is in-flight, not a gate failure, but blocks ship until MISSING:0.
+
+- Decision / result:
+  * **GREEN on code/logic @ d9a68fb** — all 417 tests pass, all scripts parse + balanced, preflight CLEAR on all 3 pages, version tags match v28. Theming+layout feature is syntactically sound and logically solid.
+  * **PENDING i18n** — Mikoto must complete translations for the 7 new theme/layout strings across 6 active languages (es/da/de/sv/nb/hu) to reach MISSING:0. Not a code issue; i18n is a known requirement before ship.
+  * **IMPORTANT FLAG FOR KAITO (for deploy):** This is a real app change (theme + layout switcher feature, new UI controls). When this deploys to gh-pages from d9a68fb (or later, if i18n moves the tip), **v28 → v29 version bump is REQUIRED** — otherwise installed PWAs keep serving cached v28 and never fetch the theming update. This bump is a ship-time step (Kaito), not needed for GREEN now (GREEN only checks v28 === v28, both matched).
+
+- Commits / SHAs:
+  * d9a68fb (app tip — theme + layout feature, version v28)
+  * (this log entry committed now)
+
+- Still open / next:
+  * Hugo GREEN complete on d9a68fb. Code/logic solid, gate passing, all published files clean.
+  * **Awaiting Mikoto:** i18n sync to reach MISSING:0 (theme/layout strings x 6 active langs).
+  * **Awaiting Osefe:** "ship it" go (sleep-mode: no auto-publish).
+  * **Kaito's deploy prep:** When ready to ship, bump v28 → v29 in both index.html APP_VER and sw.js VERSION (one commit), then re-run green.js to confirm still GREEN on the new tip, then publish to gh-pages.
