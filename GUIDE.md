@@ -35,6 +35,8 @@ MRLN opens **locked**. You unlock it once with an **access key** (a code that lo
 - **File-bound** — works only on one specific file/link (its "File ID", e.g. `#F-AB12CD`).
 - **Universal** — works on any link or installed copy (used for testers and the owner).
 
+**On first unlock**, you'll accept the legal terms and privacy notice. This is recorded on your device and appears only once.
+
 ---
 
 ## 3. Languages & currencies
@@ -76,8 +78,13 @@ You can re-run setup anytime with **⚙ Setup**, or skip it and fill things in y
 Your headline: left-over money in a typical month, comfort margin, and worst-case month. The single glance that tells you if the plan holds.
 
 ### Income
-Your monthly take-home across **slow / typical / good** months. The **typical** month is the baseline every simulator uses.
-→ To change income, use **💬 Assistant MRLN** (e.g. *"I earn 18000 a month"*).
+Your monthly take-home is tracked three ways: **low**, **typical** (baseline for every simulator), and **good** months.
+
+**Two ways to set your income:**
+1. **Manual statement** — *"I earn 18000 a month"* via **💬 Assistant MRLN** sets your guess across all three tiers (you can adjust low/good separately in the Income card).
+2. **Monthly Income Log** — Log each actual month's take-home as it arrives (tap the Income card → **Log a month**). After **3+ months logged**, the app derives typical = **median** of your last-12 months; low = minimum; high = maximum. This live history replaces your guess automatically. If you enter a new manual statement, it overrides history until you log the next month — then history takes back control.
+
+→ A single glance at the **Overview** tab shows your plan's margin: typical month vs. your expenses.
 
 #### 🧾 Tax Helper (inside Income)
 An offline **estimate** of your income tax, adapting to your country/region:
@@ -87,14 +94,11 @@ An offline **estimate** of your income tax, adapting to your country/region:
 - Generic fallback **(XX)** for all other countries — set your flat tax + social rate.
 - Always unofficial — verify with your tax authority. Numbers stay on your device.
 
-### Expenses — *Expense Breakdown*
-A read-only, grouped view of every recurring cost (with monthly/yearly totals). "Varies" items are left out of the total.
-→ The **"Edit items →"** button jumps you to **Subscriptions**, where editing lives.
-
-### Subscriptions — *where you edit everything*
-- **Add a Subscription / Recurring Cost** — add any cost to any category.
-- **Manage Items & Categories** — edit a price, change billing frequency, or delete **any** item (base or added), and add/remove whole categories. Live numbers recompute instantly.
-- **Subscription Ledger** — every recurring cost with what it is and why you keep it.
+### Budget — *costs at a glance + full edit*
+A unified view of every recurring cost in one place. Budget opens in a clean read-view; tap Edit to change prices, delete items, or add new costs.
+- **Budget Summary** — your total monthly and yearly costs, grouped by category with visual share bars (biggest costs visible at a glance). "Varies" items are left out of the total.
+- **Add a Cost** — add any new recurring expense to any category. Your live numbers update everywhere (grand total, cash-flow simulator, savings projection all recompute instantly).
+- **Your Costs** — every recurring cost, grouped by category. In Edit mode, you can change a price, billing frequency (monthly / quarterly / yearly), delete **any** item (base or added), and add/remove whole categories. All live numbers recompute as you change them.
 
 ### Loan & Debt
 Track a loan payment, amount, and (optional) interest rate; toggle whether it counts in your monthly math.
@@ -300,7 +304,7 @@ These tools appear only on **your master file** (where the private key lives):
 | "This key belongs to a different file" | You're using a file-bound key on the wrong file. Use the key that came with **this** file, or a universal key. |
 | Installed app asks for a key again | Installed apps have separate storage from the browser tab. Enter your key once in the installed app; a universal key avoids file-ID mismatches. |
 | Opened the link and it's blank with no key prompt | A bare link (no `#F-…`) opens a fresh empty app, and/or your browser already had a saved key. Your data lives in your file — import it from Connect. |
-| Can't find where to edit expenses | Expenses is read-only; edit in the **Subscriptions** tab (use the "Edit items →" button). |
+| Can't find where to edit a cost | All costs are in the **Budget** tab — scroll down to "Your Costs" to edit prices, billing, delete items, or add new categories. |
 | Numbers show as NaN + a red warning | The tamper guard tripped. Use the original, unmodified app with a valid key. |
 
 ---
