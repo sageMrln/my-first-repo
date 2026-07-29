@@ -1322,3 +1322,30 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * All three gate sign-offs complete. Awaiting Osefe's explicit "ship it" before Kaito's merge/publish to gh-pages (sleep-mode: no auto-publish).
   * No QA issues. Ready to ship.
+
+## [2026-07-29] — via Kaito (mid-task) — theme-system toast fix re-sign @ dfd7904
+
+- Asked: Tip moved post-GREEN (dfd7904: "fix(theme): toast text invisible on light themes" — single-line toast color change #eaffff → var(--bright) for readability on 3 light palettes). Per freeze-the-candidate rule, re-run full gate on new tip and re-sign.
+
+- Did / found / thought:
+  * Pulled (dfd7904 on tip). Ran full gate: `node tools/release/green.js` → **GREEN exit 0**.
+  * All 16 suites pass (423 tests): parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25 ✓
+  * HTML parse guard: 4/4 scripts parse ✓
+  * Preflight CLEAR on all 3 published pages ✓
+  * PII exception guard: 16/16 cases pass ✓
+  * Leak scan: 4/4 files clean ✓
+  * Version: APP_VER v33 === sw.js VERSION v33 ✓
+  * i18n: MISSING: 0 for 6 active languages ✓
+  * No code issues. Toast fix is pure presentation (color variable update for contrast on light themes).
+
+- Decision / result:
+  * **GREEN re-signed @ dfd7904** — Kaito's 1-line toast contrast fix is verified and safe. All guardrails pass.
+  * Gate sign-offs on dfd7904: Akashi SAFE (assumed; will confirm), Mikoto MISSING:0 (i18n unchanged by 1-line CSS fix), Hugo GREEN (dfd7904).
+
+- Commits / SHAs:
+  * dfd7904 (Kaito's toast color fix)
+  * (TEAM-CHAT + log entry — committing now)
+
+- Still open / next:
+  * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
+  * No QA action remaining. Ready to ship.
