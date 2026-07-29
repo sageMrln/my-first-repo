@@ -77,6 +77,39 @@
     --accent-rgb:232,136,171; --pos-rgb:111,214,166; --line-rgb:61,47,66;
     --warn-rgb:240,178,75; --bad-rgb:240,114,140; --glow-strength:.42;
   }
+  /* ===== Layout comfort presets (CSS over shared DOM; Pro = no override = today) ===== */
+  html[data-layout=simple]{ --glow-strength:.15; }
+  html[data-layout=simple] .wrap{ font-size:17px; }
+  html[data-layout=simple] .hero-num{ font-size:clamp(44px,12vw,64px); animation:none; }
+  html[data-layout=simple] .status,
+  html[data-layout=simple] .row2,
+  html[data-layout=simple] .subtotal,
+  html[data-layout=simple] .form-row{ grid-template-columns:1fr; gap:14px; }
+  html[data-layout=simple] header.hud .stat .val{ font-size:clamp(22px,5vw,26px); font-weight:700; }
+  html[data-layout=simple] .stat .lbl,
+  html[data-layout=simple] .field label{ font-size:12px; letter-spacing:.06em; }
+  html[data-layout=simple] .card{ padding:24px 20px; margin-bottom:20px; border-radius:16px; }
+  html[data-layout=simple] .card h2{ font-size:22px; }
+  html[data-layout=simple] .ir-name,
+  html[data-layout=simple] .ir-amt{ font-size:18px; }
+  html[data-layout=simple] .item-row{ padding:18px 4px; }
+  html[data-layout=simple]::before{ display:none; }               /* html::before scanline */
+  html[data-layout=simple] body::before,
+  html[data-layout=simple] body::after,
+  html[data-layout=simple] header.hud::after,
+  html[data-layout=simple] .card h2::before,
+  html[data-layout=simple] .exp-head .ico{ display:none; }
+  html[data-layout=simple] .tab .ix{ display:none; }
+  html[data-layout=simple] .pillbar{ display:none; }
+  html[data-layout=simple] nav.tabs{ flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start; }
+  html[data-layout=simple] .tab{ padding:13px 18px; font-size:17px; }
+
+  html[data-layout=standard]{ --glow-strength:.5; }
+  html[data-layout=standard]::before{ display:none; }             /* roaming scanline */
+  html[data-layout=standard] body::after{ opacity:.3; }
+  html[data-layout=standard] header.hud .stat .val{ font-size:clamp(17px,3vw,22px); }
+  html[data-layout=standard] .card{ padding:22px 22px; margin-bottom:18px; }
+  html[data-layout=standard] .item-row{ padding:16px 2px; }
 
   *{margin:0;padding:0;box-sizing:border-box}
 
