@@ -121,8 +121,8 @@
   html[data-layout=standard] .item-row{ padding:16px 2px; }
 
   /* fix: seal the page background (no white overscroll void) + tame rubber-band scroll */
-  html{ background:var(--bg); overscroll-behavior-y:none; }
-  #lockScreen{ overscroll-behavior:contain; }
+  html, body{ background:var(--bg); overscroll-behavior:none; overflow-x:hidden; }
+  #lkfx{ max-width:100%; }
   /* fix: hide the food-photo <img>s until they actually have a src (no broken-image glyph) */
   #foodPicImg:not([src]), #foodPicImg[src=""],
   #foodPhotoThumb:not([src]), #foodPhotoThumb[src=""]{ display:none !important; }
@@ -633,7 +633,7 @@
   /* ---- ACCESS LOCK ---- */
   #lockScreen{position:fixed;inset:0;z-index:100000;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:center;padding:24px;
     background:radial-gradient(1000px 600px at 50% -10%, rgba(var(--accent-rgb),.10), transparent 60%), var(--bg);
-    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    overflow-y:auto;overflow-x:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch}
   #lockScreen.unlocked{display:none}
   /* while locked, freeze the page behind the overlay so a fast/overscroll can't flash the app or save bar through */
   html.lk-noscroll, html.lk-noscroll body{overflow:hidden;overscroll-behavior:none;height:100%}
@@ -1097,7 +1097,7 @@ if(location.hostname==='mrln.online'&&location.protocol==='http:'){location.repl
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v30';
+window.APP_VER='v31';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
