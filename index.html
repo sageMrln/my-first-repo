@@ -1457,6 +1457,18 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <option value="nb">Norsk</option>
         <option value="hu">Magyar</option>
       </select></div>
+    <div class="lc"><label data-i18n="Theme" for="themeSel">Theme</label>
+      <select id="themeSel">
+        <option value="cyber" data-i18n="Cyberpunk">Cyberpunk</option>
+        <option value="calm" data-i18n="Calm">Calm</option>
+        <option value="pink" data-i18n="Pink">Pink</option>
+      </select></div>
+    <div class="lc"><label data-i18n="Layout" for="layoutSel">Layout</label>
+      <select id="layoutSel">
+        <option value="pro" data-i18n="Pro">Pro</option>
+        <option value="standard" data-i18n="Standard">Standard</option>
+        <option value="simple" data-i18n="Simple">Simple</option>
+      </select></div>
     <div class="lc"><label data-i18n="Currency" for="curSel">Currency</label>
       <select id="curSel">
         <option value="USD">USD $</option>
@@ -2581,7 +2593,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], media:[], tax:{}, savingsBoxes:[], incomeAsk:{}, showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'' } };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], media:[], tax:{}, savingsBoxes:[], incomeAsk:{}, showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'', theme:'cyber', layout:'pro' } };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -2620,6 +2632,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   if(!STATE.prefs.lang) STATE.prefs.lang='en';
   if(!STATE.prefs.currency) STATE.prefs.currency='DKK';
   if(STATE.prefs.country==null) STATE.prefs.country='';
+  if(['calm','pink','cyber'].indexOf(STATE.prefs.theme)<0) STATE.prefs.theme='cyber';
+  if(['simple','standard','pro'].indexOf(STATE.prefs.layout)<0) STATE.prefs.layout='pro';
+  applyAppearance();
   var _quotaWarned=false;
   function _warnStorageFull(){            // fail loud, never silent (Akashi constraint #3)
     if(_quotaWarned) return; _quotaWarned=true;   // once per session — warn, don't nag
@@ -6420,12 +6435,22 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       setAudit:function(on){ auditMode=!!on; try{ localStorage.setItem('mrln_i18n_audit', on?'1':'0'); }catch(_){ } if(on) audit(); else clearMarks(); return auditMode; } };
   })();
   try{ window.MRLN_I18N = I18N_WATCH; }catch(_){ }   // owner/QA handle: MRLN_I18N.audit(), MRLN_I18N.setAudit(true)
+  function applyAppearance(){
+    var p=STATE.prefs||(STATE.prefs={}), r=document.documentElement;
+    if(['calm','pink','cyber'].indexOf(p.theme)<0) p.theme='cyber';
+    if(['simple','standard','pro'].indexOf(p.layout)<0) p.layout='pro';
+    if(p.theme==='cyber') r.removeAttribute('data-theme'); else r.setAttribute('data-theme',p.theme);
+    if(p.layout==='pro') r.removeAttribute('data-layout'); else r.setAttribute('data-layout',p.layout);
+  }
   function initLocale(){
     var p = STATE.prefs;
     if(!p.country && MODEL.profile && MODEL.profile.location) p.country = MODEL.profile.location;  // seed from existing profile
     var ls=document.getElementById('langSel'), cs=document.getElementById('curSel'),
         ci=document.getElementById('countryInp'), lk=document.getElementById('lkLangSel');
     if(ls) ls.value=p.lang; if(lk) lk.value=p.lang; if(cs) cs.value=p.currency; if(ci) ci.value=p.country||'';
+    var thS=document.getElementById('themeSel'), lyS=document.getElementById('layoutSel');
+    if(thS){ thS.value=p.theme||'cyber'; thS.addEventListener('change', function(){ p.theme=this.value; applyAppearance(); autosave(); logChange('set-theme', this.value); }); }
+    if(lyS){ lyS.value=p.layout||'pro'; lyS.addEventListener('change', function(){ p.layout=this.value; applyAppearance(); autosave(); logChange('set-layout', this.value); }); }
     applyLang(p.lang);
     if(typeof updateCcyLabels==='function') updateCcyLabels();
     function refreshMoney(){ if(typeof updateCcyLabels==='function') updateCcyLabels(); if(window.rebuildScenarios) window.rebuildScenarios(); if(typeof refreshFinance==='function') refreshFinance(); if(typeof renderManage==='function') renderManage(); if(typeof renderProfile==='function') renderProfile(); }
@@ -6640,6 +6665,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(typeof refreshEverything==='function') refreshEverything(); else { renderAll(); if(typeof refreshFinance==='function') refreshFinance(); }
     if(typeof updateCcyLabels==='function') updateCcyLabels();
     if(typeof initLocale==='function' && document.getElementById('curSel')){ var cs=document.getElementById('curSel'), ls=document.getElementById('langSel'); if(cs) cs.value=STATE.prefs.currency; if(ls) ls.value=STATE.prefs.lang; if(typeof applyLang==='function') applyLang(STATE.prefs.lang); }
+    if(typeof applyAppearance==='function'){ applyAppearance(); var _th=document.getElementById('themeSel'), _ly=document.getElementById('layoutSel'); if(_th)_th.value=STATE.prefs.theme; if(_ly)_ly.value=STATE.prefs.layout; }
     if(typeof syncBirthday==='function') syncBirthday();
     if(typeof renderReminders==='function') renderReminders();
     if(typeof renderUsage==='function') renderUsage();
