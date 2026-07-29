@@ -823,3 +823,30 @@ END SESSION — all 7 languages complete, MISSING:0 verified, GREEN gate confirm
 
 - Still open / next: @Kaito may re-verify meaning if needed; no other team sign-offs needed (pure i18n corrections, no code or logic changed). Legal layer remains production-ready for ship.
 
+
+## [2026-07-29 session] — direct — backup-reminder feature i18n: 3 strings to 6 languages → MISSING: 0
+- Asked: Translate 3 new backup-reminder UI strings (from commit 24aeae1) to es, da, de, sv, nb, hu. Scope: only 6 target languages; Malay (ms) stays PARKED. Tone: warm, friendly but plain, appropriate for data-backup nudge (framed like photo backup).
+- Did / found:
+  * Ran `node tools/i18n/sync.js` on tip 5e18612 → confirmed MISSING: 13 (3 backup strings for 6 langs + 10 legal strings for ms, as expected).
+  * Identified exact 3 strings via need_translate.json: "Save a copy of MRLN", "You've added a lot here. Save a copy so you never lose it — back it up like you save your photos. Losing your phone shouldn't mean losing your plan." (NOTE: key uses curly apostrophe U+2019), "Save a copy".
+  * Claimed lock on TEAM-CHAT.md (commit 3b10b04).
+  * Translated all 3 × 6 langs = 18 translations:
+    - String 1 natural imperative per language (guardas/gem/speichere/spara/lagre/mentsd)
+    - String 2 warm, natural backup metaphor: "hazle una copia de seguridad como..." (es), "gem det som du gemmer..." (da), "sichere sie..." (de), "säkerhetskopiera..." (sv), "sikkerhetskopier..." (nb), "biztonsági mentésként..." (hu) — all with preserved em-dashes (—)
+    - String 3 imperative verb (guarda/gem/speichere/spara/lagre/mentsd)
+  * Merged via Node.js script using extracted keys from sync.js regex (byte-exact matching ensures U+2019 apostrophe in string 2 key preserved, avoiding earlier merge bugs with straight apostrophes)
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 for target 6 languages** (only 10 legal strings missing for ms, intentional — parked)
+  * Ran `node tools/test/html_parse_test.js` → **✓ all 4 script blocks parse** (HTML valid)
+  * Committed index.html (6a4b8c0) with succinct message
+  * Released lock on TEAM-CHAT.md, posted status (95205ea)
+  * Pushed to origin (commits 6a4b8c0 + 95205ea)
+- Key translation decisions:
+  * Tone: warm, factual, NOT hype. No emoji, no exclamation encouragement — just friendly backup-data-like-photos framing (matching Osefe's serious product voice per CLAUDE.md)
+  * Em-dashes (—) preserved exactly in string 2 (serious rhythm)
+  * All placeholders & punctuation preserved (none in these strings)
+  * Curly apostrophe (U+2019) in string 2 key was critical to merge success — must extract exact key from source, not infer/re-type (earlier attempts failed due to straight apostrophe mismatch)
+- Decision / result:
+  * **MISSING: 0 verified for target 6 languages.** All 3 backup-reminder strings now complete (es, da, de, sv, nb, hu). HTML parses cleanly. Malay (ms) intentionally untranslated per task directive.
+  * Lock released. Ready for @Kaito verification, @Akashi re-SAFE (no code change, pure i18n), @Hugo GREEN, @Osefe ship call.
+- Commits / SHAs: lock claim 3b10b04, i18n merge 6a4b8c0, lock release + team chat 95205ea.
+- Still open / next: Await downstream gate. Task complete from Mikoto perspective — MISSING: 0 for shipped languages confirmed.
