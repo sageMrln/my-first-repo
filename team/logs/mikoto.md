@@ -878,3 +878,33 @@ END SESSION — all 7 languages complete, MISSING:0 verified, GREEN gate confirm
   * **<option> translation confirmed working.** applyLang() applies to [data-i18n] on option elements via textContent; theme/layout picker will display correctly in all languages.
 - Commits / SHAs: e1e2db3 (i18n merge + theme/layout strings).
 - Still open / next: @Kaito verification if needed; @Akashi re-SAFE (no code, pure i18n); @Hugo GREEN (if tip moved); @Osefe final ship call.
+
+## [2026-07-29 ~async] — Kaito dispatch (asleep) — Translate 1 lock-screen renewal string (email instead of Discord) to 6 langs → MISSING: 0
+
+- Asked: Lock-screen renewal line changed from "Renew in Discord to get next month's key" to "Email Miradiosefe@gmail.com to get next month's key". Translate the NEW English string to es, da, de, sv, nb, hu → MISSING: 0. Old Discord key is orphaned (no code references it anymore). Keep Miradiosefe@gmail.com verbatim in all languages.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` on tip 2e29208 → confirmed MISSING: 1 for the 6 target languages + ms: "Your key unlocks the dashboard for the month. Email Miradiosefe@gmail.com to get next month's key. Your financial data never leaves this device."
+  * Translated the lock-screen renewal line to all 6 active languages (+ ms for completeness, though ms is parked):
+    - **es:** "Tu clave desbloquea el panel durante el mes. Envía un email a Miradiosefe@gmail.com para obtener la clave del próximo mes. Tus datos financieros nunca salen de este dispositivo."
+    - **da:** "Din nøgle låser dashboardet op for måneden. Send en email til Miradiosefe@gmail.com for at få næste måneds nøgle. Dine økonomiske data forlader aldrig denne enhed."
+    - **de:** "Dein Schlüssel entsperrt das Dashboard für den Monat. Sende eine E-Mail an Miradiosefe@gmail.com, um den Schlüssel für den nächsten Monat zu erhalten. Deine Finanzdaten verlassen dieses Gerät niemals."
+    - **sv:** "Din nyckel låser upp instrumentpanelen för månaden. Skicka ett email till Miradiosefe@gmail.com för att få nästa månads nyckel. Dina ekonomiska uppgifter lämnar aldrig denna enhet."
+    - **nb:** "Nøkkelen din låser opp dashboardet for måneden. Send en e-post til Miradiosefe@gmail.com for å få neste måneds nøkkel. Dine økonomiske data forlater aldri denne enheten."
+    - **hu:** "A kulcsod feloldja az irányítópultot a hónapra. Küldj egy e-mailt a Miradiosefe@gmail.com-ra, hogy megkapd a jövő hónap kulcsát. A pénzügyi adataid soha nem hagyják el ezt az eszközt."
+    - **ms:** "Kunci anda membuka papan pemuka untuk bulan ini. Hantar e-mel ke Miradiosefe@gmail.com untuk mendapatkan kunci bulan depan anda. Data kewangan anda tidak pernah meninggalkan peranti ini."
+  * Merged all 7 translations (1 key × 7 langs) into AUTO-MERGED block using Node.js string insertion (added entry at the top of each language's dictionary to avoid JSON parsing issues with the large 748KB block).
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 for target 6 languages** (20 keys untranslated in ms, expected/parked: 3 backup + 10 legal + 8 theme/layout).
+  * Ran `node tools/test/html_parse_test.js` → **✓ all 4 script blocks parse** (HTML syntax valid).
+  * Committed with message describing the lock-screen renewal translation (commit d11eeda, also includes Akashi's parallel PII exception changes for the email in preflight.js/test).
+- Key translation decisions:
+  * Preserved Miradiosefe@gmail.com verbatim in all 7 languages (email address, never translate).
+  * "Email {address}" → natural action phrasing per language (envía/send/sende/skicka/send/küldj/hantar).
+  * "to get next month's key" → future/purpose phrasing matching each language's verb conjugation conventions.
+  * Privacy clause ("Your financial data never leaves this device") kept exact parallel structure in all languages.
+  * Tone: serious, factual, consistent with lock-screen UI (no emoji, no hype).
+  * Old "Renew in Discord" key left in ms dictionary (now orphaned, harmless; dead keys don't break the UI).
+- Decision / result:
+  * **MISSING: 0 verified for target 6 languages (es/da/de/sv/nb/hu).** Lock-screen renewal instruction now fully translated in all shipped languages. HTML parses cleanly.
+  * Preflight exception for the email address was added in parallel by Akashi (scope-tight, fail-closed, only applies within .lk-foot and to exact phrase).
+- Commits / SHAs: d11eeda (i18n merge + PII exception).
+- Still open / next: @Akashi re-SAFE (confirm email exception + watchdogs); @Hugo re-GREEN (if tip moved); @Osefe final "ship it" call.
