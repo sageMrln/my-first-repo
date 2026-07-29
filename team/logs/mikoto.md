@@ -908,3 +908,27 @@ END SESSION — all 7 languages complete, MISSING:0 verified, GREEN gate confirm
   * Preflight exception for the email address was added in parallel by Akashi (scope-tight, fail-closed, only applies within .lk-foot and to exact phrase).
 - Commits / SHAs: d11eeda (i18n merge + PII exception).
 - Still open / next: @Akashi re-SAFE (confirm email exception + watchdogs); @Hugo re-GREEN (if tip moved); @Osefe final "ship it" call.
+
+## [2026-07-29 ~14:20] — Kaito dispatch (asleep) — Translate 13 theme/layout option names to 6 langs → MISSING: 0
+
+- Asked: Theme-system overhaul landed with NEW palette + layout option names replacing the old ones (Cyberpunk/Calm/Pink/Pro/Standard/Simple). Translate 13 new UI strings to es, da, de, sv, nb, hu → MISSING: 0. Preserve tone (serious, factual per Osefe's product-voice directive). Palette names may stay English if that reads best in a language; layout names translate to natural words.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 13 (palette names: Daylight/Glacier/Rose/Amethyst/Evergreen/Carmine/Umber/Ember; layout names: Command/Editorial/Analyst/Canvas/Focus), all missing in es,da,de,sv,nb,hu,ms.
+  * Translated all 13 keys to 6 active languages (78 translations):
+    - **Palette names** (8): Daylight→Luz diurna/Dagslys/Tageslicht/Dagljus/Dagslys/Nappali; Glacier→Glaciar/Gletsjer/Gletscher/Glaciär/Gletsjer/Gleccsier; Rose→Rosa/Rose/Rose/Ros/Rose/Rózsa; Amethyst→Amatista/Ametist/Amethyst/Ametist/Ametist/Ametiszt; Evergreen→Siempreverde/Stedsegrøn/Immergrün/Eviggrön/Stedsegrønn/Örökzöld; Carmine→Carmesí/Karmin/Karmin/Karmin/Karmin/Karminvörös; Umber→Tierra de sombra/Umbra/Umbra/Umbra/Umbra/Umber; Ember→Brasa/Glød/Glut/Glöd/Glør/Parázs.
+    - **Layout names** (5): Command→Centro de control/Kommandocentral/Kommandozentrale/Kommandocentral/Kommandosenter/Vezérlőpult; Editorial→Editorial/Redaktionel/Redaktionell/Redaktionell/Redaksjonell/Szerkesztői; Analyst→Análisis/Analyse/Analyst/Analys/Analyse/Elemzés; Canvas→Lienzo/Lærred/Leinwand/Duk/Lerret/Vászon; Focus→Enfoque/Fokus/Fokus/Fokus/Fokus/Fókusz.
+  * Claimed lock on index.html (commit fdf7e01 in TEAM-CHAT.md).
+  * Merged all 78 translations into AUTO-MERGED block using Python JSON parse/merge/serialize. Careful brace-counting to extract exact JSON boundaries; json.dumps with ensure_ascii=False to preserve Unicode (accents, special chars).
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0 for target 6 languages (es/da/de/sv/nb/hu fully translated); 28 MISSING only in ms (parked: 8 legal + 13 theme/layout + 7 other strings)**.
+  * Verified no MISSING in active languages: grep for es,da,de,sv,nb,hu in sync output → 0 results.
+  * Committed index.html (4a01f78) with full translation summary.
+  * Released lock and posted status to TEAM-CHAT.md (ec5ca48).
+- Key translation decisions:
+  * Palette names: "Daylight"→natural day-light words (Luz diurna/Dagslys/Tageslicht, etc.); "Rose"/"Carmine"/"Amethyst"→translated to natural colour/gem words per language; "Evergreen"/"Umber"/"Glacier"/"Ember"→natural transliterations/translations (Siempreverde/Eviggrön/Stedsegrøn, etc.). Some (Rose, Amethyst) kept partially English where it reads well in that language (e.g., da "Rose" understood, not forced to translate).
+  * Layout names: All translate to natural UI layout terms per language (Centro de control/Kommandocentral for "Command", Editorial/Redaktionel for "Editorial", Análisis/Analyse for "Analyst", Lienzo/Lærred for "Canvas", Enfoque/Fokus for "Focus").
+  * Tone: Serious, factual, no emoji, no hype (all uppercase/decorative palette names kept as-is, no emoji added).
+- Decision / result:
+  * **MISSING: 0 verified for target 6 languages.** All 13 theme/layout option names translated to es,da,de,sv,nb,hu. Theme + Layout dropdowns in Settings now fully localized.
+  * Old palette/layout names (Cyberpunk/Calm/Pink/Pro/Standard/Simple) remain in the i18n dictionary (harmless dead keys, no code references them).
+- Commits / SHAs: lock claim fdf7e01, i18n merge 4a01f78, lock release + team chat ec5ca48.
+- Still open / next: @Akashi re-SAFE (no code, pure i18n); @Hugo re-GREEN (if tip moved); @Kaito route to Osefe final "ship it" call. Theme-system overhaul now fully i18n-complete for all shipped languages.
