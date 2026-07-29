@@ -62,6 +62,21 @@
     --glow-strength:1;
     --glow:0 0 18px rgba(var(--accent-rgb), calc(.35 * var(--glow-strength)));
   }
+  /* ===== Themes (override tokens; Cyberpunk = untouched :root base) ===== */
+  [data-theme="calm"]{
+    --bg:#12161c; --panel:#1a2029; --panel2:#20272f; --line:#2e3742;
+    --cyan:#5ec8d8; --cyan-dim:#2f7d88; --lime:#66d6a2; --amber:#f0b24b; --red:#f0728c;
+    --txt:#e6ebf0; --txt-dim:#93a1b0; --bright:#f4f8fb; --field-bg:#0e1319;
+    --accent-rgb:94,200,216; --pos-rgb:102,214,162; --line-rgb:46,55,66;
+    --warn-rgb:240,178,75; --bad-rgb:240,114,140; --glow-strength:.30;
+  }
+  [data-theme="pink"]{
+    --bg:#17121a; --panel:#211a26; --panel2:#2a2130; --line:#3d2f42;
+    --cyan:#e888ab; --cyan-dim:#8a4f66; --lime:#6fd6a6; --amber:#f0b24b; --red:#f0728c;
+    --txt:#f2e9ee; --txt-dim:#bfa5b3; --bright:#fbeef4; --field-bg:#140f18;
+    --accent-rgb:232,136,171; --pos-rgb:111,214,166; --line-rgb:61,47,66;
+    --warn-rgb:240,178,75; --bad-rgb:240,114,140; --glow-strength:.42;
+  }
 
   *{margin:0;padding:0;box-sizing:border-box}
 
