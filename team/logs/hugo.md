@@ -1262,3 +1262,33 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Hugo GREEN complete on e8c3122. All gate sign-offs already satisfied (Akashi SAFE from prior, Mikoto MISSING:0 now). Awaiting Osefe's explicit "ship it" (sleep-mode: no auto-publish even for launch), then Kaito's merge/publish to gh-pages.
   * Deploy now verified green. Ship when ready.
+
+## [2026-07-29 ~23:45] — direct (Osefe) — FAST GREEN @ 9acd7e9 (v29 launch-polish: title + OG meta + http→https redirect)
+
+- Asked: FAST final GREEN on launch-polish commit 9acd7e9 (v29). Three changes: app <title> fixed (FINANCE HUD→MRLN), Open Graph/Twitter social-preview meta tags added to index.html + landing.html + legal.html, http→https redirect (1 line prepended to index.html's existing boot script; new <script> in head on landing.html + legal.html). Verify: (1) full gate GREEN exit 0 + all test counts; (2) script parse guard + script-tag balance (index still 6, landing now 2, legal now 3 per redirect addition); (3) preflight CLEAR on all 3 HTML files; (4) APP_VER === sw.js VERSION both v29; (5) i18n MISSING: 0 for 6 active target langs (ms parked gaps expected). Report GREEN @ 9acd7e9 with evidence, or NOT GREEN with exact failure. DO NOT deploy.
+
+- Did / found / thought:
+  * Pulled branch `claude/vibrant-pasteur-ie24ab`, confirmed on tip 9acd7e9. Read memory + chat (prior GREEN @ e8c3122 v29 production deploy, now launch-polish commit inbound).
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0**:
+    - **HTML parse guard (step 0):** 4/4 script blocks parse ✓ (app + landing + legal all syntactically valid after title + OG meta + redirect adds)
+    - **All 16 test suites pass:** parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓, income_log 35/35 ✓, import_sanitize 25/25 ✓ = **417 total tests** ✓
+    - **Preflight CLEAR on all 3 pages:**
+      - index.html ✓ CLEAR (6 script tags balanced — redirect prepended into existing boot script, no new tag added; slots empty, 1 public key, no PII, PUBCHK intact)
+      - landing.html ✓ CLEAR (2 script tags balanced — redirect added one new <script> in head; legal-identity exception applied)
+      - legal.html ✓ CLEAR (3 script tags balanced — redirect added one new <script> in head; existing year-display + prefers-reduced-motion scripts present; legal-identity exception applied)
+    - **Preflight PII exception guard:** 12/12 cases ✓ (no PII leaks, legal-identity exceptions properly scoped)
+    - **Leak scan:** 4/4 files clean ✓ (GUIDE.md, manifest, sw.js, team-chat all leak-free)
+    - **Version tag:** APP_VER v29 === sw.js VERSION v29 ✓
+  * Verified script tag counts: index.html 6 (unchanged), landing.html 2 (+1 for redirect), legal.html 3 (+1 for redirect). All parse + balance correctly.
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** for 6 active target languages (es/da/de/sv/nb/hu) ✓. The 20 missing entries are all `ms` (Malay), which is intentionally parked per gate protocol — not a failure.
+
+- Decision / result:
+  * **GREEN @ 9acd7e9** — all 417 tests pass. HTML parse guard ✓ (4/4 scripts). Script tag balance verified ✓ (index=6 unchanged, landing=2 +1 for redirect, legal=3 +1 for redirect; all scripts open==close). Preflight CLEAR ✓ (all 3 pages). Preflight PII exception guard ✓ (12/12 adversarial cases). Leak scan ✓ (4/4 files clean). Version tag v29 matched ✓. MISSING: 0 (6 active langs) ✓. Launch-polish changes (title + OG meta + http→https redirect) verified GREEN and ready for production deploy.
+
+- Commits / SHAs:
+  * 9acd7e9 (app tip — title fixed + OG/Twitter meta + http→https redirect, v29)
+  * (this log entry committed now)
+
+- Still open / next:
+  * Hugo GREEN complete on 9acd7e9. All gate sign-offs complete (Akashi SAFE + Mikoto MISSING:0 + Hugo GREEN). Ready for Osefe's explicit "ship it" (sleep-mode: no auto-publish even for launch) then Kaito's merge/publish to gh-pages.
+  * Deploy now verified green. Ship when ready.
