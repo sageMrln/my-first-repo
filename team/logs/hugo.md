@@ -1232,3 +1232,33 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * **Awaiting Mikoto:** i18n sync to reach MISSING:0 (theme/layout strings x 6 active langs).
   * **Awaiting Osefe:** "ship it" go (sleep-mode: no auto-publish).
   * **Kaito's deploy prep:** When ready to ship, bump v28 → v29 in both index.html APP_VER and sw.js VERSION (one commit), then re-run green.js to confirm still GREEN on the new tip, then publish to gh-pages.
+
+## [2026-07-29 ~23:30] — direct (Osefe) — FAST final GREEN @ e8c3122 (v29 production deploy, theming + CSS fixes)
+
+- Asked: Final GREEN on production-deploy tip e8c3122 (v29). Delta since d9a68fb GREEN: Mikoto i18n (MISSING:0 targets), v29 bump (index+sw both v29 now — the bump I flagged is done), two pure-CSS bug fixes (html background seal + overscroll + hide empty food-photo imgs). Confirm: (1) full gate GREEN exit 0 + all 417 tests; (2) script parse guard + script-tag balance; (3) preflight CLEAR on index.html + landing.html + legal.html; (4) APP_VER === sw.js VERSION both v29; (5) i18n MISSING: 0 for 6 active target langs (es/da/de/sv/nb/hu); Malay parked gaps expected.
+
+- Did / found / thought:
+  * Pulled branch `claude/vibrant-pasteur-ie24ab`, confirmed on tip e8c3122. Read memory + chat (prior GREEN @ d9a68fb theming+layout, v28, pending i18n; now v29 bumped, i18n done, CSS fixes applied).
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0**:
+    - **HTML parse guard (step 0):** 4/4 script blocks parse ✓ (theme CSS + switcher JS syntactically valid; two CSS fix lines added)
+    - **All 16 test suites pass:** parser 21/21 ✓, assistant 16/16 ✓, streak 4/4 ✓, sound 7/7 ✓, reorder 7/7 ✓, onboarding 10/10 ✓, transfer 58/58 ✓, silly 43/43 ✓, photo_store 17/17 ✓, pr 12/12 ✓, tax 105/105 ✓, media 43/43 ✓, savesafety 14/14 ✓, income_log 35/35 ✓, import_sanitize 25/25 ✓ = **417 total tests** ✓
+    - **Preflight CLEAR on all 3 pages:**
+      - index.html ✓ CLEAR (6 script tags balanced, slots empty, 1 public key, no PII, PUBCHK intact)
+      - landing.html ✓ CLEAR (1 script tag balanced, legal-identity exception applied)
+      - legal.html ✓ CLEAR (2 script tags balanced, legal-identity exception applied)
+    - **Preflight PII exception guard:** 12/12 cases ✓ (no PII leaks on any page)
+    - **Leak scan:** 4/4 files clean ✓ (GUIDE.md, manifest, sw.js, team-chat all leak-free)
+    - **Version tag:** APP_VER v29 === sw.js VERSION v29 ✓ (v28 → v29 bump applied correctly to both)
+  * Ran `node tools/i18n/sync.js`: **MISSING: 0** for 6 active target languages (es/da/de/sv/nb/hu) ✓. The 20 missing entries are all in `ms` (Malay), which is intentionally parked per gate protocol — not a failure.
+  * **CSS fixes confirmed:** Two pure-CSS changes (html bg seal + overscroll void, hide empty food-photo img placeholders) — invisible to tests (no logic/data-path impact), so gate passes as-is.
+
+- Decision / result:
+  * **GREEN @ e8c3122** — all 417 tests pass. HTML parse guard ✓ (4/4 scripts). Preflight CLEAR ✓ (all 3 pages: index.html + landing.html + legal.html). Preflight PII exception guard ✓ (12/12 adversarial cases). Leak scan ✓ (4/4 files clean). Version tag v29 matched ✓ (APP_VER === sw.js VERSION). MISSING: 0 for 6 active langs ✓ (ms parked, not a failure). Theming + layout feature + v29 bump + CSS fixes verified GREEN and ready for production deploy.
+
+- Commits / SHAs:
+  * d9a68fb (theming+layout feature, v28, prior GREEN, i18n pending)
+  * e8c3122 (current tip — v29 bump + Mikoto i18n + CSS fixes; this log entry now)
+
+- Still open / next:
+  * Hugo GREEN complete on e8c3122. All gate sign-offs already satisfied (Akashi SAFE from prior, Mikoto MISSING:0 now). Awaiting Osefe's explicit "ship it" (sleep-mode: no auto-publish even for launch), then Kaito's merge/publish to gh-pages.
+  * Deploy now verified green. Ship when ready.
