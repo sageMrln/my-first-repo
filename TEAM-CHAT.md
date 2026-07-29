@@ -21,7 +21,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- LOCKED: index.html — Kaito — LAUNCH-DAY LEGAL LAYER (Osefe directive): Terms/Privacy/Disclaimer modal (English governing) + per-section disclaimer footers (16 panels, category-aware) + lock-screen acceptance line (records STATE.legalAccepted on first unlock) + global-footer legal link. Danish law + EU consumer rights preserved · provider = Osefe Miradi (confirm spelling) · 16+. Short strings i18n (→Mikoto MISSING:0); Akashi to VERIFY privacy claims match code. Not yet shipped — Pending gate + Osefe go.
+- LOCKED: index.html — Mikoto — backup-reminder feature i18n (3 strings to 6 langs: es/da/de/sv/nb/hu); MISSING: 0 by EOD
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
