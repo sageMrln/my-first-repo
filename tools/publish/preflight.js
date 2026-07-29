@@ -104,6 +104,16 @@ const LOCK_ALLOW = [
   /Email Miradiosefe@gmail\.com to get next month's key/g
 ];
 
+// index.html: the SAME renewal sentence is carried into the i18n translation dictionary
+// (key = the exact English source string; value = the per-language translation). The email
+// is intended-public, but the email address itself is NOT translated, so it appears once in
+// the key and once in each language's value. We allow it ONLY inside the exact renewal
+// key:value pair, anchored to the full quoted English key, and — via a callback — strip
+// ONLY the email token, never the surrounding value. So an injected CPR/IBAN or any other
+// PII smuggled into that value STILL trips PII_RE, and the email in any OTHER dict entry
+// (different key) is untouched and still BLOCKS.
+const RENEWAL_I18N = /"Your key unlocks the dashboard for the month\. Email Miradiosefe@gmail\.com to get next month's key\. Your financial data never leaves this device\.":"[^"]*Miradiosefe@gmail\.com[^"]*"/g;
+
 // landing.html / legal.html: sanctioned contact/footer identity forms (context-anchored)
 const CONTACT_ALLOW = [
   // Provider name (bold or plain), optionally followed by ("we", "us") — footer, meta, legal eff-lines
@@ -139,6 +149,10 @@ if (isMarketing) {
     LOCK_ALLOW.forEach(function (re) { lf = lf.replace(re, ''); });
     sanitized = sanitized.replace(lockFoot[0], lf);
   }
+  // (c) the renewal sentence's i18n dictionary entries — strip ONLY the sanctioned email
+  //     token, and ONLY within the exact renewal key:value pair (any other PII in that
+  //     value, or the email under any other key, still BLOCKS).
+  sanitized = sanitized.replace(RENEWAL_I18N, function (m) { return m.replace(/Miradiosefe@gmail\.com/g, ''); });
   piiScan = sanitized;
 }
 const pii = piiScan.match(PII_RE);

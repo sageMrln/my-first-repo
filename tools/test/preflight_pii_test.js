@@ -53,6 +53,13 @@ const cases = [
   // phrasing, so the same email in any other form/location still BLOCKS.
   ['index: renewal phrase OUTSIDE lk-foot still fails', () => ['index.html', index.replace('<body', "<!-- Email Miradiosefe@gmail.com to get next month's key --><body")], 1],
   ['index: different-form email INSIDE lk-foot fails',  () => ['index.html', index.replace('never leaves this device.', 'never leaves this device. Ping Miradiosefe@gmail.com anytime.')], 1],
+  // ---- index.html i18n dictionary renewal entries (RENEWAL_I18N exception) ----
+  // The renewal sentence is translated into every language; the email stays verbatim in
+  // the key + each value. The exception allows ONLY that email token inside the exact
+  // renewal key:value pair, and strips ONLY the token — so anything else smuggled in still
+  // BLOCKS. 'index: real passes' is the positive lock (the dict entries are in the file).
+  ['index: CPR/IBAN in a renewal translation value fails', () => ['index.html', index.replace('for at få næste måneds nøgle', 'for at få næste måneds nøgle DK99887766554433')], 1],
+  ['index: email under a DIFFERENT dict key fails',        () => ['index.html', index.replace('var I18N = {', 'var I18N = {"zz":{"hi":"contact Miradiosefe@gmail.com now"},')], 1],
   // ---- landing.html / legal.html (static-page contact/footer exception) ----
   ['landing: real passes',                         () => ['landing.html', landing],                                                                  0],
   ['legal: real passes',                           () => ['legal.html', legal],                                                                      0],
