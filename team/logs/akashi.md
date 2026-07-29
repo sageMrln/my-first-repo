@@ -2418,3 +2418,16 @@ Entry format:
 - VERDICT: **SAFE @ 9acd7e9.** Title is cosmetic; OG/twitter meta reference only public URLs + the public demo screenshot + product copy (no PII/key); http→https redirect is a double-gated protocol-only forced-TLS with no open-redirect/loop, prepended into the existing boot script (no new tag, 6 scripts held); watchdogs byte-identical; slots empty; gates GREEN/CLEAR. NO security edit required.
 - Commits/SHAs reviewed: 9acd7e9 (tip), baseline e8c3122 (my prior SAFE). Read-only, NO lock, NO app-code edit (TEAM-CHAT + this log only). Posting SAFE @ 9acd7e9 to TEAM-CHAT.
 - Still open: none security-side. If index/sw/landing/legal/preflight move, I re-sign.
+
+---
+### 2026-07-29 — Preflight PII: allow sanctioned renewal email (lock-screen + i18n)
+- **ASKED (via Kaito):** renewal copy points to email Miradiosefe@gmail.com instead of Discord; preflight REDed ("Miradi, osefe@"). Add ONE tight allow-form for the exact renewal sentence without loosening the net; add guard cases; confirm CLEAR/GREEN. Given tip 2e29208.
+- **REALITY was bigger than the brief.** By the time I worked, Mikoto's i18n commit `d11eeda` had (a) translated the renewal line into 7 langs — planting Miradiosefe@gmail.com into the I18N dictionary **14×** (key + value per lang), so it was NOT "a static string only, no script touched"; and (b) **swept my UNCOMMITTED preflight.js + test edits into her i18n commit** — a lock/find-xor-fix collision (I held the lock on those files). Content ended up mine, but process was violated. Flagged to Kaito in chat.
+- **DID (security, my domain — edited preflight.js + preflight_pii_test.js directly):**
+  - `LOCK_ALLOW` = `/Email Miradiosefe@gmail\.com to get next month's key/g`, stripped ONLY inside the `.lk-foot` element (fail-closed) — covers the English lock-screen line (attr+text).
+  - `RENEWAL_I18N` = `/"Your key unlocks the dashboard for the month\. Email Miradiosefe@gmail\.com to get next month's key\. Your financial data never leaves this device\.":"[^"]*Miradiosefe@gmail\.com[^"]*"/g`, stripped via a **callback that removes ONLY the email token**, not the surrounding value — so an injected CPR/IBAN in a translation value, or the email under any OTHER dict key, STILL REDs. Covers all 7 i18n key/value pairs.
+  - +4 guard cases (renewal-phrase-outside-lk-foot fails; different-form email in lk-foot fails; CPR/IBAN in a renewal translation value fails; email under a different dict key fails). Suite now **16/16**.
+- **VERIFIED @ f020a0e:** preflight(index.html) CLEAR (slots empty · no private key · 1 public key · PUBCHK intact · 6 scripts). PII guard 16/16. green.js GREEN (all suites, MISSING:0, version v31===sw v31, all published files leak-clean). Watchdogs byte-intact: `token()` count 13 in both `700a774` and HEAD; index.html minus the `var I18N` line + `lk-foot` line hashes **identical** (4f91ad6…) across 700a774→f020a0e → only the renewal copy + its i18n entries changed; no watchdog/money/key byte touched.
+- **VERDICT: SAFE @ f020a0e.**
+- **OPEN / for Kaito:** (1) process — Mikoto's d11eeda absorbed my in-flight security edits; verify the committed preflight.js is exactly mine (it is, on my check) and remind the team lock/find-xor-fix. (2) SAFE is on tip f020a0e; if the tip moves, I re-sign.
+- Commit: security(preflight) fix pushed as `f020a0e` (earlier lock chore `30217f9`).
