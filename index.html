@@ -2580,7 +2580,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // open-in-browser/install escape hatch. Real Chrome/Safari UAs don't match these tokens.
   var IN_APP_BROWSER = (function(){ try{ return /FBAN|FBAV|FB_IAB|Instagram|Messenger|\bLine\/|Snapchat|TikTok|musical_ly|Bytedance|\bTwitter\b|Pinterest|WhatsApp|LinkedInApp|\bGSA\b|MicroMessenger|Discord|Slack|Telegram/i.test(navigator.userAgent||''); }catch(_){ return false; } })();
   var _durabilityWarned=false;
-  function _canonLink(){ return 'https://sagemrln.github.io/my-first-repo/' + ((typeof STATE==='object'&&STATE&&STATE.fid)?('#'+STATE.fid):''); }
+  function _canonLink(){ return 'https://mrln.online/' + ((typeof STATE==='object'&&STATE&&STATE.fid)?('#'+STATE.fid):''); }
   function _warnNotDurable(){            // fail loud: this browser isn't keeping data
     if(_durabilityWarned) return; _durabilityWarned=true;
     var el=document.getElementById('saveSafetyBanner');
@@ -8542,7 +8542,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     // random, human-readable file ID (no look-alike chars)
     function newFid(){ var a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s=''; for(var i=0;i<6;i++) s+=a[Math.floor(Math.random()*a.length)]; return 'F-'+s; }
     // hosted app URL — the link you give iPhone (and everyone). The File ID rides in the #hash.
-    var HOST_BASE = 'https://sagemrln.github.io/my-first-repo/';
+    var HOST_BASE = 'https://mrln.online/';
     var go=document.getElementById('mintGo');
     if(go) go.addEventListener('click', function(){
       var name=(document.getElementById('mintName').value||'').trim();
