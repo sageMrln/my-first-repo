@@ -3,7 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>FINANCE HUD</title>
+<title>MRLN — Private money & health</title>
+<meta name="description" content="MRLN — a private, offline money & health app. No bank connection, no cloud, no account; your data stays on your device.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MRLN">
+<meta property="og:url" content="https://mrln.online/">
+<meta property="og:title" content="MRLN — Private, offline money & health">
+<meta property="og:description" content="A private, offline money & health app. No bank connection, no cloud, no account.">
+<meta property="og:image" content="https://mrln.online/ov_desktop.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mrln.online/ov_desktop.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#03070e">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1080,6 +1089,7 @@
   <div class="boot-dots" aria-hidden="true"><span></span><span></span><span></span></div>
 </div>
 <script>
+if(location.hostname==='mrln.online'&&location.protocol==='http:'){location.replace(location.href.replace(/^http:/,'https:'));}
 /* Boot teardown chokepoint — mirrors __lockFX. Exits on max(app-ready, 900ms floor), then REMOVES #boot
    from the DOM (zero rAF/paint/listener after). A 4000ms safety net self-dismisses if init ever throws
    before ready() is called, so the boot can never strand the user. Own parse-time script → net covers all
@@ -1087,7 +1097,7 @@
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v29';
+window.APP_VER='v30';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
