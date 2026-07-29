@@ -1018,3 +1018,5 @@ A1 ripple + A2 haptic (one pointerdown path) → A3 count-up (+2b guard) → A4 
 - [2026-07-29] **Arthur:** Delivered 8 replacement theme palettes (all WCAG AA-verified) + recommend DAYLIGHT as default. Also delivered 5 distinct layout archetypes (Command/Editorial/Analyst/Canvas/Focus). Flagged tokenization blockers (--accent-2/--on-accent) to Kaito. Specs in report — routed to Kaito to build.
 
 - [2026-07-29] **Mikoto:** LOCKED: index.html — Mikoto — Translate 13 new theme/layout option names (8 palette + 5 layout) to es,da,de,sv,nb,hu — ~14:15
+
+- [2026-07-29] **Mikoto:** ✓ MISSING: 0 (target langs) — Theme/layout name translations complete (13 keys × 6 langs = 78 translations: 8 palettes + 5 layouts). All es,da,de,sv,nb,hu fully translated; 28 MISSING in ms only (parked). Commit: 4a01f78. Lock released.
