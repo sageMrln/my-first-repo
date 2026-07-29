@@ -4172,6 +4172,39 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       openIncomeEntry(target, 'prompt');
     }catch(_){}
   }
+  // ── Backup reminder ───────────────────────────────────────────────────────
+  // Once someone has put real work into MRLN, nudge them to save a copy so a lost
+  // or wiped phone never means a lost plan — framed like backing up your photos.
+  function _backupDataScore(){
+    try{
+      var s = 0;
+      s += (STATE.customItems||[]).length + (STATE.workouts||[]).length + (STATE.prs||[]).length;
+      s += (STATE.notes||[]).length + (STATE.foodLog||[]).length + (STATE.media||[]).length;
+      s += (STATE.log||[]).length + (STATE.savingsBoxes||[]).length + (STATE.incomeLog||[]).length;
+      try{ s += Object.keys(STATE.calendar||{}).length; }catch(_){}
+      try{ if(MODEL && MODEL.groups) MODEL.groups.forEach(function(g){ s += ((g.items||[]).length); }); }catch(_){}
+      return s;
+    }catch(_){ return 0; }
+  }
+  var BACKUP_MIN_SCORE = 12;          // "you've added a lot"
+  var BACKUP_STALE_MS  = 30*864e5;    // a saved copy older than ~30 days is worth refreshing
+  var BACKUP_SNOOZE_MS = 14*864e5;    // never nag more than ~once a fortnight
+  function checkBackupReminder(){
+    try{
+      if(STATE.fresh) return;
+      if(_backupDataScore() < BACKUP_MIN_SCORE) return;                              // not enough invested yet
+      var now = Date.now();
+      if(STATE.lastBackup && (now - STATE.lastBackup) < BACKUP_STALE_MS) return;      // saved a copy recently
+      if(STATE.backupPromptedAt && (now - STATE.backupPromptedAt) < BACKUP_SNOOZE_MS) return;  // don't nag
+      STATE.backupPromptedAt = now; try{ if(typeof autosave==='function') autosave(); }catch(_){}   // mark shown (no nagging, whatever they pick)
+      uiConfirm({
+        title: '📥 ' + t('Save a copy of MRLN'),
+        message: t('You’ve added a lot here. Save a copy so you never lose it — back it up like you save your photos. Losing your phone shouldn’t mean losing your plan.'),
+        confirmText: t('Save a copy'),
+        danger: false
+      }, function(){ try{ if(typeof exportHTML==='function') exportHTML(); }catch(_){} });
+    }catch(_){}
+  }
   // Skip / dismiss handling for the prompt: Skip = never again this month; closing = snooze ~2 days (max 2).
   function incomePromptSkip(){ STATE.incomeAsk={ skipYm:_incTargetYm }; autosave(); closeIncomeEntry(); }
   function incomePromptSnooze(){
@@ -5657,6 +5690,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
     var b = document.getElementById('saveBadge'); if(b){ b.textContent = '✓ exported ' + fname; b.style.color = 'var(--lime)'; }
+    try{ STATE.lastBackup = Date.now(); if(typeof autosave==='function') autosave(); }catch(_){}   // remember they saved a copy → quiets the backup reminder
   }
   // Export a GUARANTEED-CLEAN copy to give to a new person: no data, no key.
   // It temporarily blanks the live view, serialises, then restores your data.
@@ -8420,6 +8454,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     maybeShowUpdatePanel();   // returning, all set up → show the update popup if the build changed
     // End-of-month income prompt — only once nothing else is on screen (never stack modals)
     setTimeout(function(){ try{ if(document.querySelector('.modal-back.show')) return; if(typeof checkMonthlyIncome==='function') checkMonthlyIncome(); }catch(_){} }, 1700);
+    // Backup reminder — only if nothing else is on screen (never stack prompts)
+    setTimeout(function(){ try{ if(document.querySelector('.modal-back.show')) return; if(typeof checkBackupReminder==='function') checkBackupReminder(); }catch(_){} }, 2600);
   };
 
   /* ===================== OWNER KEY MAKER =====================
