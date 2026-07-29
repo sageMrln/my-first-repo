@@ -744,7 +744,7 @@
   .install-banner .ib-icon{font-size:26px;line-height:1;flex:none}
   .install-banner .ib-text{flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--txt)}
   .install-banner .ib-text b{color:var(--bright);font-size:15px;font-family:'Orbitron',sans-serif;letter-spacing:.02em}
-  .install-banner .ib-go{flex:none;background:linear-gradient(180deg,#22e9ff,#00b8d4);color:#03121a;border:0;border-radius:10px;
+  .install-banner .ib-go{flex:none;background:linear-gradient(180deg,var(--cyan),var(--accent-2));color:var(--on-accent);border:0;border-radius:10px;
     font-family:'Orbitron',sans-serif;font-weight:800;font-size:13px;letter-spacing:.04em;padding:11px 18px;cursor:pointer;
     box-shadow:0 0 16px rgba(var(--accent-rgb),.5)}
   .install-banner .ib-go:active{transform:translateY(1px)}
@@ -753,7 +753,7 @@
   #installBody ol li{margin:7px 0}
   #installBody ol li::marker{color:var(--cyan);font-family:'Share Tech Mono';font-weight:700}
   #installBody .ib-note{font-size:12.5px;color:var(--txt-dim);margin-top:10px;line-height:1.5}
-  #installBody .ib-now{display:block;width:100%;margin:4px 0 4px;background:linear-gradient(180deg,#22e9ff,#00b8d4);color:#03121a;
+  #installBody .ib-now{display:block;width:100%;margin:4px 0 4px;background:linear-gradient(180deg,var(--cyan),var(--accent-2));color:var(--on-accent);
     border:0;border-radius:11px;font-family:'Orbitron',sans-serif;font-weight:800;font-size:15px;letter-spacing:.03em;padding:14px;cursor:pointer;box-shadow:0 0 18px rgba(var(--accent-rgb),.45)}
   /* SAVE SAFETY — amber warning variant of the install banner + modal zones + lock escape hatch */
   .install-banner.warn{ border-color:var(--amber); border-left:3px solid var(--amber);
@@ -2886,8 +2886,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var d=document.createElement('div');
       d.textContent=msg||('✓ '+t('Nice!'));
       d.style.cssText='position:fixed;top:18%;left:50%;transform:translateX(-50%);z-index:98500;'+
-        'background:var(--lime,#7CFFB2);color:#012;font-weight:800;font-size:15px;padding:8px 16px;'+
-        'border-radius:999px;box-shadow:0 0 20px rgba(124,255,178,.6);pointer-events:none;'+
+        'background:var(--lime,#7CFFB2);color:var(--on-accent,#012);font-weight:800;font-size:15px;padding:8px 16px;'+
+        'border-radius:999px;box-shadow:0 0 20px rgba(var(--pos-rgb,124,255,178),.5);pointer-events:none;'+
         'transition:opacity .6s ease, transform .6s ease;opacity:1';
       document.body.appendChild(d);
       setTimeout(function(){ d.style.opacity='0'; d.style.transform='translateX(-50%) translateY(-18px)'; }, 700);
@@ -8487,7 +8487,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function showPersonalizeReminder(){
     if(document.getElementById('personalizeNag')) return;
     var bar=document.createElement('div'); bar.id='personalizeNag';
-    bar.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9000;max-width:92%;background:linear-gradient(135deg,#10243a,#0a1828);border:1px solid var(--cyan,#0ce);border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center;font-family:Rajdhani,sans-serif';
+    bar.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9000;max-width:92%;background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--cyan,#0ce);border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center;font-family:Rajdhani,sans-serif';
     bar.innerHTML='<div style="flex:1;min-width:0"><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">Finish personalizing</b><div style="color:var(--txt-dim,#9bb);font-size:13px">Your dashboard works, but adding your income, expenses &amp; body stats makes every grade and simulator real.</div></div>'+
       '<button id="nagGo" style="background:var(--cyan,#0ce);color:#021019;border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-family:Orbitron,sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">Finish setup</button>'+
       '<button id="nagX" aria-label="Dismiss" style="background:transparent;color:var(--txt-dim,#9bb);border:0;font-size:20px;cursor:pointer;line-height:1">✕</button>';
