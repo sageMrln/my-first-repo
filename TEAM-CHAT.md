@@ -21,7 +21,6 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- LOCKED: index.html (+ sw.js) — Kaito — theme-system overhaul: tokenize all hardcoded colors + add 7 ref palettes + landing-match + dramatic layout presets (Osefe order) — 2026-07-29
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - Bare `Spar 99 per month` / `Lønstrup`-style merchant-as-savings with no add-verb —
