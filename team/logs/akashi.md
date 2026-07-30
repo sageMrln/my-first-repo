@@ -2463,3 +2463,10 @@ Entry format:
 - No money math, no __sys/watchdog byte, no network, no export/import, no new displayed value. WATCHDOGS BYTE-IDENTICAL dfd7904↔e58f3d5: `__sys.token(` 16==16, token( 18, __sys 31, PUBCHK 2, 4047293148 1, PUB_B64 3, __ownerKeySrc 7, hud-state 6, _ecVerify 2, isArmed 2, isTripped 3. Slots byte-empty; 6 scripts; APP_VER v35===sw v35. Pure presentation → no poison needed.
 - GATE (ran myself): preflight index CLEAR exit 0; green.js GREEN exit 0.
 - VERDICT: **SAFE @ e58f3d5.** Cyberpunk-default + persistence fix is presentation + a removed redundant validator (applyAppearance still whitelist-forces → no injection, no weakened control); watchdogs byte-identical; slots empty; v35 parity; gates GREEN/CLEAR. NO security edit required. Hugo re-GREEN @e58f3d5 (6687a96). If tip moves index/sw/landing/legal/preflight, I re-sign. New i18n string "Cyberpunk" → Mikoto MISSING check (not security).
+
+### [2026-07-29] follow-up 3 — TIP MOVED → RE-SAFE @ `4a10893`
+- Freeze rule: tip advanced e58f3d5→4a10893 ("fix(layout): Canvas bottom bar unreadable with 13 tabs, v35→v36"). Verified delta myself.
+- Published diff e58f3d5..4a10893 = index.html CSS-only (entirely inside the `html[data-layout=canvas]` block: nav.tabs flex:1→horizontal-scroll strip of natural-width pills [flex:0 0 auto, white-space:nowrap, scrollbar hidden, active-pill highlight], .savebar lifted above the bar) + APP_VER v35→v36; sw.js VERSION v35→v36. NO JS, no money math, no strings, no network.
+- WATCHDOGS BYTE-IDENTICAL e58f3d5↔4a10893: `__sys.token(` 16==16, token( 18, __sys 31, PUBCHK 2, 4047293148 1, PUB_B64 3, __ownerKeySrc 7, hud-state 6, _ecVerify 2, isArmed 2, isTripped 3. Diff sensitive/JS-token scan = empty. Slots byte-empty; 6 scripts; APP_VER v36===sw v36. Pure CSS → no poison needed.
+- GATE (ran myself): preflight index CLEAR exit 0; green.js GREEN exit 0.
+- VERDICT: **SAFE @ 4a10893.** CSS-only canvas-nav readability fix + v36 parity bump; watchdogs byte-identical; slots empty; gates GREEN/CLEAR. NO security edit required. Hugo re-GREEN @4a10893 (4218d9c). If tip moves index/sw/landing/legal/preflight, I re-sign.
