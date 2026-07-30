@@ -2452,3 +2452,14 @@ Entry format:
 - Watchdogs BYTE-IDENTICAL 546bfcf↔dfd7904: `__sys.token(` 16==16, token( 18==18, __sys 31==31, PUBCHK 2, 4047293148 1, PUB_B64 3, __ownerKeySrc 7, hud-state 6, _ecVerify 2, isArmed 2, isTripped 3. Slots byte-empty; 6 scripts; APP_VER v33===sw v33. No new value/math/network → no poison needed (color token swap only).
 - GATE (ran myself @dfd7904): preflight index CLEAR exit 0; green.js GREEN exit 0.
 - VERDICT: **SAFE @ dfd7904** (index.html at dfd7904 = 546bfcf + the single toast color line). Hugo re-GREEN @dfd7904 (50fc3de). If tip moves index/sw/landing/legal/preflight, I re-sign.
+
+### [2026-07-29] follow-up 2 — TIP MOVED → RE-SAFE @ `e58f3d5`
+- Freeze rule: tip advanced dfd7904→e58f3d5 ("restore Cyberpunk as default + fix theme persistence, v33→v35"). Verified the delta myself.
+- Published diff dfd7904..e58f3d5 = index.html (CSS + JS presentation) + sw.js (v35 bump only). Exactly the 4 declared things:
+  1. CSS: :root default tokens Daylight→Cyberpunk; added explicit [data-theme="cyber"] block (= :root); light-FX gate no longer keys on `html:not([data-theme])` so the cyber default keeps neon FX. Pure presentation.
+  2. JS applyAppearance: THEMES whitelist +'cyber' (9), default 'cyber', TMIG drops cyber (valid again). STILL `if(THEMES.indexOf(p.theme)<0) p.theme=TMIG[p.theme]||'cyber'` → whitelist-FORCES before setAttribute — the injection-safe pattern I already ruled on. themeSel default 'landing'→'cyber' + new <option value="cyber">.
+  3. Removed the stale boot-time validator @~2758 (`if(['calm','pink','cyber']...) theme='cyber'` / layout) that reset every NEW theme/layout to cyber/pro on reload (the persistence bug). NOT a security control — it was a theme/layout STRING validator; `applyAppearance()` is still called on the very next line and still normalizes to the whitelist before setAttribute → validation consolidated + corrected, NOT weakened. No injection opened.
+  4. Version v33→v35 (APP_VER + sw VERSION).
+- No money math, no __sys/watchdog byte, no network, no export/import, no new displayed value. WATCHDOGS BYTE-IDENTICAL dfd7904↔e58f3d5: `__sys.token(` 16==16, token( 18, __sys 31, PUBCHK 2, 4047293148 1, PUB_B64 3, __ownerKeySrc 7, hud-state 6, _ecVerify 2, isArmed 2, isTripped 3. Slots byte-empty; 6 scripts; APP_VER v35===sw v35. Pure presentation → no poison needed.
+- GATE (ran myself): preflight index CLEAR exit 0; green.js GREEN exit 0.
+- VERDICT: **SAFE @ e58f3d5.** Cyberpunk-default + persistence fix is presentation + a removed redundant validator (applyAppearance still whitelist-forces → no injection, no weakened control); watchdogs byte-identical; slots empty; v35 parity; gates GREEN/CLEAR. NO security edit required. Hugo re-GREEN @e58f3d5 (6687a96). If tip moves index/sw/landing/legal/preflight, I re-sign. New i18n string "Cyberpunk" → Mikoto MISSING check (not security).
