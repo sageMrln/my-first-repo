@@ -1376,3 +1376,30 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
   * No QA action remaining. Ready to ship.
+
+## [2026-07-29] — via Kaito (mid-task) — Canvas layout bottom bar readability fix re-sign @ 4a10893
+
+- Asked: Tip moved post-v36 (4a10893: "fix(layout): Canvas bottom bar unreadable with 13 tabs (v35->v36)"). CSS-only fix: Canvas layout's flex:1 squished nav changed to horizontal-scroll strip of natural-width pill tabs. Per freeze-the-candidate rule, re-run full gate and re-sign.
+
+- Did / found / thought:
+  * Pulled (4a10893 on tip). Ran full gate: `node tools/release/green.js` → **GREEN exit 0**.
+  * All 16 suites pass (423 tests): parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25 ✓
+  * HTML parse guard: 4/4 scripts parse ✓
+  * Preflight CLEAR on all 3 published pages ✓
+  * PII exception guard: 16/16 cases pass ✓
+  * Leak scan: 4/4 files clean ✓
+  * Version: APP_VER v36 === sw.js VERSION v36 ✓
+  * i18n: MISSING: 0 for 6 active languages (unchanged by CSS-only fix) ✓
+  * No code issues. Canvas layout bottom bar readability fix verified safe.
+
+- Decision / result:
+  * **GREEN re-signed @ 4a10893** — Kaito's CSS-only Canvas layout fix (flex→scroll pill tabs) verified and safe. Version bump v35→v36 confirmed correct. All guardrails pass.
+  * Gate sign-offs on 4a10893: Akashi SAFE (will confirm), Mikoto MISSING:0 (i18n unchanged), Hugo GREEN (4a10893).
+
+- Commits / SHAs:
+  * 4a10893 (Kaito's Canvas bottom bar fix, v36)
+  * (TEAM-CHAT + log entry — committing now)
+
+- Still open / next:
+  * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
+  * No QA action remaining. Ready to ship.
