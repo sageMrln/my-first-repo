@@ -1349,3 +1349,30 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
   * No QA action remaining. Ready to ship.
+
+## [2026-07-29] — via Kaito (mid-task) — Cyberpunk default + persistence fix re-sign @ e58f3d5
+
+- Asked: Tip moved post-v35 (e58f3d5: "feat(theme): restore Cyberpunk as default + fix theme persistence (v34->v35)"). Two changes: (1) Cyberpunk restored as selectable theme + set as default; (2) removed stale boot-time validation, applyAppearance() now sole validator/migrator. Per freeze-the-candidate rule, re-run full gate and re-sign.
+
+- Did / found / thought:
+  * Pulled (e58f3d5 on tip). Ran full gate: `node tools/release/green.js` → **GREEN exit 0**.
+  * All 16 suites pass (423 tests): parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25 ✓
+  * HTML parse guard: 4/4 scripts parse ✓
+  * Preflight CLEAR on all 3 published pages ✓
+  * PII exception guard: 16/16 cases pass ✓
+  * Leak scan: 4/4 files clean ✓
+  * Version: APP_VER v35 === sw.js VERSION v35 ✓
+  * i18n: MISSING: 0 for 6 active languages (unchanged by theme/persistence changes) ✓
+  * No code issues. Cyberpunk default + persistence bugfix verified safe.
+
+- Decision / result:
+  * **GREEN re-signed @ e58f3d5** — Kaito's changes (Cyberpunk default restoration + boot-validation removal) verified and safe. Version bump v34→v35 confirmed correct in both files. All guardrails pass.
+  * Gate sign-offs on e58f3d5: Akashi SAFE (will confirm), Mikoto MISSING:0 (i18n unchanged), Hugo GREEN (e58f3d5).
+
+- Commits / SHAs:
+  * e58f3d5 (Kaito's Cyberpunk default + persistence fix, v35)
+  * (TEAM-CHAT + log entry — committing now)
+
+- Still open / next:
+  * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
+  * No QA action remaining. Ready to ship.
