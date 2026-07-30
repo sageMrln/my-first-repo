@@ -182,10 +182,14 @@
   html[data-layout=canvas] .card h2::before{ display:none; }
   html[data-layout=canvas] .hero-num{ font-family:'Orbitron',sans-serif; font-size:clamp(40px,11vw,60px); }
   html[data-layout=canvas] .stat{ border-radius:999px; }
-  html[data-layout=canvas] nav.tabs{ position:fixed; bottom:0; left:0; right:0; z-index:60; flex-wrap:nowrap; overflow-x:auto; background:var(--panel); border-top:1px solid var(--line); padding:6px 6px calc(6px + env(safe-area-inset-bottom)); margin:0; justify-content:space-around; }
-  html[data-layout=canvas] .tab{ flex:1; min-width:0; flex-direction:column; gap:2px; font-size:11px; padding:8px 4px; border:0; background:none; box-shadow:none; border-radius:12px; }
-  html[data-layout=canvas] .tab.active{ background:none; box-shadow:none; color:var(--cyan); border:0; }
+  /* Bottom bar: 13 tabs won't fit abreast — make it a horizontal SCROLL strip of
+     natural-width pills (swipe through them) instead of squishing every label. */
+  html[data-layout=canvas] nav.tabs{ position:fixed; bottom:0; left:0; right:0; z-index:60; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; background:var(--panel); border-top:1px solid var(--line); padding:9px 12px calc(9px + env(safe-area-inset-bottom)); margin:0; gap:7px; justify-content:flex-start; }
+  html[data-layout=canvas] nav.tabs::-webkit-scrollbar{ display:none; }
+  html[data-layout=canvas] .tab{ flex:0 0 auto; white-space:nowrap; font-size:13px; font-weight:600; letter-spacing:.02em; padding:9px 15px; border:1px solid transparent; background:none; box-shadow:none; border-radius:999px; scroll-snap-align:start; }
+  html[data-layout=canvas] .tab.active{ background:var(--field-bg); box-shadow:none; color:var(--cyan); border:1px solid var(--cyan); }
   html[data-layout=canvas] .tab .ix{ display:none; }
+  html[data-layout=canvas] .savebar{ bottom:calc(66px + env(safe-area-inset-bottom)); }
   html[data-layout=canvas] .pillbar{ display:none; }
   html[data-layout=canvas] .item-row{ min-height:54px; }
 
@@ -1191,7 +1195,7 @@ if(location.hostname==='mrln.online'&&location.protocol==='http:'){location.repl
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v35';
+window.APP_VER='v36';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
