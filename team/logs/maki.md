@@ -202,6 +202,31 @@ Entry format:
   serious-not-hype voice; tax figures MODELED (Osefe to confirm personal-vs-ApS w/ a real accountant).
 - Still open / next: nothing new — waiting on Akashi/Kaito vet + Osefe's gf-voice relay + landing-page owner.
 
+## [2026-07-31] — direct (Osefe) — "who are our competitors?" + a positioning correction
+- Asked: Osefe — who competes with MRLN. (Also earlier this session: model switched to Fable 5; Osefe
+  ordered intensive security check + optimization + max-futuristic UI polish → I DISPATCHED Akashi
+  (security, background agent) + framed an Arthur UI brief; NOT my job to do those myself.)
+- Researched (live 2026): privacy-first offline finance space is now CROWDED + partly free. Direct:
+  SenticMoney ($39/yr — our EXACT wedge at our price, closest threat), Pocket Clear (free tier),
+  BudgetVault (free), Monefy, Finny ($1.99/mo), Actual Budget (free/OSS), Goodbudget. Incumbents/foils
+  (bank-connected): YNAB/Copilot/Monarch/Rocket Money/Simplifi. Health: MyFitnessPal/Cronometer/
+  MacroFactor/Apple Health. Biggest real competitor = free + spreadsheets + apathy. KEY: research found
+  NO true all-in-one finance+HEALTH offline private apps → that combo is MRLN's white space.
+- Decided / produced: wrote `team/maki-competitors.md` (tiered map + 2 hard truths + positioning shift).
+  TWO HARD TRUTHS: (1) privacy-alone is no longer a moat (crowded/free; SenticMoney = same pitch same
+  price); (2) MOAT = the finance+health COMBINATION (nearly empty niche). POSITIONING SHIFT rec: lead
+  with the combo ("your money and your health, one place, never leaves your phone" [Akashi]), privacy =
+  reason-to-believe underneath — SUPERSEDES privacy-alone wedge in proof + asset docs (hooks still valid,
+  reframe under combo). Pricing gut-check: $6.99/$59 is TOP of privacy-app range (rivals free–$1.99/mo).
+- Metric / hypothesis: repositioning around the combo should lift differentiation + conversion vs a
+  crowded privacy-only field. If launch conversion weak → suspect price first, combo-justification second.
+- PROCESS NOTE: this turn I got moved onto branch claude/maki-agent-setup-ebs2f2 (model-switch/session
+  reset?) — maki.md/proof/asset docs weren't there. Recovered: backed up the competitor doc to scratchpad,
+  git checkout claude/vibrant-pasteur-ie24ab, restored. FUTURE-ME: always verify branch == vibrant-pasteur
+  at start (git branch --show-current) before editing.
+- Still open / next: reframe asset-drop-01 hooks under the combo umbrella (next content pass); watch
+  SenticMoney; Akashi security audit running (await result); gf-voice relay + landing-page owner unchanged.
+
 ## [2026-07-03] — via Kaito (asleep dispatch) — FINANCE TEARDOWN: bring MRLN "on par with leading finance apps," offline/private
 - Asked (Osefe green-lit): teardown to bring MRLN's finance features on par with market leaders — (1) market expectation map + what drives RETENTION vs vanity; (2) offline reframe + privacy-as-wedge positioning; (3) shareability ranking by growth-impact ÷ build-cost, what to build FIRST for GTM; (4) 3–5 platform-tuned content hooks. Brutally honest.
 - Grounded in ACTUAL product (index.html read): finance tabs = Overview, Income (variable low/typical/high recap — ALREADY BUILT, assistant returns "typical monthly income is X — low month, good month"), Expenses (categories), Loan (payoff date/APR/terms/notes), Cash Flow simulator (money-in vs out, canvas chart), Savings (goal boxes + "how long to save X" projection), Subscriptions tab, Stats & Grades (SHIPPED: 0–100 financial-health grade across resilience/savings-rate/fixed-costs-ratio/free-cash — a GRADE, not raw $), 12-country tax engine, NL assistant, PASTE-based bank import (applyBankImport — user pastes a statement, app NEVER connects to a bank/Plaid). NO net-worth trend tab, NO share-card export (both would be builds → route to Kaito).
