@@ -226,6 +226,12 @@ Entry format:
   at start (git branch --show-current) before editing.
 - Still open / next: reframe asset-drop-01 hooks under the combo umbrella (next content pass); watch
   SenticMoney; Akashi security audit running (await result); gf-voice relay + landing-page owner unchanged.
+- Deliverable: on Osefe's request, turned the competitor analysis into a polished PDF report FOR PETRA
+  (audience unknown — built as internal-strategy framing, "CONFIDENTIAL", true-claims-only, offered to
+  re-tone if Petra is external). File: `MRLN-Competitor-Report.pdf` (3pp: tiered field w/ threat ratings,
+  2 findings, positioning rec, pricing gut-check). Built w/ reportlab (had to pip-install it + pymupdf to
+  verify render; env's `cryptography` rust binding is broken so pypdf/pdfplumber fail — used fitz to QA).
+  NOT committed to the repo (strategy artifact, not app/gh-pages content) — delivered directly to Osefe.
 
 ## [2026-07-03] — via Kaito (asleep dispatch) — FINANCE TEARDOWN: bring MRLN "on par with leading finance apps," offline/private
 - Asked (Osefe green-lit): teardown to bring MRLN's finance features on par with market leaders — (1) market expectation map + what drives RETENTION vs vanity; (2) offline reframe + privacy-as-wedge positioning; (3) shareability ranking by growth-impact ÷ build-cost, what to build FIRST for GTM; (4) 3–5 platform-tuned content hooks. Brutally honest.
