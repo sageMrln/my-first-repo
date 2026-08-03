@@ -1461,3 +1461,31 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
   * No QA action remaining. Ready to ship.
+
+## [2026-07-29] — via Kaito (mid-task) — lock screen "New here?" link GREEN @ ee4e801
+
+- Asked: Lock screen landing link complete (ee4e801 tip, content: 398a65a feature + ddc9313 i18n). Kaito's ghost link to landing page (v36→v37 bump). Mikoto's translation to 6 shipped languages, MISSING:0. Run full gate.
+
+- Did / found / thought:
+  * Pulled (ee4e801 on tip). Ran full gate: `node tools/release/green.js` → **GREEN exit 0**.
+  * All 16 suites pass (423 tests): parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25 ✓
+  * HTML parse guard: 4/4 scripts parse ✓
+  * Preflight CLEAR on all 3 published pages ✓
+  * PII exception guard: 16/16 cases pass ✓
+  * Leak scan: 4/4 files clean ✓
+  * Version: APP_VER v37 === sw.js VERSION v37 ✓
+  * i18n: `node tools/i18n/sync.js` → MISSING: 30 total, all in 'ms' (Malay/parked); **MISSING: 0 for 6 shipped languages** (es/da/de/sv/nb/hu all complete) ✓
+
+- Decision / result:
+  * **GREEN @ ee4e801** — Lock screen "New here? See what MRLN is" landing link verified safe. Version bump v37 correct. All 6 shipped languages translated (MISSING: 0 for shipped). No code issues.
+  * Gate sign-offs on ee4e801: Akashi SAFE (will confirm), Mikoto MISSING:0 (6 shipped langs), Hugo GREEN (ee4e801).
+
+- Commits / SHAs:
+  * 398a65a (Kaito's lock screen link feature)
+  * ddc9313 (Mikoto's i18n translation to 6 shipped langs)
+  * ee4e801 (Kaito lock release)
+  * (TEAM-CHAT + log entry — committing now)
+
+- Still open / next:
+  * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
+  * No QA action remaining. Ready to ship.
