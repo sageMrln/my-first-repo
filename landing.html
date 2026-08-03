@@ -333,6 +333,12 @@
   .howto-card-copy{padding:20px 22px 24px}
   .howto-card-copy h3{font-family:var(--sans); font-size:1.0625rem; font-weight:600; color:var(--ink); line-height:1.3}
   .howto-card-copy p{margin-top:6px; font-size:.9375rem; color:var(--ink-body); line-height:1.55}
+  /* ===== language switcher (EN/DA/FR) ===== */
+  .lang-sw{display:inline-flex; align-items:center; margin-right:10px}
+  .lang-sw select{appearance:none; -webkit-appearance:none; background:var(--surface); border:1px solid var(--line-strong); border-radius:8px; padding:7px 10px; font:inherit; font-size:.8125rem; font-weight:600; color:var(--ink-body); cursor:pointer; letter-spacing:.02em}
+  .lang-sw select:hover{border-color:var(--blue-200)}
+  .lang-sw select:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0}
 </style>
 </head>
 <body>
@@ -351,6 +357,12 @@
         <a href="#pricing">Pricing</a>
       </div>
       
+      <label class="lang-sw"><span class="sr-only">Language</span>
+        <select id="langSw" aria-label="Language">
+          <option value="en">EN</option>
+          <option value="da">DA</option>
+          <option value="fr">FR</option>
+        </select></label>
       <a class="btn btn-primary btn-sm" href="#pricing">Get access</a>
     </nav>
   </div>
@@ -364,7 +376,7 @@
       <div class="hero-grid">
         <div class="hero-copy hero-seq">
           <p class="eyebrow">Private · Offline · One app</p>
-          <h1 class="hero-h1" id="hero-title">Your money and health — on your phone, and <span class="warm-underline">nowhere else</span>.</h1>
+          <h1 class="hero-h1" id="hero-title" data-i18n-html="hero-h1">Your money and health — on your phone, and <span class="warm-underline">nowhere else</span>.</h1>
           <p class="hero-lead">MRLN keeps your whole financial life and health picture in one calm place. No bank connection. No cloud. No account. The numbers you enter stay on your device.</p>
           <div class="hero-cta">
             
@@ -605,7 +617,7 @@
         <div class="price-inner">
           <div class="price-plan">Access key</div>
           <div class="price-amount tnum"><span data-price="9.99">$9.99</span><span class="per">/ month</span></div>
-          <p class="price-year">or <span class="tnum" data-price-year="69">$69</span> / year — <strong>save 42%</strong>, under $6/month</p>
+          <p class="price-year" data-i18n-html="price-year">or <span class="tnum" data-price-year="69">$69</span> / year — <strong>save 42%</strong>, under $6/month</p>
 
           <ul class="price-list">
             <li><span class="check" aria-hidden="true">✓</span><span>One simple plan — every feature included</span></li>
@@ -769,6 +781,55 @@
       floats.forEach(function(el){ fio.observe(el); });
     }
   })();
+</script>
+<script>
+/* ===== Landing i18n (EN/DA/FR) — offline, no network. English is the source;
+   any string missing from a dictionary silently stays English (safe fallback).
+   Dictionaries are Mikoto's area:
+   - t: exact trimmed text (text-node) -> translation
+   - h: data-i18n-html key -> full innerHTML translation (hero-h1, price-year) */
+window.__L10N = {
+  da: { t: { /* MIKOTO:DA:t */ }, h: { /* MIKOTO:DA:h */ } },
+  fr: { t: { /* MIKOTO:FR:t */ }, h: { /* MIKOTO:FR:h */ } }
+};
+(function(){
+  var KEY='mrln_landing_lang';
+  function walk(fn){
+    var w=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode:function(n){
+        var p=n.parentElement; if(!p) return NodeFilter.FILTER_REJECT;
+        if(p.closest('script,style,noscript,[data-i18n-html]')) return NodeFilter.FILTER_REJECT;
+        return n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }});
+    var n; while((n=w.nextNode())) fn(n);
+  }
+  function apply(lang){
+    var d=(window.__L10N||{})[lang]||null;
+    walk(function(n){
+      var orig = (n.__o!=null)? n.__o : n.nodeValue;
+      var key = orig.trim();
+      var tr = d && d.t && d.t[key];
+      if(tr){ if(n.__o==null) n.__o=orig; n.nodeValue = orig.replace(key, tr); }
+      else if(n.__o!=null){ n.nodeValue = n.__o; }
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el){
+      var k=el.getAttribute('data-i18n-html');
+      if(!el.__o) el.__o = el.innerHTML;
+      var tr = d && d.h && d.h[k];
+      el.innerHTML = tr || el.__o;
+    });
+    document.documentElement.setAttribute('lang', lang);
+    var sw=document.getElementById('langSw'); if(sw && sw.value!==lang) sw.value=lang;
+    try{ localStorage.setItem(KEY, lang); }catch(_){}
+  }
+  var saved=null; try{ saved=localStorage.getItem(KEY); }catch(_){}
+  var nav=(navigator.language||'').toLowerCase();
+  var lang = saved || (nav.indexOf('da')===0 ? 'da' : nav.indexOf('fr')===0 ? 'fr' : 'en');
+  if(['en','da','fr'].indexOf(lang)<0) lang='en';
+  var sw=document.getElementById('langSw');
+  if(sw) sw.addEventListener('change', function(){ apply(this.value); });
+  if(lang!=='en') apply(lang); else { if(sw) sw.value='en'; document.documentElement.setAttribute('lang','en'); }
+})();
 </script>
 </body>
 </html>
