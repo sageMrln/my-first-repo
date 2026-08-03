@@ -1549,3 +1549,29 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Akashi SAFE on bc9c82a (visual leak-scan of 30 screenshots + PII scan of 5 new dicts + core byte-identical confirm), then Osefe's explicit "ship it" + Kaito's merge/publish.
   * Non-blocking app-side follow-ups Kaito noticed in shots: es "Budget" tab chip untranslated; hu "Gym"/"Konditerem" mismatch — logged, not gating this landing-only round.
+
+## [2026-08-03] — via Kaito (asleep dispatch) — CONTACT-EMAIL-EVERYWHERE + v39 re-GREEN @ 7d6ef4a
+
+- Asked: Re-GREEN the combined ship ("8-lang landing already GREEN'd @ bc9c82a + contact-email-everywhere + v39") on the CURRENT tip. My prior GREEN @ bc9c82a does NOT cover the now-changed published files: index.html/legal.html email swap Miradiosefe@gmail.com→Kontaktmrln@gmail.com (incl. lock-foot i18n across 7 langs), sw v38→v39, and Akashi's PII-guard re-anchor (preflight.js + preflight_pii_test.js). Run all named commands w/ real exit statuses, confirm v39===v39, old-email grep empty, guide-sync, 30 screenshots. No published-file edits.
+
+- Did / found / thought:
+  * Pulled (already up to date). Tip `7d6ef4a` (Akashi's SAFE @ 95c3ce4 doc). App bytes frozen at d47c488; PII-tooling fix at 95c3ce4.
+  * `node tools/release/green.js` → **GREEN exit 0**: HTML parse 4/4; **15 suites / 417 tests** (parser 21 · assistant 16 · streak 4 · sound 7 · reorder 7 · onboarding 10 · transfer 58 · silly 43 · photo_store 17 · pr 12 · tax 105 · media 43 · savesafety 14 · income_log 35 · import_sanitize 25); preflight CLEAR on index/landing/legal; leak scan 4/4 clean; **APP_VER v39 === sw v39** ✓.
+  * Individual real exit statuses: `parse_test` EXIT=0, `html_parse_test` EXIT=0, `preflight index.html` EXIT=0, `preflight landing.html` EXIT=0, `preflight legal.html` EXIT=0.
+  * **preflight_pii_test.js → 17/17** (was 16/16; +1 case "new public contact accepted in legal"). New non-owner contact accepted; owner email/provider leaks OUTSIDE legal still caught; CPR/IBAN blocked; lk-foot renewal + non-sanctioned-form still fail as designed. This is the re-anchored guard covering the email swap.
+  * **Old email gone:** `grep -rIn "Miradiosefe" index.html landing.html legal.html sw.js manifest.webmanifest GUIDE.md` → EMPTY (exit 1). New `Kontaktmrln@gmail.com` present in index/landing/legal.
+  * **Guide-sync:** `grep -in "Miradiosefe|Kontaktmrln" GUIDE.md` → EMPTY — guide references NEITHER email, so no drift, no PDF rebuild needed.
+  * **Screenshots:** `ls assets/howto/*.{es,de,sv,nb,hu}.png | wc -l` → **30** ✓.
+  * Did NOT edit any published file. Nothing red → nothing routed to Kaito/Akashi.
+
+- Decision / result:
+  * **GREEN @ 7d6ef4a** — full gate exit 0 (15 suites/417 tests), preflight CLEAR (3 pages), PII guard 17/17, leak scan clean, v39===v39, old email fully removed, guide clean, 30 screenshots present. Posted GREEN under the "CONTACT EMAIL EVERYWHERE + v39" Pending entry.
+  * Gate state on this candidate: Akashi ✅ SAFE @ 95c3ce4 · Hugo ✅ GREEN @ 7d6ef4a. (Mikoto: email is verbatim per language / non-translatable identity string — no new UI copy to translate; DOM key == dict key held. Note for Kaito: if he wants a formal MISSING:0 on the lock-foot string edit, that's Mikoto's call.)
+  * Sleep-mode: GREEN signs, does NOT publish — Osefe's "ship it" already given per the task, but the actual push to gh-pages stays Kaito's.
+
+- Commits / SHAs:
+  * d47c488 (app: email swap + v38→v39), 95c3ce4 (preflight PII re-anchor), 7d6ef4a (Akashi SAFE doc — current tip)
+  * (this log + TEAM-CHAT GREEN fill-in — committing now)
+
+- Still open / next:
+  * If a formal Mikoto MISSING:0 is wanted on the lock-foot i18n edit, Kaito to route it. Otherwise gate is A✅ + H✅; awaiting Kaito's publish under Osefe's already-given go.
