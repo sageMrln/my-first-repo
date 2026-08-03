@@ -972,3 +972,25 @@ END SESSION — all 7 languages complete, MISSING:0 verified, GREEN gate confirm
 - Commits / SHAs: `04f55ac` (DA fixes).
 - Still open / next: Landing i18n now fully corrected for DA + FR per Kaito's verification.
 
+
+## [2026-08-03 ~15:30] — Kaito handoff — Translate lock screen link "New here? See what MRLN is" to 6 langs
+
+- Asked: Kaito added 1 new data-i18n string to the lock screen: "New here? See what MRLN is" (link to landing page for visitors without a key). Translate to es, da, de, sv, nb, hu in the AUTO-MERGED block. Tone: serious/factual (lock screen link on a paid product, not a CTA). Danish suggestion: "Ny her? Se hvad MRLN er" — use as reference but own the wording.
+- Did / found:
+  * Ran `node tools/i18n/sync.js` → confirmed MISSING: 1 in the 6 shipped languages (key "New here? See what MRLN is" missing in es,da,de,sv,nb,hu; ms dormant).
+  * Verified key already wired as `data-i18n="New here? See what MRLN is"` on lock screen link (index.html line ~284939).
+  * Translated string to all 6 languages with serious, direct tone (short for 380px card):
+    - es: "¿Nuevo aquí? Descubre qué es MRLN"
+    - da: "Ny her? Se hvad MRLN er" (Kaito's suggestion accepted)
+    - de: "Neu hier? Erfahre, was MRLN ist"
+    - sv: "Ny här? Se vad MRLN är"
+    - nb: "Ny her? Se hva MRLN er"
+    - hu: "Új? Ismerd meg az MRLN-t"
+  * Parsed ~1MB AUTO-MERGED JSON block (position 682102), added 6 translations (1 key × 6 langs), re-serialized, and wrote back to index.html (1,016,994 byte JSON block).
+  * Re-ran `node tools/i18n/sync.js` → **MISSING: 0** (776/776 keys fully translated for 6 shipped languages; remaining 30 MISSING all in ms only).
+  * Ran `node tools/publish/preflight.js` → **CLEAR** (no private-key material, watchdog intact, all checks pass).
+- Decision / result:
+  * **Lock screen link fully translated to all 6 shipped languages. MISSING: 0 verified.**
+  * Preflight CLEAR. Ready for downstream gate.
+- Commits / SHAs: `ddc9313` (i18n merge + commit).
+- Still open / next: No further i18n work needed. Lock screen now fully localized.
