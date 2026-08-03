@@ -776,6 +776,8 @@
   .ss-zone .ss-h{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:.03em; color:var(--bright); margin-bottom:8px }
   .ss-url{ font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--cyan); word-break:break-all; background:#08131f; border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:8px; user-select:all }
   .lockcard .lk-openlink{ display:block; width:100%; margin-top:14px; background:transparent; border:1px solid var(--cyan-dim); border-radius:10px; color:var(--cyan); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer }
+  .lockcard .lk-about{ display:block; width:100%; margin-top:10px; background:transparent; border:1px solid var(--line); border-radius:10px; color:var(--txt-dim); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer; text-decoration:none; text-align:center; transition:border-color .15s, color .15s }
+  .lockcard .lk-about:hover{ border-color:var(--cyan-dim); color:var(--cyan) }
   .lockcard .lk-savehelp{ margin-top:10px; text-align:left }
   .lockcard .lk-savehelp-url{ font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--cyan); word-break:break-all; background:#08131f; border:1px solid var(--line); border-radius:8px; padding:8px 10px; user-select:all }
   .lockcard .lk-savehelp-copy{ margin-top:8px; width:100%; background:linear-gradient(180deg,var(--cyan),var(--cyan-dim)); color:var(--on-accent); border:none; border-radius:9px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; padding:9px; cursor:pointer }
@@ -1195,7 +1197,7 @@ if(location.hostname==='mrln.online'&&location.protocol==='http:'){location.repl
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v36';
+window.APP_VER='v37';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
@@ -1231,6 +1233,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="lk-status" id="lkStatus"></div>
     <div class="lk-foot" data-i18n="Your key unlocks the dashboard for the month. Email Miradiosefe@gmail.com to get next month's key. Your financial data never leaves this device.">Your key unlocks the dashboard for the month. Email Miradiosefe@gmail.com to get next month's key. Your financial data never leaves this device.</div>
     <button class="lk-openlink" id="lkOpenSave" type="button" data-i18n="↗ Open in browser · Copy link · Install">↗ Open in browser · Copy link · Install</button>
+    <a class="lk-about" href="https://mrln.online/landing.html" target="_blank" rel="noopener" data-i18n="New here? See what MRLN is">New here? See what MRLN is</a>
     <div class="lk-legal"><span data-i18n="By unlocking, you accept the">By unlocking, you accept the</span> <a href="#" data-legal data-i18n="Terms, Privacy Policy and Disclaimer">Terms, Privacy Policy and Disclaimer</a>.</div>
     <div class="lk-savehelp" id="lkSaveHelp" style="display:none">
       <div class="lk-savehelp-url" id="lkSaveUrl"></div>
