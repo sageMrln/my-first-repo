@@ -1519,3 +1519,33 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Akashi SAFE on 8565ddd, then Osefe's explicit "ship it" + Kaito's merge/publish.
   * Non-blocking follow-up parked: guide one-liner for the lock-screen export escape hatch (own mini-gate, after this ships).
+
+## [2026-08-03] — via Kaito (asleep dispatch) — LANDING full app language set (es/de/sv/nb/hu) + 30 localized screenshots GREEN @ bc9c82a
+
+- Asked: GREEN sign-off on frozen candidate — "landing full app language set (es/de/sv/nb/hu) + 30 localized screenshots", published-file state frozen at `bc9c82a`. Confirm published-file freeze AND core-app (index.html/sw.js) freeze both empty vs bc9c82a; run full gate + individual commands with real exit statuses; confirm APP_VER v38 === sw v38 (unchanged this round); confirm 30 new screenshots exist + non-empty. No published-file edits (keep the freeze). Post GREEN under Pending, append log, commit+push. Sleep-mode: GREEN signs, does NOT ship.
+
+- Did / found / thought:
+  * Pulled (already up to date). Tip `bc9c82a` is the candidate itself. Note: the prior landing-revamp candidate `8565ddd` already SHIPPED (gh-pages `48d59b8`); this new language-set work sits on top of it.
+  * **Freeze check (both empty):** `git diff --stat bc9c82a -- landing.html index.html sw.js assets/howto` → **EMPTY** ✓; `git diff --stat bc9c82a -- index.html sw.js` → **EMPTY** ✓ (core app byte-frozen; only TEAM-CHAT/logs move).
+  * Ran `node tools/release/green.js` → **GREEN exit 0**:
+    - HTML parse guard (step 0): 4/4 script blocks parse ✓
+    - **15 committed suites / 417 tests all pass:** parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25 ✓
+    - Preflight CLEAR on all 3 published pages: index.html (6 scripts), landing.html (4 scripts), legal.html (3 scripts) ✓
+    - Preflight-PII exception guard: 16/16 ✓
+    - Leak scan: 4/4 files clean (GUIDE.md, manifest, sw.js, team-chat) ✓
+    - Version tag: APP_VER === sw.js VERSION = **v38** ✓ (unchanged — landing.html is network-first, NOT in SW CORE cache, so no version bump correct)
+  * Individual commands, real exit statuses captured: `parse_test` EXIT=0, `html_parse_test` EXIT=0, `preflight index.html` EXIT=0, `preflight landing.html` EXIT=0. Grep confirmed APP_VER='v38' + VERSION = 'v38'.
+  * **30 screenshots:** `ls assets/howto/*.{es,de,sv,nb,hu}.png | wc -l` → **30** ✓; empty-file check → zero empties ✓.
+  * Did NOT edit any published file — freeze held (Kaito had already registered the Pending entry with my ⏳ slot; I only filled in my GREEN line + posted status + this log).
+
+- Decision / result:
+  * **GREEN @ bc9c82a** — published + core files byte-frozen, full gate exit 0 (15 suites / 417 tests), preflight CLEAR (3 pages), PII guard 16/16, leak scan 4/4 clean, v38===v38 (correctly unchanged), 30 localized screenshots present + non-empty. Posted GREEN under Pending + MESSAGES with concrete numbers.
+  * Gate state on bc9c82a: Kaito ✅ · Mikoto ✅ MISSING:0 · Hugo ✅ GREEN (now) · Akashi ⏳ SAFE still pending. Sleep-mode: GREEN does NOT ship; Osefe's explicit "ship it" still required.
+
+- Commits / SHAs:
+  * bc9c82a (frozen candidate — landing full app language set + 30 localized screenshots; core app unchanged)
+  * (this log entry + TEAM-CHAT GREEN fill-in + MESSAGES post — committing now)
+
+- Still open / next:
+  * Awaiting Akashi SAFE on bc9c82a (visual leak-scan of 30 screenshots + PII scan of 5 new dicts + core byte-identical confirm), then Osefe's explicit "ship it" + Kaito's merge/publish.
+  * Non-blocking app-side follow-ups Kaito noticed in shots: es "Budget" tab chip untranslated; hu "Gym"/"Konditerem" mismatch — logged, not gating this landing-only round.
