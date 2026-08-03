@@ -413,9 +413,14 @@
       
       <label class="lang-sw"><span class="sr-only">Language</span>
         <select id="langSw" aria-label="Language">
-          <option value="en">EN</option>
-          <option value="da">DA</option>
-          <option value="fr">FR</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="da">Dansk</option>
+          <option value="de">Deutsch</option>
+          <option value="sv">Svenska</option>
+          <option value="nb">Norsk</option>
+          <option value="hu">Magyar</option>
+          <option value="fr">Français</option>
         </select></label>
       <a class="btn btn-primary btn-sm" href="#pricing">Get access</a>
     </nav>
@@ -906,7 +911,8 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","Skip to conte
   // Language-aware screenshots: swap each how-to shot to the localized set when one exists.
   // Only Danish has its own set today; every other language falls back to the English shots.
   function updateShots(lang){
-    var suf = (lang==='da') ? '.da' : '';
+    var LOCSHOTS={da:1,es:1,de:1,sv:1,nb:1,hu:1};   // languages with their own localized screenshot set
+    var suf = LOCSHOTS[lang] ? ('.'+lang) : '';   // en + fr fall back to the English set
     document.querySelectorAll('.howto-shot img[data-shot]').forEach(function(img){
       var name=img.getAttribute('data-shot'); var want='assets/howto/'+name+suf+'.png';
       if(img.getAttribute('src')!==want){
@@ -948,8 +954,8 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","Skip to conte
   }
   var saved=null; try{ saved=localStorage.getItem(KEY); }catch(_){}
   var nav=(navigator.language||'').toLowerCase();
-  var lang = saved || (nav.indexOf('da')===0 ? 'da' : nav.indexOf('fr')===0 ? 'fr' : 'en');
-  if(['en','da','fr'].indexOf(lang)<0) lang='en';
+  var lang = saved || (function(){ var m=[['da','da'],['fr','fr'],['es','es'],['de','de'],['sv','sv'],['nb','nb'],['nn','nb'],['no','nb'],['hu','hu']]; for(var i=0;i<m.length;i++){ if(nav.indexOf(m[i][0])===0) return m[i][1]; } return 'en'; })();
+  if(['en','es','da','de','sv','nb','hu','fr'].indexOf(lang)<0) lang='en';
   var sw=document.getElementById('langSw');
   if(sw) sw.addEventListener('change', function(){ apply(this.value); });
   if(lang!=='en') apply(lang); else { if(sw) sw.value='en'; document.documentElement.setAttribute('lang','en'); updateShots('en'); }
