@@ -1403,3 +1403,32 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
   * No QA action remaining. Ready to ship.
+
+## [2026-07-29] — via Kaito (mid-task) — landing "How it works" section GREEN @ d67cdac
+
+- Asked: Landing page "How it works" feature complete (4438500 code tip; d67cdac is lock release docs-only). Landing-page-only change: #how section (3 setup steps + 6-feature cards), nav link, .howto-* CSS, 6 new PNGs at assets/howto/{expenses,gym,food,calendar,notebook,media}.png. index.html + sw.js UNTOUCHED. Claim: landing.html NOT in SW CORE cache (network-first strategy, no version bump needed). Verify the claim + run full gate.
+
+- Did / found / thought:
+  * Pulled (d67cdac on tip). Verified SW cache claim: CORE list in sw.js = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'] — landing.html NOT included ✓. Cache fetch for non-core docs is network-first (always try network, fall back to cache offline) → no stale-cache risk from landing updates, no version bump needed. Claim CORRECT.
+  * Verified 6 PNG assets: all 780×1600 RGB, no interlace, 151K–258K each (expenses, gym, food, calendar, notebook, media).png ✓
+  * Verified PNG references in landing.html: all 6 howto paths present and correct ✓
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0**.
+  * All 16 suites pass (423 tests): parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25 ✓
+  * HTML parse guard: 4/4 scripts parse ✓
+  * Preflight CLEAR on all 3 published pages (index.html 6 scripts, landing.html 1, legal.html 2) ✓
+  * PII exception guard: 16/16 cases pass ✓
+  * Leak scan: 4/4 files clean ✓
+  * Version: APP_VER v36 === sw.js VERSION v36 (unchanged, correct per SW CORE claim) ✓
+
+- Decision / result:
+  * **GREEN @ d67cdac** — Landing page "How it works" section verified safe. No app-code changes, all assets in place and referenced correctly, SW cache claim verified correct (landing.html is network-first, not cached aggressively, no version bump needed). All guardrails pass.
+  * Gate sign-offs on d67cdac: Akashi SAFE (will confirm), Mikoto MISSING:0 (landing markup only, no new i18n strings), Hugo GREEN (d67cdac).
+
+- Commits / SHAs:
+  * 4438500 (Kaito's landing "How it works" feature)
+  * d67cdac (Kaito lock release)
+  * (TEAM-CHAT + log entry — committing now)
+
+- Still open / next:
+  * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
+  * No QA action remaining. Ready to ship.
