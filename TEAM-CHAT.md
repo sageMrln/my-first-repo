@@ -21,7 +21,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- (no active lock)
+- LOCKED: index.html + sw.js — Kaito — Osefe batch: savebar HUD toggleable · meal-suggestions massive update + likes-fix (goal filter ran before likes; DB 27→large, ≥3 meals per listed ingredient) · checklist rework (baked plan → user-own) · Savings "What it becomes" theme fix · universal number-retheme fix · v40 — 2026-08-03
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - **[Maki/Osefe] Founder launch offer** — first 100 annual keys at **$59**, renewal rate locked for life. NOTED per Osefe (2026-08-03), not on the page. Needs: a $59 Stripe price, a copy block near the yearly CTA, Mikoto da/fr, and a re-gate. Only ship once Osefe confirms he's running it + can honestly track the 100.
