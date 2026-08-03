@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <script>if(location.hostname==='mrln.online'&&location.protocol==='http:')location.replace(location.href.replace(/^http:/,'https:'));</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MRLN — Your money and health, private and offline</title>
-<meta name="description" content="MRLN keeps your whole financial life and health picture in one calm place that lives only on your phone. No bank connection, no cloud, no account. The numbers you enter stay on your device.">
+<title>MRLN — One app for all of you. Private and offline.</title>
+<meta name="description" content="MRLN brings your money, health, plans and notes into one private app that lives only on your device. No account, no cloud, no bank connection — your data never leaves your phone.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MRLN">
 <meta property="og:url" content="https://mrln.online/landing.html">
-<meta property="og:title" content="MRLN — Your money and health, private and offline">
-<meta property="og:description" content="A private, offline money & health app. No bank connection, no cloud, no account — the numbers you enter stay on your device.">
+<meta property="og:title" content="MRLN — One app for all of you">
+<meta property="og:description" content="Your money, health, plans and notes in one private app. No account, no cloud, no bank connection — your data stays on your device.">
 <meta property="og:image" content="https://mrln.online/ov_desktop.png">
 <meta property="og:image:width" content="2880">
 <meta property="og:image:height" content="1800">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MRLN — Your money and health, private and offline">
-<meta name="twitter:description" content="A private, offline money & health app. No bank connection, no cloud, no account.">
+<meta name="twitter:title" content="MRLN — One app for all of you">
+<meta name="twitter:description" content="One private app for your money, health, plans and notes. No account, no cloud — your data stays on your device.">
 <meta name="twitter:image" content="https://mrln.online/ov_desktop.png">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#FBF8F3">
@@ -347,6 +347,48 @@
   .lightbox img{max-width:min(96vw,560px); max-height:92vh; width:auto; height:auto; border-radius:14px; box-shadow:0 24px 80px rgba(0,0,0,.5); display:block}
   .lightbox .lb-close{position:absolute; top:14px; right:14px; width:42px; height:42px; border-radius:50%; border:1px solid rgba(255,255,255,.35); background:rgba(14,28,51,.6); color:#fff; font-size:20px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center}
   .lightbox .lb-close:hover{background:rgba(14,28,51,.85)}
+  /* ===== scattered-vs-one comparison ===== */
+  .scatter{margin-top:48px; display:grid; grid-template-columns:1fr auto 1fr; gap:clamp(16px,3vw,32px); align-items:center}
+  @media (max-width:760px){ .scatter{grid-template-columns:1fr; gap:16px} .scatter-arrow{transform:rotate(90deg); margin:0 auto} }
+  .scatter-col{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); padding:24px; box-shadow:var(--sh-sm)}
+  .scatter-before ul{list-style:none; padding:0; margin:12px 0 0; display:grid; gap:8px}
+  .scatter-before li{padding:9px 12px; border:1px dashed var(--line-strong); border-radius:10px; color:var(--ink-muted); font-size:.9375rem; background:var(--gray-bg)}
+  .scatter-after{border-color:var(--blue-200); background:var(--blue-50)}
+  .scatter-label{font-family:var(--sans); font-weight:600; font-size:.8125rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-muted); margin:0}
+  .scatter-after .scatter-label{color:var(--accent-text)}
+  .scatter-one{margin-top:14px; display:flex; flex-direction:column; gap:8px}
+  .scatter-one .diamond{width:14px; height:14px}
+  .scatter-one strong{font-family:var(--serif); font-weight:500; font-size:1.5rem; color:var(--ink)}
+  .scatter-one span{color:var(--ink-body); font-size:.9375rem; line-height:1.55}
+  .scatter-arrow{font-size:2rem; color:var(--blue-300); text-align:center; font-weight:700; line-height:1}
+
+  /* ===== life-area cards ===== */
+  .area-grid{margin-top:48px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px}
+  .area-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); padding:28px; box-shadow:var(--sh-sm); transition:transform .2s, box-shadow .2s, border-color .2s}
+  .area-card:hover{box-shadow:var(--sh-md); border-color:var(--blue-200)}
+  .area-head{display:flex; align-items:center; gap:12px}
+  .area-ico{width:44px; height:44px; border-radius:12px; background:var(--blue-50); display:flex; align-items:center; justify-content:center; font-size:1.375rem; line-height:1; flex:0 0 auto}
+  .area-head h3{font-family:var(--sans); font-size:1.25rem; font-weight:600; letter-spacing:-.01em; color:var(--ink)}
+  .area-outcome{margin-top:16px; font-family:var(--serif); font-weight:500; font-size:1.1875rem; color:var(--ink); line-height:1.3}
+  .area-list{list-style:none; padding:0; margin:14px 0 0; display:grid; gap:9px}
+  .area-list li{position:relative; padding-left:22px; color:var(--ink-body); font-size:.9375rem; line-height:1.5}
+  .area-list li::before{content:""; position:absolute; left:2px; top:9px; width:7px; height:7px; border-radius:2px; background:var(--blue-300); transform:rotate(45deg)}
+  .area-card-wide{grid-column:1/-1}
+  @media (max-width:760px){ .area-card-wide{grid-column:auto} }
+
+  /* ===== storage explainer + diagram ===== */
+  .store-grid{margin-top:48px; display:grid; grid-template-columns:1fr auto 1fr; gap:clamp(16px,3vw,28px); align-items:stretch}
+  @media (max-width:760px){ .store-grid{grid-template-columns:1fr; gap:14px} .store-move .store-arrows{transform:rotate(90deg)} }
+  .store-box{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); padding:24px; box-shadow:var(--sh-sm); text-align:left}
+  .store-box h3{font-family:var(--sans); font-size:1.0625rem; font-weight:600; color:var(--ink); display:flex; align-items:center; gap:10px; margin:0}
+  .store-box .store-ico{font-size:1.25rem; line-height:1}
+  .store-box p{margin-top:10px; font-size:.9375rem; color:var(--ink-body); line-height:1.55}
+  .store-tag{display:inline-block; margin-top:14px; font-family:var(--sans); font-size:.75rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--accent-text); background:var(--blue-50); border:1px solid var(--blue-100); border-radius:var(--r-pill); padding:4px 12px}
+  .store-move{align-self:center; display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--ink-muted); font-size:.8125rem; font-weight:600; text-align:center}
+  .store-move .store-arrows{font-size:1.5rem; color:var(--blue-300); line-height:1}
+  .store-note{margin:32px auto 0; max-width:660px; text-align:left; background:var(--peach-glow); border:1px solid var(--gold); border-radius:var(--r-md); padding:18px 20px; color:var(--warm-text); font-size:.9375rem; line-height:1.55}
+  .store-note strong{color:var(--warm-text)}
+  .shot-lang-note{margin-top:14px; font-size:.8125rem; color:var(--ink-muted); text-align:center; font-style:italic}
 </style>
 </head>
 <body>
@@ -359,9 +401,9 @@
     <a href="#top" class="brand" aria-label="MRLN home"><span class="diamond" aria-hidden="true"></span>MRLN</a>
     <nav class="nav" aria-label="Primary">
       <div class="nav-links">
+        <a href="#privacy">Privacy</a>
         <a href="#features">Features</a>
         <a href="#how">How it works</a>
-        <a href="#privacy">Privacy</a>
         <a href="#pricing">Pricing</a>
       </div>
       
@@ -379,27 +421,25 @@
 <main id="main">
   <span id="top"></span>
 
+  <!-- ===== HERO — identity first ===== -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="wrap">
       <div class="hero-grid">
         <div class="hero-copy hero-seq">
           <p class="eyebrow">Private · Offline · One app</p>
-          <h1 class="hero-h1" id="hero-title" data-i18n-html="hero-h1">Your money and health — on your phone, and <span class="warm-underline">nowhere else</span>.</h1>
-          <p class="hero-lead">MRLN keeps your whole financial life and health picture in one calm place. No bank connection. No cloud. No account. The numbers you enter stay on your device.</p>
+          <h1 class="hero-h1" id="hero-title" data-i18n-html="hero-h1">One app for <span class="warm-underline">all of you</span>.</h1>
+          <p class="hero-lead">Your money, health, plans, notes and more — in one private app where your data never leaves your device. No account. No cloud. No bank connection.</p>
           <div class="hero-cta">
-            
             <a class="btn btn-primary" href="#pricing">Get access</a>
-            
             <a class="btn btn-ghost" href="https://mrln.online/">See the app</a>
           </div>
           <ul class="trustline">
-            <li>No bank connection<span class="tl-dot" aria-hidden="true"></span></li>
-            <li>No cloud<span class="tl-dot" aria-hidden="true"></span></li>
             <li>No account<span class="tl-dot" aria-hidden="true"></span></li>
-            <li>Installs like an app</li>
+            <li>No cloud<span class="tl-dot" aria-hidden="true"></span></li>
+            <li>No bank connection<span class="tl-dot" aria-hidden="true"></span></li>
+            <li>Works fully offline</li>
           </ul>
         </div>
-
         <div class="hero-media">
           <figure style="margin:0">
             <div class="browser-frame">
@@ -408,7 +448,7 @@
                 <span class="browser-url">mrln</span>
               </div>
               <img class="browser-screen" src="ov_desktop.png" width="2880" height="1800" loading="eager" decoding="async"
-                   alt="The MRLN Overview screen on desktop: a single dashboard showing budget, income, savings and health at a glance.">
+                   alt="The MRLN Overview screen: one dashboard showing budget, income, savings and health at a glance.">
             </div>
             <figcaption class="shot-note">Example data — a demo profile named Alex, not a real person.</figcaption>
           </figure>
@@ -417,119 +457,137 @@
     </div>
   </section>
 
+  <!-- ===== WHY — philosophy + scattered-vs-one ===== -->
   <section class="section tint" id="why" aria-labelledby="why-title">
     <div class="wrap">
       <div class="section-head center" style="margin-left:auto;margin-right:auto">
-        <p class="eyebrow">Why MRLN is different</p>
-        <h2 class="h2" id="why-title">Every other app connects to your bank. MRLN connects to nothing.</h2>
-        <p class="lead">Most finance apps link to your accounts and store your data on their servers. MRLN never connects to a bank and never uploads what you enter. There is no server to breach, because there is no server. Privacy is the architecture, not a setting.</p>
+        <p class="eyebrow">Why MRLN exists</p>
+        <h2 class="h2" id="why-title">Your life is already connected. Your apps aren't.</h2>
+        <p class="lead">Your money, your health, your plans and your notes all shape each other — but they live in separate apps that never talk, and most of them keep a copy of your life on someone else's server. MRLN brings them together in one place, and keeps every number on your device.</p>
       </div>
-      <div class="card-grid value-grid">
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">🔒</div>
-          <h3>Nothing to connect</h3>
-          <p>No bank login, no linked accounts. You type what you want to track — MRLN does the rest, right on your device.</p>
+      <div class="scatter">
+        <div class="scatter-col scatter-before">
+          <p class="scatter-label">Today — scattered across</p>
+          <ul>
+            <li>A banking app</li>
+            <li>A budgeting app</li>
+            <li>A calorie tracker</li>
+            <li>Your notes app</li>
+            <li>Your calendar</li>
+            <li>A watch-list somewhere</li>
+          </ul>
         </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">📴</div>
-          <h3>Works fully offline</h3>
-          <p>Installs like an app and runs without a connection. Your plan is there on a plane, on the subway, anywhere.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">🧭</div>
-          <h3>One calm picture</h3>
-          <p>Money and health in a single place, not scattered across five apps. Open it and see where you stand.</p>
+        <div class="scatter-arrow" aria-hidden="true">→</div>
+        <div class="scatter-col scatter-after">
+          <p class="scatter-label">With MRLN — together</p>
+          <div class="scatter-one">
+            <span class="diamond" aria-hidden="true"></span>
+            <strong>One private app</strong>
+            <span>Money, health, planning and personal notes in one place — and every number stays on your device.</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- ===== PRIVACY — the difference, made tangible ===== -->
+  <section class="privacy" id="privacy" aria-labelledby="privacy-title">
+    <div class="wrap center">
+      <div class="section-head" style="margin-left:auto;margin-right:auto">
+        <p class="eyebrow">The difference that matters</p>
+        <h2 id="privacy-title">Private by architecture, not by promise.</h2>
+        <p class="lead">Most apps promise not to misuse your data. MRLN can't misuse it — there is no server, no account, and no copy of your life anywhere but your device.</p>
+      </div>
+      <div class="privacy-tiles">
+        <div class="privacy-tile">
+          <div class="plabel">No ads from your spending</div>
+          <p>MRLN never sees what you earn or spend, so it can never be turned into a targeted ad.</p>
+        </div>
+        <div class="privacy-tile">
+          <div class="plabel">No one reading your notes</div>
+          <p>Your journal and numbers sit on your device, not on our servers. There is no copy for anyone to read.</p>
+        </div>
+        <div class="privacy-tile">
+          <div class="plabel">No cloud account to breach</div>
+          <p>No sign-up, no cloud, no password. There is nothing to hack, leak, or reset.</p>
+        </div>
+        <div class="privacy-tile">
+          <div class="plabel">No bank permissions</div>
+          <p>MRLN never connects to your bank. You type what you want to track — nothing is pulled in behind your back.</p>
+        </div>
+      </div>
+      <p class="privacy-quiet pre-reveal">Prove it yourself: turn on airplane mode and open MRLN. Everything still works — because nothing ever needed the network.</p>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES — five life areas, outcome first ===== -->
   <section class="section" id="features" aria-labelledby="features-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="eyebrow">One app, your whole picture</p>
-        <h2 class="h2" id="features-title">Money and health, side by side.</h2>
-        <p class="lead">Everything below runs offline on your phone. Nothing to connect, nothing to sync — just open it.</p>
+        <p class="eyebrow">One app, your whole life</p>
+        <h2 class="h2" id="features-title">Everything you track, in five areas.</h2>
+        <p class="lead">Each area answers a real question — not just stores numbers. All of it runs offline on your device.</p>
       </div>
-      <div class="card-grid">
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">📊</div>
-          <h3>Overview</h3>
-          <p>Your whole plan on one screen — budget, income, savings and health, all at a glance.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">🧾</div>
-          <h3>Budget</h3>
-          <p>Every bill and subscription in one calm list. No more forgotten $12 charges.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">💼</div>
-          <h3>Income Log</h3>
-          <p>Built for variable and freelance pay. It learns your low, typical and high months.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">🧮</div>
-          <h3>Tax Helper</h3>
-          <p>An offline estimate across 13 countries. An unofficial figure to plan with — not tax advice.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">🏦</div>
-          <h3>Savings &amp; projection</h3>
-          <p>Set a goal and see where you land, month by month, at your real pace.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">🏋️</div>
-          <h3>Gym, Food &amp; Weight</h3>
-          <p>A gym plan, a food log and your weight and records — general health info, not medical advice.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">📅</div>
-          <h3>Calendar, Media &amp; Notebook</h3>
-          <p>Plan dates, log what you watch and read, and keep private notes in one place.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">🎓</div>
-          <h3>Stats &amp; Grades</h3>
-          <p>One clear grade across money, body and income, so you always know where you stand.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-well" aria-hidden="true">💬</div>
-          <h3>Assistant MRLN</h3>
-          <p>Ask "can I afford this?" in plain words. It answers from your own numbers — and never phones home.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section tint" id="showcase" aria-labelledby="showcase-title">
-    <div class="wrap">
-      <div class="showcase-grid">
-        <div class="showcase-copy">
-          <p class="eyebrow">Made for your pocket</p>
-          <h2 class="h2" id="showcase-title">Open it and everything is already there.</h2>
-          <p class="lead">No dashboards to build, no accounts to link. MRLN installs like an app and works with no signal — on a plane, in a basement, anywhere.</p>
-          <ul class="checklist">
-            <li><span class="check" aria-hidden="true">✓</span><span>Works fully offline — installs like an app</span></li>
-            <li><span class="check" aria-hidden="true">✓</span><span>Available in 7 languages</span></li>
-            <li><span class="check" aria-hidden="true">✓</span><span>Instantly clear — designed so anyone can use it</span></li>
+      <div class="area-grid">
+        <div class="area-card">
+          <div class="area-head"><span class="area-ico" aria-hidden="true">💰</span><h3>Money</h3></div>
+          <p class="area-outcome">Know exactly where your money goes.</p>
+          <ul class="area-list">
+            <li>Budget — every bill and subscription in one calm list</li>
+            <li>Income Log — built for variable and freelance pay</li>
+            <li>Tax Helper — an unofficial estimate across 13 countries</li>
+            <li>Savings &amp; projection — set a goal, see where you land</li>
           </ul>
         </div>
-        <div class="showcase-media">
-          <figure style="margin:0">
-            <div class="phone-frame">
-              <div class="phone-screen-wrap">
-                <img class="phone-screen" src="ov_mobile.png" width="824" height="1830" loading="lazy" decoding="async"
-                     alt="The MRLN Overview screen on a phone, showing the demo profile's budget, income and health summary.">
-              </div>
-            </div>
-            <figcaption class="shot-note">Example data — a demo profile named Alex, not a real person.</figcaption>
-          </figure>
+        <div class="area-card">
+          <div class="area-head"><span class="area-ico" aria-hidden="true">🏃</span><h3>Health</h3></div>
+          <p class="area-outcome">See the habits that actually move the needle.</p>
+          <ul class="area-list">
+            <li>Gym — write your training split once, keep it in your pocket</li>
+            <li>Food Log — calories and macros, estimated offline</li>
+            <li>Weight &amp; records — your trend over time, at a glance</li>
+          </ul>
+        </div>
+        <div class="area-card">
+          <div class="area-head"><span class="area-ico" aria-hidden="true">📅</span><h3>Planning</h3></div>
+          <p class="area-outcome">Your bills and your life on one calendar.</p>
+          <ul class="area-list">
+            <li>Calendar — rent, birthdays and plans, with notes inside each day</li>
+            <li>Media — a watch-list and a ranked list of films and shows</li>
+          </ul>
+        </div>
+        <div class="area-card">
+          <div class="area-head"><span class="area-ico" aria-hidden="true">📝</span><h3>Personal</h3></div>
+          <p class="area-outcome">A private notebook that stays private.</p>
+          <ul class="area-list">
+            <li>Notebook — lists, ideas and reminders, saved with your file</li>
+            <li>Stats &amp; grade — one clear read on money, body and income</li>
+          </ul>
+        </div>
+        <div class="area-card area-card-wide">
+          <div class="area-head"><span class="area-ico" aria-hidden="true">🤖</span><h3>Assistant</h3></div>
+          <p class="area-outcome">Ask in plain words; answered from your own numbers.</p>
+          <ul class="area-list">
+            <li>“Can I afford this?” — the assistant answers from the data you entered</li>
+            <li>Runs on your device — nothing is uploaded, and no outside AI service is called</li>
+          </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== HOW IT WORKS ===== -->
+  <!-- ===== EFFORT — answer the manual-entry objection early ===== -->
+  <section class="section tint" id="effort" aria-labelledby="effort-title">
+    <div class="wrap">
+      <div class="section-head center" style="margin-left:auto;margin-right:auto">
+        <p class="eyebrow">The honest part</p>
+        <h2 class="h2" id="effort-title">About a minute a day.</h2>
+        <p class="lead">There are no bank connections, so you enter your own numbers — but far less often than you'd expect. Set up your fixed costs once. After that, logging a meal, a plan or an expense takes seconds. Most people spend less time keeping MRLN current than they spend opening a banking app.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS — language-aware screenshots ===== -->
   <section class="section" id="how" aria-labelledby="how-title">
     <div class="wrap">
       <div class="section-head">
@@ -544,76 +602,66 @@
       </ol>
       <div class="howto-grid">
         <div class="howto-card">
-          <div class="howto-shot"><img src="assets/howto/expenses.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Budget tab: every recurring cost grouped by category, with monthly and yearly totals."></div>
+          <div class="howto-shot"><img data-shot="expenses" src="assets/howto/expenses.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Budget tab: every recurring cost grouped by category, with monthly and yearly totals."></div>
           <div class="howto-card-copy"><h3>💸 Budget</h3><p>Every recurring cost in one place. Change a number once and your cash flow, savings projection and grade update with it.</p></div>
         </div>
         <div class="howto-card">
-          <div class="howto-shot"><img src="assets/howto/gym.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Gym Plan tab: a weekly training split with days, exercises and sets."></div>
+          <div class="howto-shot"><img data-shot="gym" src="assets/howto/gym.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Gym Plan tab: a weekly training split with days, exercises and sets."></div>
           <div class="howto-card-copy"><h3>🏋️ Training</h3><p>Write your split once — days, lifts, sets. It's in your pocket at the gym, next to your body stats and calorie targets.</p></div>
         </div>
         <div class="howto-card">
-          <div class="howto-shot"><img src="assets/howto/food.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Food Log tab: today's logged meals with calories, protein, carbs and fat totals."></div>
+          <div class="howto-shot"><img data-shot="food" src="assets/howto/food.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Food Log tab: today's logged meals with calories, protein, carbs and fat totals."></div>
           <div class="howto-card-copy"><h3>🍽️ Meals</h3><p>Type what you ate. MRLN estimates calories and macros offline and keeps a running daily total against your target.</p></div>
         </div>
         <div class="howto-card">
-          <div class="howto-shot"><img src="assets/howto/calendar.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Calendar tab: a month view with marked days for bills, plans and events."></div>
+          <div class="howto-shot"><img data-shot="calendar" src="assets/howto/calendar.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Calendar tab: a month view with marked days for bills, plans and events."></div>
           <div class="howto-card-copy"><h3>📅 Calendar</h3><p>Rent due, birthdays, plans. A dot on the day, notes inside it — bills and life on the same page.</p></div>
         </div>
         <div class="howto-card">
-          <div class="howto-shot"><img src="assets/howto/notebook.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Notebook tab: saved notes with a search field."></div>
+          <div class="howto-shot"><img data-shot="notebook" src="assets/howto/notebook.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Notebook tab: saved notes with a search field."></div>
           <div class="howto-card-copy"><h3>📔 Notes</h3><p>Lists, ideas, reminders. They save with your file on your device — not to a cloud.</p></div>
         </div>
         <div class="howto-card">
-          <div class="howto-shot"><img src="assets/howto/media.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Media Log tab: a watch list and a ranked list of rated films and shows."></div>
+          <div class="howto-shot"><img data-shot="media" src="assets/howto/media.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Media Log tab: a watch list and a ranked list of rated films and shows."></div>
           <div class="howto-card-copy"><h3>🎬 Films &amp; shows</h3><p>Log what you watch and rate it. A ranked list builds itself — ready the next time someone asks what's worth seeing.</p></div>
         </div>
       </div>
       <p class="shot-hint">Tap any screenshot to enlarge it.</p>
+      <p class="shot-lang-note" id="shotLangNote"></p>
       <p class="shot-note">All screenshots show the app's demo profile — example data, not a real person.</p>
     </div>
   </section>
 
-  <section class="privacy" id="privacy" aria-labelledby="privacy-title">
+  <!-- ===== STORAGE — browser vs installed app + how to move data ===== -->
+  <section class="section tint" id="storage" aria-labelledby="storage-title">
     <div class="wrap center">
       <div class="section-head" style="margin-left:auto;margin-right:auto">
-        <p class="eyebrow">The signature difference</p>
-        <h2 id="privacy-title">The numbers you enter stay on your device.</h2>
-        <p class="lead">No bank, no cloud, no account. What you type into MRLN is saved on your phone — not on our servers, because there aren't any.</p>
+        <p class="eyebrow">Where your data lives</p>
+        <h2 class="h2" id="storage-title">Your data stays on the device you use — and you can move it yourself.</h2>
+        <p class="lead">Because nothing is stored on a server, your data lives in whatever you opened MRLN in. That's the whole point — and it means moving between devices is something you do, not something a cloud does for you.</p>
       </div>
-      <div class="privacy-tiles">
-        <div class="privacy-tile">
-          <div class="plabel">No bank</div>
-          <p>MRLN never links to your bank or reads your transactions. You enter what you want to track.</p>
+      <div class="store-grid">
+        <div class="store-box">
+          <h3><span class="store-ico" aria-hidden="true">🌐</span> In your browser</h3>
+          <p>Open mrln.online in a browser and your data saves in that browser, on that device. Switch to a different browser or another phone and it starts empty — because your data never left the first one.</p>
+          <span class="store-tag">Saved in this browser</span>
         </div>
-        <div class="privacy-tile">
-          <div class="plabel">No cloud</div>
-          <p>Your entries are stored on your device. There's no server holding a copy of your life.</p>
+        <div class="store-move" aria-hidden="true">
+          <span class="store-arrows">📤 → 📥</span>
+          <span>You export, you import</span>
         </div>
-        <div class="privacy-tile">
-          <div class="plabel">No account</div>
-          <p>No sign-up, no email, no password. Open the app and start — nothing to create.</p>
+        <div class="store-box">
+          <h3><span class="store-ico" aria-hidden="true">📱</span> Installed as an app</h3>
+          <p>Add MRLN to your home screen and it gets its own storage on that device, separate from the browser — the same private data, in a standalone app that opens offline.</p>
+          <span class="store-tag">Saved in the app</span>
         </div>
       </div>
-      <p class="privacy-quiet pre-reveal">Privacy is the architecture, not a setting.</p>
+      <p class="store-note"><strong>Moving to a new phone or browser is a two-tap job you control:</strong> export a copy of your data to a file, open MRLN on the other device, and load it back in. Nothing syncs behind your back — and because there's no server, only you ever hold a copy. So keep one somewhere safe: if you clear your browser or lose the device, whatever was only there is gone. Even if your key lapses, you can always export your data straight from the lock screen — it's yours to keep.</p>
     </div>
   </section>
 
-  <section class="section frontdoor" id="app" aria-labelledby="frontdoor-title">
-    <div class="wrap">
-      <div class="fd-inner">
-        <p class="eyebrow">The app itself</p>
-        <h2 class="h2" id="frontdoor-title">A bright front door. A private command center behind it.</h2>
-        <p class="lead" style="margin-left:auto;margin-right:auto">This page is the calm welcome. The app you unlock is a focused, dark workspace for your money and health — everything in reach, nothing shared out.</p>
-        <div class="hero-cta" style="justify-content:center">
-          
-          <a class="btn btn-ghost" href="https://mrln.online/">Open MRLN</a>
-        </div>
-        <p class="fd-note">A calm, bright front door. The app itself is your private, dark command center — the light landing and the dark app are one product, two moods.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section tint" id="pricing" aria-labelledby="pricing-title">
+  <!-- ===== PRICING ===== -->
+  <section class="section" id="pricing" aria-labelledby="pricing-title">
     <div class="wrap center">
       <div class="section-head" style="margin-left:auto;margin-right:auto">
         <p class="eyebrow">Pricing</p>
@@ -644,7 +692,8 @@
     </div>
   </section>
 
-  <section class="section" id="faq" aria-labelledby="faq-title">
+  <!-- ===== FAQ — expanded ===== -->
+  <section class="section tint" id="faq" aria-labelledby="faq-title">
     <div class="wrap center">
       <div class="section-head" style="margin-left:auto;margin-right:auto">
         <p class="eyebrow">Good to know</p>
@@ -652,20 +701,40 @@
       </div>
       <div class="faq">
         <details>
+          <summary>Why put everything in one app instead of five specialized ones?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">Because your money, health and plans affect each other, and five apps can't see across themselves. In MRLN, a change to your budget updates your savings and your grade at once — and it's all under one private roof, on your device, with nothing syncing out.</div>
+        </details>
+        <details>
           <summary>Does MRLN connect to my bank?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <div class="answer">No — and there's no "connect your bank" button to hunt for. You type in what you want to track, and it never leaves your phone.</div>
+          <div class="answer">No — and there's no "connect your bank" button to hunt for. You type in what you want to track, and it never leaves your device.</div>
         </details>
         <details>
-          <summary>Where is my data stored?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <div class="answer">The numbers you enter are saved on your device. There's no account and no cloud copy. Loading the app itself uses a static web host, but what you type stays with you.</div>
+          <summary>Where is my data stored — the browser or the app?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">Wherever you opened it. In a browser, your data saves in that browser on that device. Installed to your home screen, the app keeps its own storage on that device. Neither one is on a server, and neither syncs to the other — you move data between them yourself.</div>
         </details>
         <details>
-          <summary>Does it work offline?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <div class="answer">Yes — plane, subway, basement, all of it. Once it's on your home screen it never needs a signal again.</div>
+          <summary>Can I move my data to a new phone?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">Yes — you carry it over yourself. Export a copy of your data to a file, open MRLN on the new phone, and load it back in. It takes seconds, and no copy ever passes through a server on the way.</div>
+        </details>
+        <details>
+          <summary>Is the assistant private?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">Yes. The assistant runs on your device and answers from the numbers you've entered. Nothing is uploaded, and no outside AI service is called — asking it a question keeps your data exactly where it already was.</div>
+        </details>
+        <details>
+          <summary>What happens if I stop paying, or MRLN disappears?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">The app locks without an active key — but your data is never held hostage. You can export every number you've entered straight from the lock screen, as a plain file that's yours to keep. Nothing is deleted, and there's no server holding a copy to lose. Your data was always on your device; it stays there.</div>
+        </details>
+        <details>
+          <summary>Does it get slower as years of data build up?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">No. We loaded it with thousands of entries — the equivalent of five years of daily logging — and it still opened in well under a second and switched tabs without lag. Everything runs locally, so there's no network round-trip to wait on.</div>
         </details>
         <details>
           <summary>What if I lose my phone?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
           <div class="answer">Straight answer: whatever's only on that phone is gone — same as any notes app. That's the honest trade for keeping nothing on a server. So once you've added a lot, MRLN nudges you to save a copy — back it up like you save your photos. It's a one-tap export; keep a copy somewhere safe and a new phone restores it in seconds.</div>
+        </details>
+        <details>
+          <summary>Is it just for one person, or can a couple use it?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <div class="answer">Either. There's no account tying MRLN to one identity, so a couple can each keep their own private file on their own phones, or share a single file on one device — whatever fits. Each access key unlocks the app; how you split things is up to you.</div>
         </details>
         <details>
           <summary>Is the Tax Helper official tax advice?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
@@ -683,22 +752,20 @@
     </div>
   </section>
 
-  <section class="section cta-band tint" id="get" aria-labelledby="get-title">
+  <!-- ===== FINAL CTA ===== -->
+  <section class="section cta-band" id="get" aria-labelledby="get-title">
     <div class="wrap center">
       <div class="section-head" style="margin-left:auto;margin-right:auto">
         <p class="eyebrow">Ready when you are</p>
-        <h2 class="h2" id="get-title">Your whole picture, in one private place.</h2>
-        <p class="lead">Get your access key, or take a look inside the app first.</p>
+        <h2 class="h2" id="get-title">One app for all of you.</h2>
+        <p class="lead">Your money, health, plans and notes — in one private place that lives only on your device.</p>
       </div>
       <div class="hero-cta" style="justify-content:center; margin-top:32px">
-        
         <a class="btn btn-primary" href="#pricing">Get access</a>
-        
         <a class="btn btn-ghost" href="https://mrln.online/">Open MRLN</a>
       </div>
     </div>
   </section>
-
 </main>
 
 <footer class="site-footer">
@@ -824,6 +891,20 @@ window.__L10N = {
 };
 (function(){
   var KEY='mrln_landing_lang';
+  // Language-aware screenshots: swap each how-to shot to the localized set when one exists.
+  // Only Danish has its own set today; every other language falls back to the English shots.
+  function updateShots(lang){
+    var suf = (lang==='da') ? '.da' : '';
+    document.querySelectorAll('.howto-shot img[data-shot]').forEach(function(img){
+      var name=img.getAttribute('data-shot'); var want='assets/howto/'+name+suf+'.png';
+      if(img.getAttribute('src')!==want){
+        img.onerror=function(){ img.onerror=null; img.src='assets/howto/'+name+'.png'; };  // fall back to EN if a localized shot is missing
+        img.setAttribute('src', want);
+      }
+    });
+    var note=document.getElementById('shotLangNote');
+    if(note) note.textContent = (lang==='da') ? '' : (lang==='fr') ? 'Screenshots are shown in English; the app itself is fully translated.' : '';
+  }
   function walk(fn){
     var w=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
       acceptNode:function(n){
@@ -849,6 +930,7 @@ window.__L10N = {
       el.innerHTML = tr || el.__o;
     });
     document.documentElement.setAttribute('lang', lang);
+    updateShots(lang);
     var sw=document.getElementById('langSw'); if(sw && sw.value!==lang) sw.value=lang;
     try{ localStorage.setItem(KEY, lang); }catch(_){}
   }
@@ -858,7 +940,7 @@ window.__L10N = {
   if(['en','da','fr'].indexOf(lang)<0) lang='en';
   var sw=document.getElementById('langSw');
   if(sw) sw.addEventListener('change', function(){ apply(this.value); });
-  if(lang!=='en') apply(lang); else { if(sw) sw.value='en'; document.documentElement.setAttribute('lang','en'); }
+  if(lang!=='en') apply(lang); else { if(sw) sw.value='en'; document.documentElement.setAttribute('lang','en'); updateShots('en'); }
 })();
 </script>
 </body>
