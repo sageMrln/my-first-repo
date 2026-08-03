@@ -512,8 +512,8 @@
 
   .meter{height:14px;border:1px solid var(--line);border-radius:8px;background:var(--field-bg);overflow:hidden;margin:6px 0 2px}
   .meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));border-radius:7px;position:relative}
-  .meter.lime > span{background:linear-gradient(90deg,color-mix(in srgb,var(--lime) 60%,#000),var(--lime))}
-  .meter.amber > span{background:linear-gradient(90deg,color-mix(in srgb,var(--amber) 60%,#000),var(--amber))}
+  .meter.lime > span{background:linear-gradient(90deg,rgba(var(--pos-rgb),.45),var(--lime))}
+  .meter.amber > span{background:linear-gradient(90deg,rgba(var(--warn-rgb),.45),var(--amber))}
   /* Budget summary — per-category share bars (biggest cost reads at a glance) */
   .bud-bars{ margin:2px 0 14px; display:flex; flex-direction:column; gap:11px }
   .bud-bar-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px }
@@ -974,7 +974,7 @@
   .modal-actions .mcancel{background:var(--panel2);color:var(--txt)}
   .modal-actions .mcancel:hover{border-color:var(--cyan);color:var(--bright)}
   .modal-actions .mok{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:var(--on-accent);border-color:var(--cyan)}
-  .modal-actions .mok.danger{background:linear-gradient(180deg,var(--red),color-mix(in srgb,var(--red) 70%,#000));border-color:var(--red);color:#fff}
+  .modal-actions .mok.danger{background:linear-gradient(180deg,var(--red),rgba(var(--bad-rgb),.78));border-color:var(--red);color:#fff}
   .modal-actions button:hover{transform:translateY(-1px)}
 
   /* ===== LEGAL LAYER — per-section disclaimer footers, lock-screen acceptance line,
@@ -1941,7 +1941,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   <section class="panel" id="checklist">
     <div class="card">
       <h2>Your Life Tier <span class="tag now" id="tierBadge" style="font-size:11px">—</span></h2>
-      <div class="desc">An honest, realistic read on your money life — built <b>only from your own numbers</b>. The goal: a true S-tier life. Work the plan below to climb.</div>
+      <div class="desc" data-i18n="An honest, realistic read on your money life — built only from your own numbers. Stats &amp; Grades shows the factor-by-factor breakdown behind it.">An honest, realistic read on your money life — built <b>only from your own numbers</b>. Stats &amp; Grades shows the factor-by-factor breakdown behind it.</div>
       <div class="meter" style="height:16px"><span id="tierBar" style="width:0%;display:block;height:100%"></span></div>
       <div class="note" id="tierMsg" style="border-left-color:var(--cyan)">Add your income and costs to unlock your tier.</div>
     </div>
@@ -2589,7 +2589,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   <button class="savebtn" id="saveBtn" data-i18n="💾 Save / Export">💾 Save / Export</button>
   <button class="chattoggle" id="dataBtn" title="Move your data between your devices (private)" data-i18n="⇄ Backup / Import">⇄ Backup / Import</button>
   <button class="chattoggle" id="lockBtn" title="Lock the dashboard — you'll need your key to get back in" data-i18n="🔒 Lock / Log out">🔒 Lock / Log out</button>
-  <button class="savefab" id="saveFab" title="Save & tools" aria-label="Save and tools">💾</button>
+  <button class="savefab" id="saveFab" title="Save, backup &amp; assistant" aria-label="Save, backup and assistant" aria-expanded="false">💾</button>
 </div>
 
 <!-- Persisted user state (read on load, rewritten on export). Do not edit by hand. -->
@@ -3679,10 +3679,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     function freeMoney(){ return comfort(MODEL.income[scen]); }  // after the savings match
     function verdict(I){
       var s = surplus(), c = freeMoney();
-      if(I <= c)      return {tag:'✅ GOOD',  rgb:'124,255,178', msg:t('Easily affordable — pay both instalments from spare cash and still set money aside.')};
-      if(I <= s)      return {tag:'☑ OK',     rgb:'0,229,255',   msg:t('Affordable if you pause this month’s savings transfer. Essentials and any loan stay untouched.')};
-      if(I <= s*1.15) return {tag:'⚠ TIGHT',  rgb:'255,181,71',  msg:t('Right at your limit — you’d dip slightly into savings to cover it. Only in a typical-or-better month.')};
-      return                 {tag:'⛔ BAD',    rgb:'255,92,124',  msg:t('Too big — the instalments exceed your surplus, so you’d have to raid savings. Don’t.')};
+      if(I <= c)      return {tag:'✅ GOOD',  rgb:_rgbTok('--pos-rgb','124,255,178'), msg:t('Easily affordable — pay both instalments from spare cash and still set money aside.')};
+      if(I <= s)      return {tag:'☑ OK',     rgb:_rgbTok('--accent-rgb','0,229,255'),   msg:t('Affordable if you pause this month’s savings transfer. Essentials and any loan stay untouched.')};
+      if(I <= s*1.15) return {tag:'⚠ TIGHT',  rgb:_rgbTok('--warn-rgb','255,181,71'),  msg:t('Right at your limit — you’d dip slightly into savings to cover it. Only in a typical-or-better month.')};
+      return                 {tag:'⛔ BAD',    rgb:_rgbTok('--bad-rgb','255,92,124'),  msg:t('Too big — the instalments exceed your surplus, so you’d have to raid savings. Don’t.')};
     }
     function signed(n){ return n >= 0 ? fmtN(n) : '−' + fmtN(-n); }
     function setTxt(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; }
@@ -3859,8 +3859,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var B=(typeof computeBodyGrade==='function')?computeBodyGrade():{ok:false};   // body grade still blends into the overall tier
     return { tier:tier, score:score, dataComplete:dataComplete, body:B, factors:factors };
   }
-  function renderMissions(){
-    var ul=document.getElementById('checklist-list'); if(!ul) return;
+  function renderMissions(){ renderTier(); renderChecklist(); }
+  function renderTier(){
     var M=computeMissions();
     STATE.missionsDone = STATE.missionsDone || {};
     // OVERALL = finance blended with body (when body stats exist AND the body toggle is on)
@@ -3877,28 +3877,34 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var line = !M.dataComplete ? t('Add your income and costs to unlock your real tier and a plan made just for you.')
         : oTier==='S' ? t('Elite — money <i>and</i> body. You\'re resilient, saving hard, living below your means and in great shape. Keep compounding.')
         : oTier==='A' ? t('Strong across the board. Tighten one or two things below and S-tier is genuinely in reach.')
-        : oTier==='B' ? t('Solid base. The plan below is the short list of moves that lifts you to A.')
-        : oTier==='C' ? t('On your way. Focus on the very top item — it\'s the one holding you back most right now.')
-        : oTier==='D' ? t('Early days — and that\'s fine. Start at the top: get the basics in and stop the leaks.')
-        : t('Rock bottom is just the start of the climb. Do the top item this week — small wins stack fast.');
+        : oTier==='B' ? t('Solid base. Your weakest factors in Stats &amp; Grades are the short list that lifts you to A.')
+        : oTier==='C' ? t('On your way. Focus on your weakest factor in Stats &amp; Grades — it\'s what holds you back most right now.')
+        : oTier==='D' ? t('Early days — and that\'s fine. Get the basics in — your income and real costs — and stop the leaks.')
+        : t('Rock bottom is just the start of the climb. Fix one weak factor this week — small wins stack fast.');
       var bodyBit = !B.ok ? '   ·   💪 '+t('Body')+' <span style="color:var(--txt-dim)">'+t('add stats in Gym')+'</span>'
         : !bodyIncluded() ? '   ·   💪 '+t('Body')+' <span style="color:var(--txt-dim)">'+B.tier+' '+t('(off — not counted)')+'</span>'
         : '   ·   💪 '+t('Body')+' <b style="color:rgb('+tierRGB(B.tier)+')">'+B.tier+' · '+B.score+'</b>';
       var sub = '<div style="margin-top:8px;font-style:normal;font-family:\'Share Tech Mono\';font-size:11px">💰 '+t('Finance')+' <b style="color:rgb('+tierRGB(M.tier)+')">'+M.tier+' · '+fin+'</b>'+bodyBit+'</div>';
       msg.innerHTML='<b>'+esc(tf('{tier}-tier · {n}/100 overall.',{tier:oTier,n:overall}))+'</b> '+line+sub;
     }
-    renderChecklist();
   }
   /* ---- the user's own checklist (replaces the baked plan) ---- */
   function ckList(){ STATE.checklist = STATE.checklist || []; return STATE.checklist; }
   function renderChecklist(){
     var ul=document.getElementById('checklist-list'); if(!ul) return;
     var list=ckList();
+    if(!list.length){
+      var migrated = STATE.missionsDone && Object.keys(STATE.missionsDone).length;
+      ul.innerHTML = '<li style="list-style:none;color:var(--txt-dim);font-size:13px">'+
+        (migrated ? t('The built-in plan has been replaced by your own checklist.')+' ' : '')+
+        t('No items yet — add your first below.')+'</li>';
+      return;
+    }
     ul.innerHTML = list.map(function(it){
       return '<li class="'+(it.done?'done':'')+'">'+
         '<span class="box'+(it.done?' done':'')+'" data-ck="'+esc(it.id)+'" tabindex="0" role="checkbox" aria-checked="'+(it.done?'true':'false')+'"></span>'+
         '<span style="flex:1;min-width:0" data-i18n-skip>'+esc(it.text)+'</span>'+
-        '<button class="iconbtn ck-del" data-ck="'+esc(it.id)+'" title="'+t('Delete')+'" aria-label="'+t('Delete')+'" style="padding:3px 8px;flex:0 0 auto;margin-left:8px">✕</button></li>';
+        '<button class="iconbtn ck-del" data-ck="'+esc(it.id)+'" title="'+t('Delete')+'" aria-label="'+t('Delete')+'" style="min-width:40px;min-height:40px;flex:0 0 auto;margin-left:8px">✕</button></li>';
     }).join('');
     ul.querySelectorAll('.box').forEach(function(b){
       function toggle(){ var id=b.getAttribute('data-ck'); var it=ckList().filter(function(x){ return x.id===id; })[0]; if(!it) return; it.done=!it.done; if(typeof autosave==='function') autosave(); renderChecklist(); }
@@ -4494,7 +4500,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   }
   // shared S→E tiering
   function tierOf(score){ return score>=88?'S':score>=74?'A':score>=60?'B':score>=46?'C':score>=32?'D':'E'; }
-  function tierRGB(t){ return ({S:'124,255,178',A:'0,229,255',B:'120,220,140',C:'255,181,71',D:'255,140,90',E:'255,92,124'})[t]||'0,229,255'; }
+  // tier colors follow the ACTIVE theme (council: these are the most visible themed numbers).
+  function _rgbTok(n,fb){ var v=(typeof cssVar==='function')?cssVar(n):''; return (v&&/^[\d, ]+$/.test(v))?v:fb; }
+  function _rgbMix(a,b){ var p=a.split(','),r=b.split(','); return p.map(function(x,i){ return Math.round((parseInt(x,10)+parseInt(r[i],10))/2); }).join(','); }
+  function tierRGB(t){
+    var pos=_rgbTok('--pos-rgb','124,255,178'), acc=_rgbTok('--accent-rgb','0,229,255'),
+        warn=_rgbTok('--warn-rgb','255,181,71'), bad=_rgbTok('--bad-rgb','255,92,124');
+    return ({S:pos,A:acc,B:_rgbMix(pos,acc),C:warn,D:_rgbMix(warn,bad),E:bad})[t]||acc;
+  }
   // grade the body against optimal stats for this person's age / height / sex + muscle-to-fat
   function computeBodyGrade(){
     var bd=STATE.body||{};
@@ -4990,7 +5003,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     {n:'Ratatouille with white beans & farro',goals:['cut','maintain'],kcal:400,p:18,c:54,f:12,tags:['ratatouille','eggplant','zucchini','beans','farro','vegan','tomato'],ing:['eggplant, zucchini, bell peppers, tomato','100g white beans','100g cooked farro','garlic, basil, thyme','olive oil']},
     {n:'Split pea & carrot soup with rye',goals:['cut','maintain'],kcal:370,p:22,c:52,f:8,tags:['split peas','soup','carrots','vegan','rye'],ing:['120g split peas','carrots, celery, onion','vegetable stock, thyme','2 slices rye bread','black pepper']},
     {n:'Lentil bolognese with spaghetti',goals:['maintain'],kcal:450,p:22,c:68,f:10,tags:['lentil','spaghetti','pasta','vegan','italian','tomato'],ing:['120g cooked lentils','110g spaghetti (dry)','tomato, carrots, celery','garlic, oregano, basil','nutritional yeast']},
-    {n:'Stuffed bell peppers with bulgur & feta',goals:['cut','maintain'],kcal:420,p:20,c:48,f:16,tags:['bell peppers','bulgur','cheese','vegetarian'],ing:['2 bell peppers','110g bulgur','40g feta','tomato, onion, parsley','pumpkin seeds']},
+    {n:'Stuffed bell peppers with bulgur & feta',goals:['cut','maintain'],kcal:420,p:20,c:48,f:16,tags:['bell peppers','bulgur','cheese','vegetarian'],ing:['2 bell peppers','110g bulgur (cracked wheat)','40g feta','tomato, onion, parsley','pumpkin seeds']},
     {n:'Mushroom & barley soup',goals:['cut'],kcal:300,p:14,c:44,f:8,tags:['mushrooms','barley','soup','vegan','thyme'],ing:['200g mixed mushrooms','80g barley','onion, garlic, celery','thyme, black pepper','vegetable stock']},
     {n:'Mushroom farro risotto',goals:['maintain'],kcal:430,p:18,c:58,f:14,tags:['mushrooms','farro','risotto','vegetarian','italian'],ing:['150g mushrooms','130g farro','onion, garlic, thyme','20g parmesan','splash of milk']},
     {n:'Creamy polenta with garlic mushrooms',goals:['maintain'],kcal:400,p:16,c:52,f:14,tags:['polenta','cornmeal','mushrooms','vegetarian','garlic'],ing:['120g polenta (cornmeal)','200g garlic mushrooms','20g parmesan','milk','thyme, chives']},
@@ -5025,7 +5038,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     {n:'Millet & roast vegetable pilaf',goals:['maintain'],kcal:390,p:14,c:56,f:12,tags:['millet','pilaf','vegetables','vegan'],ing:['120g millet','roast carrots, zucchini, bell peppers','onion, garlic, cumin','15g almonds','parsley, lemon']},
     {n:'Chicken millet bowl with tahini drizzle',goals:['maintain'],kcal:480,p:40,c:48,f:14,tags:['chicken','millet','bowl','tahini'],ing:['170g chicken breast','110g cooked millet','roast broccoli','tahini-lemon drizzle','pumpkin seeds']},
     {n:'Spelt berry salad with chicken & herbs',goals:['maintain'],kcal:440,p:38,c:46,f:12,tags:['spelt','chicken','salad','herbs'],ing:['160g chicken breast','120g cooked spelt berries','cucumber, tomato, parsley, dill','lemon & olive oil','40g feta']},
-    {n:'Spelt porridge with pear & cinnamon',goals:['maintain'],kcal:370,p:14,c:56,f:10,tags:['spelt','porridge','pear','cinnamon','breakfast','vegetarian'],ing:['70g spelt flakes','1 sliced pear','250ml milk','cinnamon, honey','10g walnuts']},
+    {n:'Spelt porridge with pear & cinnamon',goals:['maintain'],kcal:370,p:14,c:56,f:10,tags:['spelt','porridge','pear','cinnamon','breakfast','vegetarian'],ing:['70g spelt flakes (ancient wheat)','1 sliced pear','250ml milk','cinnamon, honey','10g walnuts']},
     {n:'Light haddock fish pie',goals:['maintain'],kcal:440,p:38,c:44,f:12,tags:['haddock','fish','pie','potato'],ing:['180g haddock','potato mash top','peas, leeks','milk-based sauce','chives']},
     {n:'Garlic mussels with spaghetti',goals:['maintain'],kcal:470,p:32,c:58,f:12,tags:['mussels','spaghetti','pasta','seafood','garlic','italian'],ing:['400g mussels','100g spaghetti (dry)','garlic, chilli, parsley','tomato','olive oil']},
     {n:'Seared scallops with sweetcorn & paprika',goals:['cut'],kcal:330,p:30,c:30,f:10,tags:['scallops','corn','paprika','seafood'],ing:['200g scallops','sweetcorn purée','smoked paprika','rocket, lime','chives']},
@@ -5033,6 +5046,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     {n:'Penne with roast vegetables & ricotta',goals:['maintain'],kcal:470,p:24,c:62,f:14,tags:['penne','pasta','vegetables','cheese','vegetarian','italian'],ing:['110g penne (dry)','roast zucchini, bell peppers, eggplant','80g ricotta','garlic, basil, oregano','olive oil']},
     {n:'Pesto baked chicken with cherry tomatoes',goals:['cut','maintain'],kcal:430,p:44,c:18,f:20,tags:['chicken','pesto','tomato','basil'],ing:['180g chicken breast','1.5 tbsp pesto (basil)','roast cherry tomatoes','green beans','20g parmesan']},
     {n:'Iced coffee protein shake',goals:['cut','maintain'],kcal:280,p:30,c:26,f:6,tags:['coffee','shake','snack','vanilla'],ing:['double espresso coffee, chilled','1 scoop whey','250ml milk','ice, vanilla extract','cinnamon dusting']},
+    {n:'Crispy tofu & broccoli rice bowl',goals:['cut','maintain'],kcal:450,p:28,c:52,f:14,tags:['tofu','broccoli','rice','vegan','asian','soybeans'],ing:['200g extra-firm tofu (soybeans)','130g rice','broccoli, spring onion','soy sauce, ginger, garlic','sesame seeds']},
     {n:'Coffee-rubbed steak with roast sweet potato',goals:['maintain','bulk'],kcal:530,p:46,c:42,f:20,tags:['beef','steak','coffee','sweet potato'],ing:['200g sirloin steak','coffee & smoked paprika rub','250g roast sweet potato with rosemary','rocket','chimichurri (parsley, vinegar)']}
   ];
   function splitTerms(s){ return (s||'').toLowerCase().split(/[,\n;]+/).map(function(x){ return x.trim(); }).filter(Boolean); }
@@ -5040,7 +5054,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // so "Chesse." still avoids parmesan, feta, cottage cheese, etc.
   var FOOD_SYN={
     cheese:['cheese','parmesan','feta','mozzarella','cheddar','paneer','ricotta','halloumi','brie','gouda','quark'],
-    dairy:['milk','cream','yogurt','yoghurt','butter','cheese','parmesan','feta','mozzarella','cheddar','paneer','cottage','quark','skyr'],
+    dairy:['milk','cream','yogurt','yoghurt','butter','ghee','cheese','parmesan','feta','mozzarella','cheddar','paneer','cottage','quark','skyr','ricotta','tzatziki'],
     pork:['pork','bacon','ham','sausage','chorizo','prosciutto'],
     beef:['beef','steak','mince','bolognese'],
     chicken:['chicken','poultry'],
@@ -5069,6 +5083,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     bean:['beans','black beans','kidney beans','pinto','chickpea','chickpeas','lentil','lentils','edamame','butter beans'],
     legume:['beans','chickpea','chickpeas','lentil','lentils','edamame','split peas'],
     seeds:['chia seeds','flaxseeds','sesame seeds','pumpkin seeds','sunflower seeds'],
+    sesame:['sesame','sesame seeds','sesame oil','tahini'],
+    soy:['soy','soya','soybeans','tofu','edamame','miso','soy sauce'],
     oil:['olive oil','sesame oil','avocado oil','coconut oil'],
     tea:['tea','matcha','sencha'],
     coffee:['coffee','espresso','mocha'],
@@ -5116,8 +5132,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var arr=Object.keys(out).filter(function(w){ return w.length>=3; });
     _expandCache[term]=arr; return arr;
   }
-  function mealHay(m){ return (m.n+' '+(m.tags||[]).join(' ')+' '+(m.ing||[]).join(' ')).toLowerCase(); }
-  function termHitsMeal(term,m){ var ws=expandTerm(term); if(!ws.length) return false; var hay=mealHay(m); return ws.some(function(w){ return hay.indexOf(w)>=0; }); }
+  // word-boundary matching: padded-token lookup on the normalised haystack, so "pea"
+  // can't false-match peach/peanut (the ★ chips would expose it and cost trust).
+  function mealHay(m){ return ' '+normTerm(m.n+' '+(m.tags||[]).join(' ')+' '+(m.ing||[]).join(' '))+' '; }
+  function termHitsMeal(term,m){ var ws=expandTerm(term); if(!ws.length) return false; var hay=mealHay(m); return ws.some(function(w){ return hay.indexOf(' '+w+' ')>=0; }); }
   function mealMatchesText(m,term){ return termHitsMeal(term,m); }   // back-compat alias
   function updateMealBadge(){
     var b=document.getElementById('mealGoalBadge'); if(!b) return;
@@ -5214,17 +5232,18 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var T=nutritionTargets();
     var goal=(STATE.body&&STATE.body.goal)||'maintain';
     var likes=splitTerms(STATE.body.diet&&STATE.body.diet.likes), dislikes=splitTerms(STATE.body.diet&&STATE.body.diet.dislikes);
-    // GOAL IS A SOFT PREFERENCE: likes can surface ANY meal (portions scale to the user),
-    // goal-matching meals rank first among equals. Hard-excluding by goal hid every match
-    // for a liked ingredient whose meals sat in another goal (the "banana on a cut" bug).
+    // Council rule: on-goal meals always; an OFF-goal meal appears only when an explicit
+    // like earns the override (fixes "banana on a cut" without rotating off-goal meals
+    // into a browsing user's pages). Dislikes always exclude.
     var pool=MEAL_DB.slice();
-    pool=pool.filter(function(m){ return !dislikes.some(function(d){ return mealMatchesText(m,d); }); });   // never a dislike
     pool.forEach(function(m){
       m._hits = likes.filter(function(l){ return mealMatchesText(m,l); });   // which liked terms matched
       m._score = m._hits.length;
       m._goal = m.goals.indexOf(goal)>=0 ? 1 : 0;
       m._fit = mealFitScore(m,T);
     });
+    pool=pool.filter(function(m){ return m._goal || m._score>0; });
+    pool=pool.filter(function(m){ return !dislikes.some(function(d){ return mealMatchesText(m,d); }); });   // never a dislike
     // primary: what you like · then: fits your goal · then: what best fits your body
     pool.sort(function(a,b){ return (b._score-a._score) || (b._goal-a._goal) || (b._fit-a._fit); });
     if(!pool.length){ host.innerHTML='<div class="empty">No meals fit those filters — try removing a dislike, then Suggest again.</div>'; if(hint) hint.style.display='none'; return; }
@@ -5248,15 +5267,22 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(advance && canRotate) mealOffset++;
     }
     _mealView=picks;
-    var best = pool[0]; _mealBest = best;   // top-ranked = healthiest fit for this goal (within your likes, if any)
-    var goalNote = goal==='cut'?'higher-protein, lower-calorie picks to lose fat':goal==='bulk'?'calorie- and carb-dense picks to gain':'balanced picks to hold steady';
-    var head = T ? ('Ranked <b>healthiest-for-your-goal first</b> for <b>'+physLabel(T.phys)+'</b> — '+goalNote+(likes.length?', weighted to what you like':'')+'. Portions scaled to you; tap a meal for full nutrition.')
-                 : ('Showing <b>'+goalNote+'</b>'+(likes.length?', weighted to what you like':'')+(dislikes.length?', avoiding '+dislikes.length+' thing(s)':'')+'. Tap a meal for full nutrition.');
+    var best=null; pool.forEach(function(m){ if(m._goal && (!best || m._fit>best._fit)) best=m; }); _mealBest=best;   // healthiest = best body-fit AMONG ON-GOAL meals only
+    var goalNote = goal==='cut'?t('higher-protein, lower-calorie picks to lose fat'):goal==='bulk'?t('calorie- and carb-dense picks to gain'):t('balanced picks to hold steady');
+    var anyMatch = pool.some(function(m){ return m._score>0; });
+    var head = T ? ((likes.length&&anyMatch)
+                    ? t('Your matches first, then ')+tf('the best fits for <b>{phys}</b> — {note}. Portions scaled to you; tap a meal for full nutrition.',{phys:physLabel(T.phys),note:goalNote})
+                    : tf('The best fits for <b>{phys}</b> — {note}. Portions scaled to you; tap a meal for full nutrition.',{phys:physLabel(T.phys),note:goalNote}))
+                 : (tf('Showing <b>{note}</b>',{note:goalNote})+((likes.length&&anyMatch)?t(', your matches first'):'')+(dislikes.length?tf(', avoiding {n} thing(s)',{n:dislikes.length}):'')+t('. Tap a meal for full nutrition.'));
+    if(likes.length && !anyMatch){
+      head = tf('No meal matches "{q}" — showing the closest picks for your goal.',{q:esc(likes.join(', '))})+' '+head;
+    }
     host.innerHTML='<div class="note" style="margin:0 0 10px">'+head+'</div>'+
       picks.map(function(m,ix){
         var likedTag = m._score>0 ? '<span class="tag now" style="font-size:8px" data-i18n-skip>★ '+esc((m._hits&&m._hits.length?m._hits.slice(0,2).join(' + '):'').toUpperCase()||'YOUR TASTE')+'</span>' : '';
         var topTag = (T && m===best) ? '<span class="tag now" style="font-size:8px;background:var(--lime);color:var(--on-accent)">✅ HEALTHIEST FOR YOU</span>' : '';
-        var badges = (likedTag||topTag) ? '<div style="display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 1px">'+likedTag+topTag+'</div>' : '';
+        var offTag = !m._goal ? '<span class="tag" style="font-size:8px;color:var(--txt-dim);border:1px solid var(--line)">'+t('off-goal · scaled to your target')+'</span>' : '';
+        var badges = (likedTag||topTag||offTag) ? '<div style="display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 1px">'+likedTag+topTag+offTag+'</div>' : '';
         var sc=scaleMeal(m,T);
         var amount = T && sc.mult!==1 ? ('<b>'+sc.mult+'×</b> serving · ') : '';
         var macros = amount + sc.kcal+' kcal · P '+sc.p+'g · C '+sc.c+'g · F '+sc.f+'g';
@@ -6135,6 +6161,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     }
   }
   (function initSave(){
+    // try-mode (a fresh share template) starts EXPANDED: those users must see Save
+    // immediately or their first session's data dies with the tab (council ruling).
+    if(typeof TEMPLATE_MODE!=='undefined' && TEMPLATE_MODE){ var _tb=document.querySelector('.savebar'); if(_tb) _tb.classList.add('open'); }
     var btn = document.getElementById('saveBtn'); if(btn) btn.addEventListener('click', exportHTML);
     var lkb = document.getElementById('lockBtn');
     if(lkb) lkb.addEventListener('click', function(){
@@ -6146,9 +6175,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     // mobile: the round 💾 button opens/closes the stack; tapping any action closes it again
     var bar = document.querySelector('.savebar'), fab = document.getElementById('saveFab');
     if(fab && bar){
-      fab.addEventListener('click', function(){ bar.classList.toggle('open'); fab.textContent = bar.classList.contains('open') ? '✕' : '💾'; });
-      bar.querySelectorAll('.savebtn, .chattoggle').forEach(function(el){
-        el.addEventListener('click', function(){ bar.classList.remove('open'); fab.textContent = '💾'; });
+      fab.setAttribute('aria-expanded', bar.classList.contains('open')?'true':'false');
+      fab.addEventListener('click', function(){ bar.classList.toggle('open'); var o=bar.classList.contains('open'); fab.textContent = o ? '✕' : '💾'; fab.setAttribute('aria-expanded', o?'true':'false'); });
+      // Save/Export stays open so its "✓ exported" confirmation is visible; other actions close.
+      bar.querySelectorAll('.chattoggle').forEach(function(el){
+        el.addEventListener('click', function(){ bar.classList.remove('open'); fab.textContent = '💾'; fab.setAttribute('aria-expanded','false'); });
       });
     }
     var bk = document.getElementById('bakeKey');
@@ -6798,6 +6829,20 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(LAYOUTS.indexOf(p.layout)<0) p.layout = LMIG[p.layout] || 'command';
     r.setAttribute('data-theme',p.theme);
     r.setAttribute('data-layout',p.layout);
+    // JS-computed colors (canvas chart, anatomy SVG, tier pill, savings rows, Klarna box)
+    // resolve tokens at render time — re-render them so a switch recolors instantly.
+    // First (boot) call skips: data isn't loaded yet; boot renders happen right after.
+    if(window.__appearanceBooted){
+      var R=function(fn){ try{ if(typeof fn==='function') fn(); }catch(_){ } };
+      R(typeof drawChart==='function'?drawChart:null);
+      R(typeof renderMissions==='function'?renderMissions:null);
+      R(typeof renderSavingsBoxes==='function'?renderSavingsBoxes:null);
+      R(typeof renderBody==='function'?renderBody:null);
+      R(typeof renderFoodLog==='function'?renderFoodLog:null);
+      R(typeof klRefresh==='function'?klRefresh:null);
+      R(typeof renderMeals==='function'?function(){ renderMeals(false); }:null);
+    }
+    window.__appearanceBooted=true;
   }
   function initLocale(){
     var p = STATE.prefs;

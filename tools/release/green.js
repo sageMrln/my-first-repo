@@ -63,6 +63,10 @@ run(['tools/test/sound_test.js'], 'sound suite');
 section('tab reorder engine — tools/test/reorder_test.js');
 run(['tools/test/reorder_test.js'], 'reorder suite');
 
+// Meal Ideas engine + DB guard (council v40): coverage, macros, boundaries, allergens, the banana bug
+section('meal engine & database — tools/test/meal_test.js');
+run(['tools/test/meal_test.js'], 'meal suite');
+
 // 5b) committed Smart Onboarding priority-picker test — tab-order mapping contract
 //     Guards that priority picker → tabOrder sets picked tabs first in order,
 //     unpicked follow in original order, no tab lost/duplicated, skip path preserves order
