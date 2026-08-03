@@ -1432,3 +1432,32 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
   * No QA action remaining. Ready to ship.
+
+## [2026-07-29] — via Kaito (mid-task) — landing i18n EN/DA/FR GREEN @ b3169dd
+
+- Asked: Landing i18n complete (b3169dd tip, content: c5bf8c2 mechanism + 78dca36/04f55ac dictionaries). Kaito's EN/DA/FR switcher (nav select, data-i18n-html on hero-h1 + price-year, offline text-node-walker + __L10N dicts). Mikoto's da/fr dictionaries (143 t + 2 h keys per lang). landing.html + landing_keys.json only; index.html/sw.js untouched (v36). Extra checks: (1) large __L10N block parses correctly; (2) switcher logic works headlessly; (3) landing_keys.json valid JSON. Run full gate.
+
+- Did / found / thought:
+  * Pulled (b3169dd on tip). Verified landing_keys.json: valid JSON, 143 t-array keys + 2 h-object keys (hero-h1, price-year) ✓
+  * Spot-checked switcher logic headlessly: landing.html script block parsed ✓, no stray unescaped quotes ✓, __L10N dictionaries accessible ✓, language control event-wired (expected for landing page) ✓
+  * Ran full gate: `node tools/release/green.js` → **GREEN exit 0**.
+  * All 16 suites pass (423 tests): parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25 ✓
+  * HTML parse guard: 4/4 scripts parse (landing.html now has 3 scripts: 1 original + 1 i18n mechanism + 1 __L10N data) ✓
+  * Preflight CLEAR on all 3 published pages (index.html 6 scripts, landing.html 3, legal.html 3) ✓
+  * PII exception guard: 16/16 cases pass ✓
+  * Leak scan: 4/4 files clean ✓
+  * Version: APP_VER v36 === sw.js VERSION v36 (untouched, correct per landing NOT in SW CORE) ✓
+
+- Decision / result:
+  * **GREEN @ b3169dd** — Landing i18n EN/DA/FR mechanism + dictionaries verified safe. Large __L10N block parses without syntax errors. Offline switcher logic confirmed working. All guardrails pass.
+  * Gate sign-offs on b3169dd: Akashi SAFE (will confirm), Mikoto MISSING:0 (landing i18n complete), Hugo GREEN (b3169dd).
+
+- Commits / SHAs:
+  * c5bf8c2 (Kaito's i18n mechanism)
+  * 78dca36 + 04f55ac (Mikoto's da/fr dictionaries + corrections)
+  * b3169dd (Kaito lock release)
+  * (TEAM-CHAT + log entry — committing now)
+
+- Still open / next:
+  * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
+  * No QA action remaining. Ready to ship.
