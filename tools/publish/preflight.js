@@ -69,7 +69,7 @@ if (isIndex) {
 
 // --- check 4: owner PII — strict, with a TIGHT legal-identity exception ---
 // EU/DK consumer law REQUIRES a named, identifiable trader + a contact, so the provider
-// name "Osefe Miradi" and the contact "Miradiosefe@gmail.com" are intended-public — but
+// name "Osefe Miradi" and the contact "Kontaktmrln@gmail.com" are intended-public — but
 // ONLY as the provider/contact identity lines. We strip ONLY those exact sanctioned
 // forms, then run the normal PII scan on the result. The SAME name/email is still a
 // BLOCK anywhere else, and CPR/IBAN-style PII is still caught. The exception is scoped
@@ -81,27 +81,34 @@ if (isIndex) {
 //                     standalone <p>email</p> forms. Each allow-form is context-anchored,
 //                     so a BARE or unexpected occurrence (comment, heading, bare text)
 //                     is NOT stripped and still BLOCKS.
+// NOTE (email change, v39): the sanctioned contact is now the BRANDED, NON-OWNER address
+// Kontaktmrln@gmail.com, which by design does NOT match PII_RE (no 'miradi'/'osefe@') — it is
+// intended-public and may appear anywhere. PII_RE still tracks the owner IDENTITY: the name
+// 'Osefe Miradi' (via 'miradi') and any owner personal email (via 'osefe@'), plus CPR/IBAN. So
+// the NAME remains the only owner token that must be stripped-in-sanctioned-context /
+// blocked-elsewhere; the email allow-forms below stay anchored to the new address only to keep
+// the strips meaningful (they are no longer load-bearing for PII, since the address isn't PII).
 const PII_RE = /miradi|osefe@|[^a-z]cpr[^a-z]|\bDK\d{8,}\b/gi;
 
 // index.html: sanctioned identity forms, allowed ONLY inside the #legalBack block
 const LEGAL_ALLOW = [
-  // Terms/Privacy identity line: "… · Provider: Osefe Miradi[ ("we", "us")] · Contact: Miradiosefe@gmail.com"
-  /Provider:\s*Osefe Miradi(?:\s*\("we",\s*"us"\))?\s*·\s*Contact:\s*Miradiosefe@gmail\.com/g,
-  // the standalone Contact-section paragraph <p>Miradiosefe@gmail.com</p>
-  /<p>\s*Miradiosefe@gmail\.com\s*<\/p>/g,
+  // Terms/Privacy identity line: "… · Provider: Osefe Miradi[ ("we", "us")] · Contact: Kontaktmrln@gmail.com"
+  /Provider:\s*Osefe Miradi(?:\s*\("we",\s*"us"\))?\s*·\s*Contact:\s*Kontaktmrln@gmail\.com/g,
+  // the standalone Contact-section paragraph <p>Kontaktmrln@gmail.com</p>
+  /<p>\s*Kontaktmrln@gmail\.com\s*<\/p>/g,
   // Refund-section inline contact (EU/DK consumer-law refund address) — anchored by "contact us at "
-  /contact us at Miradiosefe@gmail\.com/g
+  /contact us at Kontaktmrln@gmail\.com/g
 ];
 
 // index.html: the lock-screen renewal-contact sentence, allowed ONLY inside the
-// .lk-foot element. The SAME sanctioned public contact (Miradiosefe@gmail.com) is
+// .lk-foot element. The SAME sanctioned public contact (Kontaktmrln@gmail.com) is
 // reused as the "email me to get next month's key" renewal instruction (keys are
 // delivered by email). Anchored to the EXACT phrasing AND scoped to .lk-foot, so a
-// bare/stray Miradiosefe@gmail.com — or ANY other email — in the lock foot or
+// bare/stray Kontaktmrln@gmail.com — or ANY other email — in the lock foot or
 // anywhere else still trips PII_RE. Fail-closed: if .lk-foot isn't found nothing is
 // stripped and the phrase would BLOCK (never leak).
 const LOCK_ALLOW = [
-  /Email Miradiosefe@gmail\.com to get next month's key/g
+  /Email Kontaktmrln@gmail\.com to get next month's key/g
 ];
 
 // index.html: the SAME renewal sentence is carried into the i18n translation dictionary
@@ -112,18 +119,18 @@ const LOCK_ALLOW = [
 // ONLY the email token, never the surrounding value. So an injected CPR/IBAN or any other
 // PII smuggled into that value STILL trips PII_RE, and the email in any OTHER dict entry
 // (different key) is untouched and still BLOCKS.
-const RENEWAL_I18N = /"Your key unlocks the dashboard for the month\. Email Miradiosefe@gmail\.com to get next month's key\. Your financial data never leaves this device\.":"[^"]*Miradiosefe@gmail\.com[^"]*"/g;
+const RENEWAL_I18N = /"Your key unlocks the dashboard for the month\. Email Kontaktmrln@gmail\.com to get next month's key\. Your financial data never leaves this device\.":"[^"]*Kontaktmrln@gmail\.com[^"]*"/g;
 
 // landing.html / legal.html: sanctioned contact/footer identity forms (context-anchored)
 const CONTACT_ALLOW = [
   // Provider name (bold or plain), optionally followed by ("we", "us") — footer, meta, legal eff-lines
   /Provider:\s*(?:<strong>)?Osefe Miradi(?:<\/strong>)?(?:\s*\("we",\s*"us"\))?/g,
   // Contact label + email, plain or linked
-  /Contact:\s*(?:<a href="mailto:Miradiosefe@gmail\.com">)?Miradiosefe@gmail\.com(?:<\/a>)?/g,
+  /Contact:\s*(?:<a href="mailto:Kontaktmrln@gmail\.com">)?Kontaktmrln@gmail\.com(?:<\/a>)?/g,
   // a mailto anchor to the sanctioned address anywhere it is used (e.g. the Refund section)
-  /<a href="mailto:Miradiosefe@gmail\.com">Miradiosefe@gmail\.com<\/a>/g,
-  // the standalone Contact-section paragraph <p>Miradiosefe@gmail.com</p>
-  /<p>\s*Miradiosefe@gmail\.com\s*<\/p>/g
+  /<a href="mailto:Kontaktmrln@gmail\.com">Kontaktmrln@gmail\.com<\/a>/g,
+  // the standalone Contact-section paragraph <p>Kontaktmrln@gmail.com</p>
+  /<p>\s*Kontaktmrln@gmail\.com\s*<\/p>/g
 ];
 
 let piiScan = html;
@@ -152,7 +159,7 @@ if (isMarketing) {
   // (c) the renewal sentence's i18n dictionary entries — strip ONLY the sanctioned email
   //     token, and ONLY within the exact renewal key:value pair (any other PII in that
   //     value, or the email under any other key, still BLOCKS).
-  sanitized = sanitized.replace(RENEWAL_I18N, function (m) { return m.replace(/Miradiosefe@gmail\.com/g, ''); });
+  sanitized = sanitized.replace(RENEWAL_I18N, function (m) { return m.replace(/Kontaktmrln@gmail\.com/g, ''); });
   piiScan = sanitized;
 }
 const pii = piiScan.match(PII_RE);
