@@ -2787,7 +2787,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function _warnStorageFull(){            // fail loud, never silent (Akashi constraint #3)
     if(_quotaWarned) return; _quotaWarned=true;   // once per session — warn, don't nag
     try{ if(typeof toast==='function') toast(t('Storage is full — export your data to free space.')); }catch(_){ }
-    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● storage full — export to free space'; b.style.color='var(--red)'; } _hudWarn();
+    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● storage full — export to free space'; b.style.color='var(--red)'; } if(typeof _hudWarn==='function') _hudWarn();
   }
   // --- SAVE SAFETY: durability detection + fail-loud (Akashi contract). In-app browsers
   // (social webviews), private mode, and some file:// contexts silently drop localStorage on
@@ -2804,7 +2804,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(_durabilityWarned) return; _durabilityWarned=true;
     var el=document.getElementById('saveSafetyBanner');
     if(el && el.getAttribute('data-dismissed')!=='1') el.style.display='';
-    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● not saving — open in your browser'; b.style.color='var(--red)'; } _hudWarn();
+    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● not saving — open in your browser'; b.style.color='var(--red)'; } if(typeof _hudWarn==='function') _hudWarn();
   }
   function _saveReplacer(k,v){
     // A food photo is dropped from localStorage ONLY once its bytes are confirmed in IndexedDB
@@ -2817,7 +2817,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     STATE.savedAt = nowISO();
     if(TEMPLATE_MODE){   // fresh share copy: never touch this device's storage
       var bt=document.getElementById('saveBadge');
-      if(bt){ bt.textContent='● try mode — press Save to keep your file'; bt.style.color='var(--amber)'; } _hudWarn();
+      if(bt){ bt.textContent='● try mode — press Save to keep your file'; bt.style.color='var(--amber)'; } if(typeof _hudWarn==='function') _hudWarn();
       return;
     }
     var _stuck=false;
