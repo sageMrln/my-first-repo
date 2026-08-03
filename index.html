@@ -512,8 +512,8 @@
 
   .meter{height:14px;border:1px solid var(--line);border-radius:8px;background:var(--field-bg);overflow:hidden;margin:6px 0 2px}
   .meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));border-radius:7px;position:relative}
-  .meter.lime > span{background:linear-gradient(90deg,#2f8f5e,var(--lime))}
-  .meter.amber > span{background:linear-gradient(90deg,#9a6a1c,var(--amber))}
+  .meter.lime > span{background:linear-gradient(90deg,color-mix(in srgb,var(--lime) 60%,#000),var(--lime))}
+  .meter.amber > span{background:linear-gradient(90deg,color-mix(in srgb,var(--amber) 60%,#000),var(--amber))}
   /* Budget summary — per-category share bars (biggest cost reads at a glance) */
   .bud-bars{ margin:2px 0 14px; display:flex; flex-direction:column; gap:11px }
   .bud-bar-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px }
@@ -706,8 +706,15 @@
   .bakechk{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;cursor:pointer;user-select:none}
   .bakechk input{accent-color:var(--cyan);cursor:pointer;margin:0}
   /* mobile: collapse the save bar into one round button so it stops eating the screen */
-  .savefab{display:none;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:1px solid var(--cyan);background:var(--panel2);color:var(--cyan);font-size:24px;line-height:1;cursor:pointer;box-shadow:var(--glow);align-self:flex-end;transition:all .15s}
+  .savefab{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:1px solid var(--cyan);background:var(--panel2);color:var(--cyan);font-size:24px;line-height:1;cursor:pointer;box-shadow:var(--glow);align-self:flex-end;transition:all .15s}
   .savefab:hover{filter:brightness(1.1)}
+  /* toggleable HUD (all sizes): collapsed to the fab; .open expands the stack. A live
+     save-safety warning (.haswarn) keeps the status badge visible even while collapsed —
+     the fail-loud contract must survive the collapse. */
+  .savebar > :not(.savefab){display:none}
+  .savebar.open > :not(.savefab){display:flex}
+  .savebar.haswarn .badge{display:flex}
+  .savebar.haswarn .savefab{border-color:var(--red);color:var(--red);box-shadow:0 0 18px rgba(var(--bad-rgb),.45)}
   .chattoggle{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--cyan-dim);background:var(--panel2);color:var(--cyan);padding:10px 16px;border-radius:12px;cursor:pointer;transition:all .15s}
   .chattoggle:hover{border-color:var(--cyan);box-shadow:var(--glow);color:var(--bright)}
   .chatwidget{width:340px;max-width:calc(100vw - 36px);max-height:72vh;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 14px 44px rgba(0,0,0,.55);text-align:left;transform-origin:bottom right}
@@ -774,7 +781,7 @@
   .install-banner.warn .ib-icon{ color:var(--amber) }
   .ss-zone{ border:1px solid var(--line); border-radius:12px; padding:12px 13px; margin:10px 0; background:rgba(8,19,31,.5) }
   .ss-zone .ss-h{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:.03em; color:var(--bright); margin-bottom:8px }
-  .ss-url{ font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--cyan); word-break:break-all; background:#08131f; border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:8px; user-select:all }
+  .ss-url{ font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--cyan); word-break:break-all; background:var(--field-bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:8px; user-select:all }
   .lockcard .lk-openlink{ display:block; width:100%; margin-top:14px; background:transparent; border:1px solid var(--cyan-dim); border-radius:10px; color:var(--cyan); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer }
   .lockcard .lk-about{ display:block; width:100%; margin-top:10px; background:transparent; border:1px solid var(--line); border-radius:10px; color:var(--txt-dim); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer; text-decoration:none; text-align:center; transition:border-color .15s, color .15s }
   .lockcard .lk-about:hover{ border-color:var(--cyan-dim); color:var(--cyan) }
@@ -783,7 +790,7 @@
   .lockcard .lk-export{ display:block; width:100%; margin-top:10px; background:transparent; border:1px solid var(--line); border-radius:10px; color:var(--txt-dim); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer; text-align:center; transition:border-color .15s, color .15s }
   .lockcard .lk-export:hover{ border-color:var(--amber); color:var(--amber) }
   .lockcard .lk-savehelp{ margin-top:10px; text-align:left }
-  .lockcard .lk-savehelp-url{ font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--cyan); word-break:break-all; background:#08131f; border:1px solid var(--line); border-radius:8px; padding:8px 10px; user-select:all }
+  .lockcard .lk-savehelp-url{ font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--cyan); word-break:break-all; background:var(--field-bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; user-select:all }
   .lockcard .lk-savehelp-copy{ margin-top:8px; width:100%; background:linear-gradient(180deg,var(--cyan),var(--cyan-dim)); color:var(--on-accent); border:none; border-radius:9px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; padding:9px; cursor:pointer }
   #openSaveBtn{ min-height:44px; padding:9px 12px }   /* THE recovery affordance — honest 44px touch target (Arthur) */
   /* Build tag — a subtle at-a-glance version so a device serving a stale cache is diagnosable
@@ -803,7 +810,7 @@
   @media(min-width:860px){ .lk-guide.ios{order:-1} .lockcard{order:0} .lk-guide.android{order:1} }
   .lockcard .lk-lang{margin-bottom:18px;display:flex;align-items:center;justify-content:flex-end;gap:7px}
   .lockcard .lk-lang .lk-globe{font-size:15px;line-height:1;filter:drop-shadow(0 0 5px rgba(var(--accent-rgb),.5))}
-  .lockcard .lk-lang select{background:#08131f;border:1px solid var(--cyan-dim);border-radius:999px;color:var(--cyan);font-family:'Share Tech Mono';font-size:12px;letter-spacing:.04em;padding:6px 12px;outline:none;cursor:pointer;box-shadow:0 0 12px rgba(var(--accent-rgb),.12)}
+  .lockcard .lk-lang select{background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:999px;color:var(--cyan);font-family:'Share Tech Mono';font-size:12px;letter-spacing:.04em;padding:6px 12px;outline:none;cursor:pointer;box-shadow:0 0 12px rgba(var(--accent-rgb),.12)}
   .lockcard .lk-lang select:focus{border-color:var(--cyan)}
 
   /* ============ LOCK-SCREEN ALIVE — self-contained cyberpunk ambient INSIDE the opaque overlay.
@@ -914,12 +921,9 @@
     .cal-cell .cal-dot{position:static;top:auto;right:auto;margin-top:4px}
     .cal-dow{font-size:9px;padding:3px 0}
 
-    /* floating controls collapse into ONE round button; tap it to reveal the rest */
-    .savefab{display:flex}
+    /* phone: the open stack goes full-width for fat-finger comfort */
     .savebar{right:11px;left:auto;bottom:11px;align-items:flex-end}
-    .savebar > :not(.savefab){display:none}
     .savebar.open{left:11px;align-items:stretch}
-    .savebar.open > :not(.savefab){display:flex}
     .savebar.open .badge{max-width:none;text-align:center}
     .savebar.open .savebtn,.savebar.open .chattoggle,.savebar.open .bakechk{width:100%;text-align:center;justify-content:center}
     .chatwidget{width:100%;max-width:none;max-height:64vh}
@@ -970,7 +974,7 @@
   .modal-actions .mcancel{background:var(--panel2);color:var(--txt)}
   .modal-actions .mcancel:hover{border-color:var(--cyan);color:var(--bright)}
   .modal-actions .mok{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:var(--on-accent);border-color:var(--cyan)}
-  .modal-actions .mok.danger{background:linear-gradient(180deg,var(--red),#b22a45);border-color:var(--red);color:#fff}
+  .modal-actions .mok.danger{background:linear-gradient(180deg,var(--red),color-mix(in srgb,var(--red) 70%,#000));border-color:var(--red);color:#fff}
   .modal-actions button:hover{transform:translateY(-1px)}
 
   /* ===== LEGAL LAYER — per-section disclaimer footers, lock-screen acceptance line,
@@ -1098,7 +1102,7 @@
     background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 24px 70px rgba(0,0,0,.65);padding:26px 24px;margin:auto}
   .wiz .wlogo{font-family:'Orbitron';font-weight:900;font-size:24px;letter-spacing:.14em;color:var(--bright);text-shadow:var(--glow);text-align:center}
   .wiz .wstepd{font-family:'Share Tech Mono';font-size:11px;color:var(--cyan);letter-spacing:.06em;text-align:center;margin:4px 0 2px}
-  .wiz .wbar{height:5px;border-radius:4px;background:#0a1a2b;overflow:hidden;margin:12px 0 18px}
+  .wiz .wbar{height:5px;border-radius:4px;background:var(--panel2);overflow:hidden;margin:12px 0 18px}
   .wiz .wbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width .3s}
   .wiz h2{font-family:'Orbitron';font-size:18px;color:var(--bright);margin-bottom:6px}
   .wiz p.wsub{color:var(--txt-dim);font-size:13.5px;line-height:1.5;margin-bottom:16px}
@@ -1201,7 +1205,7 @@ if(location.hostname==='mrln.online'&&location.protocol==='http:'){location.repl
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v39';
+window.APP_VER='v40';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
@@ -1464,7 +1468,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div id="mintOut" style="display:none;margin-top:14px">
       <div id="mintFidOut" style="font-family:'Share Tech Mono';font-size:12px;color:var(--cyan);margin-bottom:8px"></div>
       <label style="font-size:12px;color:var(--txt-dim)">The key for this file — copy &amp; send it with the file</label>
-      <div id="mintKey" style="background:#06101c;border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:12px;padding:11px;word-break:break-all;line-height:1.5;margin-top:4px"></div>
+      <div id="mintKey" style="background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:12px;padding:11px;word-break:break-all;line-height:1.5;margin-top:4px"></div>
       <div id="mintMeta" style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin-top:6px"></div>
       <button class="btn ghost" id="mintCopy" style="margin-top:8px">Copy key</button>
     </div>
@@ -1883,7 +1887,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2>💰 <span data-i18n="Savings Boxes">Savings Boxes</span></h2>
       <div class="desc" data-i18n="Make a box for each thing you're saving for — a holiday, a new phone, an emergency cushion. Tell it what it holds now and what you add; it shows what it becomes and what the interest earns you.">Make a box for each thing you're saving for — a holiday, a new phone, an emergency cushion. Tell it what it holds now and what you add; it shows what it becomes and what the interest earns you.</div>
       <button class="btn" id="sbNew" style="margin-top:12px">+ <span data-i18n="New savings box">New savings box</span></button>
-      <div id="sbForm" style="display:none;margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:14px;background:#08131f">
+      <div id="sbForm" style="display:none;margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--panel2)">
         <div class="form-row">
           <div class="field" style="flex:0 0 64px"><label data-i18n="Icon">Icon</label><input id="sbIcon" maxlength="2" placeholder="🏖️"></div>
           <div class="field"><label data-i18n="What's it for?">What's it for?</label><input id="sbName" data-i18n-ph="Holiday, New phone, Emergency…" placeholder="Holiday, New phone, Emergency…"></div>
@@ -1942,9 +1946,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="note" id="tierMsg" style="border-left-color:var(--cyan)">Add your income and costs to unlock your tier.</div>
     </div>
     <div class="card">
-      <h2>Your Personalized Plan</h2>
-      <div class="desc">Ranked for <b>your</b> situation — the top one matters most. Tap a box when it's done; the plan updates itself as your numbers change.</div>
-      <ul class="check" id="checklist-list"></ul>
+      <h2 data-i18n="Your Checklist">Your Checklist</h2>
+      <div class="desc" data-i18n="Your own list — add anything you want to get done. It saves with your data, on your device only.">Your own list — add anything you want to get done. It saves with your data, on your device only.</div>
+      <ul class="check" id="checklist-list" style="margin-bottom:4px"></ul>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input id="ckNew" data-i18n-ph="Add an item…" placeholder="Add an item…" maxlength="200" style="flex:1;min-width:0;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:10px 12px;font-family:Rajdhani;font-size:15px">
+        <button class="btn" id="ckAdd" title="Add" aria-label="Add item" style="flex:0 0 auto;padding:10px 18px;font-size:18px;line-height:1">+</button>
+      </div>
     </div>
 
     <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
@@ -1956,7 +1964,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2>Klarna Float System</h2>
       <div class="desc">A free, zero-interest cash tool — explained simply. With pay-in-2, Klarna sends the <b>full amount</b> to your bank now, and you pay it back over the next 2 months in two equal, interest-free instalments. Because there's no interest, you return <b>exactly</b> what you borrowed — it's really just bringing your own future salary forward to today, for free.</div>
 
-      <div style="background:rgba(255,181,71,.08);border:1px solid var(--amber);border-radius:10px;padding:14px 16px;margin-bottom:16px">
+      <div style="background:rgba(var(--warn-rgb),.08);border:1px solid var(--amber);border-radius:10px;padding:14px 16px;margin-bottom:16px">
         <div style="font-family:'Share Tech Mono';font-size:11px;letter-spacing:.14em;color:var(--amber);margin-bottom:8px">⚠ THE ONE RULE TO NEVER FORGET</div>
         <div style="font-size:14px;color:var(--txt)">The money is <b>NOT yours to keep</b> — it's your own future salary pulled forward, and you return every bit over the next 2 months. Think "borrowing from myself, interest-free," never "free money." Treat it as keep-money and it will hurt you; treat it as a short bridge and it's a powerful free tool.</div>
       </div>
@@ -2017,7 +2025,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <div class="calc-row"><span>Left each month after the instalment</span><b id="klAfter">—</b></div>
       </div>
 
-      <div id="klVerdict" style="margin-top:16px;border-radius:12px;padding:16px 18px;border:1px solid var(--amber);background:rgba(255,181,71,.08)">
+      <div id="klVerdict" style="margin-top:16px;border-radius:12px;padding:16px 18px;border:1px solid var(--amber);background:rgba(var(--warn-rgb),.08)">
         <div style="font-family:'Orbitron';font-weight:700;font-size:22px;color:var(--amber)" id="klVtag">⚠ TIGHT</div>
         <div style="font-size:14px;color:var(--txt);margin-top:6px" id="klVmsg">Right at your limit.</div>
       </div>
@@ -2418,7 +2426,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="card">
       <h2 data-i18n="📦 Move my data">📦 Move my data</h2>
       <div class="desc">New phone, or just installed the app? Bring everything across — it stays <b>private to your devices</b> and is <b>never</b> uploaded.</div>
-      <div id="moveTip" style="display:none;margin-top:8px;background:#08121f;border:1px solid var(--cyan);border-radius:10px;padding:11px 13px;font-size:13px;color:var(--txt);line-height:1.5"></div>
+      <div id="moveTip" style="display:none;margin-top:8px;background:var(--panel2);border:1px solid var(--cyan);border-radius:10px;padding:11px 13px;font-size:13px;color:var(--txt);line-height:1.5"></div>
 
       <div id="moveSteps" style="display:flex;flex-direction:column;gap:16px;margin-top:16px">
         <!-- GET: bring data ONTO this device (the hero when freshly installed) -->
@@ -2456,7 +2464,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
             <summary data-i18n="Other ways to send (file, code)" style="cursor:pointer;color:var(--cyan);font-size:12.5px">Other ways to send (file, code)</summary>
             <button class="btn ghost" id="dataExportBtn" data-i18n="Show my data code" style="margin-top:10px">Show my data code</button>
             <div id="dataExportWrap" style="display:none;margin-top:10px">
-              <div id="dataCode" style="background:#06101c;border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:11px;padding:11px;word-break:break-all;line-height:1.45;max-height:120px;overflow:auto;cursor:pointer;user-select:text"></div>
+              <div id="dataCode" style="background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:11px;padding:11px;word-break:break-all;line-height:1.45;max-height:120px;overflow:auto;cursor:pointer;user-select:text"></div>
               <div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" id="dataCopy" style="flex:1">Copy code</button><button class="btn ghost" id="dataDownload" style="flex:1">Download as file</button></div>
             </div>
           </details>
@@ -2731,7 +2739,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], media:[], tax:{}, savingsBoxes:[], incomeAsk:{}, showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'', theme:'cyber', layout:'pro' } };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], media:[], tax:{}, checklist:[], savingsBoxes:[], incomeAsk:{}, showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'', theme:'cyber', layout:'pro' } };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -2754,7 +2762,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     return Object.assign({}, DEFAULTS, pick||{}, {
       customItems:(pick&&pick.customItems)||[], workouts:(pick&&pick.workouts)||[],
       calendar:(pick&&pick.calendar)||{}, log:(pick&&pick.log)||[],
-      body:(pick&&pick.body)||{}, prs:(pick&&pick.prs)||[], notes:(pick&&pick.notes)||[], foodLog:(pick&&pick.foodLog)||[], media:(pick&&pick.media)||[], tax:(pick&&pick.tax)||{}
+      body:(pick&&pick.body)||{}, prs:(pick&&pick.prs)||[], notes:(pick&&pick.notes)||[], foodLog:(pick&&pick.foodLog)||[], media:(pick&&pick.media)||[], tax:(pick&&pick.tax)||{}, checklist:(pick&&pick.checklist)||[]
     });
   }
   var STATE = loadState();
@@ -2775,10 +2783,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // was stale and reset every new theme/layout back to cyber/pro on reload).
   applyAppearance();
   var _quotaWarned=false;
+  function _hudWarn(){ try{ var b=document.querySelector('.savebar'); if(b) b.classList.add('haswarn'); }catch(_){ } }  // a live warning must pierce the collapsed HUD
   function _warnStorageFull(){            // fail loud, never silent (Akashi constraint #3)
     if(_quotaWarned) return; _quotaWarned=true;   // once per session — warn, don't nag
     try{ if(typeof toast==='function') toast(t('Storage is full — export your data to free space.')); }catch(_){ }
-    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● storage full — export to free space'; b.style.color='var(--red)'; }
+    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● storage full — export to free space'; b.style.color='var(--red)'; } _hudWarn();
   }
   // --- SAVE SAFETY: durability detection + fail-loud (Akashi contract). In-app browsers
   // (social webviews), private mode, and some file:// contexts silently drop localStorage on
@@ -2795,7 +2804,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(_durabilityWarned) return; _durabilityWarned=true;
     var el=document.getElementById('saveSafetyBanner');
     if(el && el.getAttribute('data-dismissed')!=='1') el.style.display='';
-    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● not saving — open in your browser'; b.style.color='var(--red)'; }
+    var b=document.getElementById('saveBadge'); if(b){ b.textContent='● not saving — open in your browser'; b.style.color='var(--red)'; } _hudWarn();
   }
   function _saveReplacer(k,v){
     // A food photo is dropped from localStorage ONLY once its bytes are confirmed in IndexedDB
@@ -2808,7 +2817,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     STATE.savedAt = nowISO();
     if(TEMPLATE_MODE){   // fresh share copy: never touch this device's storage
       var bt=document.getElementById('saveBadge');
-      if(bt){ bt.textContent='● try mode — press Save to keep your file'; bt.style.color='var(--amber)'; }
+      if(bt){ bt.textContent='● try mode — press Save to keep your file'; bt.style.color='var(--amber)'; } _hudWarn();
       return;
     }
     var _stuck=false;
@@ -3355,9 +3364,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   /* ---------- SAVINGS GROWTH CHART ---------- */
   var currentScen = 'avg';
   var scenarios = {
-    low:  { label:'Low',     color:'#ffb547', income: MODEL.income.low },
-    avg:  { label:'Typical', color:'#00e5ff', income: MODEL.income.avg },
-    high: { label:'Good',    color:'#7CFFB2', income: MODEL.income.high }
+    low:  { label:'Low',     income: MODEL.income.low },
+    avg:  { label:'Typical', income: MODEL.income.avg },
+    high: { label:'Good',    income: MODEL.income.high }
   };
   window.rebuildScenarios = function(){
     scenarios.low.income = MODEL.income.low;
@@ -3553,7 +3562,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var totNow=0, totFinal=0, totInt=0;
     host.innerHTML = boxes.map(function(b){
       var p=projectBox(b, yrs); totNow+=p.start; totFinal+=p.final; totInt+=p.interest;
-      var rgb = '0,229,255';
+
       // target progress
       var tgtHtml='';
       if(+b.target>0){
@@ -3562,12 +3571,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var reach = pct>=100 ? t('Reached')
           : (yt===Infinity ? t('add a bit monthly to reach it')
           : tf('on track in about {n}', {n: sbYearsText(yt)}));
-        tgtHtml = '<div style="margin-top:8px"><div class="meter" style="height:9px"><span style="display:block;height:100%;width:'+pct+'%;background:rgb('+rgb+')"></span></div>'+
+        tgtHtml = '<div style="margin-top:8px"><div class="meter" style="height:9px"><span style="display:block;height:100%;width:'+pct+'%;background:rgb(var(--accent-rgb))"></span></div>'+
           '<div style="font-size:11.5px;color:var(--txt-dim);margin-top:4px">'+pct+'% '+t('of')+' '+M(+b.target)+' · '+reach+'</div></div>';
       }
       var contrib = b.freq==='none' ? t('manual top-ups only') : tf('{amt} {per}', {amt:M(+b.amt||0), per:sbFreqLabel(b.freq)});
       var rateBit = (+b.rate>0) ? (' · '+tf('{r}% interest', {r:(+b.rate)})) : '';
-      return '<div style="border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:12px;background:#08111e">'+
+      return '<div style="border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:12px;background:var(--panel2)">'+
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'+
           '<div style="font-size:15px;font-weight:700;color:var(--bright)"><span>'+esc(b.icon||'💰')+'</span> <span data-i18n-skip>'+esc(b.name||t('Savings'))+'</span></div>'+
           '<div style="flex:none;display:flex;gap:6px">'+
@@ -3578,7 +3587,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         '</div>'+
         '<div style="font-family:\'Share Tech Mono\';font-size:12px;color:var(--cyan);margin-top:6px">'+t('Now')+': <b>'+M(+b.balance||0)+'</b> · '+t('you add')+' '+contrib+rateBit+'</div>'+
         tgtHtml+
-        '<div style="margin-top:9px;padding-top:9px;border-top:1px solid rgba(27,58,92,.5);font-size:13px">'+
+        '<div style="margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:13px">'+
           tf('In {y} years: ', {y:yrs})+'<b style="color:var(--lime);font-size:15px">'+M(p.final)+'</b>'+
           '<div style="font-size:11.5px;color:var(--txt-dim);margin-top:3px">'+tf('you put in {c} · interest earns you {i}', {c:M(p.start+p.contributed), i:M(p.interest)})+'</div>'+
         '</div>'+
@@ -3844,33 +3853,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(!dataComplete) score=Math.min(score,25);
     var tier = tierOf(score);
 
-    var F=Ff, sym=curInfo().sym, items=[];
-    function add(key,w,title,detail){ items.push({ key:key, w:w, title:title, detail:detail }); }
-
-    if(avg<=0) add('income',100,t('Add your income'),t('Put your typical monthly take-home into the Income tab — the whole plan is built on it.'));
-    if(costs<=0) add('costs',98,t('Add your real monthly costs'),t('List your actual bills in Expenses so these numbers are real, not guesses.'));
-    if(dataComplete && leftLow<0) add('deficit',95,t('Close your slow-month gap'),tf('On a low month you run about {short} short. Trim your biggest area ({cat}, {val}/mo){extra}.',{short:F(-leftLow),cat:esc(bigCat),val:F(bigVal),extra:(hasJob?tf(' or pick up a few extra hours at {emp}',{emp:esc(prof.employer)}):t(' or add some income'))}));
-    if(dataComplete && saveRate<0.20){ var target=Math.round(avg*0.20); add('savings', leftLow<0?70:90, t('Pay yourself first'), tf('You\'re saving about {pct}% of income. Aim for 20% ({t}/mo) — make it an automatic transfer the day you\'re paid.',{pct:Math.round(saveRate*100),t:F(target)})); }
-    if(!hasJob) add('income-src',80,t('Lock in a steady income'),t('Add a reliable income source — even part-time. A stable inflow is the floor everything else stands on.'));
-    else if(dataComplete && leftAvg<avg*0.10) add('more-hours',62,t('Nudge your income up'),tf('Even ~4 extra hours/week at {emp} could add a few hundred {sym}/mo and loosen things up fast.',{emp:esc(prof.employer),sym:sym}));
-    if(dataComplete && subs>avg*0.10) add('subs',58,t('Trim your subscriptions'),tf('Subscriptions cost about {s}/mo{biggest}. Cancel anything you don\'t truly use; it\'s the fastest free raise there is.',{s:F(subs),biggest:(subName?tf(' — your biggest is {n}',{n:esc(subName)}):'')}));
-    if(dataComplete) add('buffer', comfortAvg>0?52:40, t('Build a 3-month cushion'), tf('Aim for {e} set aside for emergencies. Automating {a}/mo gets you there steadily.',{e:F(costs*3),a:F(Math.max(save,avg*0.10))}));
-    if(loan>0) add('loan',50,t('Kill the loan faster'),tf('Your loan takes {l}/mo. In good months (~{h}) throw extra at it — paying down debt is a guaranteed return.',{l:F(loan),h:F(high)}));
-    if(dataComplete && comfortAvg>0) add('invest',45,t('Put your surplus to work'),tf('You\'ve got about {c}/mo genuinely free. Automate it into savings or investing{age}.',{c:F(comfortAvg),age:(age&&age<35?tf(' — at {a}, compounding does the heavy lifting for you',{a:age}):'')}));
-    var klShown=(function(){ var t=document.querySelector('#tabs .tab[data-p="klarna"]'); return t && getComputedStyle(t).display!=='none'; })();
-    if(klShown && dataComplete && comfortAvg>0 && leftLow>=0) add('klarna',38,t('Use a free interest-free bridge'),t('When you need cash without raiding savings, an interest-free pay-in-2 (see the Klarna Float tab) pulls a buffer forward at zero cost. Bridge with it — never treat it as spending money.'));
-    // ---- body: fold the gym goal into the life plan ----
-    var B=(typeof computeBodyGrade==='function')?computeBodyGrade():{ok:false};
-    if(!B.ok){ add('bodystats',30,t('Add your body stats'),t('Pop your height, weight and (if you know them) body-fat % and muscle % into the Gym tab — an S-tier life is health too, not just money.')); }
-    else if(B.tier==='C'||B.tier==='D'||B.tier==='E'){
-      var aim = B.fat!=null ? tf('aim for ~{f}% body fat',{f:B.fatT.ideal}) : tf('aim for the {lo}–{hi} kg healthy range',{lo:F(B.idealLo).replace(curInfo().sym,'').trim(),hi:B.idealHi});
-      add('body', B.tier==='E'?72:48, t('Level up your body'), tf('Your body is {tier}-tier. Use the Gym tab — {aim}{ratio}. Small, steady changes compound just like money.',{tier:B.tier,aim:aim,ratio:(B.ratio!=null?tf(', and push your muscle-to-fat ratio up from {r}×',{r:B.ratio.toFixed(1)}):'')}));
-    }
-
-    add('backup',20,t('Back up your data'),tf('Hit 💾 {save} (or ⇄ {backup}) so your plan is safe and travels with you.',{save:t('Save / Export'),backup:t('Backup')}));
-
-    items.sort(function(a,b){ return b.w-a.w; });
-    return { tier:tier, score:score, dataComplete:dataComplete, body:B, items:items, factors:factors };
+    // The baked "personalized plan" items were removed (Osefe): the checklist is now the
+    // user's own list (renderChecklist below). Score/factors/tier remain — they drive the
+    // Life Tier card, the header GRADE pill and the Stats tab.
+    var B=(typeof computeBodyGrade==='function')?computeBodyGrade():{ok:false};   // body grade still blends into the overall tier
+    return { tier:tier, score:score, dataComplete:dataComplete, body:B, factors:factors };
   }
   function renderMissions(){
     var ul=document.getElementById('checklist-list'); if(!ul) return;
@@ -3900,17 +3887,39 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var sub = '<div style="margin-top:8px;font-style:normal;font-family:\'Share Tech Mono\';font-size:11px">💰 '+t('Finance')+' <b style="color:rgb('+tierRGB(M.tier)+')">'+M.tier+' · '+fin+'</b>'+bodyBit+'</div>';
       msg.innerHTML='<b>'+esc(tf('{tier}-tier · {n}/100 overall.',{tier:oTier,n:overall}))+'</b> '+line+sub;
     }
-    ul.innerHTML = M.items.map(function(it){
-      var done=!!STATE.missionsDone[it.key];
-      return '<li class="'+(done?'done':'')+'"><span class="box'+(done?' done':'')+'" data-mkey="'+esc(it.key)+'" tabindex="0" role="checkbox" aria-checked="'+(done?'true':'false')+'"></span>'+
-        '<span><b>'+esc(it.title)+'</b><br><small style="color:var(--txt-dim)">'+esc(it.detail)+'</small></span></li>';
+    renderChecklist();
+  }
+  /* ---- the user's own checklist (replaces the baked plan) ---- */
+  function ckList(){ STATE.checklist = STATE.checklist || []; return STATE.checklist; }
+  function renderChecklist(){
+    var ul=document.getElementById('checklist-list'); if(!ul) return;
+    var list=ckList();
+    ul.innerHTML = list.map(function(it){
+      return '<li class="'+(it.done?'done':'')+'">'+
+        '<span class="box'+(it.done?' done':'')+'" data-ck="'+esc(it.id)+'" tabindex="0" role="checkbox" aria-checked="'+(it.done?'true':'false')+'"></span>'+
+        '<span style="flex:1;min-width:0" data-i18n-skip>'+esc(it.text)+'</span>'+
+        '<button class="iconbtn ck-del" data-ck="'+esc(it.id)+'" title="'+t('Delete')+'" aria-label="'+t('Delete')+'" style="padding:3px 8px;flex:0 0 auto;margin-left:8px">✕</button></li>';
     }).join('');
     ul.querySelectorAll('.box').forEach(function(b){
-      function toggle(){ var k=b.getAttribute('data-mkey'); STATE.missionsDone[k]=!STATE.missionsDone[k]; if(typeof autosave==='function') autosave(); renderMissions(); }
+      function toggle(){ var id=b.getAttribute('data-ck'); var it=ckList().filter(function(x){ return x.id===id; })[0]; if(!it) return; it.done=!it.done; if(typeof autosave==='function') autosave(); renderChecklist(); }
       b.addEventListener('click', toggle);
       b.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(); } });
     });
+    ul.querySelectorAll('.ck-del').forEach(function(b){
+      b.addEventListener('click', function(){ var id=b.getAttribute('data-ck'); STATE.checklist=ckList().filter(function(x){ return x.id!==id; }); if(typeof autosave==='function') autosave(); logChange('checklist-del',''); renderChecklist(); });
+    });
   }
+  (function initChecklist(){
+    var inp=document.getElementById('ckNew'), add=document.getElementById('ckAdd');
+    if(!inp||!add) return;
+    function addItem(){
+      var txt=String(inp.value||'').trim().slice(0,200); if(!txt) return;
+      ckList().push({ id:'ck'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), text:txt, done:false });
+      inp.value=''; if(typeof autosave==='function') autosave(); logChange('checklist-add',''); renderChecklist(); inp.focus();
+    }
+    add.addEventListener('click', addItem);
+    inp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); addItem(); } });
+  })();
   function bodyIncluded(){ return STATE.bodyOn !== false; }
 
   /* ===================== STATS & GRADES (with trusted sources) ===================== */
@@ -4564,12 +4573,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(weekEl){ weekEl.textContent=(perWeekKg>=0?'+':'−')+Math.abs(perWeekKg).toFixed(2)+' kg/week'; weekEl.style.color = Math.abs(perWeekKg)>1 ? 'var(--amber)' : ''; }
     if(vEl){
       var v;
-      if(intake < c.bmr*0.85 || intake < 1300){ v={t:'⛔ Dangerously low — below what your body needs even at rest. Not safe to sustain; you risk muscle loss, fatigue and worse.', c:'#ff5c7c'}; }
-      else if(delta <= -750){ v={t:'⚠ Aggressive deficit — fast fat loss but hard to keep up and you may lose muscle. Eat more protein and consider easing off.', c:'#ffb547'}; }
-      else if(delta < -150){ v={t:'✅ Deficit — steady, healthy fat loss. Great for cutting.', c:'#7CFFB2'}; }
-      else if(delta <= 150){ v={t:'⚖️ Maintenance — your weight stays stable here.', c:'#00e5ff'}; }
-      else if(delta <= 500){ v={t:'✅ Lean surplus — supports muscle gain with minimal fat. Ideal for bulking.', c:'#7CFFB2'}; }
-      else { v={t:'⚠ Large surplus — you\'ll gain fast, but most of it will be fat. Dial it back for a cleaner bulk.', c:'#ffb547'}; }
+      if(intake < c.bmr*0.85 || intake < 1300){ v={t:'⛔ Dangerously low — below what your body needs even at rest. Not safe to sustain; you risk muscle loss, fatigue and worse.', c:'var(--red)'}; }
+      else if(delta <= -750){ v={t:'⚠ Aggressive deficit — fast fat loss but hard to keep up and you may lose muscle. Eat more protein and consider easing off.', c:'var(--amber)'}; }
+      else if(delta < -150){ v={t:'✅ Deficit — steady, healthy fat loss. Great for cutting.', c:'var(--lime)'}; }
+      else if(delta <= 150){ v={t:'⚖️ Maintenance — your weight stays stable here.', c:'var(--cyan)'}; }
+      else if(delta <= 500){ v={t:'✅ Lean surplus — supports muscle gain with minimal fat. Ideal for bulking.', c:'var(--lime)'}; }
+      else { v={t:'⚠ Large surplus — you\'ll gain fast, but most of it will be fat. Dial it back for a cleaner bulk.', c:'var(--amber)'}; }
       vEl.textContent=t(v.t); vEl.style.color=v.c;
     }
   }
@@ -4658,10 +4667,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         {x:kx,y:374,w:D.calfHalf*0.72}, {x:kx,y:394,w:D.ankleHalf} ]); }
     function foot(side){ var fx=cx+side*(D.hipHalf*0.42); return '<ellipse cx="'+_r1(fx-side*D.footLen*0.16)+'" cy="398" rx="'+_r1(D.ankleHalf+D.footLen*0.5)+'" ry="'+_r1(D.ankleHalf*1.15)+'"/>'; }
     // ---- interior muscle definition (shows when lean+muscular, fades under fat) ----
+    // theme-accent shades for the anatomy art (canvas/SVG attrs can't use var())
+    var _AR=(typeof cssVar==='function'&&cssVar('--accent-rgb'))||'0,229,255';
+    function _shadeRGB(k){ var p=_AR.split(',').map(function(x){return parseInt(x,10)||0;});
+      return p.map(function(v){ return Math.round(k>=0 ? v+(255-v)*k : v*(1+k)); }).join(','); }
     var defA=Math.max(0,Math.min(0.82, m*1.18 - f*0.72)), def='';
     if(defA>0.03){
       var ch=D.chestHalf, wa=D.waistHalf, sH=D.shoulderHalf;
-      function ln(d){ return '<path d="'+d+'" fill="none" stroke="rgba(190,248,255,'+_r1(defA)+')" stroke-width="1.1" stroke-linecap="round"/>'; }
+      function ln(d){ return '<path d="'+d+'" fill="none" stroke="rgba('+_shadeRGB(0.75)+','+_r1(defA)+')" stroke-width="1.1" stroke-linecap="round"/>'; }
       def+=ln('M '+cx+' 112 L '+cx+' 185');                                   // linea alba
       [150,162,174].forEach(function(y){ def+=ln('M '+_r1(cx-wa*0.4)+' '+y+' L '+_r1(cx+wa*0.4)+' '+y); }); // ab rows
       def+=ln('M '+_r1(cx-wa*0.42)+' 145 L '+_r1(cx-wa*0.42)+' 183');         // ab borders
@@ -4680,8 +4693,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       });
     }
     svg.innerHTML='<defs><linearGradient id="bGrad" x1="0" x2="1" y1="0" y2="0">'+
-      '<stop offset="0" stop-color="#063040"/><stop offset="0.26" stop-color="#1b7d97"/><stop offset="0.5" stop-color="#3ccbe6"/><stop offset="0.74" stop-color="#1b7d97"/><stop offset="1" stop-color="#04222c"/></linearGradient></defs>'+
-      '<g fill="url(#bGrad)" stroke="rgba(0,229,255,.62)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">'+
+      '<stop offset="0" stop-color="rgb('+_shadeRGB(-0.80)+')"/><stop offset="0.26" stop-color="rgb('+_shadeRGB(-0.45)+')"/><stop offset="0.5" stop-color="rgb('+_shadeRGB(-0.10)+')"/><stop offset="0.74" stop-color="rgb('+_shadeRGB(-0.45)+')"/><stop offset="1" stop-color="rgb('+_shadeRGB(-0.85)+')"/></linearGradient></defs>'+
+      '<g fill="url(#bGrad)" stroke="rgba('+_AR+',.62)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">'+
       '<path d="'+leg(-1)+'"/><path d="'+leg(1)+'"/>'+foot(-1)+foot(1)+
       '<path d="'+arm(-1)+'"/><path d="'+arm(1)+'"/>'+
       '<rect x="'+_r1(cx-D.neckHalf)+'" y="64" width="'+_r1(D.neckHalf*2)+'" height="18" rx="5"/>'+
@@ -4703,10 +4716,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var set=function(id,v,col){ var e=document.getElementById(id); if(e){ e.textContent=v; if(col!=null) e.style.color=col; } };
     set('bodySimW', wt.toFixed(1)+' kg');
     if(B.ok){ var v,col;
-      if(wt<B.idealLo){ v=t('under your healthy range'); col='#ffb547'; }
-      else if(wt<=B.idealHi){ v=t('✅ in your healthy range'); col='#7CFFB2'; }
-      else if(wt<=B.idealHi*1.1){ v=t('just over — a small cut helps'); col='#ffb547'; }
-      else { v=t('over your healthy range'); col='#ff5c7c'; }
+      if(wt<B.idealLo){ v=t('under your healthy range'); col='var(--amber)'; }
+      else if(wt<=B.idealHi){ v=t('✅ in your healthy range'); col='var(--lime)'; }
+      else if(wt<=B.idealHi*1.1){ v=t('just over — a small cut helps'); col='var(--amber)'; }
+      else { v=t('over your healthy range'); col='var(--red)'; }
       set('bodySimVerdict', v, col);
     } else set('bodySimVerdict',t('add height + weight above'),'');
   }
@@ -4864,57 +4877,203 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // Each meal carries macros (per serving) + tags (ingredients & cuisine) + goals it suits.
   // YouTube link is a search query so it always resolves to a real recipe video, offline-safe.
   // macros are per standard serving; ing = ingredients shown in the detail window
+  // v2 — 154 health-oriented meals; every core ingredient on the taste list matches >=3
+  // meals via the matcher below (verified by harness). kcal ~= 4p+4c+9f per serving.
   var MEAL_DB=[
-    {n:'Grilled chicken, rice & broccoli',goals:['cut','maintain','bulk'],kcal:520,p:48,c:55,f:10,tags:['chicken','rice','broccoli','high protein','meal prep'],ing:['180g chicken breast','150g cooked rice','150g broccoli','1 tsp olive oil','garlic, salt, pepper']},
-    {n:'Lean beef & sweet potato bowl',goals:['maintain','bulk'],kcal:640,p:46,c:60,f:22,tags:['beef','sweet potato','high protein'],ing:['170g lean beef mince (5%)','250g sweet potato','handful spinach','1 tbsp olive oil','spices']},
-    {n:'Salmon, quinoa & asparagus',goals:['cut','maintain'],kcal:560,p:42,c:38,f:26,tags:['salmon','fish','quinoa','omega 3','asparagus'],ing:['170g salmon fillet','120g cooked quinoa','8 asparagus spears','lemon','olive oil']},
-    {n:'Egg-white veggie omelette',goals:['cut','maintain'],kcal:310,p:34,c:12,f:14,tags:['eggs','vegetarian','breakfast','low calorie'],ing:['6 egg whites + 1 whole egg','peppers, onion, spinach','30g feta','herbs']},
-    {n:'Greek yogurt, berries & granola',goals:['cut','maintain','bulk'],kcal:340,p:24,c:48,f:7,tags:['yogurt','berries','breakfast','vegetarian'],ing:['200g 0% Greek yogurt','100g mixed berries','40g granola','drizzle honey']},
-    {n:'Turkey & avocado wrap',goals:['maintain'],kcal:480,p:38,c:42,f:18,tags:['turkey','avocado','wrap','lunch'],ing:['150g turkey breast','1 wholegrain wrap','1/2 avocado','lettuce, tomato','light mayo']},
-    {n:'Thai green chicken curry & jasmine rice',goals:['maintain','bulk'],kcal:680,p:40,c:62,f:28,tags:['chicken','thai','curry','rice','spicy'],ing:['160g chicken thigh','150g jasmine rice','100ml light coconut milk','green curry paste','veg']},
-    {n:'Tofu & vegetable stir-fry',goals:['cut','maintain'],kcal:420,p:26,c:44,f:16,tags:['tofu','vegan','vegetarian','asian','stir fry','vegetables'],ing:['200g firm tofu','mixed stir-fry veg','100g cooked noodles','soy sauce, ginger, garlic']},
-    {n:'Lentil & chickpea dahl',goals:['cut','maintain','bulk'],kcal:450,p:24,c:62,f:11,tags:['lentil','chickpea','indian','vegan','vegetarian','curry'],ing:['100g red lentils','100g chickpeas','tomato, onion, garlic','curry spices','100g rice']},
+    {n:'Grilled chicken, rice & broccoli',goals:['cut','maintain','bulk'],kcal:520,p:48,c:55,f:10,tags:['chicken','rice','broccoli','high protein','meal prep'],ing:['180g chicken breast','150g cooked rice','150g broccoli','1 tsp olive oil','garlic, salt, black pepper']},
+    {n:'Lean beef & sweet potato bowl',goals:['maintain','bulk'],kcal:640,p:46,c:60,f:22,tags:['beef','sweet potato','high protein'],ing:['170g lean beef mince (5%)','250g sweet potato','handful spinach','1 tbsp olive oil','paprika, cumin']},
+    {n:'Salmon, quinoa & asparagus',goals:['cut','maintain'],kcal:560,p:42,c:38,f:26,tags:['salmon','fish','quinoa','omega 3','asparagus'],ing:['170g salmon fillet','120g cooked quinoa','8 asparagus spears','lemon','olive oil, dill']},
+    {n:'Egg-white veggie omelette',goals:['cut','maintain'],kcal:310,p:34,c:12,f:14,tags:['eggs','vegetarian','breakfast','low calorie'],ing:['6 egg whites + 1 whole egg','bell peppers, onion, spinach','30g feta','chives, herbs']},
+    {n:'Greek yogurt, berries & granola',goals:['cut','maintain','bulk'],kcal:340,p:24,c:48,f:7,tags:['yogurt','berries','breakfast','vegetarian'],ing:['200g 0% Greek yogurt','100g mixed berries (strawberries, blueberries)','40g granola (oats, sunflower seeds)','drizzle honey']},
+    {n:'Turkey & avocado wrap',goals:['maintain'],kcal:480,p:38,c:42,f:18,tags:['turkey','avocado','wrap','lunch'],ing:['150g turkey breast','1 wholegrain wheat wrap','1/2 avocado','lettuce, tomato','mustard']},
+    {n:'Thai green chicken curry & jasmine rice',goals:['maintain','bulk'],kcal:680,p:40,c:62,f:28,tags:['chicken','thai','curry','rice','spicy'],ing:['160g chicken thigh','150g jasmine rice','100ml light coconut milk','green curry paste','thai basil, veg']},
+    {n:'Tofu & vegetable stir-fry',goals:['cut','maintain'],kcal:420,p:26,c:44,f:16,tags:['tofu','vegan','vegetarian','asian','stir fry','vegetables','soybeans'],ing:['200g firm tofu (soybeans)','mixed stir-fry veg (carrots, cabbage, peppers)','100g cooked noodles','soy sauce, ginger, garlic','sesame oil']},
+    {n:'Lentil & chickpea dahl',goals:['cut','maintain','bulk'],kcal:450,p:24,c:62,f:11,tags:['lentil','chickpea','indian','vegan','vegetarian','curry'],ing:['100g red lentils','100g chickpeas','tomato, onion, garlic','turmeric, cumin, coriander','100g rice']},
     {n:'Protein oats with peanut butter & banana',goals:['bulk','maintain'],kcal:620,p:38,c:72,f:20,tags:['oats','peanut butter','banana','breakfast','vegetarian'],ing:['80g oats','1 scoop whey','1 tbsp peanut butter','1 banana','250ml milk']},
-    {n:'Tuna pasta with sweetcorn',goals:['maintain','bulk'],kcal:600,p:44,c:78,f:12,tags:['tuna','fish','pasta','italian'],ing:['2 tins tuna','120g pasta (dry)','100g sweetcorn','light mayo / tomato','black pepper']},
-    {n:'Beef & bean chilli con carne',goals:['maintain','bulk'],kcal:610,p:42,c:54,f:24,tags:['beef','beans','mexican','spicy','chilli'],ing:['170g beef mince','kidney beans','chopped tomatoes','onion, garlic','100g rice']},
-    {n:'Shrimp & garlic zucchini noodles',goals:['cut'],kcal:330,p:34,c:16,f:14,tags:['shrimp','prawn','seafood','low carb','keto'],ing:['180g shrimp','2 courgettes (spiralised)','garlic, chilli','1 tbsp olive oil','lemon']},
+    {n:'Tuna pasta with sweetcorn',goals:['maintain','bulk'],kcal:600,p:44,c:78,f:12,tags:['tuna','fish','pasta','italian','corn'],ing:['2 tins tuna','120g pasta (dry)','100g sweetcorn','tomato passata','black pepper']},
+    {n:'Beef & bean chilli con carne',goals:['maintain','bulk'],kcal:610,p:42,c:54,f:24,tags:['beef','beans','mexican','spicy','chilli','kidney beans'],ing:['170g beef mince','kidney beans','chopped tomatoes','onion, garlic, cumin, chilli powder','100g rice']},
+    {n:'Shrimp & garlic zucchini noodles',goals:['cut'],kcal:330,p:34,c:16,f:14,tags:['shrimp','prawn','seafood','low carb','keto','zucchini'],ing:['180g shrimp','2 zucchini (spiralised)','garlic, chilli','1 tbsp olive oil','lemon, parsley']},
     {n:'Cottage cheese & pineapple bowl',goals:['cut','maintain'],kcal:280,p:30,c:24,f:6,tags:['cottage cheese','pineapple','vegetarian','snack','high protein'],ing:['250g low-fat cottage cheese','100g pineapple','10g pumpkin seeds','cinnamon']},
-    {n:'Steak, eggs & spinach',goals:['bulk','maintain'],kcal:640,p:52,c:6,f:44,tags:['beef','steak','eggs','keto','low carb','high protein'],ing:['200g sirloin steak','2 whole eggs','large handful spinach','butter','salt, pepper']},
-    {n:'Chicken Caesar salad (light dressing)',goals:['cut','maintain'],kcal:400,p:40,c:14,f:20,tags:['chicken','salad','low carb'],ing:['180g chicken breast','romaine lettuce','20g parmesan','light Caesar dressing','croutons (optional)']},
-    {n:'Black bean & rice burrito bowl',goals:['maintain','bulk'],kcal:580,p:24,c:84,f:16,tags:['beans','rice','mexican','vegan','vegetarian'],ing:['150g black beans','150g rice','corn, peppers','salsa, guacamole','lime']},
+    {n:'Steak, eggs & spinach',goals:['bulk','maintain'],kcal:640,p:52,c:6,f:44,tags:['beef','steak','eggs','keto','low carb','high protein'],ing:['200g sirloin steak','2 whole eggs','large handful spinach','1 tsp olive oil','salt, black pepper']},
+    {n:'Chicken Caesar salad (light dressing)',goals:['cut','maintain'],kcal:400,p:40,c:14,f:20,tags:['chicken','salad','low carb','lettuce'],ing:['180g chicken breast','romaine lettuce','20g parmesan','light Caesar dressing','black pepper']},
+    {n:'Black bean & rice burrito bowl',goals:['maintain','bulk'],kcal:580,p:24,c:84,f:16,tags:['beans','rice','mexican','vegan','vegetarian','black beans','corn'],ing:['150g black beans','150g rice','corn, bell peppers','salsa, guacamole (avocado)','lime, cilantro']},
     {n:'Mackerel on rye with cottage cheese',goals:['cut','maintain'],kcal:430,p:34,c:28,f:22,tags:['mackerel','fish','omega 3','rye','breakfast'],ing:['1 mackerel fillet','2 slices rye bread','100g cottage cheese','cucumber, dill']},
-    {n:'Pork tenderloin, potatoes & green beans',goals:['maintain','bulk'],kcal:600,p:46,c:48,f:22,tags:['pork','potato','high protein'],ing:['180g pork tenderloin','250g potatoes','green beans','1 tbsp olive oil','rosemary']},
-    {n:'Vegetable & paneer curry',goals:['maintain','bulk'],kcal:560,p:28,c:44,f:30,tags:['paneer','vegetarian','indian','curry','vegetables'],ing:['150g paneer','mixed veg','tomato-onion masala','100g rice','spices']},
-    {n:'Chicken pesto pasta',goals:['maintain','bulk'],kcal:620,p:45,c:65,f:18,tags:['chicken','pasta','pesto','italian'],ing:['160g chicken breast','120g pasta (dry)','2 tbsp pesto','cherry tomatoes','parmesan']},
-    {n:'Spaghetti bolognese (lean beef)',goals:['maintain','bulk'],kcal:650,p:42,c:72,f:20,tags:['beef','pasta','spaghetti','italian','tomato','mince'],ing:['170g lean beef mince','120g spaghetti (dry)','chopped tomatoes','onion, garlic, herbs','parmesan']},
-    {n:'High-protein mac & cheese',goals:['bulk','maintain'],kcal:680,p:46,c:66,f:24,tags:['pasta','cheese','macaroni','vegetarian','italian'],ing:['120g macaroni (dry)','60g reduced-fat cheddar','100g low-fat Greek yogurt','1 scoop unflavoured whey','mustard, pepper']},
+    {n:'Pork tenderloin, potatoes & green beans',goals:['maintain','bulk'],kcal:600,p:46,c:48,f:22,tags:['pork','potato','high protein','green beans'],ing:['180g pork tenderloin','250g potatoes','green beans','1 tbsp olive oil','rosemary']},
+    {n:'Vegetable & paneer curry',goals:['maintain','bulk'],kcal:560,p:28,c:44,f:30,tags:['paneer','vegetarian','indian','curry','vegetables','cheese'],ing:['150g paneer','mixed veg (cauliflower, peas, carrots)','tomato-onion masala','turmeric, cumin, ginger','100g rice']},
+    {n:'Chicken pesto pasta',goals:['maintain','bulk'],kcal:620,p:45,c:65,f:18,tags:['chicken','pasta','pesto','italian','basil'],ing:['160g chicken breast','120g pasta (dry)','2 tbsp pesto (basil, pine nuts)','cherry tomatoes','parmesan']},
+    {n:'Spaghetti bolognese (lean beef)',goals:['maintain','bulk'],kcal:650,p:42,c:72,f:20,tags:['beef','pasta','spaghetti','italian','tomato','mince'],ing:['170g lean beef mince','120g spaghetti (dry)','chopped tomatoes','onion, garlic, oregano','parmesan']},
+    {n:'High-protein mac & cheese',goals:['bulk','maintain'],kcal:680,p:46,c:66,f:24,tags:['pasta','cheese','macaroni','vegetarian','italian'],ing:['120g macaroni (dry)','60g reduced-fat cheddar','100g low-fat Greek yogurt','1 scoop unflavoured whey','mustard, black pepper']},
     {n:'Prawn & tomato linguine',goals:['cut','maintain'],kcal:520,p:38,c:62,f:12,tags:['prawn','shrimp','pasta','linguine','seafood','italian','tomato'],ing:['180g prawns','100g linguine (dry)','tomato passata','garlic, chilli, basil','1 tsp olive oil']},
     {n:'Chicken Alfredo pasta',goals:['bulk'],kcal:780,p:48,c:70,f:32,tags:['chicken','pasta','alfredo','creamy','italian'],ing:['180g chicken breast','120g fettuccine (dry)','light cream / milk','garlic, parmesan','black pepper']},
     {n:'Cottage cheese protein pasta bake',goals:['cut','maintain'],kcal:480,p:44,c:52,f:10,tags:['pasta','cottage cheese','high protein','vegetarian','italian','tomato'],ing:['100g pasta (dry)','250g low-fat cottage cheese','tomato sauce','spinach','30g mozzarella']},
-    {n:'Turkey meatball marinara with penne',goals:['maintain','bulk'],kcal:600,p:46,c:64,f:16,tags:['turkey','pasta','penne','meatballs','italian','tomato'],ing:['180g turkey mince (meatballs)','110g penne (dry)','marinara sauce','garlic, herbs','parmesan']}
+    {n:'Turkey meatball marinara with penne',goals:['maintain','bulk'],kcal:600,p:46,c:64,f:16,tags:['turkey','pasta','penne','meatballs','italian','tomato'],ing:['180g turkey mince (meatballs)','110g penne (dry)','marinara sauce','garlic, oregano','parmesan']},
+    {n:'Apple cinnamon overnight oats',goals:['cut','maintain'],kcal:410,p:22,c:58,f:10,tags:['oats','apple','cinnamon','breakfast','vegetarian'],ing:['60g oats','1 grated apple','200ml milk','1 scoop whey','cinnamon, chia seeds']},
+    {n:'Blueberry protein pancakes',goals:['maintain','bulk'],kcal:440,p:32,c:52,f:12,tags:['pancakes','blueberries','oats','breakfast','vegetarian'],ing:['80g oats (blended)','1 scoop whey','2 eggs','100g blueberries','maple syrup drizzle']},
+    {n:'Chia pudding with mango & coconut',goals:['cut','maintain'],kcal:380,p:18,c:40,f:16,tags:['chia','mango','coconut','breakfast','vegan'],ing:['40g chia seeds','200ml light coconut milk','100g mango','vanilla extract','10g coconut flakes']},
+    {n:'Buckwheat porridge, banana & walnuts',goals:['maintain','bulk'],kcal:490,p:20,c:62,f:18,tags:['buckwheat','banana','walnuts','breakfast','vegan'],ing:['70g buckwheat groats','1 banana','20g walnuts','250ml milk or oat drink','maple syrup, cinnamon']},
+    {n:'Millet porridge with peach & almonds',goals:['maintain'],kcal:410,p:16,c:54,f:14,tags:['millet','peach','almonds','breakfast','vegetarian'],ing:['60g millet','1 sliced peach','15g almonds','250ml milk','honey']},
+    {n:'Spelt toast, scrambled eggs & tomato',goals:['cut','maintain'],kcal:410,p:28,c:34,f:18,tags:['spelt','eggs','tomato','breakfast','vegetarian'],ing:['2 slices spelt bread','3 eggs, scrambled','grilled tomato','chives','black pepper']},
+    {n:'Rye avocado toast with poached eggs',goals:['cut','maintain'],kcal:460,p:24,c:36,f:24,tags:['rye','avocado','eggs','breakfast','vegetarian'],ing:['2 slices rye bread','1/2 avocado','2 poached eggs','chilli flakes, lemon','black pepper']},
+    {n:'Shakshuka with peppers & feta',goals:['cut','maintain'],kcal:410,p:26,c:28,f:22,tags:['eggs','tomato','bell peppers','breakfast','vegetarian','shakshuka'],ing:['3 eggs','tomato & bell pepper sauce','onion, garlic, paprika, cumin','30g feta','parsley']},
+    {n:'Matcha overnight oats',goals:['cut','maintain'],kcal:390,p:24,c:50,f:10,tags:['oats','matcha','tea','breakfast','vegetarian'],ing:['60g oats','1 tsp matcha green tea','200ml milk','1 scoop vanilla whey','flaxseeds, honey']},
+    {n:'Mocha protein overnight oats',goals:['maintain','bulk'],kcal:450,p:30,c:56,f:12,tags:['oats','coffee','cocoa','breakfast','vegetarian'],ing:['70g oats','1 shot espresso coffee','1 tbsp cocoa powder','1 scoop whey','250ml milk, maple syrup']},
+    {n:'Berry flaxseed smoothie',goals:['cut','maintain'],kcal:330,p:26,c:34,f:10,tags:['smoothie','berries','flaxseeds','breakfast','vegetarian'],ing:['150g strawberries & blueberries','1 tbsp flaxseeds','1 scoop whey','200ml milk','ice']},
+    {n:'Green spinach & kiwi smoothie',goals:['cut'],kcal:280,p:20,c:32,f:8,tags:['smoothie','spinach','kiwi','vegan','low calorie'],ing:['1 kiwi','handful spinach','1/2 banana','1 scoop plant protein','1/2 tsp matcha, 200ml water, mint']},
+    {n:'Tropical papaya smoothie bowl',goals:['maintain'],kcal:390,p:22,c:48,f:12,tags:['smoothie','papaya','pineapple','coconut','breakfast'],ing:['150g papaya','100g pineapple','1 kiwi, sliced','1 scoop whey','100ml coconut milk, granola (oats), chia seeds']},
+    {n:'Cocoa banana protein shake',goals:['bulk','maintain'],kcal:400,p:34,c:44,f:10,tags:['shake','cocoa','banana','vanilla','breakfast'],ing:['1 banana','1 tbsp cocoa powder','1 scoop whey','300ml milk','vanilla extract, honey']},
+    {n:'Peanut butter & apple porridge',goals:['bulk','maintain'],kcal:500,p:24,c:60,f:18,tags:['oats','peanut butter','apple','breakfast','vegetarian'],ing:['80g oats','1 tbsp peanut butter','1 chopped apple','250ml milk','cinnamon']},
+    {n:'Greek yogurt bark with cherries & pistachios',goals:['cut','maintain'],kcal:280,p:20,c:28,f:10,tags:['yogurt','cherries','pistachios','snack','vegetarian'],ing:['250g Greek yogurt','80g cherries','15g pistachios','honey','frozen in a tray']},
+    {n:'Cottage cheese bowl with pear & walnuts',goals:['cut','maintain'],kcal:340,p:28,c:26,f:14,tags:['cottage cheese','pear','walnuts','snack','vegetarian'],ing:['250g cottage cheese','1 sliced pear','15g walnuts','cinnamon','honey drizzle']},
+    {n:'Quark bowl with plum & sunflower seeds',goals:['cut','maintain'],kcal:310,p:30,c:26,f:10,tags:['quark','plums','sunflower seeds','snack','vegetarian'],ing:['250g quark or skyr','2 sliced plums','15g sunflower seeds','vanilla extract','honey']},
+    {n:'Watermelon, feta & mint salad with chicken',goals:['cut'],kcal:370,p:36,c:24,f:14,tags:['watermelon','feta','mint','salad','chicken','cheese'],ing:['150g grilled chicken','200g watermelon','40g feta','fresh mint, lime','olive oil']},
+    {n:'Chicken salad with grapes, apple, celery & walnuts',goals:['cut','maintain'],kcal:400,p:38,c:26,f:16,tags:['chicken','grapes','apple','celery','walnuts','salad'],ing:['170g chicken breast','80g grapes','1/2 apple, 1 celery stick','15g walnuts','Greek yogurt dressing, chives']},
+    {n:'Tabbouleh with chickpeas & pomegranate',goals:['cut','maintain'],kcal:380,p:16,c:52,f:12,tags:['bulgur','tabbouleh','pomegranate','chickpeas','vegan','parsley','mint'],ing:['100g bulgur wheat','80g chickpeas','pomegranate seeds','LOTS of parsley & mint','lemon, olive oil, tomato']},
+    {n:'Greek salad with grilled chicken',goals:['cut'],kcal:400,p:38,c:18,f:20,tags:['greek','salad','chicken','cheese','cucumbers','tomato'],ing:['170g chicken breast','cucumber, tomato, red onion','40g feta, olives','oregano','olive oil & red wine vinegar']},
+    {n:'Tuna niçoise salad',goals:['cut','maintain'],kcal:410,p:38,c:28,f:16,tags:['tuna','salad','eggs','green beans','potato','fish'],ing:['1 tin tuna','1 boiled egg','baby potatoes, green beans','lettuce, tomato, olives','mustard vinaigrette']},
+    {n:'Smoked trout, beetroot & orange salad',goals:['cut'],kcal:340,p:30,c:24,f:14,tags:['trout','fish','orange','salad','omega 3'],ing:['120g smoked trout','1 orange, segmented','beetroot, rocket','10g walnuts','dill, lemon dressing']},
+    {n:'Crab, avocado & lime salad',goals:['cut'],kcal:340,p:28,c:16,f:18,tags:['crab','avocado','lime','salad','seafood'],ing:['150g white crab meat','1/2 avocado','lime, chilli, cilantro','cucumber, lettuce','olive oil']},
+    {n:'Chicken & mango salad with cashews',goals:['cut','maintain'],kcal:420,p:38,c:32,f:16,tags:['chicken','mango','cashews','salad'],ing:['170g chicken breast','100g mango','20g cashews','mixed leaves, cucumber','lime & ginger dressing']},
+    {n:'Farro salad with roast vegetables & feta',goals:['maintain'],kcal:430,p:18,c:54,f:16,tags:['farro','salad','vegetables','cheese','vegetarian'],ing:['120g cooked farro','roast zucchini, bell peppers, eggplant','40g feta','basil, parsley','balsamic vinegar, olive oil']},
+    {n:'Waldorf-style turkey salad',goals:['cut','maintain'],kcal:380,p:34,c:24,f:16,tags:['turkey','apple','grapes','celery','walnuts','salad'],ing:['150g turkey breast','1/2 apple, 60g grapes','1 celery stick, 15g walnuts','Greek yogurt dressing','lettuce cups']},
+    {n:'Cucumber & dill salad with baked salmon',goals:['cut'],kcal:370,p:36,c:12,f:20,tags:['salmon','cucumbers','dill','salad','fish'],ing:['170g baked salmon','1 sliced cucumber','Greek yogurt & dill dressing','red onion','lemon, black pepper']},
+    {n:'Edamame & soba noodle salad',goals:['cut','maintain'],kcal:410,p:24,c:52,f:12,tags:['edamame','soba','buckwheat','salad','asian','vegan','soybeans'],ing:['100g soba (buckwheat) noodles','100g edamame beans','carrot, cucumber, sesame seeds','soy sauce, rice vinegar','sesame oil, ginger']},
+    {n:'Melon, prosciutto-style turkey & mozzarella plate',goals:['cut'],kcal:350,p:30,c:22,f:16,tags:['melon','watermelon','turkey','cheese','snack'],ing:['120g turkey slices','200g melon or watermelon','60g light mozzarella','rocket, mint','balsamic glaze']},
+    {n:'Honey-mustard baked chicken with roast carrots',goals:['maintain'],kcal:450,p:44,c:38,f:14,tags:['chicken','honey','mustard','carrots'],ing:['180g chicken breast','honey-mustard glaze','300g roast carrots','thyme','olive oil']},
+    {n:'Paprika chicken skewers with bulgur',goals:['maintain'],kcal:470,p:42,c:48,f:12,tags:['chicken','paprika','bulgur','skewers'],ing:['180g chicken breast','smoked paprika, garlic, lemon','120g cooked bulgur','bell peppers, red onion','parsley']},
+    {n:'Chicken fajita bowl with pinto beans',goals:['maintain','bulk'],kcal:540,p:40,c:58,f:16,tags:['chicken','mexican','pinto beans','bell peppers','fajita','rice'],ing:['170g chicken strips','100g pinto beans','bell peppers, onion, cumin, chilli powder','120g rice','salsa, lime, cilantro']},
+    {n:'Cashew chicken stir-fry',goals:['maintain'],kcal:500,p:40,c:44,f:18,tags:['chicken','cashews','stir fry','asian','broccoli'],ing:['170g chicken breast','25g cashews','broccoli, carrots, bell peppers','soy sauce, garlic, ginger','sesame oil, rice']},
+    {n:'Chicken satay with peanut sauce & rice',goals:['maintain','bulk'],kcal:560,p:44,c:52,f:20,tags:['chicken','peanuts','satay','asian','rice'],ing:['180g chicken skewers','peanut sauce (peanut butter, soy sauce, lime)','120g rice','cucumber salad','cilantro']},
+    {n:'Lemon thyme roast chicken with potatoes',goals:['maintain','bulk'],kcal:500,p:46,c:44,f:16,tags:['chicken','lemon','thyme','potatoes','roast'],ing:['200g roast chicken','300g roast potatoes','lemon, thyme, garlic','green beans','olive oil']},
+    {n:'Turmeric chicken & rice with yogurt',goals:['maintain'],kcal:490,p:42,c:50,f:14,tags:['chicken','turmeric','rice','yogurt'],ing:['180g chicken thigh','turmeric, ginger, garlic','130g rice','2 tbsp Greek yogurt','cilantro, lime']},
+    {n:'Chicken arrabbiata penne',goals:['maintain','bulk'],kcal:520,p:42,c:62,f:12,tags:['chicken','penne','pasta','spicy','tomato','italian'],ing:['160g chicken breast','110g penne (dry)','tomato & chilli arrabbiata sauce','garlic, basil','parmesan']},
+    {n:'Turkey burgers with corn on the cob',goals:['maintain'],kcal:470,p:40,c:42,f:16,tags:['turkey','burger','corn'],ing:['180g turkey mince patties','wholegrain bun','1 corn on the cob','lettuce, tomato, red onion','Greek yogurt & chive sauce']},
+    {n:'Turkey & vegetable rice noodle stir-fry',goals:['cut','maintain'],kcal:430,p:38,c:48,f:10,tags:['turkey','rice noodles','stir fry','asian','vegetables'],ing:['160g turkey strips','100g rice noodles','cabbage, carrots, peas','soy sauce, ginger, garlic','sesame seeds']},
+    {n:'Chicken couscous with apricots & almonds',goals:['maintain','bulk'],kcal:520,p:40,c:58,f:14,tags:['chicken','couscous','almonds','moroccan'],ing:['170g chicken','120g couscous','dried apricots, 15g almonds','cinnamon, cumin, coriander','mint, lemon']},
+    {n:'Chicken & barley grain bowl',goals:['maintain'],kcal:480,p:40,c:52,f:12,tags:['chicken','barley','grain bowl','vegetables'],ing:['170g chicken breast','120g cooked barley','roast broccoli & carrots','tahini-lemon dressing','pumpkin seeds']},
+    {n:'Beef & broccoli stir-fry with rice',goals:['maintain','bulk'],kcal:550,p:42,c:54,f:18,tags:['beef','broccoli','stir fry','asian','rice'],ing:['170g lean beef strips','broccoli, onion','soy sauce, garlic, ginger','130g rice','sesame oil, sesame seeds']},
+    {n:'Steak with chimichurri & sweet potato',goals:['maintain','bulk'],kcal:560,p:46,c:40,f:24,tags:['beef','steak','chimichurri','sweet potato','parsley'],ing:['200g sirloin steak','chimichurri (parsley, garlic, vinegar, olive oil)','250g roast sweet potato','rocket','black pepper']},
+    {n:'Beef barley stew',goals:['maintain'],kcal:450,p:38,c:44,f:14,tags:['beef','barley','stew','carrots','celery'],ing:['160g lean stewing beef','80g barley','carrots, celery, onion','thyme, bay','beef stock']},
+    {n:'Pho-style beef rice noodle soup',goals:['cut','maintain'],kcal:430,p:36,c:50,f:10,tags:['beef','pho','rice noodles','asian','soup','ginger'],ing:['140g lean beef, thin-sliced','100g rice noodles','star anise, ginger, cinnamon broth','bean sprouts, lime','cilantro, mint, chilli']},
+    {n:'Pork chops with apples & red cabbage',goals:['maintain'],kcal:470,p:42,c:34,f:18,tags:['pork','apple','cabbage'],ing:['180g pork loin chop','1 apple, pan-roasted','braised red cabbage','apple cider vinegar','mustard mash (potato)']},
+    {n:'Pork & plum ginger stir-fry',goals:['maintain'],kcal:460,p:40,c:44,f:14,tags:['pork','plums','ginger','stir fry','asian'],ing:['170g lean pork strips','2 plums, sliced','soy sauce, ginger, garlic','bell peppers, cabbage','120g rice']},
+    {n:'Lamb kofta with tzatziki & bulgur',goals:['maintain','bulk'],kcal:530,p:40,c:44,f:22,tags:['lamb','kofta','bulgur','tzatziki','mint'],ing:['180g lean lamb mince','cumin, coriander, mint','120g bulgur','tzatziki (yogurt, cucumber, garlic)','tomato & onion salad']},
+    {n:'Greek lamb salad with olives & feta',goals:['cut','maintain'],kcal:460,p:38,c:18,f:26,tags:['lamb','greek','salad','cheese','oregano'],ing:['170g grilled lamb leg','cucumber, tomato, olives','40g feta','oregano, lemon','olive oil']},
+    {n:'Lamb & vegetable couscous',goals:['maintain','bulk'],kcal:540,p:38,c:56,f:18,tags:['lamb','couscous','moroccan','vegetables'],ing:['160g lean lamb','120g couscous','zucchini, carrots, chickpeas','ras el hanout (cumin, cinnamon, coriander)','mint']},
+    {n:'Duck breast with orange & green beans',goals:['maintain'],kcal:460,p:42,c:28,f:20,tags:['duck','orange','green beans'],ing:['170g duck breast, skin trimmed','1 orange, segmented + juice','steamed green beans','thyme','baby potatoes']},
+    {n:'Duck & cherry sauce with mash',goals:['maintain','bulk'],kcal:510,p:40,c:46,f:18,tags:['duck','cherries','potato'],ing:['170g duck breast','80g cherry sauce','potato mash','kale or spinach','black pepper']},
+    {n:'Duck soba noodle bowl',goals:['maintain'],kcal:490,p:38,c:52,f:14,tags:['duck','soba','buckwheat','asian','noodles'],ing:['150g duck breast, sliced','100g soba (buckwheat) noodles','spring onion, chives','soy sauce, ginger','sesame seeds, pak choi']},
+    {n:'Venison steak with roast roots',goals:['cut','maintain'],kcal:410,p:44,c:36,f:10,tags:['venison','game','lean','carrots','potato'],ing:['180g venison steak (very lean)','roast carrots, parsnip, potato','rosemary, garlic','1 tsp olive oil','red-wine-free jus']},
+    {n:'Venison chilli with kidney beans',goals:['maintain'],kcal:450,p:42,c:48,f:10,tags:['venison','chilli','kidney beans','mexican','spicy'],ing:['170g venison mince (lean)','kidney beans, chopped tomatoes','cumin, chilli powder, paprika','onion, garlic','100g rice']},
+    {n:'Honey-garlic salmon with rice & pak choi',goals:['maintain','bulk'],kcal:540,p:40,c:50,f:20,tags:['salmon','honey','garlic','rice','fish','asian'],ing:['170g salmon fillet','honey, soy sauce, garlic glaze','130g rice','pak choi','sesame seeds']},
+    {n:'Pistachio-crusted salmon with couscous',goals:['maintain'],kcal:550,p:42,c:42,f:24,tags:['salmon','pistachios','couscous','fish'],ing:['170g salmon fillet','20g crushed pistachios','110g couscous','lemon, parsley','roast zucchini']},
+    {n:'Ginger-soy baked cod with rice',goals:['cut','maintain'],kcal:380,p:38,c:44,f:6,tags:['cod','fish','ginger','rice','asian','low fat'],ing:['180g cod fillet','soy sauce, ginger, garlic','120g rice','steamed broccoli','spring onion']},
+    {n:'Cod & white bean tomato stew',goals:['cut'],kcal:360,p:38,c:34,f:8,tags:['cod','fish','beans','tomato','stew','lima beans'],ing:['180g cod','butter beans (lima beans)','tomato, garlic, paprika','spinach','parsley, lemon']},
+    {n:'Smoked haddock kedgeree',goals:['maintain'],kcal:480,p:36,c:52,f:14,tags:['haddock','fish','rice','eggs','kedgeree','curry'],ing:['150g smoked haddock','120g rice','1 boiled egg','curry powder (turmeric, coriander)','peas, parsley']},
+    {n:'Baked haddock with lemon & herby potatoes',goals:['cut','maintain'],kcal:380,p:38,c:38,f:8,tags:['haddock','fish','lemon','potato'],ing:['180g haddock fillet','lemon, dill, chives','250g baby potatoes','green beans','1 tsp olive oil']},
+    {n:'Trout almondine with green beans',goals:['cut','maintain'],kcal:450,p:40,c:18,f:24,tags:['trout','almonds','fish','green beans','omega 3'],ing:['170g trout fillet','15g flaked almonds','green beans','lemon, parsley','1 tsp olive oil']},
+    {n:'Baked trout with fennel & orange',goals:['cut'],kcal:370,p:36,c:20,f:16,tags:['trout','fish','orange','fennel'],ing:['170g trout fillet','fennel, orange segments','dill','baby potatoes','olive oil']},
+    {n:'Garlic prawn spaghetti with chilli & lemon',goals:['maintain'],kcal:480,p:34,c:60,f:12,tags:['prawn','shrimp','spaghetti','pasta','garlic','seafood'],ing:['170g prawns','110g spaghetti (dry)','garlic, chilli, lemon','parsley','1 tbsp olive oil']},
+    {n:'Shrimp tacos with cabbage slaw',goals:['cut','maintain'],kcal:420,p:32,c:42,f:14,tags:['shrimp','prawn','tacos','mexican','cabbage','lime'],ing:['160g shrimp','3 small corn tortillas (cornmeal)','cabbage & carrot slaw','lime, cilantro, chilli','Greek yogurt crema']},
+    {n:'Crab cakes with lemon yogurt & salad',goals:['cut','maintain'],kcal:380,p:30,c:30,f:16,tags:['crab','seafood','cakes','lemon'],ing:['150g crab meat','wholegrain breadcrumbs, egg','lemon-yogurt sauce','mixed leaves, cucumber','chives, black pepper']},
+    {n:'Crab & chilli linguine',goals:['maintain'],kcal:460,p:30,c:58,f:12,tags:['crab','linguine','pasta','seafood','chilli','italian'],ing:['120g crab meat','100g linguine (dry)','chilli, garlic, lemon','parsley','olive oil']},
+    {n:'Mussels in tomato-garlic broth with rye bread',goals:['cut','maintain'],kcal:370,p:34,c:36,f:10,tags:['mussels','seafood','tomato','broth'],ing:['500g mussels (in shell)','tomato, garlic, chilli broth','parsley','2 slices rye bread','lemon']},
+    {n:'Thai mussel curry with rice',goals:['maintain'],kcal:480,p:32,c:52,f:16,tags:['mussels','seafood','thai','curry','coconut','rice'],ing:['400g mussels','light coconut milk, red curry paste','lime, cilantro','120g rice','green beans']},
+    {n:'Seared scallops with pea purée',goals:['cut'],kcal:310,p:30,c:26,f:10,tags:['scallops','seafood','peas'],ing:['200g scallops','pea & mint purée','lemon','rocket salad','1 tsp olive oil']},
+    {n:'Scallop & quinoa citrus bowl',goals:['cut','maintain'],kcal:390,p:32,c:42,f:10,tags:['scallops','quinoa','orange','seafood','bowl'],ing:['180g scallops','120g cooked quinoa','orange segments, rocket','pumpkin seeds','lime & honey dressing']},
+    {n:'Tuna steak with sesame soba noodles',goals:['cut','maintain'],kcal:460,p:42,c:46,f:12,tags:['tuna','soba','buckwheat','sesame','asian','fish'],ing:['170g tuna steak','100g soba (buckwheat) noodles','sesame seeds & sesame oil','soy sauce, ginger','cucumber, edamame']},
+    {n:'Salmon poke bowl with edamame & avocado',goals:['maintain'],kcal:510,p:36,c:52,f:18,tags:['salmon','poke','rice','edamame','avocado','soybeans'],ing:['150g raw-grade salmon','150g sushi rice','edamame, avocado, cucumber','soy sauce, sesame seeds','pickled ginger']},
+    {n:'Green tea rice bowl with salmon (ochazuke)',goals:['cut'],kcal:390,p:32,c:44,f:10,tags:['salmon','rice','tea','japanese'],ing:['120g flaked salmon','130g rice','green tea broth (sencha)','sesame seeds, nori','spring onion']},
+    {n:'Tuna & sweetcorn jacket potato',goals:['cut','maintain'],kcal:400,p:34,c:48,f:8,tags:['tuna','potato','corn','fish'],ing:['1 large jacket potato','1 tin tuna','60g sweetcorn','Greek yogurt & chives','side salad']},
+    {n:'Chickpea & spinach curry with rice',goals:['cut','maintain','bulk'],kcal:460,p:20,c:64,f:14,tags:['chickpea','spinach','curry','vegan','indian','rice'],ing:['150g chickpeas','2 handfuls spinach','tomato, onion, garlic, ginger','turmeric, cumin, coriander','120g rice']},
+    {n:'Black bean & sweet potato tacos',goals:['maintain'],kcal:450,p:18,c:62,f:14,tags:['black beans','sweet potato','tacos','mexican','vegan'],ing:['120g black beans','200g roast sweet potato','3 corn tortillas (cornmeal)','avocado, lime, cilantro','chilli powder, cumin']},
+    {n:'Miso-glazed eggplant with rice & edamame',goals:['cut','maintain'],kcal:410,p:18,c:58,f:12,tags:['eggplant','miso','rice','edamame','vegan','asian','soybeans'],ing:['1 eggplant, miso-glazed','130g rice','100g edamame','sesame seeds, spring onion','ginger, soy sauce']},
+    {n:'Ratatouille with white beans & farro',goals:['cut','maintain'],kcal:400,p:18,c:54,f:12,tags:['ratatouille','eggplant','zucchini','beans','farro','vegan','tomato'],ing:['eggplant, zucchini, bell peppers, tomato','100g white beans','100g cooked farro','garlic, basil, thyme','olive oil']},
+    {n:'Split pea & carrot soup with rye',goals:['cut','maintain'],kcal:370,p:22,c:52,f:8,tags:['split peas','soup','carrots','vegan','rye'],ing:['120g split peas','carrots, celery, onion','vegetable stock, thyme','2 slices rye bread','black pepper']},
+    {n:'Lentil bolognese with spaghetti',goals:['maintain'],kcal:450,p:22,c:68,f:10,tags:['lentil','spaghetti','pasta','vegan','italian','tomato'],ing:['120g cooked lentils','110g spaghetti (dry)','tomato, carrots, celery','garlic, oregano, basil','nutritional yeast']},
+    {n:'Stuffed bell peppers with bulgur & feta',goals:['cut','maintain'],kcal:420,p:20,c:48,f:16,tags:['bell peppers','bulgur','cheese','vegetarian'],ing:['2 bell peppers','110g bulgur','40g feta','tomato, onion, parsley','pumpkin seeds']},
+    {n:'Mushroom & barley soup',goals:['cut'],kcal:300,p:14,c:44,f:8,tags:['mushrooms','barley','soup','vegan','thyme'],ing:['200g mixed mushrooms','80g barley','onion, garlic, celery','thyme, black pepper','vegetable stock']},
+    {n:'Mushroom farro risotto',goals:['maintain'],kcal:430,p:18,c:58,f:14,tags:['mushrooms','farro','risotto','vegetarian','italian'],ing:['150g mushrooms','130g farro','onion, garlic, thyme','20g parmesan','splash of milk']},
+    {n:'Creamy polenta with garlic mushrooms',goals:['maintain'],kcal:400,p:16,c:52,f:14,tags:['polenta','cornmeal','mushrooms','vegetarian','garlic'],ing:['120g polenta (cornmeal)','200g garlic mushrooms','20g parmesan','milk','thyme, chives']},
+    {n:'Shrimp & polenta bowl',goals:['maintain'],kcal:430,p:34,c:46,f:12,tags:['shrimp','prawn','polenta','cornmeal','seafood'],ing:['160g shrimp','120g polenta (cornmeal)','tomato, garlic, paprika','spinach','lemon']},
+    {n:'Cauliflower & potato curry (aloo gobi)',goals:['cut','maintain'],kcal:390,p:14,c:52,f:14,tags:['cauliflower','potato','curry','vegan','indian'],ing:['1/2 cauliflower','200g potatoes','tomato, onion, ginger, garlic','turmeric, cumin, coriander, chilli','cilantro, rice']},
+    {n:'Hummus & roast vegetable bowl with tahini',goals:['cut','maintain'],kcal:450,p:18,c:50,f:20,tags:['hummus','tahini','chickpea','vegetables','vegan','bowl'],ing:['100g hummus (chickpeas, tahini)','roast carrots, zucchini, cauliflower','120g quinoa','tahini-lemon drizzle','pomegranate seeds, parsley']},
+    {n:'Falafel bowl with tabbouleh & tzatziki',goals:['maintain'],kcal:470,p:22,c:56,f:18,tags:['falafel','chickpea','bulgur','tabbouleh','vegetarian'],ing:['4 baked falafel (chickpeas)','100g tabbouleh (bulgur, parsley, mint)','tzatziki (yogurt, cucumber)','tomato, red onion','lemon']},
+    {n:'Pea & mint soup with cottage cheese toast',goals:['cut'],kcal:330,p:24,c:40,f:8,tags:['peas','mint','soup','cottage cheese','vegetarian'],ing:['200g peas','fresh mint, onion','vegetable stock','2 slices rye toast','100g cottage cheese']},
+    {n:'Sesame-peanut rice noodles with vegetables',goals:['maintain'],kcal:490,p:20,c:62,f:18,tags:['rice noodles','peanuts','sesame','vegan','asian','vegetables'],ing:['100g rice noodles','peanut-sesame sauce (peanut butter, tahini, soy sauce)','carrots, cabbage, bell peppers','sesame seeds','lime, cilantro']},
+    {n:'Corn & black bean quesadilla',goals:['maintain'],kcal:470,p:26,c:52,f:18,tags:['corn','black beans','quesadilla','mexican','cheese','vegetarian'],ing:['2 wholewheat tortillas','100g black beans','60g sweetcorn','50g reduced-fat cheddar','salsa, lime, cilantro']},
+    {n:'Sweet potato & peanut stew (mafe-style)',goals:['maintain','bulk'],kcal:480,p:18,c:58,f:20,tags:['sweet potato','peanuts','stew','vegan','african'],ing:['300g sweet potato','2 tbsp peanut butter','tomato, onion, garlic, ginger','chilli, cilantro','120g rice']},
+    {n:'Succotash bowl with grilled chicken',goals:['maintain'],kcal:440,p:38,c:46,f:12,tags:['succotash','corn','lima beans','chicken','beans'],ing:['160g grilled chicken','80g sweetcorn','80g butter beans (lima beans)','bell peppers, onion, paprika','chives']},
+    {n:'Tofu & pineapple sweet-sour stir-fry',goals:['maintain'],kcal:450,p:24,c:56,f:14,tags:['tofu','pineapple','stir fry','vegan','asian','soybeans'],ing:['200g firm tofu (soybeans)','100g pineapple','bell peppers, onion','rice vinegar, soy sauce, honey','120g rice']},
+    {n:'Chicken & sweetcorn soup',goals:['cut'],kcal:300,p:30,c:32,f:6,tags:['chicken','corn','soup','asian'],ing:['140g shredded chicken','80g sweetcorn','egg ribbons, spring onion','ginger, chicken stock','soy sauce']},
+    {n:'Minestrone with kidney beans',goals:['cut','maintain'],kcal:330,p:16,c:48,f:8,tags:['minestrone','soup','kidney beans','pasta','vegetables','italian'],ing:['80g kidney beans','50g small pasta','tomato, carrots, celery, cabbage','garlic, oregano, basil','pesto drizzle, parmesan']},
+    {n:'Lentil soup with cumin & lemon',goals:['cut'],kcal:330,p:20,c:44,f:8,tags:['lentil','soup','cumin','vegan','lemon'],ing:['120g red lentils','carrots, onion, garlic','cumin, coriander, paprika','lemon juice','parsley']},
+    {n:'Roast pumpkin & carrot soup with pumpkin seeds',goals:['cut'],kcal:320,p:12,c:40,f:12,tags:['pumpkin','carrots','soup','vegan','pumpkin seeds'],ing:['300g pumpkin & carrots','onion, garlic, ginger','vegetable stock','15g toasted pumpkin seeds','chilli flakes']},
+    {n:'Apple & peanut butter protein snack plate',goals:['cut','maintain'],kcal:370,p:22,c:34,f:16,tags:['apple','peanut butter','snack','vegetarian'],ing:['1 sliced apple','1.5 tbsp peanut butter','100g Greek yogurt dip','cinnamon','10g granola']},
+    {n:'Orange, pomegranate & pistachio fruit salad',goals:['cut'],kcal:260,p:6,c:42,f:8,tags:['orange','pomegranate','pistachios','fruit salad','vegan','snack'],ing:['2 oranges, segmented','pomegranate seeds','15g pistachios','fresh mint','lime juice, honey']},
+    {n:'Fruit salad with kiwi, grapes & cherries',goals:['cut'],kcal:220,p:5,c:44,f:3,tags:['fruit salad','kiwi','grapes','cherries','vegan','snack'],ing:['1 kiwi','80g grapes','80g cherries','1 plum + 100g papaya','1/2 apple, lime, fresh mint']},
+    {n:'Papaya & lime with cottage cheese',goals:['cut'],kcal:260,p:26,c:28,f:5,tags:['papaya','lime','cottage cheese','snack'],ing:['200g papaya','200g cottage cheese','lime zest & juice','10g coconut flakes','fresh mint']},
+    {n:'Pear, walnut & blue cheese salad',goals:['cut'],kcal:340,p:14,c:26,f:20,tags:['pear','walnuts','cheese','salad','vegetarian'],ing:['1 sliced pear','20g walnuts','30g blue cheese','rocket, chicory','balsamic vinegar, honey']},
+    {n:'Loaded baked potato with cottage cheese & chives',goals:['cut','maintain'],kcal:370,p:28,c:52,f:6,tags:['potato','cottage cheese','chives','vegetarian'],ing:['1 large baked potato','200g cottage cheese','chives, black pepper','side salad','olive oil drizzle']},
+    {n:'Guacamole & veggie sticks with seeded crackers',goals:['cut'],kcal:370,p:10,c:32,f:22,tags:['avocado','guacamole','snack','vegan','celery'],ing:['1 avocado, mashed with lime','carrot, celery & cucumber sticks','seeded crackers (flaxseeds, sesame seeds)','tomato, onion, cilantro','chilli']},
+    {n:'Peaches with yogurt, honey & granola',goals:['cut','maintain'],kcal:320,p:18,c:44,f:8,tags:['peach','yogurt','honey','snack','breakfast'],ing:['2 grilled peaches','200g Greek yogurt','honey drizzle','30g granola (oats)','cinnamon']},
+    {n:'Strawberry & spinach salad with grilled chicken',goals:['cut'],kcal:360,p:38,c:20,f:14,tags:['strawberries','spinach','chicken','salad'],ing:['170g grilled chicken','100g strawberries','baby spinach, red onion','10g sunflower seeds','balsamic vinegar, olive oil']},
+    {n:'Baked cod with mango salsa & rice',goals:['cut','maintain'],kcal:410,p:38,c:50,f:6,tags:['cod','fish','mango','salsa','rice'],ing:['180g cod fillet','mango, lime & cilantro salsa','120g rice','red onion, chilli','black beans']},
+    {n:'Peach & burrata-style salad with parma-free turkey',goals:['cut'],kcal:370,p:30,c:26,f:16,tags:['peach','cheese','turkey','salad','basil'],ing:['2 sliced peaches','80g light mozzarella','120g turkey slices','basil, rocket','balsamic glaze']},
+    {n:'Watermelon gazpacho with feta',goals:['cut'],kcal:270,p:12,c:34,f:10,tags:['watermelon','gazpacho','soup','tomato','cheese'],ing:['300g watermelon','tomato, cucumber, bell pepper','red onion, lime','30g feta','fresh mint, basil']},
+    {n:'Grilled asparagus with poached eggs & parmesan',goals:['cut'],kcal:310,p:24,c:14,f:18,tags:['asparagus','eggs','parmesan','vegetarian','low carb'],ing:['10 asparagus spears','2 poached eggs','20g parmesan','lemon, black pepper','olive oil']},
+    {n:'Chicken & asparagus lemon stir-fry',goals:['cut','maintain'],kcal:420,p:42,c:36,f:12,tags:['chicken','asparagus','lemon','stir fry'],ing:['180g chicken breast','8 asparagus spears, snapped','lemon, garlic, thyme','120g rice','chives']},
+    {n:'Millet & roast vegetable pilaf',goals:['maintain'],kcal:390,p:14,c:56,f:12,tags:['millet','pilaf','vegetables','vegan'],ing:['120g millet','roast carrots, zucchini, bell peppers','onion, garlic, cumin','15g almonds','parsley, lemon']},
+    {n:'Chicken millet bowl with tahini drizzle',goals:['maintain'],kcal:480,p:40,c:48,f:14,tags:['chicken','millet','bowl','tahini'],ing:['170g chicken breast','110g cooked millet','roast broccoli','tahini-lemon drizzle','pumpkin seeds']},
+    {n:'Spelt berry salad with chicken & herbs',goals:['maintain'],kcal:440,p:38,c:46,f:12,tags:['spelt','chicken','salad','herbs'],ing:['160g chicken breast','120g cooked spelt berries','cucumber, tomato, parsley, dill','lemon & olive oil','40g feta']},
+    {n:'Spelt porridge with pear & cinnamon',goals:['maintain'],kcal:370,p:14,c:56,f:10,tags:['spelt','porridge','pear','cinnamon','breakfast','vegetarian'],ing:['70g spelt flakes','1 sliced pear','250ml milk','cinnamon, honey','10g walnuts']},
+    {n:'Light haddock fish pie',goals:['maintain'],kcal:440,p:38,c:44,f:12,tags:['haddock','fish','pie','potato'],ing:['180g haddock','potato mash top','peas, leeks','milk-based sauce','chives']},
+    {n:'Garlic mussels with spaghetti',goals:['maintain'],kcal:470,p:32,c:58,f:12,tags:['mussels','spaghetti','pasta','seafood','garlic','italian'],ing:['400g mussels','100g spaghetti (dry)','garlic, chilli, parsley','tomato','olive oil']},
+    {n:'Seared scallops with sweetcorn & paprika',goals:['cut'],kcal:330,p:30,c:30,f:10,tags:['scallops','corn','paprika','seafood'],ing:['200g scallops','sweetcorn purée','smoked paprika','rocket, lime','chives']},
+    {n:'Cashew & vegetable curry',goals:['maintain'],kcal:480,p:18,c:52,f:22,tags:['cashews','curry','vegetables','vegan','indian'],ing:['40g cashews','cauliflower, carrots, peas','tomato-onion sauce, light coconut milk','turmeric, cumin, ginger, coriander','120g rice']},
+    {n:'Penne with roast vegetables & ricotta',goals:['maintain'],kcal:470,p:24,c:62,f:14,tags:['penne','pasta','vegetables','cheese','vegetarian','italian'],ing:['110g penne (dry)','roast zucchini, bell peppers, eggplant','80g ricotta','garlic, basil, oregano','olive oil']},
+    {n:'Pesto baked chicken with cherry tomatoes',goals:['cut','maintain'],kcal:430,p:44,c:18,f:20,tags:['chicken','pesto','tomato','basil'],ing:['180g chicken breast','1.5 tbsp pesto (basil)','roast cherry tomatoes','green beans','20g parmesan']},
+    {n:'Iced coffee protein shake',goals:['cut','maintain'],kcal:280,p:30,c:26,f:6,tags:['coffee','shake','snack','vanilla'],ing:['double espresso coffee, chilled','1 scoop whey','250ml milk','ice, vanilla extract','cinnamon dusting']},
+    {n:'Coffee-rubbed steak with roast sweet potato',goals:['maintain','bulk'],kcal:530,p:46,c:42,f:20,tags:['beef','steak','coffee','sweet potato'],ing:['200g sirloin steak','coffee & smoked paprika rub','250g roast sweet potato with rosemary','rocket','chimichurri (parsley, vinegar)']}
   ];
   function splitTerms(s){ return (s||'').toLowerCase().split(/[,\n;]+/).map(function(x){ return x.trim(); }).filter(Boolean); }
   // ---- robust like/dislike matching: typo-tolerant + synonyms + scans ingredients ----
   // so "Chesse." still avoids parmesan, feta, cottage cheese, etc.
   var FOOD_SYN={
-    cheese:['cheese','parmesan','feta','mozzarella','cheddar','paneer','ricotta','halloumi','brie','gouda'],
-    dairy:['milk','cream','yogurt','yoghurt','butter','cheese','parmesan','feta','mozzarella','cheddar','paneer','cottage'],
+    cheese:['cheese','parmesan','feta','mozzarella','cheddar','paneer','ricotta','halloumi','brie','gouda','quark'],
+    dairy:['milk','cream','yogurt','yoghurt','butter','cheese','parmesan','feta','mozzarella','cheddar','paneer','cottage','quark','skyr'],
     pork:['pork','bacon','ham','sausage','chorizo','prosciutto'],
     beef:['beef','steak','mince','bolognese'],
     chicken:['chicken','poultry'],
     turkey:['turkey'],
-    fish:['fish','salmon','tuna','mackerel','cod','sardine','anchovy'],
-    shellfish:['shrimp','prawn','prawns','crab','lobster','mussel','seafood'],
-    seafood:['fish','salmon','tuna','mackerel','cod','shrimp','prawn','prawns','seafood'],
+    fish:['fish','salmon','tuna','mackerel','cod','sardine','anchovy','trout','haddock'],
+    shellfish:['shrimp','prawn','prawns','crab','lobster','mussel','mussels','scallop','scallops','seafood'],
+    seafood:['fish','salmon','tuna','mackerel','cod','shrimp','prawn','prawns','crab','mussels','scallops','seafood'],
     egg:['egg','eggs'],
-    nuts:['nut','nuts','peanut','peanuts','almond','cashew','walnut','pesto'],
+    eggs:['egg','eggs','omelette','frittata','shakshuka'],
+    nuts:['nut','nuts','peanut','peanuts','almond','almonds','cashew','cashews','walnut','walnuts','pistachio','pistachios','pesto'],
     peanut:['peanut','peanuts'],
-    gluten:['pasta','bread','wheat','rye','noodle','noodles','spaghetti','penne','linguine','macaroni','fettuccine','granola','crouton','croutons','oats','wrap'],
-    spicy:['spicy','chilli','chili','curry'],
-    meat:['chicken','beef','steak','pork','turkey','mince','meatball','bacon','ham','sausage'],
-    rice:['rice','jasmine'],
-    tomato:['tomato','marinara','passata','bolognese'],
-    vegan:[], vegetarian:[]
+    gluten:['pasta','bread','wheat','rye','noodle','noodles','spaghetti','penne','linguine','macaroni','fettuccine','granola','crouton','croutons','oats','wrap','couscous','bulgur','barley','spelt','farro'],
+    spicy:['spicy','chilli','chili','curry','cayenne'],
+    meat:['chicken','beef','steak','pork','turkey','lamb','duck','venison','mince','meatball','bacon','ham','sausage'],
+    rice:['rice','jasmine','risotto'],
+    tomato:['tomato','marinara','passata','bolognese','arrabbiata'],
+    fruit:['apple','banana','orange','mango','berries','pineapple','peach','pear','melon','watermelon','kiwi','grapes','cherries','plums','papaya','pomegranate'],
+    berries:['berries','strawberries','blueberries','raspberries'],
+    berry:['berries','strawberries','blueberries'],
+    greens:['spinach','lettuce','rocket','kale','cabbage','pak choi'],
+    veg:['vegetables','broccoli','carrots','cauliflower','spinach','zucchini','peppers','eggplant'],
+    veggies:['vegetables','broccoli','carrots','cauliflower','spinach','zucchini','peppers'],
+    courgette:['zucchini'],
+    aubergine:['eggplant'],
+    noodle:['noodles','soba','udon','ramen','linguine','spaghetti'],
+    bean:['beans','black beans','kidney beans','pinto','chickpea','chickpeas','lentil','lentils','edamame','butter beans'],
+    legume:['beans','chickpea','chickpeas','lentil','lentils','edamame','split peas'],
+    seeds:['chia seeds','flaxseeds','sesame seeds','pumpkin seeds','sunflower seeds'],
+    oil:['olive oil','sesame oil','avocado oil','coconut oil'],
+    tea:['tea','matcha','sencha'],
+    coffee:['coffee','espresso','mocha'],
+    vegan:[],
+    vegetarian:[]
   };
   function normTerm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim(); }
   var FOOD_VOCAB=(function(){
@@ -4944,6 +5103,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     toks.forEach(function(t){
       if(FOOD_STOP[t]) return;
       out[t]=1;
+      // singular/plural variants so "apples" finds "apple", "cherries" finds "cherry", and back
+      var vars=[t+'s'];
+      if(t.length>4 && /ies$/.test(t)) vars.push(t.slice(0,-3)+'y');
+      else if(t.length>4 && /es$/.test(t)){ vars.push(t.slice(0,-2)); vars.push(t.slice(0,-1)); }
+      else if(t.length>3 && /s$/.test(t)) vars.push(t.slice(0,-1));
+      if(/y$/.test(t)) vars.push(t.slice(0,-1)+'ies');
+      vars.forEach(function(v){ if(v.length>=3) out[v]=1; });
       var corr=fuzzyCorrect(t); if(corr) out[corr]=1;
       [t,corr].forEach(function(x){ if(x&&FOOD_SYN[x]) FOOD_SYN[x].forEach(function(w){ out[normTerm(w)]=1; }); });
     });
@@ -5048,14 +5214,19 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var T=nutritionTargets();
     var goal=(STATE.body&&STATE.body.goal)||'maintain';
     var likes=splitTerms(STATE.body.diet&&STATE.body.diet.likes), dislikes=splitTerms(STATE.body.diet&&STATE.body.diet.dislikes);
-    var pool=MEAL_DB.filter(function(m){ return m.goals.indexOf(goal)>=0; });
+    // GOAL IS A SOFT PREFERENCE: likes can surface ANY meal (portions scale to the user),
+    // goal-matching meals rank first among equals. Hard-excluding by goal hid every match
+    // for a liked ingredient whose meals sat in another goal (the "banana on a cut" bug).
+    var pool=MEAL_DB.slice();
     pool=pool.filter(function(m){ return !dislikes.some(function(d){ return mealMatchesText(m,d); }); });   // never a dislike
     pool.forEach(function(m){
-      m._score = likes.reduce(function(s,l){ return s + (mealMatchesText(m,l)?1:0); }, 0);
+      m._hits = likes.filter(function(l){ return mealMatchesText(m,l); });   // which liked terms matched
+      m._score = m._hits.length;
+      m._goal = m.goals.indexOf(goal)>=0 ? 1 : 0;
       m._fit = mealFitScore(m,T);
     });
-    // primary: what you like · secondary: what best fits your body
-    pool.sort(function(a,b){ return (b._score-a._score) || (b._fit-a._fit); });
+    // primary: what you like · then: fits your goal · then: what best fits your body
+    pool.sort(function(a,b){ return (b._score-a._score) || (b._goal-a._goal) || (b._fit-a._fit); });
     if(!pool.length){ host.innerHTML='<div class="empty">No meals fit those filters — try removing a dislike, then Suggest again.</div>'; if(hint) hint.style.display='none'; return; }
     var PAGE=5;
     // meals that match your likes are PINNED on top of every page so they never rotate away;
@@ -5083,8 +5254,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
                  : ('Showing <b>'+goalNote+'</b>'+(likes.length?', weighted to what you like':'')+(dislikes.length?', avoiding '+dislikes.length+' thing(s)':'')+'. Tap a meal for full nutrition.');
     host.innerHTML='<div class="note" style="margin:0 0 10px">'+head+'</div>'+
       picks.map(function(m,ix){
-        var likedTag = m._score>0 ? '<span class="tag now" style="font-size:8px">★ YOUR TASTE</span>' : '';
-        var topTag = (T && m===best) ? '<span class="tag now" style="font-size:8px;background:var(--lime);color:#04220f">✅ HEALTHIEST FOR YOU</span>' : '';
+        var likedTag = m._score>0 ? '<span class="tag now" style="font-size:8px" data-i18n-skip>★ '+esc((m._hits&&m._hits.length?m._hits.slice(0,2).join(' + '):'').toUpperCase()||'YOUR TASTE')+'</span>' : '';
+        var topTag = (T && m===best) ? '<span class="tag now" style="font-size:8px;background:var(--lime);color:var(--on-accent)">✅ HEALTHIEST FOR YOU</span>' : '';
         var badges = (likedTag||topTag) ? '<div style="display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 1px">'+likedTag+topTag+'</div>' : '';
         var sc=scaleMeal(m,T);
         var amount = T && sc.mult!==1 ? ('<b>'+sc.mult+'×</b> serving · ') : '';
@@ -5118,7 +5289,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var rows=function(label,std,you,unit){ return '<div class="calc-row"><span>'+label+'</span><b>'+std+unit+(T&&sc.mult!==1?(' · <span style="color:var(--cyan)">'+you+unit+' for you</span>'):'')+'</b></div>'; };
     var html='';
     if(T){
-      if(_mealBest===m){ html+='<div class="note" style="margin:0 0 10px;background:rgba(124,255,178,.12);border:1px solid var(--lime);border-radius:8px;padding:8px 10px;color:var(--bright)">✅ <b>Your healthiest pick</b> for this goal — best protein-to-calorie balance of your matching meals, and still genuinely tasty.</div>'; }
+      if(_mealBest===m){ html+='<div class="note" style="margin:0 0 10px;background:rgba(var(--pos-rgb),.12);border:1px solid var(--lime);border-radius:8px;padding:8px 10px;color:var(--bright)">✅ <b>Your healthiest pick</b> for this goal — best protein-to-calorie balance of your matching meals, and still genuinely tasty.</div>'; }
       html+='<div class="note" style="margin:0 0 10px">Your serving: <b>'+sc.mult+'×</b> the standard recipe → <b>'+sc.kcal+' kcal</b>, '+sc.p+'g protein, '+sc.c+'g carbs, '+sc.f+'g fat.</div>';
     }
     html+='<div class="subtotal" style="margin:0 0 12px"><div class="calc-row" style="font-weight:700;color:var(--bright)"><span>Standard serving</span><span>'+(T?'Scaled for you':'')+'</span></div>'+
@@ -5927,13 +6098,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function exportBlank(fid){
     var hs = document.getElementById('hud-state');
     var oks = document.getElementById('__ownerKeySrc');
-    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapN = STATE.notes, snapFL = STATE.foodLog, snapMedia = STATE.media, snapTX = STATE.tax, snapOK = oks?oks.textContent:'';
+    var snapHS = hs.textContent, snapModel = MODEL, snapW = STATE.workouts, snapC = STATE.calendar, snapL = STATE.log, snapB = STATE.body, snapP = STATE.prs, snapN = STATE.notes, snapFL = STATE.foodLog, snapMedia = STATE.media, snapTX = STATE.tax, snapCK = STATE.checklist, snapOK = oks?oks.textContent:'';
     try{
       // 0) CRITICAL: strip the owner's private signing key — a Blank copy / customer
       //    file must NEVER contain it, or anyone could mint keys.
       if(oks) oks.textContent = '';
       // 1) blank every data-bearing thing and re-render so NO personal text remains
-      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = []; STATE.notes = []; STATE.foodLog = []; STATE.media = []; STATE.tax = {};
+      MODEL = blankModel(); STATE.workouts = []; STATE.calendar = {}; STATE.log = []; STATE.body = {}; STATE.prs = []; STATE.notes = []; STATE.foodLog = []; STATE.media = []; STATE.tax = {}; STATE.checklist = [];
       STATE.reminders = []; STATE.usage = { totalSec:0, streak:0, lastDay:'' }; delete STATE.bdayYear; STATE.missionsDone = {};
       renderAll();
       // 2) mark it a FRESH template (ignores any device's stored data on open),
@@ -5959,7 +6130,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     } finally {
       // 3) restore YOUR data + private key exactly as they were
       if(oks) oks.textContent = snapOK;
-      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP; STATE.notes = snapN; STATE.foodLog = snapFL; STATE.media = snapMedia; STATE.tax = snapTX;
+      hs.textContent = snapHS; MODEL = snapModel; STATE.workouts = snapW; STATE.calendar = snapC; STATE.log = snapL; STATE.body = snapB; STATE.prs = snapP; STATE.notes = snapN; STATE.foodLog = snapFL; STATE.media = snapMedia; STATE.tax = snapTX; STATE.checklist = snapCK;
       renderAll();
     }
   }
@@ -6799,7 +6970,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     // single photo can be that big). Food-log METADATA travels; the image bytes move via the
     // separate "Export my photos" file. Osefe's call — storage size vs transfer ease, decoupled.
     var foodLogLite = (STATE.foodLog||[]).map(function(e){ var c={},k; for(k in e){ if(k==='photo') continue; c[k]=e[k]; } return c; });
-    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], foodLog:foodLogLite, media:STATE.media||[], tax:STATE.tax||{}, savingsBoxes:STATE.savingsBoxes||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{} };
+    var data = { v:1, cfg:MODEL, workouts:STATE.workouts||[], calendar:STATE.calendar||{}, log:STATE.log||[], body:STATE.body||{}, prs:STATE.prs||[], notes:STATE.notes||[], foodLog:foodLogLite, media:STATE.media||[], tax:STATE.tax||{}, savingsBoxes:STATE.savingsBoxes||[], prefs:STATE.prefs||{}, reminders:STATE.reminders||[], usage:STATE.usage||null, bdayYear:STATE.bdayYear, missionsDone:STATE.missionsDone||{}, checklist:STATE.checklist||[] };
     return 'MRLNDATA-' + btoa(unescape(encodeURIComponent(JSON.stringify(data))));   // UTF-8 safe (emoji/names)
   }
   // SECURITY (Akashi): imported data (MRLNDATA code / master-file hud-state) is UNTRUSTED.
@@ -6815,6 +6986,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function _sanitizeIngested(){
     function fixIds(arr){ if(Array.isArray(arr)) arr.forEach(function(o){ if(o && typeof o==='object' && 'id' in o) o.id=_sid(o.id); }); }
     fixIds(STATE.workouts); fixIds(STATE.notes); fixIds(STATE.media); fixIds(STATE.reminders); fixIds(STATE.savingsBoxes);
+    if(Array.isArray(STATE.checklist)) STATE.checklist=STATE.checklist.filter(function(o){ return o && typeof o==="object"; }).map(function(o){ return { id:_sid(o.id), text:String(o.text==null?"":o.text).slice(0,200), done:!!o.done }; });
     if(Array.isArray(STATE.prs)) STATE.prs.forEach(function(pr){ if(!pr||typeof pr!=='object') return; if('id' in pr) pr.id=_sid(pr.id); pr.wt=_inum(pr.wt); pr.reps=_inum(pr.reps); pr.dist=_inum(pr.dist); pr.secs=_inum(pr.secs); });
     if(Array.isArray(STATE.foodLog)) STATE.foodLog.forEach(function(e){ if(!e||typeof e!=='object') return; if('id' in e) e.id=_sid(e.id); if(e.total&&typeof e.total==='object'){ e.total.kcal=_inum(e.total.kcal); e.total.p=_inum(e.total.p); e.total.c=_inum(e.total.c); e.total.f=_inum(e.total.f); } });
     if(MODEL && Array.isArray(MODEL.groups)) MODEL.groups.forEach(function(g){ if(!g||typeof g!=='object') return; if('id' in g) g.id=_sid(g.id); fixIds(g.items); });
@@ -6842,6 +7014,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(d.usage){ STATE.usage=STATE.usage||{totalSec:0,streak:0,lastDay:''}; STATE.usage.totalSec=Math.max(STATE.usage.totalSec||0, d.usage.totalSec||0); STATE.usage.streak=Math.max(STATE.usage.streak||0, d.usage.streak||0); }
     if(d.bdayYear!=null) STATE.bdayYear=d.bdayYear;
     if(d.missionsDone) STATE.missionsDone=d.missionsDone;
+    if(Array.isArray(d.checklist)) STATE.checklist=d.checklist;
     if(d.prefs) STATE.prefs=Object.assign({}, STATE.prefs, d.prefs);
     if(d.showKlarna) STATE.showKlarna=true;
     _sanitizeIngested();                                // SECURITY: neutralise smuggled markup in imported ids/keys/numeric fields before any render
