@@ -1489,3 +1489,33 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Still open / next:
   * Awaiting Osefe's explicit "ship it" before Kaito publishes to gh-pages (sleep-mode: no auto-publish).
   * No QA action remaining. Ready to ship.
+
+## [2026-08-03] — via Kaito (asleep dispatch) — LANDING REVAMP + v38 escape-hatch GREEN @ 8565ddd
+
+- Asked: GREEN sign-off on frozen candidate — "LANDING REVAMP + v38 DATA-EXPORT ESCAPE HATCH", published-file state frozen at `8565ddd` (index.html + landing.html + sw.js; APP_VER+sw v37→v38). Confirm freeze, run full gate + individual commands with real exit statuses, confirm v38===v38, assess guide sync for the new lock-screen "Export my data" button WITHOUT editing published files (freeze). Post GREEN, log, commit+push. Sleep-mode: GREEN signs, does NOT ship.
+
+- Did / found / thought:
+  * Pulled (already up to date). Current tip `53a3b31` (docs-only "register landing revamp in Pending"); candidate published-file freeze is `8565ddd`.
+  * **Freeze check:** `git diff --stat 8565ddd -- index.html landing.html sw.js` → **EMPTY** ✓ (published files byte-frozen vs candidate; only TEAM-CHAT/logs moved for the Pending entry, as expected).
+  * Ran `node tools/release/green.js` → **GREEN exit 0**:
+    - HTML parse guard (step 0): 4/4 script blocks parse ✓
+    - **15 committed suites / 417 tests all pass:** parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25 ✓
+    - Preflight CLEAR on all 3 published pages: index.html (6 scripts balanced), landing.html (4 scripts), legal.html (3 scripts) ✓
+    - Preflight-PII exception guard: 16/16 ✓
+    - Leak scan: 4/4 files clean (GUIDE.md, manifest.webmanifest, sw.js, team-chat.html) ✓
+    - Version tag: APP_VER === sw.js VERSION = **v38** ✓
+  * Ran the individual commands the task named, captured real exit statuses: `parse_test` EXIT=0, `html_parse_test` EXIT=0, `preflight index.html` EXIT=0, `preflight landing.html` EXIT=0. Direct grep confirmed APP_VER='v38' (index.html) and VERSION = 'v38' (sw.js) — match.
+  * **Guide-sync assessment (did NOT edit — freeze protects Akashi's sign-off):** New user-facing feature = lock-screen "📤 Export my data" escape hatch (app stays locked on key lapse, but data always exportable as JSON). GUIDE.md §2 (access key/lock) and §11 (Connect/export) do NOT yet mention it. Worth a one-line note that data stays exportable while locked / after a key lapse. Flagged as **NON-BLOCKING follow-up** (small separate commit with its own mini-gate) — does NOT gate this GREEN and editing now would break the freeze + reopen Akashi.
+  * Did not rubber-stamp — everything ran clean, real exit 0s captured, nothing routed to Kaito/Akashi.
+
+- Decision / result:
+  * **GREEN @ 8565ddd** — published files byte-frozen, full gate exit 0 (15 suites / 417 tests), preflight CLEAR (3 pages), PII guard 16/16, leak scan 4/4 clean, v38===v38. Posted GREEN under Pending in TEAM-CHAT with concrete numbers + the non-blocking guide note.
+  * Gate state on 8565ddd: Kaito ✅ · Mikoto ✅ MISSING:0 · Hugo ✅ GREEN (now) · Akashi ⏳ SAFE still pending. Sleep-mode: GREEN does NOT ship; Osefe's explicit "ship it" still required.
+
+- Commits / SHAs:
+  * 8565ddd (frozen published-file candidate — landing revamp + v38 escape hatch)
+  * (this log entry + TEAM-CHAT GREEN post — committing now)
+
+- Still open / next:
+  * Awaiting Akashi SAFE on 8565ddd, then Osefe's explicit "ship it" + Kaito's merge/publish.
+  * Non-blocking follow-up parked: guide one-liner for the lock-screen export escape hatch (own mini-gate, after this ships).
