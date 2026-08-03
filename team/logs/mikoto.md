@@ -955,3 +955,20 @@ END SESSION — all 7 languages complete, MISSING:0 verified, GREEN gate confirm
   * Commit: `78dca36` (landing page i18n translated).
 - Still open / next: Ready for landing page deployment. If Osefe ships, both Danish and French UI will switch flawlessly on lang-select.
 
+
+## [2026-08-03 ~15:00] — Kaito verification + Danish corrections
+
+- Asked: Kaito verified landing i18n coverage (143+2 both langs, zero missing) but found 2 Danish errors + requested sweep. Fix + sweep + re-verify.
+- Errors found:
+  * hero-h1 (DA): "Dine penge og sundhed ... ingenting andet" — missing possessive repeat ("Dine penge og din sundhed") + "ingenting andet" is thing-not-place ("ingen andre steder" is correct).
+  * "Enter income and fixed costs" (DA): "Indlast indkomst" is calque; idiomatic = "Indtast indkomst" (data-entry verb).
+- Sweep revealed 2 more calques of same type:
+  * "Rent, subscriptions, transport. Every tab builds on these numbers, so you only enter them once." (DA): "indlasters dem" → "indtaster dem".
+  * "The numbers you enter stay on your device." (DA): "indlaster" → "indtaster" (2 instances, both corrected).
+- Fixed all 5 strings (1 hero-h1 + 4 t-keys), re-verified JSON (143 t + 2 h still intact), ran preflight → **CLEAR**.
+- Decision / result:
+  * **Danish corrections committed** (`04f55ac`). All indlast/ingenting errors resolved. Idiomatic verb "indtast" now correct across all data-entry contexts.
+  * Remaining 141 DA strings reviewed during sweep — no other obvious calques or thing/place mix-ups detected.
+- Commits / SHAs: `04f55ac` (DA fixes).
+- Still open / next: Landing i18n now fully corrected for DA + FR per Kaito's verification.
+
