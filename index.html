@@ -778,6 +778,10 @@
   .lockcard .lk-openlink{ display:block; width:100%; margin-top:14px; background:transparent; border:1px solid var(--cyan-dim); border-radius:10px; color:var(--cyan); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer }
   .lockcard .lk-about{ display:block; width:100%; margin-top:10px; background:transparent; border:1px solid var(--line); border-radius:10px; color:var(--txt-dim); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer; text-decoration:none; text-align:center; transition:border-color .15s, color .15s }
   .lockcard .lk-about:hover{ border-color:var(--cyan-dim); color:var(--cyan) }
+  /* Data escape hatch — always available while locked, so your data is never held hostage
+     by a lapsed key. Exports the raw local data as a plain JSON file (no key, no armed app). */
+  .lockcard .lk-export{ display:block; width:100%; margin-top:10px; background:transparent; border:1px solid var(--line); border-radius:10px; color:var(--txt-dim); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer; text-align:center; transition:border-color .15s, color .15s }
+  .lockcard .lk-export:hover{ border-color:var(--amber); color:var(--amber) }
   .lockcard .lk-savehelp{ margin-top:10px; text-align:left }
   .lockcard .lk-savehelp-url{ font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--cyan); word-break:break-all; background:#08131f; border:1px solid var(--line); border-radius:8px; padding:8px 10px; user-select:all }
   .lockcard .lk-savehelp-copy{ margin-top:8px; width:100%; background:linear-gradient(180deg,var(--cyan),var(--cyan-dim)); color:var(--on-accent); border:none; border-radius:9px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; padding:9px; cursor:pointer }
@@ -1197,7 +1201,7 @@ if(location.hostname==='mrln.online'&&location.protocol==='http:'){location.repl
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v37';
+window.APP_VER='v38';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
@@ -1234,6 +1238,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="lk-foot" data-i18n="Your key unlocks the dashboard for the month. Email Miradiosefe@gmail.com to get next month's key. Your financial data never leaves this device.">Your key unlocks the dashboard for the month. Email Miradiosefe@gmail.com to get next month's key. Your financial data never leaves this device.</div>
     <button class="lk-openlink" id="lkOpenSave" type="button" data-i18n="↗ Open in browser · Copy link · Install">↗ Open in browser · Copy link · Install</button>
     <a class="lk-about" href="https://mrln.online/landing.html" target="_blank" rel="noopener" data-i18n="New here? See what MRLN is">New here? See what MRLN is</a>
+    <button class="lk-export" id="lkExport" type="button" style="display:none" data-i18n="📤 Export my data">📤 Export my data</button>
     <div class="lk-legal"><span data-i18n="By unlocking, you accept the">By unlocking, you accept the</span> <a href="#" data-legal data-i18n="Terms, Privacy Policy and Disclaimer">Terms, Privacy Policy and Disclaimer</a>.</div>
     <div class="lk-savehelp" id="lkSaveHelp" style="display:none">
       <div class="lk-savehelp-url" id="lkSaveUrl"></div>
@@ -6077,9 +6082,46 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       });
     }
     function unlock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.add('unlocked'); document.documentElement.classList.remove('lk-noscroll'); if(window.__lockFX) try{ window.__lockFX.stop(); }catch(_){ } }   // kill the living field the instant we leave the gate (zero in-app rAF/listeners)
-    function lock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.remove('unlocked'); document.documentElement.classList.add('lk-noscroll'); if(window.__lockFX) try{ window.__lockFX.start(); }catch(_){ } }   // bring it back on re-lock (expireNow / logout)
+    function lock(){ var el=document.getElementById('lockScreen'); if(el) el.classList.remove('unlocked'); document.documentElement.classList.add('lk-noscroll'); if(window.__lockFX) try{ window.__lockFX.start(); }catch(_){ } try{ updateExportBtn(); }catch(_){ } }   // bring it back on re-lock (expireNow / logout); refresh the data-export escape hatch
     function fmtDate(sec){ try{ return new Date(sec*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }catch(_){ return ''; } }
     function setStatus(msg,color){ var s=document.getElementById('lkStatus'); if(s){ s.textContent=msg||''; s.style.color=color||'var(--txt-dim)'; } }
+    // ---- DATA ESCAPE HATCH — your data is always yours, even while locked ----
+    // A lapsed/expired key keeps the app LOCKED (Osefe's call), but it must never trap your
+    // data. This reads the raw local data and downloads it as a plain JSON file. No key is
+    // exported and no runnable app is produced — just the numbers you entered — so the paid
+    // gate stays intact while "your data is always yours" stays literally true.
+    var DATA_KEY='financeHudState';
+    function _dataObj(){ try{ var raw=localStorage.getItem(DATA_KEY); if(!raw) return null; var o=JSON.parse(raw); return (o&&typeof o==='object')?o:null; }catch(_){ return null; } }
+    function hasExportableData(){                    // true only if this device holds genuine user content
+      var o=_dataObj(); if(!o || o.__fresh || o.fresh) return false;
+      var arrs=['workouts','log','prs','notes','foodLog','media','customItems','savingsBoxes'];
+      for(var i=0;i<arrs.length;i++){ if(o[arrs[i]] && o[arrs[i]].length) return true; }
+      if(o.calendar && Object.keys(o.calendar).length) return true;
+      if(o.body && Object.keys(o.body).length) return true;
+      if(o.tax && Object.keys(o.tax).length) return true;
+      var c=o.cfg;                                   // the finance model (income + expense groups)
+      if(c && typeof c==='object'){
+        if(c.income && (c.income.avg||c.income.low||c.income.high)) return true;
+        if(c.incomeLog && c.incomeLog.length) return true;
+        if(c.groups && c.groups.some && c.groups.some(function(g){ return g && g.items && g.items.length; })) return true;
+      }
+      return false;
+    }
+    function updateExportBtn(){ var b=document.getElementById('lkExport'); if(b) b.style.display = hasExportableData() ? 'block' : 'none'; }
+    function exportMyData(){
+      var raw=null; try{ raw=localStorage.getItem(DATA_KEY); }catch(_){ }
+      if(!raw){ setStatus('No saved data on this device to export.','var(--amber)'); return; }
+      try{
+        var d=new Date(), p=function(n){ return (n<10?'0':'')+n; };
+        var stamp=d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes());
+        var blob=new Blob([raw],{type:'application/json'});
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a'); a.href=url; a.download='mrln-data-'+stamp+'.json';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){ URL.revokeObjectURL(url); },1500);
+        setStatus('✓ Exported your data. Keep this file safe — it is yours.','var(--lime)');
+      }catch(_){ setStatus('Could not export right now. Try again.','var(--red)'); }
+    }
     // LIVE EXPIRY: lock the user out the moment their key expires, mid-session.
     var curExp=null, expTimer=null;
     function armExpiry(exp){
@@ -6124,8 +6166,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     function boot(){
       document.documentElement.classList.add('lk-noscroll');   // page loads locked; unlock() lifts this
       var btn=document.getElementById('lkBtn'); if(btn) btn.addEventListener('click', submit);
+      var xb=document.getElementById('lkExport'); if(xb) xb.addEventListener('click', exportMyData);   // data escape hatch: always available while locked
       var inp=document.getElementById('lkInput'); if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
       setInterval(function(){ if(curExp && Date.now() >= curExp*1000) expireNow(); }, 2000);  // backup poll (sleep/clock jumps)
+      updateExportBtn();   // show the escape hatch on the initial locked load if this device already holds data
       var saved=null;
       // a fresh share template never auto-unlocks — it must ask for the recipient's key
       if(!TEMPLATE_MODE){
