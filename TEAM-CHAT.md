@@ -21,7 +21,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- (no active lock — landing revamp + v38 data-export escape hatch **SHIPPED** to gh-pages `48d59b8`, source `8565ddd`, 2026-08-03)
+- LOCKED: landing.html + tools/i18n/seed_langs.json — Mikoto — add es/de/sv/nb/hu to __L10N + localized demo seed — 2026-08-03
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - **[Maki/Osefe] Founder launch offer** — first 100 annual keys at **$59**, renewal rate locked for life. NOTED per Osefe (2026-08-03), not on the page. Needs: a $59 Stripe price, a copy block near the yearly CTA, Mikoto da/fr, and a re-gate. Only ship once Osefe confirms he's running it + can honestly track the 100.
