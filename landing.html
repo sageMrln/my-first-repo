@@ -339,6 +339,14 @@
   .lang-sw select:hover{border-color:var(--blue-200)}
   .lang-sw select:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
   .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0}
+  /* ===== screenshot lightbox (click to enlarge) ===== */
+  .howto-shot img{cursor:zoom-in}
+  .shot-hint{margin-top:18px; font-size:.875rem; color:var(--ink-muted); text-align:center}
+  .lightbox{position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(14,28,51,.82); backdrop-filter:blur(4px); cursor:zoom-out}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:min(96vw,560px); max-height:92vh; width:auto; height:auto; border-radius:14px; box-shadow:0 24px 80px rgba(0,0,0,.5); display:block}
+  .lightbox .lb-close{position:absolute; top:14px; right:14px; width:42px; height:42px; border-radius:50%; border:1px solid rgba(255,255,255,.35); background:rgba(14,28,51,.6); color:#fff; font-size:20px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center}
+  .lightbox .lb-close:hover{background:rgba(14,28,51,.85)}
 </style>
 </head>
 <body>
@@ -560,7 +568,8 @@
           <div class="howto-card-copy"><h3>🎬 Films &amp; shows</h3><p>Log what you watch and rate it. A ranked list builds itself — ready the next time someone asks what's worth seeing.</p></div>
         </div>
       </div>
-      <p class="shot-note" style="margin-top:28px">All screenshots show the app's demo profile — example data, not a real person.</p>
+      <p class="shot-hint">Tap any screenshot to enlarge it.</p>
+      <p class="shot-note">All screenshots show the app's demo profile — example data, not a real person.</p>
     </div>
   </section>
 
@@ -781,6 +790,27 @@
       floats.forEach(function(el){ fio.observe(el); });
     }
   })();
+</script>
+<div class="lightbox" id="shotLightbox" role="dialog" aria-modal="true" aria-label="Enlarged screenshot">
+  <button class="lb-close" type="button" aria-label="Close">✕</button>
+  <img id="shotLightboxImg" src="" alt="">
+</div>
+<script>
+/* ===== Screenshot lightbox — click any how-to screenshot to enlarge; click/Esc closes.
+   Uses the clicked img's current src+alt, so it follows the active language automatically. */
+(function(){
+  var lb=document.getElementById('shotLightbox'), im=document.getElementById('shotLightboxImg');
+  if(!lb||!im) return;
+  var lastFocus=null;
+  function open(src,alt){ im.src=src; im.alt=alt||''; lb.classList.add('open'); document.body.style.overflow='hidden'; lastFocus=document.activeElement; lb.querySelector('.lb-close').focus(); }
+  function close(){ lb.classList.remove('open'); im.src=''; document.body.style.overflow=''; if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
+  document.addEventListener('click', function(e){
+    var img=e.target.closest('.howto-shot img');
+    if(img){ open(img.currentSrc||img.src, img.alt); return; }
+    if(lb.classList.contains('open') && (e.target===lb||e.target.closest('.lb-close')||e.target===im)) close();
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'&&lb.classList.contains('open')) close(); });
+})();
 </script>
 <script>
 /* ===== Landing i18n (EN/DA/FR) — offline, no network. English is the source;
