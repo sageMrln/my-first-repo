@@ -30,6 +30,7 @@ MRLN opens **locked**. You unlock it once with an **access key** (a code that lo
 - It's **time-limited** (a tester key might last a week; a personal key, years). When it expires, the app re-locks — even mid-session — and asks for a new one.
 - Once entered, it's **remembered on that device**, so you don't retype it every time.
 - Keys are tied to access, **not** to your data. Renewing a key never touches your numbers.
+- **Your data is never held hostage.** If your key lapses, the app locks — but a **📤 Export my data** button sits right there on the lock screen, so you can always take your numbers out, key or no key.
 
 **Three ways a key can be scoped:**
 - **File-bound** — works only on one specific file/link (its "File ID", e.g. `#F-AB12CD`).
@@ -44,7 +45,7 @@ MRLN opens **locked**. You unlock it once with an **access key** (a code that lo
 Top of the screen is the **locale bar**: 🌐 Language · Currency · Country.
 
 **Languages (7):** English, Español, Dansk, Deutsch, Svenska, Norsk, **Magyar**.
-Switching translates **the entire interface** instantly — tabs, headings, buttons, help text, the setup wizard, everything. A built-in **language watchdog** runs constantly: it re-checks every screen — including text that only appears in certain situations (your plan, tax breakdown, calendar, logs) — and keeps it all in your chosen language, with nothing left in English.
+Switching translates **the entire interface** instantly — tabs, headings, buttons, help text, the setup wizard, everything. A built-in **language watchdog** runs constantly: it re-checks every screen — including text that only appears in certain situations (your tier verdict, tax breakdown, calendar, logs) — and keeps it all in your chosen language, with nothing left in English.
 
 **Currencies (11):** USD, EUR, GBP, DKK, SEK, NOK, CHF, CAD, AUD, JPY, **HUF**.
 Currency is a **real conversion**, not just a relabel. Switch from kr to € and `8,000 kr` becomes `~1,070 €` at the bundled offline exchange rate. Every stored figure — income, expenses, loan, savings — converts together, and switching back returns the original amount. (Rates are an offline snapshot; no server needed.)
@@ -111,11 +112,21 @@ The "**Savings**" tab opens with the short list of **wealth-building rules** (pa
 
 Below the rules are your **Savings Boxes** — Lunar-style pots. Make a box for each thing you're saving for (a holiday, a new phone, an emergency cushion). Tell it what it **holds now**, what you **add** (monthly / quarterly / yearly, or top up by hand any time), and an optional **interest rate** and **target**. A slider projects every box **X years ahead** — what it becomes, what you put in, and exactly **how much the interest earns you** — with a progress bar and an honest "reach it in ~N years." All boxes total up, and every figure converts with your currency.
 
-### *Your Life Tier* + *Your Personalized Plan* (Checklist)
-An honest, S→F **tier rating of your money life**, built **only from your own numbers**, with a ranked, realistic action plan that updates as your numbers change.
+### Your Life Tier
+An honest, S→F **rating of your money life**, built **only from your own numbers**, and it moves as those numbers move. The **GRADE** pill at the top of the screen shows the same result at a glance, and **Stats & Grades** shows the factor-by-factor breakdown behind it — slow-month resilience, savings rate, fixed costs against income, free cash each month, and income source.
 
-### Checklist — *Action Checklist*
-Concrete next actions (build a cushion, automate savings, etc.).
+If you've filled in your body stats, your body grade is blended in and the card shows both parts (💰 Finance and 💪 Body) under the headline. Turn the body toggle off in **Gym** and the tier goes back to money only.
+
+### Your Checklist
+Your own to-do list, on the same tab. **MRLN does not write it for you.** A new checklist is empty and says *"No items yet — add your first below."* — everything on it is something you put there.
+
+- **Add** — type in the box at the bottom and tap **+** (or press Enter). Up to 200 characters an item, and as many items as you want.
+- **Tick** — tap the box beside an item to mark it done. Tap it again to undo.
+- **Delete** — tap **✕** on the item.
+
+It saves with the rest of your data, on your device only, and it comes with you when you move your data to another phone.
+
+*Coming from an older version?* MRLN used to print its own action plan on this tab. That plan has been removed, and the tab tells you so: *"The built-in plan has been replaced by your own checklist."* None of your money numbers changed — only the built-in list is gone, and the space is yours now.
 
 ### Klarna Float *(master-only tab)*
 A clear, honest breakdown of interest-free pay-in-2 as a **zero-cost liquidity bridge** — with a safe-size rule, a cash-flow simulator sized to your surplus, and an honest verdict (GOOD / OK / TIGHT / BAD). Shown only on the owner's master (or after importing it).
@@ -129,7 +140,7 @@ A clear, honest breakdown of interest-free pay-in-2 as a **zero-cost liquidity b
 - **Body Grade & Shape** — an S→F physique grade, body-fat/muscle read, and a visual silhouette.
 - **Body Measurements** — track measurements over time.
 - **Calorie Simulator** — your BMR/TDEE and a slider for cut / maintain / bulk, with honest verdicts ("aggressive deficit", "lean surplus", etc.).
-- **Meal Ideas** — suggests the **healthiest tasty meals for your goal**, respects likes/dislikes (typo-tolerant — "avoid chesse" still works), pins favourites, rotates fresh ideas, and surfaces the healthiest pick.
+- **Meal Ideas** — a **155-meal** library, matched to your body and your goal. Pick the **physique you want** (balanced / lean / athletic / muscular) and your **training focus** (general / strength / calisthenics / hybrid); MRLN works out your per-meal calorie and protein target from your stats and shows you **how much** of each meal to eat — *"2× serving"* — not just what to eat. Type ingredients or cuisines you **like** and anything to **avoid**; matches are pinned to the top of every page and a dislike is never suggested. Typo-tolerant ("avoid chesse" still works). Meals are tagged **★ your taste**, **✅ HEALTHIEST FOR YOU** (the best fit for your body among the meals that suit your goal), and **OFF YOUR GOAL** when a meal you asked for doesn't match the goal you set. **Tap any meal** for the full window: ingredients, your scaled calories and macros, why it fits you, and a **recipe-video link** (that link is the one thing that goes off-device, and only if you tap it — it opens YouTube with the meal's name as the search, and sends nothing else). Press **Suggest** again to rotate through the rest.
 - **Personal Records (PRs)** — log strength lifts (weight/reps → auto-calculates 1RM) and cardio (distance/time → tracks pace). Both group by exercise and show your best. **Workouts / Training Split** — your weekly plan.
 
 ### Food Log
@@ -167,7 +178,7 @@ MRLN's Media Log is a personal **rating journal for films, series, shows, and ga
 - **Search** — search by title or comment; matches highlight in both lists.
 - **Share** — tap the share button to copy your ranked list (top 20) as plain text — paste it anywhere. Formatted as a numbered list: `1. Title  9.4`, etc.
 
-**Data:** Rating, comment, type, genre, date added, date rated, and title — all stored locally. **Your Media Log data stays on your device — it never syncs or uploads on its own** (the ↗ IMDb button is the one exception, and only when you tap it: it sends just the title, nothing else). Your Media Log doesn't transfer in the quick clipboard move (because it's personal opinion, not data you might need on another phone), but you can manually export/import it via the photos path if you want a backup on a USB stick or cloud drive.
+**Data:** Rating, comment, type, genre, date added, date rated, and title — all stored locally. **Your Media Log data stays on your device — it never syncs or uploads on its own** (the ↗ IMDb button is the one exception, and only when you tap it: it sends just the title, nothing else). Your Media Log **does** come with you in the quick clipboard move — titles, types, genres, ratings, comments and dates all travel with the rest of your data (see §10), so your list is the same on your new phone.
 
 ---
 
@@ -179,7 +190,9 @@ Installing is **front and centre**, not buried in a menu:
 - **"Get the app" banner** — a bright banner across the top of the dashboard. Tap **Install** and it either installs in **one tap** (Android / Chrome / Edge) or opens a **step-by-step** card for your exact device (iPhone Safari, Android, or desktop).
 - It **removes itself automatically** the moment the app is installed — no clutter once you're set up.
 
-## 11. Connect — move data between devices
+---
+
+## 10. Connect — move data between devices
 
 The hub for moving your data — all **on-device**, nothing is ever uploaded.
 
@@ -213,7 +226,7 @@ confirm** before anything changes.
 
 ---
 
-## 12. 💬 Assistant MRLN — offline Q&A + plain-language commands
+## 11. 💬 Assistant MRLN — offline Q&A + plain-language commands
 
 Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **free, offline, in your browser** — nothing changes until you confirm. 
 
@@ -237,15 +250,15 @@ Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask que
 
 ---
 
-## 13. Daily Habits — engagement & motivation
+## 12. Daily Habits — engagement & motivation
 
-Three mechanics keep you coming back:
+A handful of small mechanics keep the app worth opening daily:
 
 **Streak Counter** — Track consecutive days you've logged income or expenses. The header shows a `STREAK N` pill with your count — green when you logged something today, amber when it's been a day or two. Breaking a streak resets you to 1, so dailies become a ritual. It's the oldest retention mechanic in apps like Duolingo and Habitica — and it works.
 
 **☀️ Morning Briefing** — Once per day on app load, you see a time-aware greeting by name. *"Good morning, Ingrid 👋 — 7 days in a row · on track to keep €2,140 this month"* The greeting changes by time of day (Good morning/afternoon/evening); combines your streak count and your **monthly surplus** (the amount you're on track to have left over after expenses and loan payments). **Offline-only, local-only** — never leaves your device. A daily reminder of your progress without hype.
 
-**Apply Feedback** — When you apply a command or confirm an edit, a 2-second toast pops up: *"nice! 7-second parse"* or *"saved ✓"*. It's a tiny score (how fast you wrote it) and a checkmark, giving instant proof that the app heard you and the numbers updated.
+**Apply Feedback** — When you apply a command, a short toast pops up with the count of what changed — *"✓ 3 applied"*. It's instant proof that the app heard you and that the numbers on screen are the new ones.
 
 **🔊 Satisfying UI Sounds** — Synthesized audio chimes (Web Audio, no files, fully offline) play on key actions. The core rule: **sounds voice *outcomes*, not inputs** — you hear confirmation when something works or changes, but not on every keystroke or slider tick. This keeps the app feeling responsive without becoming grating.
   - **Always sound:** tab navigation (soft tick), Apply success (C–E–G chime), save/export (two-note), streak milestones (celebration fanfare).
@@ -255,7 +268,7 @@ Three mechanics keep you coming back:
 
 Sounds are **soft by design** (~0.09–0.12 gain) and **respect reduced-motion** mode: if your OS is set to prefer reduced motion, sounds default OFF (toggle back ON anytime with 🔊/🔇). Even with sound ON, the visual toast (✓ or ✨) always confirms every action — sound is the *bonus*, never the only signal.
 
-All four mechanics are **per-device, never synced** (they reset if you import to a new phone) and are **stripped from any file you share** — so a customer file or a test upload stays clean, and the habit counters don't follow your export.
+These mechanics are **per-device, never synced** (they reset if you import to a new phone) and are **stripped from any file you share** — so a customer file or a test upload stays clean, and the habit counters don't follow your export.
 
 **📍 Organize Your Dashboard** — Double-tap any navigation tab (Money, Health, Calendar, etc.) to open its options. You'll see a "Position in the menu" control (◀ _number_ ▶) that lets you **reorder the tabs** in your navigation bar. Slide a tab to position 1 and it jumps to the front; a smooth ripple animates the other tabs into place. Your custom order saves automatically and persists across sessions. Make the app work your way.
 
@@ -263,7 +276,7 @@ All four mechanics are **per-device, never synced** (they reset if you import to
 
 ---
 
-## 14. Updates — how new features reach you
+## 13. Updates — how new features reach you
 
 - **On the hosted link / installed app:** updates are **automatic**. Open it online and the newest version loads itself (network-first service worker); offline still works from cache. Your data is preserved across every update — no migration, no re-login.
 - **On a downloaded file:** that file is frozen. To get new features, open the hosted app (or a newer file) and **import your data** across.
@@ -272,7 +285,7 @@ All four mechanics are **per-device, never synced** (they reset if you import to
 
 ---
 
-## 15. Privacy & anti-tamper (the security model)
+## 14. Privacy & anti-tamper (the security model)
 
 - **Your data is yours.** It lives in your browser's local storage (and embedded in your saved file). It is never uploaded — there's no server to upload to.
 - **Unforgeable access.** Keys are signed with a private key that exists **only** in the owner's master file. The public app holds just the public half — enough to verify keys, never to make them.
@@ -282,7 +295,7 @@ All four mechanics are **per-device, never synced** (they reset if you import to
 
 ---
 
-## 16. For the owner — running the show
+## 15. For the owner — running the show
 
 These tools appear only on **your master file** (where the private key lives):
 
@@ -290,13 +303,13 @@ These tools appear only on **your master file** (where the private key lives):
 - **📤 New file + key** — birth a fresh, blank customer file **and** the single key that unlocks it, together. (Never share your master — only the file+key it creates.)
 - **Klarna Float** tab is visible here (and on any copy that imported your master).
 
-**Releasing updates:** edit `index.html`, push to `gh-pages`. Everyone on the hosted link/app gets it on next online open. Only bump the service-worker version when you add/rename a static asset (icons, etc.).
+**Releasing updates:** edit `index.html`, then bump **both** `APP_VER` and the `VERSION` in `sw.js` **every time a published file changes** — that version is what makes an already-installed copy throw away its cached page and fetch the new one. Skipping it is why installed apps used to sit on an old build. Run `node tools/release/green.js` (it fails the release if anything is red) and `node tools/publish/deploy.js --check` before pushing to `gh-pages`; everyone on the hosted link or installed app picks it up on their next online open.
 
 **Your master file** auto-unlocks on your devices, holds your real data, and can mint keys. Keep it private; back it up; never hand it out.
 
 ---
 
-## 17. Quick troubleshooting
+## 16. Quick troubleshooting
 
 | Symptom | Fix |
 |---|---|
