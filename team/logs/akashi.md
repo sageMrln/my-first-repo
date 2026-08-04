@@ -2573,3 +2573,174 @@ Entry format:
 - VERDICT: **SAFE @ 95c3ce4.** New email is a non-owner branded address (no PII); provider NAME still gated to sanctioned legal/footer/lock-foot only; guard re-anchored + fail-closed; fixtures keep adversarial owner-PII coverage (17/17); watchdogs byte-identical vs last SAFE except the v39 tag + the email literal in the lock-foot i18n string (no money/poison line touched → no new poison); APP_VER v39===sw v39; gates GREEN/CLEAR; no old email anywhere. Security fix made DIRECTLY (poison/leak/integrity exception). Commit 95c3ce4.
 - Commits/SHAs: 95c3ce4 (my guard fix+fixtures, tip) on top of d47c488 (Kaito content swap, app-byte frozen). Baseline for watchdog byte-identity = bc9c82a (my last SAFE). Posted Pending + SAFE @ 95c3ce4 to TEAM-CHAT (Pending + MESSAGES).
 - Still open: gate needs @Kaito i18n MISSING:0 + render verify on 95c3ce4 + @Hugo GREEN same tip, then Osefe's explicit "ship it" (sleep-mode: I sign, I don't publish). If any published file (index/landing/legal/sw/preflight) moves, I re-sign. NON-BLOCKING backlog reminder still open: landing i18n extraction should EXCLUDE footer identity so a future __L10N rebuild doesn't re-add Provider/Contact as passthrough keys.
+
+## [2026-08-04] — via Kaito (asleep) — RULING (design, no code): v41 "AI-like assistant" + OPTIONAL ONLINE LOOKUP
+- Asked: rule on whether an opt-in online lookup (film/anime/show/game titles, foods, exercises) is compatible
+  with MRLN's shipped privacy promise. It collides with claims I signed SAFE 4 days ago, live in 8 langs on
+  mrln.online. Deliver GO / GO-WITH-CONDITIONS / NO-GO + full contract; do NOT edit index.html/landing.html.
+- TIP AT RULING: `46ca898`. NOTE: v40 batch (89437e5 meal engine v2 / savebar / checklist, c670168, 2c1fbbc,
+  46ca898 assistant fab) has landed since my last SAFE @95c3ce4 and has NOT had a security pass — it is NOT
+  covered by any SAFE of mine. Kaito holds the index.html+sw.js lock (TEAM-CHAT line 24). I stayed read-only.
+- VERIFIED THE CURRENT REALITY (not memory): index.html `fetch(` count = **1** (owner-gated Team Room @9719,
+  gate @9688-9693 unchanged); XHR/sendBeacon/WebSocket/EventSource = **0**; **no CSP anywhere** (index/landing/
+  legal/sw all 0 hits); localStorage keys = mrln_access_key / mrln_i18n_audit / mrln_team; `showAnswer` @6089
+  writes `body.textContent` (not innerHTML); `answerQuestion` @6033 routes to answer-or-null, `showProposal`
+  @6096 is the money-mutating path; exportDataCode @7048 is an explicit allowlist; 6 inline `onclick=` handlers
+  remain (→ CSP script-src must keep 'unsafe-inline', no nonce — unchanged from my 2026-06-28 draft);
+  MEAL_DB @4914 = 154 bundled meals (proof the offline-knowledge model already works here).
+- CLAIMS AT RISK (read the live files, exact lines): landing.html **581** feature bullet, **732** FAQ "Is the
+  assistant private?", **740** perf FAQ "no network round-trip"; index.html **#legalBack Privacy §3** @1396-1403.
+  Global pitch lines (landing 8/13/19 meta, 503, 521, 523, 673, 720, 786) are a different class — see below.
+- ===== VERDICT: **GO-WITH-CONDITIONS** on the mechanism · **SPLIT AND DEFER** as my product recommendation =====
+  - PART A (build now, needs no ruling): "AI-like" = user's own numbers compared against **BUNDLED** general
+    knowledge (nutrition per 100g, MET values, typical price/rent bands, genre/runtime facts). 100% offline,
+    zero claim change, zero consent UI, zero CSP dependency, zero cost, no new attack surface. MEAL_DB proves
+    the pattern. This is ~80% of what Osefe actually asked for ("compared against general knowledge").
+  - PART B (the network): allowed ONLY under the OL-1..OL-12 contract below. My recommendation is to ship A
+    first and re-test whether the gap is real, because B costs a unique, defensible, already-paid-for claim.
+  - A blanket NO-GO would be overreach: an opt-in, per-query, user-typed-term-only lookup does NOT trade my
+    standing invariant ("no private financial data and no private key ever leaves the device"). I will not
+    block something that doesn't violate my own stated line — that would be theatre, not security.
+- ===== THE CONTRACT (OL-1..OL-12) — every point is gating for my SAFE on any Part-B build =====
+  - OL-1 DEFAULT OFF, AND UN-SETTABLE FROM OUTSIDE. `STATE.prefs.onlineLookup` default false; absent/undefined
+    MUST evaluate false. **An imported file must NEVER be able to turn it on**: `_sanitizeIngested` must force
+    the flag FALSE on every import path (MRLNDATA code + importMasterHTML), and the flag must NOT be added to
+    the exportDataCode allowlist. Device-local only. (This is the sharpest new hole: without it, a crafted
+    import silently enables a network feature.)
+  - OL-2 TOGGLE LOCATION: own card in Connect/Settings next to the privacy copy — not buried, not in a submenu.
+    PLUS a persistent visible indicator next to the assistant input whenever it is ON (data-i18n-skip). The
+    state must never be invisible.
+  - OL-3 INFORMED CONSENT AT ENABLE (a dedicated modal, before the first byte, no pre-ticked box, primary
+    button = Cancel): (a) exactly what is sent = the words you type into the lookup box and submit, nothing
+    else; (b) exactly where = the named fixed site list; (c) those sites see the request **and your IP**, like
+    any website; (d) your money, health, notes, calendar and food data are never sent; (e) a sent lookup
+    cannot be taken back; (f) turn it off and the app is fully offline again.
+  - OL-4 CONSENT MODEL — MY CALL: **persistent setting (OFF) + per-query explicit gesture. NOT session
+    consent.** The toggle answers "may you ever?"; the gesture answers "now, this term". Typing a question in
+    the assistant must NEVER auto-fire a request — the user taps a distinct "Look up online ↗" control with the
+    term visible. Session consent is the worst of the three: it silently converts later questions into uploads.
+  - OL-5 WHAT MAY LEAVE — Osefe's proposal CONFIRMED and TIGHTENED: only the literal string the user typed into
+    the lookup field for that submission. Hard cap ≤80 chars, strip newlines/control chars, encodeURIComponent,
+    single query param. **NOTHING derived from STATE/MODEL may be interpolated into a request** — not a budget
+    item name, not a food-log entry, not a Media Log title, not fid, not lang/currency. To look up something
+    already stored, the app **prefills the lookup box and the user must see it and submit** — prefill-then-
+    submit, never read-and-send. Request hygiene: https only, `credentials:'omit'`, `referrerPolicy:'no-referrer'`,
+    `mode:'cors'`, **`redirect:'error'`** (a redirect is exactly how a compromised endpoint would move the query
+    to another host), AbortController timeout ≤8s, response read as text with a ≤256KB cap, one in-flight
+    request, rate cap (≤1/3s and a daily ceiling) so no loop becomes a channel. No identifying custom headers.
+  - OL-6 WHAT MUST NEVER LEAVE UNDER ANY SETTING: income, expenses, any money figure, savings, loans, tax in/out,
+    weight/body/health, food log, notes, calendar, reminders, Media Log contents, PRs, change log, access key,
+    private signing key, #hud-state, fid, device/browser fingerprint, and any stored text the user did not
+    personally type and submit for that lookup. No telemetry, no error reporting, no "anonymous usage stats" —
+    ever. Not now, not as a later "improvement".
+  - OL-7 HARD-CODED DESTINATIONS: fixed const array of https origins in the file. No host/path ever built from
+    user or imported data. No user-editable endpoint field, no "custom API" setting, no LLM/AI service. If a
+    lookup needs a host not on the list, it does not ship.
+  - OL-8 **CSP BECOMES MANDATORY, NOT OPTIONAL** (this answers the parked backlog item). Ship the CSP meta as a
+    PRECONDITION of Part B: `connect-src 'self' <exact lookup origins> https://raw.githubusercontent.com`,
+    `object-src 'none'`, `base-uri 'none'`, `form-action 'none'`. HONEST LIMIT restated: 6 inline `onclick=` +
+    inline scripts mean script-src keeps `'unsafe-inline'` and CANNOT use a nonce → CSP does **not** stop
+    injected inline JS. What it DOES do is make the destination allowlist **browser-enforced** instead of a code
+    convention one bad diff can break. That is precisely why it graduates from "nice hardening" to "required".
+    Must be browser-tested (data: fonts, data: food photos, blob: manifest rewrite, same-origin sw).
+  - OL-9 THE RESPONSE IS UNTRUSTED, ALWAYS — treat it exactly like an imported file: (a) render via
+    `textContent` ONLY — never innerHTML, never into an attribute, never `new Image()/src`, never a link href
+    without encodeURIComponent+esc; (b) NEVER written to STATE/MODEL, NEVER persisted (v1 = in-memory,
+    display-only, gone on reload — which also keeps exportBlank/exportDataCode untouched); (c) NEVER parsed into
+    a number that reaches a money/health figure, a MODEL field, or an aiProposal; (d) visually separated and
+    labelled with the source name; (e) JSON.parse under a byte cap in try/catch, no eval, no dynamic script/
+    style, no data:/javascript: URL from the response ever rendered.
+  - OL-10 INTEGRITY ISOLATION — Osefe's proposed rule CONFIRMED and made concrete: fetched content may never
+    influence a computed money/health figure or the poison token. The lookup path must not read/write `__sys`,
+    must not call `token()`, must not touch applyChange/parseClause/setIncome/MODEL.*, and its result routes to
+    **`showAnswer()` (textContent) ONLY — NEVER `showProposal()`**. A web result must not be Apply-able: the
+    Apply path mutates money, so a spoofed response that could produce a proposal would be a remote write into
+    the user's finances. No new `__sys.token()` gating is needed *inside* the lookup (it displays no owner
+    figure) — but no fetched value may flow into an existing token-gated display, or the poison would end up
+    laundering third-party data. Lookup UI lives post-unlock like everything else.
+  - OL-11 AUDIT / VERIFIABILITY (this is what makes the promise checkable rather than merely readable): a local,
+    visible "Online lookups" list in the same card as the toggle — per lookup: date+time, the **exact string
+    sent**, destination host, success/fail, response size. `data-i18n-skip`. Own localStorage key; **NOT** added
+    to the exportDataCode allowlist; **NOT** in the Change Log (that's financial history and it exports);
+    dropped from blanks automatically by exportBlank's reconstruct. Plus "Clear log". A count badge makes
+    silent activity impossible.
+  - OL-12 FAIL-CLOSED + OFFLINE PARITY: toggle off / offline / CSP-blocked / timed out / rate-capped / response
+    fails validation → fall back to the offline answer exactly as today. No retry storm, no fallback to a
+    different host, no error text that carries the query anywhere.
+- ===== EXFILTRATION SURFACE — the honest analysis (question 2) =====
+  - **A network path does NOT give an XSS attacker a new capability.** `fetch`, `<img src>`, `sendBeacon` are
+    native browser powers; an injected script can already exfiltrate localStorage (incl. `mrln_access_key`)
+    today, feature or no feature. Saying this feature "creates" the exfil risk would be wrong, and I won't say it.
+  - What IS genuinely new: (1) **a live, repeatable untrusted-input channel** — today the only untrusted input
+    is an imported file (one chokepoint, sanitized); a compromised/MITM'd/DNS-hijacked endpoint feeds content in
+    on every query → closed by OL-9 + https + redirect:'error'. (2) **a stored-data→outbound-query channel** if
+    a query is ever STATE-derived → closed by OL-5 + OL-4. (3) **loss of an auditing property**: today ANY
+    outbound request from a customer file is an anomaly, which is how I verify the promise every review; once
+    lookups are normal, "it's talking to the internet" stops being evidence of compromise — a real, permanent
+    loss, and the reason OL-11 exists. (4) **IP/timing metadata to third parties** — unavoidable, disclose it
+    (OL-3c); engineering it away needs a proxy, which is a server, which we will not build.
+  - Crafted import / stored XSS abusing the path: an import must never (a) enable the toggle → OL-1, (b) supply
+    an endpoint → OL-7, (c) auto-trigger a lookup → OL-4/OL-5. A stored XSS can steal the key today regardless.
+  - THE COUNTER-INTUITIVE UPSHOT, stated plainly: doing Part B *properly* leaves the app **more** exfil-resistant
+    than it is today, because CSP `connect-src` becomes mandatory and for the first time bounds where injected
+    script may send anything. That is the strongest technical argument FOR building it under this contract.
+- ===== THE PUBLISHED CLAIMS — exact minimal edits (question 3) =====
+  - RULING: they **must** change even though the default is OFF. I blocked GUIDE §8 on 2026-07-01 for exactly
+    this shape (an unqualified "Nothing ever leaves your device" sitting inside the section documenting an
+    outbound link). Applying a softer standard to a feature Osefe wants than to Hugo's guide would make me a
+    yes-man. But the change is a SCOPING CLAUSE, not a rewrite — the promise genuinely does still hold for the
+    data that matters.
+  - (a) landing.html **732** FAQ → keep "No outside AI service is called" VERBATIM (a reference lookup is not an
+    AI service — this stays true and is worth keeping), move the absolute onto the data, add the exception:
+    "Yes. The assistant runs on your device and answers from the numbers you've entered. No outside AI service is
+    called, and your numbers, notes and health data are never uploaded. The one exception is optional and off by
+    default: if you switch on Look it up online, a word you type into the lookup box — and only that word — is
+    sent to look up a title or a food."
+  - (b) landing.html **581** bullet → "Runs on your device — no outside AI service is called, and your data is
+    never uploaded (optional online lookup is off by default)".
+  - (c) landing.html **740** perf FAQ → drop the "no network round-trip" absolute (it becomes false for lookups)
+    and answer the question actually asked, which is about scaling: "No. Your data lives on your device, so
+    there's no server call that gets slower the more you add — it stays fast as your history grows." Arguably
+    stronger copy than what's live.
+  - (d) index.html **#legalBack Privacy §3** → ADD one bullet after "Features you choose to use": "<b>Online
+    lookup (optional, off by default).</b> If you switch on the online lookup, the words you type into the
+    lookup box and submit are sent to a small fixed list of public reference sites to fetch a description. Those
+    sites see that request and your IP address, as with any website. Your money, health, notes, calendar and
+    food data are never sent, and results are shown only — never saved into your data. The App keeps a local
+    list of every lookup you made so you can check this yourself. Turn it off and the App is fully offline again."
+  - (e) DELIBERATELY UNCHANGED — the global pitch (landing meta 8/13/19, 503, 521, 523, 673, 720, 786 "your data
+    never leaves your device" / "no cloud" / "no bank"). Same distinction I ruled on for GUIDE line 18 vs §8: a
+    qualified global principle with a fully disclosed exception is accurate; an unqualified absolute sitting
+    *inside* the section documenting the exception is not. These are about the data the user saves, which still
+    never leaves. Changing them would be over-correction and would cost the brand for no honesty gain.
+  - MIKOTO BLAST RADIUS: 3 landing strings × 8 landing languages (en/es/da/de/sv/nb/hu/fr) + 1 policy bullet × 7
+    app languages + legal.html consistency check + GUIDE.md/PDF §Assistant + re-gate. Non-trivial — another
+    reason to ship Part A first and only pay this once, if ever.
+- ===== FREE-TO-OPERATE (question 5) =====
+  - ONLY acceptable class: **keyless, CORS-permitting, no-quota-billing public endpoints**. Candidates to verify
+    at build time (I am NOT asserting these as fact — Kaito must confirm CORS headers + terms before wiring):
+    Wikipedia/Wikidata REST summary, Open Food Facts, wger exercise DB.
+  - HARD REJECT: (1) **anything needing an API key** — TMDB/OMDb/RAWG/Spoonacular etc. A key in a single-file
+    client app is a *published* key: not a secret, will be scraped, and then either bills Osefe or gets the
+    account banned. This is a NO even where a free tier exists. (2) **anything needing a proxy/serverless
+    function** — that is a server: a running cost AND a place user queries could be logged, which kills "no
+    server" outright. (3) **any LLM/AI API** — paid, and it would make "no outside AI service is called" false,
+    which is the single claim I most want to keep true.
+  - Keyless-free still carries a **fair-use obligation** (rate limits, UA policy) — an obligation, not a bill.
+    OL-5's rate cap partly discharges it.
+- HONEST RECOMMENDATION TO OSEFE (asked for, and I do disagree in part): **build Part A, defer Part B.** The
+  reason is not fear of the mechanism — the contract makes the mechanism safe. It is that "the assistant is
+  offline" is a claim no competitor can make, it is live in 8 languages, customers bought on it under a 30-day
+  guarantee, and changing a privacy characteristic after sale is a trust event rather than a copy edit. Part A
+  delivers most of the felt intelligence at zero claim cost. If, after A ships, the long tail (arbitrary
+  films/games/foods) is genuinely missing, Part B is available under OL-1..OL-12 and would actually leave the
+  app harder to exfiltrate from than it is today (CSP). Smallest safe version of B if he wants it now: ONE
+  keyless source, ONE prefill-then-submit lookup box, display-only textContent result, CSP shipped in the same
+  commit, visible lookup log, toggle off + per-query tap.
+- Did NOT edit index.html / landing.html / legal.html / sw.js (design ruling; Kaito implements and holds the
+  lock). No lock taken. No gate sign-off given — this ruling is NOT a SAFE and publishes nothing.
+- Commits / SHAs: this log + TEAM-CHAT ruling post only. App tip unchanged at 46ca898.
+- Still open: (1) **v40 batch (89437e5..46ca898) has had NO security pass** — it needs a real SAFE review before
+  anything ships; flagged to Kaito. (2) If Osefe picks Part A, it needs no ruling but does need a normal review.
+  (3) If he picks Part B, I want the CSP meta landed and browser-tested BEFORE the lookup code, not with it.
+  (4) CSP backlog item is now RECLASSIFIED: parked → mandatory-if-B-proceeds. Sleep-mode: no auto-publish.
