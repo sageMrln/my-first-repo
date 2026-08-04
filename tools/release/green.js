@@ -122,17 +122,33 @@ run(['tools/test/income_log_test.js'], 'income-log suite');
 section('import sanitize (stored-XSS guard) — tools/test/import_sanitize_test.js');
 run(['tools/test/import_sanitize_test.js'], 'import-sanitize suite');
 
-// 12) deep pre-publish guard on the app itself
-section('preflight — index.html (slots empty · no private key · 1 public key · no PII · PUBCHK · script balance)');
-run(['tools/publish/preflight.js', 'index.html'], 'preflight(index.html)');
+// 11c) routing / deploy-map regression — the source→published rename, the service
+//      worker's cache list and fallback, the manifest identity, and (from phase 3)
+//      the root router that must forward BOTH ?query and #fragment. Every assertion
+//      is stated against tools/publish/deploy_map.json, so it stays meaningful as the
+//      migration advances instead of pinning one layout.
+section('routing & deploy map — tools/test/routing_test.js');
+run(['tools/test/routing_test.js'], 'routing suite');
 
-// 12a) preflight guard on landing.html — static public marketing page (no slots/keys/watchdogs; legal-identity exception for footer contact)
-section('preflight — landing.html (static marketing page, no PII except sanctioned footer contact)');
-run(['tools/publish/preflight.js', 'landing.html'], 'preflight(landing.html)');
-
-// 12b) preflight guard on legal.html — static legal + privacy page (legal-identity exception for provider/contact throughout)
-section('preflight — legal.html (static legal page, legal-identity exception for provider/contact)');
-run(['tools/publish/preflight.js', 'legal.html'], 'preflight(legal.html)');
+// 12) deep pre-publish guard on EVERY published HTML page, driven by the deploy map.
+//     Hand-listing the three pages was drift waiting to happen: a new published file
+//     simply would not be preflighted, and the app is published under a DIFFERENT name
+//     from phase 3 on. The map is the single source of truth for the deploy set, and
+//     --role carries the security profile across the rename. Fails closed: an unreadable
+//     map stops the gate rather than silently checking nothing.
+section('preflight — every published HTML page (role-driven, from tools/publish/deploy_map.json)');
+let pfPages = null;
+try {
+  const dm = JSON.parse(fs.readFileSync(path.join(root, 'tools/publish/deploy_map.json'), 'utf8'));
+  pfPages = dm.entries.filter(e => /\.html$/i.test(e.source) && e.role !== 'static');
+} catch (e) {
+  console.log('  ✗ cannot read tools/publish/deploy_map.json — ' + e.message); failed = true;
+}
+if (pfPages && !pfPages.length) { console.log('  ✗ deploy map declares no publishable HTML page'); failed = true; }
+(pfPages || []).forEach(e => {
+  console.log('  · ' + e.source + ' → published as ' + e.published + ' [' + e.role + ']');
+  run(['tools/publish/preflight.js', e.source, '--role', e.role], 'preflight(' + e.source + ')');
+});
 
 // 12c) guards the TIGHT legal-identity PII exception in preflight (the intended-public
 //      trader name/contact is allowed ONLY inside #legalBack — never a blanket removal)
