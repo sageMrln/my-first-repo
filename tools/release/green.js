@@ -122,6 +122,13 @@ run(['tools/test/income_log_test.js'], 'income-log suite');
 section('import sanitize (stored-XSS guard) — tools/test/import_sanitize_test.js');
 run(['tools/test/import_sanitize_test.js'], 'import-sanitize suite');
 
+// 11b) price-signal differential — the assistant must never green-light a purchase against
+//      a number it invented from a product name ("can I afford a PS5?" -> "Yes, 5 kr fits").
+//      Extracts the LIVE _priceFrom and pins model-designator questions to "ask, don't answer"
+//      while real prices still answer. Never delete a case here; add one when a bug is found.
+section('assistant price-signal differential — tools/test/price_test.js');
+run(['tools/test/price_test.js'], 'price suite');
+
 // 11c) routing / deploy-map regression — the source→published rename, the service
 //      worker's cache list and fallback, the manifest identity, and (from phase 3)
 //      the root router that must forward BOTH ?query and #fragment. Every assertion

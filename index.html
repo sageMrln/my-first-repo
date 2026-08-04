@@ -5962,9 +5962,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var tk = toks[i];
       var mm = tk.match(/^(\d+(?:\.\d+)?)(k)?$/);                                  // a bare number, optionally the k-thousands suffix
       if(!mm) continue;                                                        // glued forms (ps5, rtx5090, a4) fail this and are never prices
-      var terminal = (i === toks.length - 1);                                   // nothing after it but the end
       var prev = i > 0 ? toks[i-1] : '';
-      if(terminal && prev && /^[a-z\u00e0-\u00ff]{2,}$/.test(prev) && !_PRICE_STOP.test(prev)) continue;   // "switch 2", "iphone 17" -> model number
+      // A number sitting right after a real word is a MODEL designator, not a price —
+      // "iphone 17", "switch 2", "series 9". Position in the sentence is irrelevant:
+      // requiring it to be the last token meant "can I afford an iPhone 17 this year?"
+      // still answered "Yes — 17 kr fits" (Akashi, RELEASE A). Words that are never
+      // product names (_PRICE_STOP: afford, save, a, the, ...) leave the number a price,
+      // and branch (a) has already claimed anything with a currency beside it.
+      if(prev && /^[a-z\u00e0-\u00ff]{2,}$/.test(prev) && !_PRICE_STOP.test(prev)) continue;   // "switch 2", "iphone 17" -> model number
       n = parseFloat(mm[1]); if(!isFinite(n)) continue; if(mm[2]) n *= 1000;
       if(!isFinite(best) || n > best) best = n;
     }
