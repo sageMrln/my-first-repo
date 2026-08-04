@@ -709,13 +709,20 @@
   /* mobile: collapse the save bar into one round button so it stops eating the screen */
   .savefab{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:1px solid var(--cyan);background:var(--panel2);color:var(--cyan);font-size:24px;line-height:1;cursor:pointer;box-shadow:var(--glow);align-self:flex-end;transition:all .15s}
   .savefab:hover{filter:brightness(1.1)}
+  /* Assistant MRLN gets its own permanent door — the product's headline feature must
+     never hide behind a glyph that promises only saving (Arthur). */
+  .botfab{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;
+    border:1px solid var(--cyan);background:var(--panel2);color:var(--cyan);font-size:24px;line-height:1;
+    cursor:pointer;box-shadow:var(--glow);align-self:flex-end;transition:all .15s;position:relative}
+  .botfab:hover{filter:brightness(1.1)}
+  .botfab.on{background:var(--cyan);color:var(--on-accent)}
   /* toggleable HUD (all sizes): collapsed to the fab; .open expands the stack. A live
      save-safety warning (.haswarn) keeps the status badge visible even while collapsed —
      the fail-loud contract must survive the collapse. */
-  .savebar > :not(.savefab){display:none}
-  .savebar.open > :not(.savefab){display:flex}
+  .savebar > :not(.savefab):not(.botfab){display:none}
+  .savebar.open > :not(.savefab):not(.botfab){display:flex}
   .savebar.open{align-items:stretch; width:min(280px,calc(100vw - 22px))}
-  .savebar.open > :not(.savefab){width:100%; text-align:center; justify-content:center}
+  .savebar.open > :not(.savefab):not(.botfab){width:100%; text-align:center; justify-content:center}
   .savebar.open .badge{max-width:none; text-align:center}
   /* real surface behind the open stack so page content can't read between the controls */
   .savebar.open::before{content:'';position:absolute;inset:-14px -14px 66px -14px;z-index:-1;border-radius:16px;
@@ -2600,7 +2607,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   <button class="savebtn" id="saveBtn" data-i18n="💾 Save / Export">💾 Save / Export</button>
   <button class="chattoggle" id="dataBtn" title="Move your data between your devices (private)" data-i18n="⇄ Backup / Import">⇄ Backup / Import</button>
   <button class="chattoggle" id="lockBtn" title="Lock the dashboard — you'll need your key to get back in" data-i18n="🔒 Lock / Log out">🔒 Lock / Log out</button>
-  <button class="savefab" id="saveFab" title="Save, backup &amp; assistant" aria-label="Save, backup and assistant" aria-expanded="false">💾</button>
+  <button class="botfab" id="botFab" title="Assistant MRLN — ask me anything" aria-label="Open Assistant MRLN" aria-expanded="false" data-i18n-skip>🤖</button>
+  <button class="savefab" id="saveFab" title="Save, backup &amp; lock" aria-label="Save, backup and lock" aria-expanded="false">💾</button>
 </div>
 
 <!-- Persisted user state (read on load, rewritten on export). Do not edit by hand. -->
@@ -6044,8 +6052,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     function status(msg, color){ statusEl.style.display='block'; statusEl.style.color=color||'var(--txt-dim)'; statusEl.textContent=msg; }
     // open / close the floating chat widget
     var toggle = document.getElementById('chatToggle'), widget = document.getElementById('chatWidget'), closeB = document.getElementById('chatClose');
-    function setOpen(open){ if(!widget) return; widget.style.display = open ? 'block' : 'none'; if(toggle) toggle.textContent = open ? '▾ Assistant MRLN' : '🤖 Assistant MRLN'; if(open) document.getElementById('aiText').focus(); }
+    function setOpen(open){ if(!widget) return; widget.style.display = open ? 'block' : 'none'; if(toggle) toggle.textContent = open ? '▾ Assistant MRLN' : '🤖 Assistant MRLN';
+      var _bf=document.getElementById('botFab'); if(_bf){ _bf.classList.toggle('on', !!open); _bf.setAttribute('aria-expanded', open?'true':'false'); } if(open) document.getElementById('aiText').focus(); }
     if(toggle) toggle.addEventListener('click', function(){ setOpen(widget.style.display === 'none'); });
+    // the dedicated 🤖 fab: the Assistant's permanent, always-visible door
+    var botFab = document.getElementById('botFab');
+    if(botFab) botFab.addEventListener('click', function(){ setOpen(widget.style.display === 'none'); });
     if(closeB) closeB.addEventListener('click', function(){ setOpen(false); });
     sendBtn.addEventListener('click', function(){
       var text = (document.getElementById('aiText').value||'').trim();
@@ -8832,7 +8844,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       {sel:'#tabs .tab[data-p="stats"]', text:'<b>Stats &amp; Grades.</b> Your overall S–E grade explained — money, body and income class, with how to climb.'},
       {sel:'#tabs .tab[data-p="notebook"]', text:'<b>Notebook.</b> A free-writing space like your phone’s Notes — anything you don’t want to lose.'},
       {sel:'#tabs .tab[data-p="calendar"]', text:'<b>Calendar.</b> Birthdays, your weekly sports &amp; hobbies, and reminders — alarms included.'},
-      {sel:'#chatToggle', text:'<b>Assistant MRLN.</b> Type a change in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions” — or ask a question about any feature.'},
+      {sel:'#botFab', text:'<b>Assistant MRLN.</b> Type a change in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions” — or ask a question about any feature.'},
       {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'},
       {sel:'#langSel', text:'<b>Language & currency.</b> Switch these to whatever suits you. Your data always stays on your device.'},
       {sel:'#tourBtn', text:'<b>All done.</b> Tap here any time to replay this tour.'}
