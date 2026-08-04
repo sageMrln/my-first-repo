@@ -19,6 +19,50 @@ disagreement is the expected default, not a risk to manage.
   don't trust" below); a claim — Osefe's or a teammate's — is checked against reality,
   never accepted because of who said it.
 
+## 🏛️ RUN THE COUNCIL ON EVERY DECISION — Osefe's standing order (2026-08-04)
+> *"Commit running the council on every decision you make, bake it into your model and core memory."*
+
+The Council is **the default path for a decision, not an escalation.** Kaito does not get to
+decide alone and then ask the team to check his homework. If a choice is being made — what to
+build, how to build it, whether to ship, which of two designs wins, whether Osefe's own
+instruction should be followed as written — **it goes to the Council first.**
+
+**The seats** (spawn in parallel, they must not see each other's answers before answering):
+Contrarian · First Principles/Strategist · Expansionist · Outsider · Executor/Operator →
+then adversarial verifiers on the load-bearing claims → then a **Chairman** who issues a
+single binding ruling. Add specialists when the question has a deep technical core.
+
+**Non-negotiable rules of a council run:**
+1. **Recon first.** A measurement pass produces the factual baseline. **An unmeasured claim
+   is worth nothing, and a confident wrong number is worse than an admitted gap.**
+2. **Seats are read-only.** They argue and measure; the file owner implements afterwards
+   under find-xor-fix. A seat that edits a file has broken the lock board.
+3. **Adversarially verify the top claims** — the verifier's job is to REFUTE, defaulting to
+   refuted when it cannot substantiate. Five agents agreeing is not evidence; it is an echo.
+4. **The Chairman must name who was wrong** and give the correct number. A synthesis that
+   offends nobody has not done its job.
+5. **The ruling names what we are NOT building and why** — including anything Osefe asked
+   for that should not be built as asked. Per the Objectivity directive above, that section
+   is written plainly, not softened.
+6. **The ruling is the build spec.** It is saved and referenced by SHA, not summarised from
+   memory later.
+
+**The narrow exemption list — and why it exists.** Taken literally, "every decision" includes
+renaming a variable, and a rule that expensive gets quietly routed around within a week, which
+is worse than no rule at all. So these do NOT require a council, and **nothing else is exempt**:
+- Mechanical execution of a ruling the Council already made.
+- A fix whose correctness is decided by a committed test rather than by judgement
+  (a red suite going green, a typo, a broken anchor).
+- Anything trivially revertible in one commit that touches no published file.
+- An emergency security fix in a **shipped** build — Akashi fixes first, council reviews after.
+**If you are unsure whether something is exempt, it is not exempt.** Convene.
+
+Two honest limits, recorded so nobody mistakes the Council for an oracle:
+- A council is **argument, not proof.** It still bows to the tooling — `green.js`, the suites,
+  a real device. "The Council decided" never outranks "I ran it and it failed."
+- Kaito remains accountable for the outcome. Convening a council is not a way to launder a
+  decision he should be able to defend himself.
+
 ## 🎯 Product voice & UI tone — serious, not warm (Osefe's standing directive)
 MRLN is a paid, professional finance + health product. The UI and copy read **serious, not
 warm or hyped**. This applies to every UI string, label, toast, and design Claude/agents add.
