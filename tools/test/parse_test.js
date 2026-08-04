@@ -72,6 +72,42 @@ check('bérlet 450', 'addItem');                    // hu season ticket / pass
 check('fizetési határidő 500', 'addItem');         // hu payment deadline
 check('bevásárlás 2000', 'addItem');               // hu groceries — must not hit "bevétel"
 
+// --- THE PREFIX-COLLISION CLASS, all languages (swept after Hugo found jövedelemadó).
+//     _has() matches with a LEADING boundary only. Danish, German, Swedish, Norwegian and
+//     Hungarian all COMPOUND where English uses two words, so an income stem swallows the
+//     compound and an EXPENSE silently overwrites the user's INCOME — which corrupts
+//     leftover, tier, affordability and every savings projection at once. All of these
+//     were live on the shipped v39 build, in six of seven languages INCLUDING English. ---
+check('income tax 3000', 'addItem');               // en — the flagship language was not exempt
+check('lohnsteuer 3000', 'addItem');               // de wage tax
+check('einkommensteuer 3000', 'addItem');          // de income tax
+check('gehaltsabrechnung 200', 'addItem');         // de payslip service
+check('lønskat 3000', 'addItem');                  // da wage tax
+check('lønseddel 100', 'addItem');                 // da payslip
+check('lønkonto 0', 'addItem');                    // da salary ACCOUNT, not salary
+check('inkomstskatt 3000', 'addItem');             // sv income tax
+check('löneskatt 3000', 'addItem');                // sv wage tax
+check('inntektsskatt 3000', 'addItem');            // nb income tax
+check('jövedelemadó 3000', 'addItem');             // hu income tax
+check('bérautó 4000', 'addItem');                  // hu rental car
+check('bérgarázs 900', 'addItem');                 // hu rental garage
+check('kereset 28000', 'setIncome');               // hu earnings — was MISSING, minted a bogus expense
+// the income phrasings these lookaheads must never break, in every language
+check('my income after tax is 25000', 'setIncome');// "after tax" is its own entry — the delicate one
+check('a fizetési szintem 25000', 'setIncome');    // hu pay level — I regressed this with fizetés(?!i);
+check('fizetési sávom 25000', 'setIncome');        //   Akashi caught it, the lookahead was reverted
+check('min lønn er 25000', 'setIncome');           // nb
+check('mein lohn ist 25000', 'setIncome');         // de
+check('min lön är 25000', 'setIncome');            // sv
+check('mis ingresos son 25000', 'setIncome');      // es
+
+// --- LEX.age was matched with a TRAILING boundary only — a SUFFIX match, unlike every
+//     other lexicon group. Any Spanish word ending in "edad" became the user's age. ---
+check('propiedad 41', 'addItem');                  // es property
+check('sociedad 45', 'addItem');                   // es society
+check('my age is 41', 'setProfile');               // and the age command still works
+check('min alder er 41', 'setProfile');            // da
+
 // --- real commands must still work ---
 check('my income is 30000', 'setIncome');
 check('loan payment 4500', 'setLoanPayment');

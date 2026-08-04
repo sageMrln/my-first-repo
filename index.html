@@ -5296,7 +5296,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var head = T ? ((likes.length&&anyMatch)
                     ? t('Your matches first, then ')+tf('the best fits for <b>{phys}</b> — {note}. Portions scaled to you; tap a meal for full nutrition.',{phys:physLabel(T.phys),note:goalNote})
                     : tf('The best fits for <b>{phys}</b> — {note}. Portions scaled to you; tap a meal for full nutrition.',{phys:physLabel(T.phys),note:goalNote}))
-                 : (tf('Showing <b>{note}</b>',{note:goalNote})+((likes.length&&anyMatch)?t(', your matches first'):'')+(dislikes.length?tf(', avoiding {n} thing(s)',{n:dislikes.length}):'')+t('. Tap a meal for full nutrition.'));
+                 : (tf('Showing <b>{note}</b>',{note:goalNote})+((likes.length&&anyMatch)?t(', your matches first'):'')+(dislikes.length?(dislikes.length===1?t(', avoiding 1 ingredient'):tf(', avoiding {n} ingredients',{n:dislikes.length})):'')+t('. Tap a meal for full nutrition.'));
     if(likes.length && !anyMatch){
       head = tf('No meal matches "{q}" — showing the closest picks for your goal.',{q:esc(likes.join(', '))})+' '+head;
     }
@@ -5701,7 +5701,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     savings:  'savings?|opsparing|sparen|ersparnis|ahorros?|sparande|sparing|megtakarítás',
     transfer: 'match|transfer|forced|overførsel|overføring|übertrag|sparrate|transferencia|överföring|átutalás',
     save:     'save|spar|spare|spara|ahorrar|ahorro|félreteszek|megtakarítok|félretesz',
-    income:   'income|salary|wage|paycheck|after[\\s-]?tax|indkomst|inntekt|inkomst|løn|lønn|nettoløn|nettolønn|gehalt|lohn|nettolön|einkommen|ingresos?|salario|sueldo|nómina|lön|jövedelem|jövedelm|bevétel|fizetés(?!i)|bér(?!l)',
+    income:   'income(?!\\s*tax)|salary|wage|paycheck|after[\\s-]?tax|indkomst(?!skat)|inntekt(?!sskatt)|inkomst(?!skatt)|løn(?!seddel|skat|konto|strup)|lønn(?!sslipp)|nettoløn|nettolønn|gehalt(?!sabrechnung)|lohn(?!steuer)|nettolön|einkommen(?!s?steuer)|ingresos?|salario|sueldo|nómina|lön(?!eskatt)|jövedelem(?!adó)|jövedelm|bevétel|kereset|fizetés(?!i\\s+határidő)|bér(?!l|autó|garázs|kocsi)',
     month:    'month|måned|monat|mes|månad|hónap',
     low:      'low|bad|worst|slow|soft|lav|niedrig|bajo|låg|alacsony|dårlig|schlecht|malo|dålig|rossz|værste|verste|peor|sämsta|gyenge|svag|schwach|flojo|svak',
     high:     'high|good|best|great|strong|høj|høy|hoch|alto|hög|magas|god|gut|bueno|bra|jó|bedste|beste|mejor|bästa|legjobb|stærk|stark|fuerte|sterk|erős',
@@ -5809,7 +5809,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     // Also excludes "year(s)" from the gate (it collides with yearly frequency).
     // copula allowed between the age word and the number ("alder er 41", "age is 41",
     // "Alter ist 41") — a whitelist, so "Alter Ego sub 120" still can't slip through.
-    var _agem = c.match(_re('(?:'+LEX.age+')'+_WA+'(?:\\s+(?:is|am|are|was|er|ist|bin|war|är|es|van|vagyok)\\b)?\\s*[:=]?\\s*(\\d{1,3})(?!\\d)'))
+    var _agem = c.match(_re(_WB+'(?:'+LEX.age+')'+_WA+'(?:\\s+(?:is|am|are|was|er|ist|bin|war|är|es|van|vagyok)\\b)?\\s*[:=]?\\s*(\\d{1,3})(?!\\d)'))
              || c.match(_re('(\\d{1,3})\\s*(?:years?|år|años|anos|jahre|éves|év)'+_WA))
              || c.match(/\b(?:i(?:'m| am)|jeg er|ich bin|jag är|tengo)\s+(\d{1,3})\b/iu);
     if(_agem){ var an=_agem[1]; if(+an>0 && +an<130) return { op:'setProfile', field:'age', value:an, description:'Set age → '+an }; }
@@ -5941,7 +5941,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // question's own words are removed, the number is all that remains ("can I afford 4000?").
   var _CCY_RE = /(?:kr|dkk|sek|nok|isk|usd|eur|gbp|chf|cad|aud|huf|pln|czk|jpy|\u00a4|\$|\u20ac|\u00a3|\u00a5|\u20b9|\u20a9)/;
   // Words that are never product names, so a number right after one is still a PRICE.
-  var _PRICE_STOP = /^(?:how|long|much|many|to|2|for|of|a|an|the|i|we|my|me|is|it|can|could|do|does|would|should|afford|affrod|buy|get|have|enough|new|another|this|that|and|or|please|now|still|really|about|around|roughly|need|want|save|saving|savings|reach|goal|cost|costs|costing|price|priced|spend|spent|put|aside|til|kan|jeg|har|koster|kostet|kosten|cuesta|spar|spare|spara)$/;
+  var _PRICE_STOP = /^(?:how|long|much|many|to|2|for|of|a|an|the|i|we|my|me|is|it|can|could|do|does|would|should|afford|affrod|buy|get|have|enough|new|another|this|that|and|or|please|now|still|really|about|around|roughly|need|want|save|saving|savings|up|reach|goal|cost|costs|costing|price|priced|spend|spent|put|aside|til|kan|jeg|har|koster|kostet|kosten|cuesta|spar|spare|spara)$/;
   // A PRICE must be signalled — a finance app must never green-light a purchase against a
   // number it invented from a product name (council: the worst defect found in the product).
   //   "Can I afford a PS5?" -> 5      "iPhone 17" -> 17      "RTX 5090" -> 5090 (looks plausible: worse)
