@@ -81,16 +81,29 @@ check('bevásárlás 2000', 'addItem');               // hu groceries — must n
 check('income tax 3000', 'addItem');               // en — the flagship language was not exempt
 check('lohnsteuer 3000', 'addItem');               // de wage tax
 check('einkommensteuer 3000', 'addItem');          // de income tax
-check('gehaltsabrechnung 200', 'addItem');         // de payslip service
 check('lønskat 3000', 'addItem');                  // da wage tax
-check('lønseddel 100', 'addItem');                 // da payslip
-check('lønkonto 0', 'addItem');                    // da salary ACCOUNT, not salary
 check('inkomstskatt 3000', 'addItem');             // sv income tax
 check('löneskatt 3000', 'addItem');                // sv wage tax
 check('inntektsskatt 3000', 'addItem');            // nb income tax
 check('jövedelemadó 3000', 'addItem');             // hu income tax
-check('bérautó 4000', 'addItem');                  // hu rental car
+check('bérautó 4000', 'addItem');                  // hu rental car — a rental IS an expense
 check('bérgarázs 900', 'addItem');                 // hu rental garage
+check('Lønstrup 500', 'addItem');                  // da TOWN name — a merchant, like Netto/Spar
+
+// A PAYSLIP IS NOT A TAX. I blocked these three in the sweep above and Mikoto caught it:
+// blocking does not fix the error, it FLIPS ITS SIGN. `lønseddel 25000` became a 25 000/mo
+// EXPENSE — catastrophic, and the exact failure I added `kereset` to prevent. Someone
+// typing a payslip amount means their salary, so income is the better reading and a wrong
+// income is far cheaper than an invented recurring bill. Only TAX words stay blocked,
+// because "this money went OUT" is unambiguous there. Never re-add these to the denylist.
+check('lønseddel 25000', 'setIncome');             // da payslip
+check('lønkonto 25000', 'setIncome');              // da salary account
+check('gehaltsabrechnung 25000', 'setIncome');     // de payslip
+check('lohnabrechnung 25000', 'setIncome');        // de payslip, the OTHER everyday spelling
+check('lønnsslipp 25000', 'setIncome');            // nb payslip — `lønn(?!sslipp)` was DEAD
+check('lönebesked 25000', 'setIncome');            //   code: `løn` matches the prefix first
+check('lönespecifikation 25000', 'setIncome');     //   from earlier in the alternation, so da
+                                                   //   and nb answered oppositely for one word
 check('kereset 28000', 'setIncome');               // hu earnings — was MISSING, minted a bogus expense
 // the income phrasings these lookaheads must never break, in every language
 check('my income after tax is 25000', 'setIncome');// "after tax" is its own entry — the delicate one

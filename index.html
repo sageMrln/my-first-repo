@@ -3887,7 +3887,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var bar=document.getElementById('tierBar'); if(bar){ bar.style.width=overall+'%'; bar.style.background='rgb('+c+')'; }
     var msg=document.getElementById('tierMsg');
     if(msg){ msg.style.borderLeftColor='rgb('+c+')';
-      var line = !M.dataComplete ? t('Add your income and costs to unlock your real tier and a plan made just for you.')
+      var line = !M.dataComplete ? t('Add your income and costs to unlock your real tier.')
         : oTier==='S' ? t('Elite — money <i>and</i> body. You\'re resilient, saving hard, living below your means and in great shape. Keep compounding.')
         : oTier==='A' ? t('Strong across the board. Tighten one or two things below and S-tier is genuinely in reach.')
         : oTier==='B' ? t('Solid base. Your weakest factors in Stats &amp; Grades are the short list that lifts you to A.')
@@ -5701,7 +5701,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     savings:  'savings?|opsparing|sparen|ersparnis|ahorros?|sparande|sparing|megtakarítás',
     transfer: 'match|transfer|forced|overførsel|overføring|übertrag|sparrate|transferencia|överföring|átutalás',
     save:     'save|spar|spare|spara|ahorrar|ahorro|félreteszek|megtakarítok|félretesz',
-    income:   'income(?!\\s*tax)|salary|wage|paycheck|after[\\s-]?tax|indkomst(?!skat)|inntekt(?!sskatt)|inkomst(?!skatt)|løn(?!seddel|skat|konto|strup)|lønn(?!sslipp)|nettoløn|nettolønn|gehalt(?!sabrechnung)|lohn(?!steuer)|nettolön|einkommen(?!s?steuer)|ingresos?|salario|sueldo|nómina|lön(?!eskatt)|jövedelem(?!adó)|jövedelm|bevétel|kereset|fizetés(?!i\\s+határidő)|bér(?!l|autó|garázs|kocsi)',
+    income:   'income(?!\\s*tax)|salary|wage|paycheck|after[\\s-]?tax|indkomst(?!skat)|inntekt(?!sskatt)|inkomst(?!skatt)|løn(?!skat|strup)|lønn|nettoløn|nettolønn|gehalt|lohn(?!steuer)|nettolön|einkommen(?!s?steuer)|ingresos?|salario|sueldo|nómina|lön(?!eskatt)|jövedelem(?!adó)|jövedelm|bevétel|kereset|fizetés(?!i\\s+határidő)|bér(?!l|autó|garázs|kocsi)',
     month:    'month|måned|monat|mes|månad|hónap',
     low:      'low|bad|worst|slow|soft|lav|niedrig|bajo|låg|alacsony|dårlig|schlecht|malo|dålig|rossz|værste|verste|peor|sämsta|gyenge|svag|schwach|flojo|svak',
     high:     'high|good|best|great|strong|høj|høy|hoch|alto|hög|magas|god|gut|bueno|bra|jó|bedste|beste|mejor|bästa|legjobb|stærk|stark|fuerte|sterk|erős',
