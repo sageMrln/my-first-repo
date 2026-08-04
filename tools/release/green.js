@@ -142,7 +142,12 @@ run(['tools/test/preflight_pii_test.js'], 'preflight-PII guard');
 // 13) leak scan across every OTHER published text file (the "whole surface" rule)
 //     Amend PUBLISHED_TEXT when the gh-pages deploy set changes. index.html is covered
 //     by preflight above; the PDF derives from GUIDE.md (scanned) and is binary.
-const PUBLISHED_TEXT = ['GUIDE.md', 'manifest.webmanifest', 'sw.js', 'team-chat.html'];
+//     NOTE (2026-08-04, Akashi): team-chat.html was REMOVED from this list. It is an
+//     owner-local viewer, unpublished from gh-pages at 2964d70 and absent from
+//     tools/publish/deploy_map.json — scanning it asserted over a file the deploy set
+//     does not contain, which reads as coverage but is none. It stays in source,
+//     unpublished; if it is ever re-added to the deploy map, it comes back here too.
+const PUBLISHED_TEXT = ['GUIDE.md', 'manifest.webmanifest', 'sw.js'];
 const KEY = /BEGIN [A-Z ]*PRIVATE|pkcs8/i;                       // private-key material
 const PII = () => /miradi|osefe@|[^a-z]cpr[^a-z]|\bDK\d{8,}\b/gi; // owner PII (same shape as preflight)
 section('leak scan — other published files');
@@ -158,6 +163,33 @@ PUBLISHED_TEXT.forEach(function (f) {
   else console.log('  ✓ ' + f + ' clean');
 });
 console.log('  · MRLN-Guide.pdf derives from GUIDE.md (scanned above); binary — not text-scanned here.');
+
+// 13b) PHONE-HOME scan — NO published file may reference raw.githubusercontent.
+//      The in-app Team Room polled that host every 5s from a flag any visitor could set
+//      (`#team` in the URL), which made the shipped customer build phone home and falsified
+//      the "owner-gated / customer files never fetch" claim. The viewer is deleted; this
+//      assertion is what stops it — or anything like it — coming back.
+//      The file list is DERIVED from tools/publish/deploy_map.json (the single source of
+//      truth for the deploy set) rather than hand-listed, so it cannot go stale the way
+//      PUBLISHED_TEXT did. FAIL-CLOSED: an unreadable/unparseable map is a RED.
+section('phone-home scan — no published file may reference raw.githubusercontent');
+const PHONE_HOME = /raw\.githubusercontent/i;
+const SKIP_BINARY = /\.(png|jpe?g|gif|webp|pdf|woff2?|ttf|otf|ico)$/i;
+try {
+  const map = JSON.parse(fs.readFileSync(path.join(root, 'tools/publish/deploy_map.json'), 'utf8'));
+  const sources = (map.entries || []).map(e => e.source).filter(Boolean).filter(f => !SKIP_BINARY.test(f));
+  if (!sources.length) { console.log('  ✗ deploy_map.json declared no scannable published files'); failed = true; }
+  let dirty = 0;
+  sources.forEach(function (f) {
+    const p = path.join(root, f);
+    if (!fs.existsSync(p)) { console.log('  ✗ ' + f + ' — declared in deploy_map.json but MISSING from source'); failed = true; dirty++; return; }
+    if (PHONE_HOME.test(fs.readFileSync(p, 'utf8'))) {
+      console.log('  ✗ ' + f + ' — references raw.githubusercontent (a published file must never phone home)');
+      failed = true; dirty++;
+    }
+  });
+  if (!dirty) console.log('  ✓ ' + sources.length + ' published text files — no raw.githubusercontent reference');
+} catch (e) { console.log('  ✗ phone-home scan could not read tools/publish/deploy_map.json: ' + e.message); failed = true; }
 
 // 14) version-drift guard — the visible build tag (index.html APP_VER) MUST equal sw.js VERSION,
 //     or a device can't be told which build it runs and the "update ready" signal misfires.
