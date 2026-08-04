@@ -30,11 +30,42 @@
  */
 const fs = require('fs');
 const path = require('path');
-const file = process.argv[2] || 'index.html';
+const argv = process.argv.slice(2);
+const roleIx = argv.indexOf('--role');
+const roleArg = roleIx >= 0 ? String(argv[roleIx + 1] || '').toLowerCase() : null;
+// NOTE: only skip the value slot when --role was actually given, or index 0 (the file
+// itself) gets filtered out and preflight silently checks index.html instead of the
+// file you named — a silent pass, which is the exact failure this flag exists to close.
+const file = argv.filter((a, i) => i !== roleIx && (roleIx < 0 || i !== roleIx + 1))[0] || 'index.html';
 const base = path.basename(file).toLowerCase();
-const isIndex = base === 'index.html';
+
+/* PROFILE SELECTION — fails CLOSED.
+ * Selecting the profile by filename was a silent hole: the migration publishes the app
+ * as `app.html`, and app content under any name other than index.html slipped through
+ * with "✓ CLEAR to publish" while skipping the public-key count, the PUBCHK watchdog
+ * and the owner-slot presence checks. A stripped watchdog would have shipped under a
+ * green tick. So: an explicit --role wins; otherwise the deploy map decides; otherwise
+ * the legacy filename rule; and anything still undeclared gets the FULL APP profile,
+ * because over-checking a marketing page costs a false alarm while under-checking app
+ * content costs the product. Any new published file must be declared to pass. */
+let role = null;
+if (roleArg) {
+  if (['app', 'marketing', 'static', 'stub'].indexOf(roleArg) < 0) {
+    console.error('✗ preflight: unknown --role "' + roleArg + '"'); process.exit(1);
+  }
+  role = roleArg;
+} else {
+  try {
+    const map = JSON.parse(fs.readFileSync(path.join(__dirname, 'deploy_map.json'), 'utf8'));
+    const rel = path.relative(path.resolve(__dirname, '..', '..'), path.resolve(file)).split(path.sep).join('/');
+    const hit = map.entries.filter(e => e.source === rel || e.published === rel)[0];
+    if (hit) role = hit.role;
+  } catch (_) { /* map unreadable → fall through to the filename rule, then fail closed */ }
+  if (!role) role = (base === 'landing.html' || base === 'legal.html') ? 'marketing' : 'app';
+}
+const isIndex = role === 'app';
 // static public marketing + legal pages: no app slots / signing key / watchdog to check.
-const isMarketing = base === 'landing.html' || base === 'legal.html';
+const isMarketing = role === 'marketing' || role === 'stub';
 const html = fs.readFileSync(file, 'utf8');
 const fails = [];
 const ok = [];
@@ -177,7 +208,8 @@ const open = (html.match(/<script\b/g) || []).length, close = (html.match(/<\/sc
 if (open === close) ok.push(`script tags balanced (${open})`);
 else fails.push(`script tags unbalanced: ${open} open / ${close} close`);
 
-console.log('PREFLIGHT — ' + file + (isMarketing ? ' (static public page)' : ''));
+console.log('PREFLIGHT — ' + file + '  [role: ' + role + (roleArg ? ' (explicit)' : ' (resolved)') + ']' +
+  (isMarketing ? ' (static public page)' : ''));
 ok.forEach(x => console.log('  ✓ ' + x));
 fails.forEach(x => console.log('  ✗ ' + x));
 console.log(fails.length ? '\n✗ BLOCKED — ' + fails.length + ' issue(s). Do NOT publish.' : '\n✓ CLEAR to publish.');
