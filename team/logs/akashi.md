@@ -2769,3 +2769,95 @@ Entry format:
 - This is the SECOND time (first: Mikoto's `d11eeda` absorbed my uncommitted preflight.js + fixture edits, logged 2026-07-29). Reminder to the team: ground rule #1 — one session at a time, and never `git add .`/`commit -a` in a shared cwd; stage explicit paths only.
 - ALSO NOTED (non-security, good news): `d2017b2` records Osefe's decision — the assistant stays **OFFLINE-ONLY for now**, online lookup parked with my OL-1..OL-12 contract. That matches my split-and-defer recommendation, so Part B is not pending a review; CSP stays parked (it only becomes mandatory if B proceeds).
 - TIP MOVED `667cec1` → `de7a4ee` (docs/log only). `git diff --stat 46ca898 de7a4ee -- index.html sw.js landing.html legal.html manifest.webmanifest` = **EMPTY** → published bytes unchanged, so **my SAFE holds on the current tip** (scoped to the published artifact, per my e19e1ba ruling — chat/log commits don't reopen a sign-off; only a published-file change does).
+
+## [2026-08-04] — via Kaito (asleep, v41 council §4A) — SECURITY STRIP + GATE FIX: Team Room DELETED from the app @ `1dc90a4`
+- Asked: execute the v41 root-migration council's §4 ruling — the in-app Team Room is a LIVE hole in the deployed
+  customer build and outranks the landing-page question. (A) delete the viewer IIFE + `#teamRoomCard` markup entirely
+  (re-pointing the URL is NOT enough), keep `team-chat.html` in source but never published; (E) fix the gate's coverage
+  in the SAME commit — add a `raw.githubusercontent` assertion to `green.js` §13 and drop the dead `team-chat.html`
+  entry from `PUBLISHED_TEXT`. My standing security exception: I code this one directly. Baseline tip `7f4a875`.
+- **THE HOLE, PLAINLY — AND IT WAS MINE.** The card was documented (by me, repeatedly) as "owner-gated". The gate was
+  `ownerFile || localStorage.mrln_team`, and the flag was set by *anything* matching `/team/i` in `location.hash`:
+  `try{ if(/team/i.test(location.hash)) localStorage.setItem('mrln_team','1'); }catch(e){}`. Typing `mrln.online/#team`
+  was the entire attack. The `#__ownerKeySrc` arm really is byte-empty in every published file (preflight enforces it),
+  so the hash flag was the ONLY live path — and it **persists in localStorage**, leaving the internal chat card
+  permanently in that customer's app, polling `raw.githubusercontent.com` every 5s. Consequences: (1) the customer build
+  phoned home, undercutting FREE · OFFLINE; (2) my own recorded audit line — "Outbound vectors enumerated: ONLY fetch =
+  Team Room, OWNER-GATED → customer files never fetch" (2026-07-02 full-surface audit, repeated in several later
+  sign-offs) — was **FALSE**. I wrote it, I repeated it, and I did not re-derive the gate when I re-asserted it. On a
+  paid privacy product a false published privacy claim is refund/consumer-protection exposure, not embarrassment.
+  LESSON, concrete: "owner-gated" is a claim about a BOOLEAN EXPRESSION, and I must re-read the expression every time I
+  restate it — I had been carrying the 2026-06-28 reading forward for five weeks. I had even logged the `#team` flag as
+  a "Low, owner-only impact" backlog nit on 2026-06-28; I under-rated it because I scored it as *information exposure*
+  (only the public chat) and never scored it as *the app phoning home*, which is the actual product claim.
+- DID (index.html, -56 lines, ZERO additions — verified `git diff --numstat` = `0 56`):
+  - deleted the whole `<script>` block "Owner-only Team Room viewer" (was 9742-9791): RAW const, `#team` hash sniff,
+    `mrln_team` flag, `tick()` 5s `fetch` poll, feed renderer, open/close button wiring.
+  - deleted `#teamRoomCard` markup (was 2438-2443) inside `<section class="panel" id="connect">`.
+  - RESIDUE GREPS ALL **0**: `teamRoomCard` · `teamRoomOpen` · `teamRoomFeed` · `mrln_team` · `raw.githubusercontent` ·
+    `Team Room`. i18n: the card carried `data-i18n-skip` and the dictionary has NO "Team Room" key (verified, did not
+    assume) → no orphan keys, MISSING unchanged. No CSS rule referenced any of the ids (0 hits) → no orphaned rule.
+    `exportHTML`/`exportBlank` never referenced it → export paths untouched. `team-chat.html` left in source, untouched,
+    and it is NOT in `tools/publish/deploy_map.json` → never enters the deploy set.
+- DID (tools/release/green.js):
+  - NEW section **13b phone-home scan**: no published file may contain `raw.githubusercontent`. Deliberate design call —
+    the file list is **DERIVED from `tools/publish/deploy_map.json`** (the single source of truth for the deploy set,
+    Kaito's phase-0 artifact) rather than hand-listed, and it **FAILS CLOSED** if the map is missing/unparseable. That
+    fixes the CLASS (a gate list drifting from the deploy set), not just the instance. Binary extensions skipped.
+  - DROPPED `team-chat.html` from `PUBLISHED_TEXT`. **Correction to Kaito's brief:** it does NOT print
+    "(not present — skipped)" — the file EXISTS in source, so the scan ran on it and printed "✓ team-chat.html clean".
+    The coverage was fake in a different way than described: a reassuring green tick for a file that does not publish.
+- VERIFIED, NOT ASSUMED:
+  - `node tools/release/green.js` → **GREEN exit 0** (all suites; html-parse now **3/3** blocks — one fewer because I
+    deleted a `<script>`; parser 21/21; preflight CLEAR ×3; PII guard 17/17; leak scan 3 files clean; phone-home scan
+    "11 published text files — no raw.githubusercontent reference"; APP_VER v40 === sw v40). Re-ran AFTER rebasing onto
+    Kaito's `3561e09` → still exit 0.
+  - `node tools/publish/preflight.js index.html` → **CLEAR exit 0** — slots byte-empty, 1 public key, PUBCHK intact,
+    **script tags balanced (5)**, down from 6 because the deleted block was one of them (preflight checks open===close,
+    NOT a fixed count — confirmed by reading it, which is why this doesn't RED).
+  - WATCHDOGS BYTE-IDENTICAL vs `7f4a875`: `__sys.token(` 18==18, `__sys.` 34, arm 2, trip 6, isArmed 2, isTripped 3,
+    `_ecVerify` 2, PUBCHK 2, 4047293148 1, PUB_B64 3, hud-state 6, `verify(` 4, `subtle` 5. The ONE count that moved is
+    `__ownerKeySrc` **7→5** = exactly the two references INSIDE the deleted viewer (the comment + its `getElementById`).
+    I hand-checked the remaining 5: the slot tag @2613, `exportBlank`'s `oks.textContent=''` key-strip @6209, the import
+    comment @7142, and MINT's `priv()` @9054/9059. Key-strip machinery intact.
+  - i18n: `node tools/i18n/sync.js` → **MISSING: 59** on my tree AND **59** on the baseline index.html run in a scratch
+    copy → my change moved nothing (the 59 are ms-only/parked, Mikoto's standing note).
+  - ADVERSARIAL PROOF the new assertion bites (full green.js run on a scratch copy of the repo, 4 cases, all **RED
+    exit 1**): (a) planted `raw.githubusercontent` URL appended to GUIDE.md → flagged GUIDE.md; (b) the deleted Team Room
+    RAW const re-added to index.html → flagged index.html; (c) deploy_map.json removed → "could not read … fail-closed";
+    (d) map declares `ghost-page.html` that does not exist in source → flagged missing. I also tightened the missing-file
+    branch to suppress the clean summary so the ✓ line can't sit next to a ✗.
+- MEASURED OUTBOUND-VECTOR SWEEP of index.html (counted with regex over the whole file, then every hit inspected by hand):
+  `fetch(` **0** · `XMLHttpRequest` **0** · `sendBeacon` **0** · `WebSocket` **0** · `EventSource` **0** · dynamic
+  `import(` **0 real** (8 regex hits are all the dictionary string "Import (load onto this device)" × 7 langs) ·
+  `importScripts` 0 · `eval(`/`new Function`/`document.write` 0 · `src="http` **0** · `src="//` 0 · external `<link>`
+  **0** (3 link tags, all same-origin relative: manifest, apple-touch-icon, icon) · `@import` **0 real** (2 hits are the
+  code comments describing the *removed* Google Fonts import) · `url(http` in CSS 0 · `<iframe|object|embed|video|audio|
+  source|track|form>` **all 0** · `new Image()` 2 = LOCAL FileReader/data:→canvas EXIF re-encode (no remote src, cleared
+  in prior audits) · `postMessage` 2 = same-origin service-worker messaging · `serviceWorker.register` 1 = same-origin
+  sw.js. Absolute-URL host census: mrln.online 6, investopedia 4, who.int 1, acefitness 1, pewresearch 1, youtube 1,
+  imdb 1 — ALL inside anchor hrefs (user-tapped) or JS that BUILDS an href; none in a `src`, none auto-loaded.
+  **HONEST CLAIM WORDING (I will not overclaim — this is the same standard I used to block GUIDE §8 on 2026-07-01):**
+  the app makes **zero automatic requests to anything but the same-origin files it is served from** (sw.js,
+  manifest.webmanifest, icon-192.png). "Zero outbound requests, full stop" would be false as literally stated — the
+  browser still fetches the app's own same-origin assets, and a user-tapped link still navigates out. What IS now true,
+  and is the marketable line: **no third-party request, no automatic request, nothing the user did not tap.**
+- FOUND, NOT ASKED FOR — routed to Kaito: `tools/test/routing_test.js` (his phase-0 gate, `3561e09`, which landed under
+  me mid-run and I rebased onto) is **NOT wired into green.js** — I ran it manually, it passes ("7 held for a later
+  phase"), but the routing/deploy-map guards do NOT run in the release gate, so a regression there ships silently. His
+  lane + Hugo's runner; I did not wire it.
+- NOTED FOR THE RECORD (no action from me, per the brief): `preflight.js:91` `PII_RE` blocks a publish on
+  `/miradi|osefe@/…` while the repo itself publishes the owner's address ~41× through `team/logs/*`. The guard's threat
+  model stops at the gh-pages file set; repo visibility walks around it. That is the private-repo split — **Osefe's call,
+  NOT mine to start.**
+- VERDICT: hole CLOSED at the source (deleted, not re-pointed) + the gate that missed it now asserts against it and
+  derives its file list from the deploy map. **This is NOT a SAFE.** My SAFE has been open since `667cec1` (code frozen
+  `46ca898`); index.html has since moved via `9fa12b9`, `7f4a875`, and now this commit — a fresh SAFE must be taken on
+  whatever tip is proposed for ship.
+- Commits / SHAs: lock `1daffe4` → **strip+gate `1dc90a4`** (index.html + tools/release/green.js only, staged
+  explicitly) → this log + TEAM-CHAT verdict + lock release in the follow-up commit. Rebased onto Kaito's `3561e09`
+  (phase-0 deploy map) mid-run; re-ran the gate after the rebase.
+- Still open: (1) a fresh **SAFE** on the ship candidate — mine does not carry; (2) Kaito: wire `routing_test.js` into
+  green.js; (3) Osefe: private-repo split (the `team/logs` PII exposure the preflight can't see); (4) `team-chat.html`
+  must stay out of the deploy map forever — the phone-home assertion would now catch it if it were re-added.
+  Sleep-mode: I fixed and signed nothing for publish — NO auto-publish, Osefe's explicit go still required.
