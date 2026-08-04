@@ -6125,7 +6125,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var lockEl = document.getElementById('lockScreen');
     var wasUnlocked = lockEl && lockEl.classList.contains('unlocked');
     if(lockEl){ lockEl.classList.remove('unlocked'); if(!lockEl.className) lockEl.removeAttribute('class'); }   // ship clean, locked
+    // the HUD's transient state is THIS device's, never the recipient's: a stale .haswarn
+    // would show a new user a red "not saving" warning that means nothing (Akashi note a).
+    var _sbar = document.querySelector('.savebar');
+    var _sbarCls = _sbar ? _sbar.className : null;
+    if(_sbar) _sbar.classList.remove('haswarn','open');
     var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    if(_sbar && _sbarCls!=null) _sbar.className = _sbarCls;
     if(lockEl && wasUnlocked) lockEl.classList.add('unlocked');
     var blob = new Blob([html], { type:'text/html' });
     var url = URL.createObjectURL(blob);
@@ -6178,7 +6184,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(sbb){ sbbParent=sbb.parentNode; sbbNext=sbb.nextSibling; sbb.parentNode.removeChild(sbb); }
       var mb = document.getElementById('mintBtn'); var mbDisp = mb ? mb.style.display : null;
       if(mb) mb.style.display = 'none';   // initMint may have shown it on the owner's file; a Blank must never show it
+      var _sbar2 = document.querySelector('.savebar');                       // same HUD-state hygiene as exportHTML (Akashi note a)
+      var _sbarCls2 = _sbar2 ? _sbar2.className : null;
+      if(_sbar2) _sbar2.classList.remove('haswarn','open');
       var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      if(_sbar2 && _sbarCls2!=null) _sbar2.className = _sbarCls2;
       if(mb) mb.style.display = mbDisp;   // restore the live owner app
       if(sbb && sbbParent){ sbbParent.insertBefore(sbb, sbbNext); }   // put it back in the live app
       if(lockEl && wasU) lockEl.classList.add('unlocked');
@@ -6868,7 +6878,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     // resolve tokens at render time — re-render them so a switch recolors instantly.
     // First (boot) call skips: data isn't loaded yet; boot renders happen right after.
     if(window.__appearanceBooted){
-      var R=function(fn){ try{ if(typeof fn==='function') fn(); }catch(_){ } };
+      var R=function(fn){ try{ if(typeof fn==='function') fn(); }catch(e){ try{ console.warn('MRLN: re-render failed on theme switch', e); }catch(_){ } } };   // never silent (Akashi note d)
       R(typeof drawChart==='function'?drawChart:null);
       R(typeof renderMissions==='function'?renderMissions:null);
       R(typeof renderSavingsBoxes==='function'?renderSavingsBoxes:null);
@@ -7066,7 +7076,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function _sanitizeIngested(){
     function fixIds(arr){ if(Array.isArray(arr)) arr.forEach(function(o){ if(o && typeof o==='object' && 'id' in o) o.id=_sid(o.id); }); }
     fixIds(STATE.workouts); fixIds(STATE.notes); fixIds(STATE.media); fixIds(STATE.reminders); fixIds(STATE.savingsBoxes);
-    if(Array.isArray(STATE.checklist)) STATE.checklist=STATE.checklist.filter(function(o){ return o && typeof o==="object"; }).map(function(o){ return { id:_sid(o.id), text:String(o.text==null?"":o.text).slice(0,200), done:!!o.done }; });
+    if(Array.isArray(STATE.checklist)){ var _ckSeen={}; STATE.checklist=STATE.checklist.filter(function(o){ return o && typeof o==="object"; }).map(function(o,ix){
+      var _id=_sid(o.id);                                        // hostile/absent ids sanitise to '' -> collide -> one delete removed several rows (Akashi note b)
+      if(!_id || _ckSeen[_id]) _id='ck'+ix.toString(36)+Math.random().toString(36).slice(2,6);
+      _ckSeen[_id]=1;
+      return { id:_id, text:String(o.text==null?"":o.text).slice(0,200), done:!!o.done }; }); }
     if(Array.isArray(STATE.prs)) STATE.prs.forEach(function(pr){ if(!pr||typeof pr!=='object') return; if('id' in pr) pr.id=_sid(pr.id); pr.wt=_inum(pr.wt); pr.reps=_inum(pr.reps); pr.dist=_inum(pr.dist); pr.secs=_inum(pr.secs); });
     if(Array.isArray(STATE.foodLog)) STATE.foodLog.forEach(function(e){ if(!e||typeof e!=='object') return; if('id' in e) e.id=_sid(e.id); if(e.total&&typeof e.total==='object'){ e.total.kcal=_inum(e.total.kcal); e.total.p=_inum(e.total.p); e.total.c=_inum(e.total.c); e.total.f=_inum(e.total.f); } });
     if(MODEL && Array.isArray(MODEL.groups)) MODEL.groups.forEach(function(g){ if(!g||typeof g!=='object') return; if('id' in g) g.id=_sid(g.id); fixIds(g.items); });
