@@ -48,20 +48,49 @@ const base = path.basename(file).toLowerCase();
  * the legacy filename rule; and anything still undeclared gets the FULL APP profile,
  * because over-checking a marketing page costs a false alarm while under-checking app
  * content costs the product. Any new published file must be declared to pass. */
+// How much checking each role buys. Used ONLY to stop a downgrade — never to pick a role.
+const ROLE_STRENGTH = { app: 3, marketing: 2, stub: 2, static: 1 };
+// What the deploy map says about this file. Authoritative when present: it is committed
+// and reviewed, whereas an --role flag is whatever the person at the keyboard typed.
+let mapRole = null;
+try {
+  const map = JSON.parse(fs.readFileSync(path.join(__dirname, 'deploy_map.json'), 'utf8'));
+  const rel = path.relative(path.resolve(__dirname, '..', '..'), path.resolve(file)).split(path.sep).join('/');
+  const hit = map.entries.filter(e => e.source === rel || e.published === rel)[0];
+  if (hit) mapRole = hit.role;
+} catch (_) { /* map unreadable → fall through to the filename rule, then fail closed */ }
+
 let role = null;
+let roleNote = '';
 if (roleArg) {
-  if (['app', 'marketing', 'static', 'stub'].indexOf(roleArg) < 0) {
+  if (!ROLE_STRENGTH[roleArg]) {
     console.error('✗ preflight: unknown --role "' + roleArg + '"'); process.exit(1);
+  }
+  // --role may DECLARE a role for an unmapped file, or restate/strengthen a mapped one.
+  // It must NEVER weaken what the map declares. Measured before this guard existed:
+  // `preflight.js index.html --role marketing` printed "✓ CLEAR to publish" on an
+  // index.html whose PUBCHK watchdog had been gutted, because marketing skips the
+  // watchdog/public-key/slot-presence checks. The flag is a convenience, not an
+  // authority — a downgrade below the map is now a BLOCK. (Akashi)
+  if (mapRole && ROLE_STRENGTH[roleArg] < ROLE_STRENGTH[mapRole]) {
+    console.error('✗ preflight: --role ' + roleArg + ' would WEAKEN the deploy map\'s declared role "' +
+      mapRole + '" for ' + file + ' — refusing. Fix the map, or drop the flag.');
+    process.exit(1);
   }
   role = roleArg;
 } else {
-  try {
-    const map = JSON.parse(fs.readFileSync(path.join(__dirname, 'deploy_map.json'), 'utf8'));
-    const rel = path.relative(path.resolve(__dirname, '..', '..'), path.resolve(file)).split(path.sep).join('/');
-    const hit = map.entries.filter(e => e.source === rel || e.published === rel)[0];
-    if (hit) role = hit.role;
-  } catch (_) { /* map unreadable → fall through to the filename rule, then fail closed */ }
+  role = mapRole;
   if (!role) role = (base === 'landing.html' || base === 'legal.html') ? 'marketing' : 'app';
+}
+// "static" describes a byte asset (icon, font, PDF, CNAME, manifest) — never a page of
+// markup. An .html carrying that role would skip the public-key count, the owner-slot
+// presence check and PUBCHK, i.e. a stripped watchdog under a green tick. Same principle
+// the block above already states: over-checking a marketing page costs a false alarm,
+// under-checking app content costs the product. So fail CLOSED onto the app profile and
+// say so out loud. (Akashi)
+if (role === 'static' && /\.html?$/i.test(base)) {
+  roleNote = ' — role "static" is not valid for an HTML page; using the full app profile (fail-closed)';
+  role = 'app';
 }
 const isIndex = role === 'app';
 // static public marketing + legal pages: no app slots / signing key / watchdog to check.
@@ -209,7 +238,7 @@ if (open === close) ok.push(`script tags balanced (${open})`);
 else fails.push(`script tags unbalanced: ${open} open / ${close} close`);
 
 console.log('PREFLIGHT — ' + file + '  [role: ' + role + (roleArg ? ' (explicit)' : ' (resolved)') + ']' +
-  (isMarketing ? ' (static public page)' : ''));
+  (isMarketing ? ' (static public page)' : '') + roleNote);
 ok.forEach(x => console.log('  ✓ ' + x));
 fails.forEach(x => console.log('  ✗ ' + x));
 console.log(fails.length ? '\n✗ BLOCKED — ' + fails.length + ' issue(s). Do NOT publish.' : '\n✓ CLEAR to publish.');

@@ -140,7 +140,15 @@ section('preflight — every published HTML page (role-driven, from tools/publis
 let pfPages = null;
 try {
   const dm = JSON.parse(fs.readFileSync(path.join(root, 'tools/publish/deploy_map.json'), 'utf8'));
-  pfPages = dm.entries.filter(e => /\.html$/i.test(e.source) && e.role !== 'static');
+  // EVERY published .html is preflighted, whatever role the map gives it. Excluding
+  // role:"static" re-opened, one layer up, the exact silent-pass phase 0 set out to close:
+  // an .html declared "static" (the role 58 of 61 entries use, so the natural typo for the
+  // migration entry) was dropped from this loop entirely — no owner-slot check, no
+  // private-key check, no PII scan, no PUBCHK. PROVEN on a scratch copy: app content
+  // published as app.html with the watchdog gutted AND the owner-key slot populated still
+  // printed "GREEN" once the file-count pin was bumped. preflight.js itself now also
+  // fail-closes an .html declared static onto the full app profile. (Akashi)
+  pfPages = dm.entries.filter(e => /\.html?$/i.test(e.source));
 } catch (e) {
   console.log('  ✗ cannot read tools/publish/deploy_map.json — ' + e.message); failed = true;
 }
