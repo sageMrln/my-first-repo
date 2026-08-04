@@ -5764,6 +5764,16 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function _addItem(c){
     var amt=_num(c); if(amt==null) return null;
     var fq=_freq(c);
+    // GUARD (council): this LAST-RESORT branch invented bills out of health statements —
+    // "I ate 600 calories today" minted a 600 kr/mo expense. Reject a HEALTH statement only
+    // when it carries no cost intent, so "add protein powder 299 kr/mo" still works while
+    // "i ran 5 km today" never becomes a bill. (An earlier, stricter version demanded a
+    // signal from EVERY add and broke legitimate da/de phrasings the parser suite guards.)
+    var _lc=String(c||'').toLowerCase();
+    var _CCY_LOCAL=/(?:kr|dkk|sek|nok|usd|eur|gbp|chf|cad|aud|huf|jpy|\u00a4|\$|\u20ac|\u00a3|\u00a5)/;   // local: _addItem is inside the parser-suite slice window, _CCY_RE is not
+    var _healthWord=/(?<![\p{L}])(?:calorie|calories|kcal|protein|carbs?|macros?|steps?|reps?|sets?|km|miles?|lbs?|bpm)(?![\p{L}])/u.test(_lc);
+    var _addVerb=false; try{ _addVerb=_re('^\\s*(?:'+LEX.add+')').test(_lc); }catch(_){ }
+    if(_healthWord && !_addVerb && !_CCY_LOCAL.test(_lc)) return null;
     var catPhrase=(c.match(_re('\\s+(?:'+LEX.to+')\\s+([\\p{L}\\d&\'’ ]+)$'))||[])[1];
     var cat=_matchCategory(c) || (catPhrase?catPhrase.trim():null);
     var name=_cleanName(c);
@@ -5930,6 +5940,42 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(!vals.length) return NaN;
     return Math.max.apply(null, vals);                                  // the price/goal asked about is the largest figure (ignores stray "2"="to" text-speak)
   }
+  // A PRICE, unlike a bare number, must be signalled. "PS5" / "iPhone 17" / "Switch 2" /
+  // "RTX 5090" all carry digits that are NOT prices, and a finance app must never green-light
+  // a purchase against a number it invented from a product name (council: worst defect found).
+  // Confident when: (a) a currency symbol/code sits next to the number, or (b) once the
+  // question's own words are removed, the number is all that remains ("can I afford 4000?").
+  var _CCY_RE = /(?:kr|dkk|sek|nok|isk|usd|eur|gbp|chf|cad|aud|huf|pln|czk|jpy|\u00a4|\$|\u20ac|\u00a3|\u00a5|\u20b9|\u20a9)/;
+  // Words that are never product names, so a number right after one is still a PRICE.
+  var _PRICE_STOP = /^(?:how|long|much|many|to|2|for|of|a|an|the|i|we|my|me|is|it|can|could|do|does|would|should|afford|affrod|buy|get|have|enough|new|another|this|that|and|or|please|now|still|really|about|around|roughly|need|want|save|saving|savings|reach|goal|cost|costs|costing|price|priced|spend|spent|put|aside|til|kan|jeg|har|koster|kostet|kosten|cuesta|spar|spare|spara)$/;
+  // A PRICE must be signalled — a finance app must never green-light a purchase against a
+  // number it invented from a product name (council: the worst defect found in the product).
+  //   "Can I afford a PS5?" -> 5      "iPhone 17" -> 17      "RTX 5090" -> 5090 (looks plausible: worse)
+  function _priceFrom(str){
+    var raw = String(str||'').toLowerCase().replace(/,/g,' ').replace(/[?!;:]/g,' ');
+    // (a) currency adjacency, either side — always decisive: "4000 kr", "$50", "kr 4000"
+    var near = new RegExp('(?:' + _CCY_RE.source + ')\\s*(\\d+(?:\\.\\d+)?)(k(?![a-z]))?|(\\d+(?:\\.\\d+)?)(k(?![a-z]))?\\s*(?:' + _CCY_RE.source + ')', 'gi');
+    var m, best = NaN, n;
+    while((m = near.exec(raw))){
+      var d = m[1] != null ? m[1] : m[3], kk = m[1] != null ? m[2] : m[4];
+      n = parseFloat(d); if(!isFinite(n)) continue; if(kk) n *= 1000;
+      if(!isFinite(best) || n > best) best = n;
+    }
+    if(isFinite(best)) return best;
+    // (b) positional: keep numbers that are NOT model designators
+    var toks = raw.split(/\s+/).filter(Boolean);
+    for(var i=0;i<toks.length;i++){
+      var tk = toks[i];
+      var mm = tk.match(/^(\d+(?:\.\d+)?)(k)?$/);                                  // a bare number, optionally the k-thousands suffix
+      if(!mm) continue;                                                        // glued forms (ps5, rtx5090, a4) fail this and are never prices
+      var terminal = (i === toks.length - 1);                                   // nothing after it but the end
+      var prev = i > 0 ? toks[i-1] : '';
+      if(terminal && prev && /^[a-z\u00e0-\u00ff]{2,}$/.test(prev) && !_PRICE_STOP.test(prev)) continue;   // "switch 2", "iphone 17" -> model number
+      n = parseFloat(mm[1]); if(!isFinite(n)) continue; if(mm[2]) n *= 1000;
+      if(!isFinite(best) || n > best) best = n;
+    }
+    return isFinite(best) ? best : NaN;
+  }
   // Normalise common misspellings + text-speak in a QUESTION so fast/daft typing still routes
   // to the right intent. Operates ONLY on the asked text (never on stored data) and is word-bounded
   // so it can't touch amounts or category names — a recognition aid, nothing more.
@@ -5985,17 +6031,19 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     }
     // affordability
     if(/\bafford/.test(s) || /\b(can i (?:buy|get|have)|enough for)\b/.test(s)){
-      var a=_amtFrom(s);
-      if(!isFinite(a)) return t('Tell me the price and I’ll check, e.g. “can I afford 4000?”.');
+      var a=_priceFrom(s);                                              // NEVER _amtFrom here — see _priceFrom
+      if(!isFinite(a)) return t('What does it cost? Tell me the price and I’ll check it against your leftover and savings, e.g. “can I afford 4000 kr?”.');
       if(!inc) return t('I can’t check that without your income — set it in Setup first.');
+      var _boxes=0; try{ (STATE.savingsBoxes||[]).forEach(function(b){ var v=Number(b&&b.balance)||0; _boxes += v*T; }); }catch(_){ }
       if(a <= left*T) return tf('Yes — {amt} fits within your typical {left}/month leftover.', {amt:money(a), left:money(left)});
+      if(_boxes > 0 && a <= _boxes) return tf('{amt} is more than one month’s leftover ({left}), but you have {saved} saved — it would take about {n} month(s) to replace.', {amt:money(a), left:money(left), saved:money(_boxes), n:Math.max(1,Math.ceil(a/Math.max(1,left*T)))});
       return tf('No — {amt} is more than your typical {left}/month leftover, so part of it would come from savings.', {amt:money(a), left:money(left)});
     }
     // save-time
     if(/\b(how long|when will|time to)\b/.test(s) && /\b(save|saving|reach)\b/.test(s)){
-      var target=_amtFrom(s);
+      var target=_priceFrom(s);                                         // same price-signal rule as affordability
       var rate=((MODEL.savingsMatch||0)*T) || left;
-      if(!isFinite(target) || target<=0) return t('Tell me the goal amount, e.g. “how long to save 50000?”.');
+      if(!isFinite(target) || target<=0) return t('Tell me the goal amount, e.g. “how long to save 50000 kr?”.');
       if(!isFinite(rate) || rate<=0) return t('Set a monthly saving first, e.g. “save 2000 per month”, and I’ll tell you how long.');
       var n=Math.ceil(target/rate);
       return n===1 ? tf('At {rate}/month you would reach {amt} in about 1 month.', {rate:money(rate), amt:money(target)})
