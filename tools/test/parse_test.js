@@ -50,6 +50,28 @@ check('add Kort 50', 'addItem');
 check('Alter Ego sub 120', 'addItem');
 check('Sparekassen 500 om måneden', 'addItem');   // da savings BANK
 check('Sparkasse 500 monatlich', 'addItem');       // de bank
+
+// --- HUNGARIAN income lexicon (found by Mikoto running the app's OWN quoted examples
+//     through the real parser in a browser; both halves were live in a shipped build) ---
+// (a) the words the Hungarian UI itself uses for Income were missing, so a user setting
+//     their income silently created a monthly EXPENSE named after the word they typed.
+check('a bevételem 25000', 'setIncome');           // hu "my income" — the Income tab's own word
+check('bevétel 25000', 'setIncome');
+check('a jövedelmem 25000', 'setIncome');          // hu possessive DROPS the stem vowel:
+check('a jövedelem 25000', 'setIncome');           //   jövedelem -> jövedelm+em, so the
+check('a fizetésem 25000', 'setIncome');           //   dictionary form alone never matched
+check('a bérem 25000', 'setIncome');
+// (b) the mirror bug, and the worse one: _has() matches with a LEADING boundary only (by
+//     design, so Germanic inflections like "lønnen"->"lønn" still hit). In an agglutinative
+//     language that makes a short stem a prefix of unrelated words — "bérleti díj" is RENT,
+//     and it was setting the user's INCOME, corrupting the whole finance model from one typo
+//     of a sentence. Never delete these.
+check('bérleti díj 5000', 'addItem');              // hu rent — expense, NOT income
+check('bérlés 5000', 'addItem');                   // hu rental
+check('bérlet 450', 'addItem');                    // hu season ticket / pass
+check('fizetési határidő 500', 'addItem');         // hu payment deadline
+check('bevásárlás 2000', 'addItem');               // hu groceries — must not hit "bevétel"
+
 // --- real commands must still work ---
 check('my income is 30000', 'setIncome');
 check('loan payment 4500', 'setLoanPayment');
