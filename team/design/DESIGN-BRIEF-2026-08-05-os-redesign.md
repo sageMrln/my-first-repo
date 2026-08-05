@@ -167,3 +167,18 @@ Chairman under this directive: exact group count (mock showed 4; standing
 blueprint ruling `a8abee4` decided 5 incl. MORE), group names ("Diary" flagged
 as unpredictable by the Outsider seat), and where connect/log/settings live.
 Consumer-ease is the deciding criterion Osefe named.
+
+## Owner addendum 2 (2026-08-05 — verbatim)
+> "Think of this as a complete reskin"
+
+Ruling effect: scope = the ENTIRE app gets the new design language — every
+screen, not just Overview + hub landings. Features, data models and logic
+untouched (consistent with the brief's "improve only the presentation").
+Reads on the seats' debate: the Expansionist/Executor suggestion to limit the
+new card vocabulary to Overview+hubs is now bounded — leaf pages are IN scope
+for the reskin (palette/type/spacing/card chrome), while forcing KPI-card
+anatomy onto dense data-entry tools remains a Chairman judgment call about
+hierarchy, not an excuse to leave pages visually stale. Where a mock element
+has no honest backing data (balance series, weight history), the reskin adapts
+the presentation to real data rather than inventing series — flagged to Osefe
+in the ruling, not silently resolved.
