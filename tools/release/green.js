@@ -137,6 +137,17 @@ run(['tools/test/price_test.js'], 'price suite');
 section('routing & deploy map — tools/test/routing_test.js');
 run(['tools/test/routing_test.js'], 'routing suite');
 
+// 11d) allergen / dislike filter across the six non-English languages we ship.
+//      The app promises "never suggest a dislike" in seven languages; the matcher
+//      is ASCII-only, so most non-English allergen terms hide NOTHING and seven of
+//      them are Levenshtein-corrected into an unrelated food (worse than a miss).
+//      Ships XFAIL BY DESIGN (council 2026-08-05 §4 row A0): it prints the live
+//      count every run and exits 0 while the count is at or below the recorded
+//      baseline, and exits 1 the moment it goes UP. The number can only go down.
+//      It does NOT block the gate today; the fix is stage C1. Do not "quiet" it.
+section('allergen dislike filter × 6 languages — tools/test/allergen_i18n_test.js  [XFAIL RATCHET]');
+run(['tools/test/allergen_i18n_test.js'], 'allergen i18n ratchet');
+
 // 12) deep pre-publish guard on EVERY published HTML page, driven by the deploy map.
 //     Hand-listing the three pages was drift waiting to happen: a new published file
 //     simply would not be preflighted, and the app is published under a DIFFERENT name
