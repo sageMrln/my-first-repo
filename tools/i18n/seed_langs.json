@@ -123,5 +123,30 @@
    {"text":"Zabkása bogyókkal és skyrrel","kcal":420,"p":24,"c":58,"f":9},
    {"text":"Fehérjeturmix edzés után","kcal":210,"p":32,"c":8,"f":4}
   ]
+ },
+ "fr": {
+  "workouts": [
+   {"day":"Lundi","title":"Poussée — pectoraux, épaules, triceps","body":"Développé couché 4×8\nDéveloppé militaire 3×10\nDéveloppé incliné haltères 3×12\nÉcartés à la poulie 3×15"},
+   {"day":"Mercredi","title":"Tirage — dos et biceps","body":"Soulevé de terre 3×5\nTractions 4×8\nRowing barre 3×10\nCurls 3×12"},
+   {"day":"Vendredi","title":"Jambes et gainage","body":"Squat 4×6\nSoulevé de terre roumain 3×10\nPresse à cuisses 3×12\nGainage 3×60s"}
+  ],
+  "calendar": ["Loyer à payer","Jour des jambes 18h00","Facture de mobile","Cinéma avec Ida","Préparer les repas dimanche","Arrivée du salaire"],
+  "notes": [
+   {"title":"Courses de la semaine","body":"Poulet, riz, avoine, œufs, fruits rouges surgelés, café. Ne pas dépasser 600 kr."},
+   {"title":"Rappel de renouvellement","body":"L’abonnement à la salle se renouvelle le 12 — vérifier si le tarif étudiant s’applique toujours."}
+  ],
+  "media": [
+   {"title":"Oppenheimer","type":"film","status":"watched","rating":9,"comment":"À revoir avec papa","genre":"Drame"},
+   {"title":"Dune: Part Two","type":"film","status":"watched","rating":8.5,"comment":"","genre":"Science-fiction"},
+   {"title":"Breaking Bad","status":"watched","rating":9.5,"comment":"Saison 5 terminée","genre":"Drame"},
+   {"title":"The Bear","status":"watched","rating":8,"comment":"","genre":"Drame"},
+   {"title":"Interstellar","type":"film","status":"towatch","comment":"Soirée cinéma vendredi","genre":"Science-fiction"},
+   {"title":"Severance","status":"towatch","comment":"","genre":"Thriller"}
+  ],
+  "food": [
+   {"text":"Saumon, quinoa, brocoli","kcal":508,"p":41,"c":28,"f":24},
+   {"text":"Yaourt, granola, banane","kcal":678,"p":28,"c":98,"f":21},
+   {"text":"Salade, tomate, avocat, feta","kcal":461,"p":18,"c":21,"f":36}
+  ]
  }
 }
