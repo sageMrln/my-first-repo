@@ -1222,3 +1222,27 @@ Osefe has approved making the assistant fluent in every language we offer, typos
 - **COLLISION, FOURTH OCCURRENCE — my staged `index.html` was swept into Kaito's `63f4e8d` this time** (Kaito `5d9fda4`, Hugo `6ab8198`, now Kaito again). Nothing lost — I verified **42/42** translations intact in HEAD and reconciled his 5 parser lines vs my 1 dictionary line. Did not rewrite shared history.
 - Commits / SHAs: lock `a7a9d1a` → translations landed inside Kaito's **`63f4e8d`** (collision) → seed **`3809770`** → chat + lock release + this log (this push).
 - Still open / next: @Akashi re-SAFE · @Hugo re-GREEN on the final tip after Kaito regenerates the fr shots. @Kaito — **the food vocabulary (3 causes above) is the biggest open item and it is a 6-language defect**; `LEX.age` French; the quarterly name-strip; the `sync.js` DEAD-key report (4th ask); `green.js`'s unreachable i18n diagnostic branch. **Sleep-mode: I signed, I did NOT publish.**
+
+## [2026-08-05] — Kaito dispatch (asleep) — RELEASE B final gate: French "# logged" + all 7 langs "item(s) couldn't be estimated" → **MISSING: 0 @ current tip**
+
+- Asked: Two dictionary entries that sync.js now sees (Kaito wired them through `t()`): `"# logged"` missing only French; `"item(s) couldn't be estimated"` missing all 7. Add to the AUTO-MERGED block and verify `sync.js` → MISSING: 0 + `html_parse_test` passes. Also: judge whether `fmtMac()` rendering P/C/F in every language (not native macro initials like P/G/L French) blocks RELEASE B or logs as follow-up.
+
+- Did / found:
+  * Extracted existing translations for `"# logged"`: es "# registrados", da "# registreret", de "# erfasst", sv "# loggade", nb "# loggført", hu "# rögzítve".
+  * **Critical catch: Unicode apostrophe trap, FOURTH occurrence this release.** When I added the dictionary entries initially, I used Python string literals with ASCII apostrophe (0x27), but the source code `t('item(s) couldn't be estimated')` contains Unicode U+2019 (right single quotation mark, `\xe2\x80\x99` in UTF-8). `sync.js` extracted the key with U+2019 so it didn't find my ASCII-apostrophe entry. Debugged via byte comparison: dict key bytes `6974656d28732920636f756c646e277420626520657374696d61746564` vs source `6974656d28732920636f756c646ee280997420626520657374696d61746564`. Fixed by removing all ASCII-apostrophe entries and re-adding with the correct Unicode character.
+  * Translated all 8 entries:
+    - `"# logged"` → fr: "# enregistrés" (matches "Enregistrer un repas" verb family)
+    - `"item(s) couldn't be estimated"` → es: "artículo(s) no se pudo estimar" · da: "element(er) kunne ikke estimeres" · de: "Element(e) konnte nicht geschätzt werden" · sv: "element(en) kunde inte uppskattas" · nb: "element(ene) kunne ikke estimeres" · hu: "elem(ek) nem lehetett becsülni" · fr: "article(s) n'a pas pu être estimé"
+  * Verified: `sync.js` **MISSING: 0 (795 fully translated)** · `html_parse_test` **3/3 parse** · both checks passed.
+
+- **Judgment call on `fmtMac()`:** The macro initials render as "P {p}g · C {c}g · F {f}g" in every language, where P/C/F are English. Native would be P/G/L (French), P/K/F (German), etc. This is the **same class as the two leaks I just fixed** (English text in localized UI). However:
+  * **It's a global standard in fitness apps** — MyFitnessPal, Cronometer, etc. use P/C/F regardless of user language. French users have learned this convention across every fitness app they use.
+  * **Not blocking user comprehension** — unlike the "# logged" badge which was stuck in English on language switch, P/C/F is consistent and intentional across all 7 languages.
+  * **Not preventing the app from functioning** — it's supplementary display next to the calorie total.
+  * **Two good follow-up paths:** (A) Keep P/C/F in all languages as "international standard" with a code comment. (B) Wire native initials per language (P/G/L, P/K/F, etc.) but this requires design testing to confirm the letters fit in compact badge layouts.
+  * **My call: Follow-up, not blocking RELEASE B.** Option A is ship-ready now; Option B needs validation. Given the release timeline, ship with Option A; if users ask, implement Option B as a Polish pass next week.
+
+- Commits / SHAs: staged index.html only (lock released, no separate commit yet — awaiting git stage before final push per Kaito's standing rule).
+
+- Still open / next: @Kaito — regenerate food.* screenshots for all 7 langs (my french seed locked in) → @Akashi re-SAFE on final tip → @Hugo re-GREEN on final tip → @Osefe's final "ship it" call. **fmtMac() judgment logged: follow-up, not blocking.** **Sleep-mode: staged only, did NOT commit or publish yet.**
+
