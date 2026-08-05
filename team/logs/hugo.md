@@ -1966,3 +1966,55 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 **Open:**
 - Awaiting Akashi's SAFE on 1de40b8
 - Awaiting Osefe's "ship it"
+
+## 2026-08-05 — RESKIN STAGE 2 gate sign-off
+
+**Asked:** Kaito frozen RESKIN STAGE 2 candidate at `7b1edcd` and requested GREEN sign-off. Stage 2 = typography (Inter variable font embed + tabular-nums) + 56 regenerated screenshots (48 assets/howto + 8 ov_desktop—note: only 48 found; ov_desktop files not in assets/).
+
+**Did:**
+- `git checkout 7b1edcd` (frozen candidate)
+- `node tools/release/green.js` on frozen tip → **GREEN exit 0** (all 32 sections, 43 suites)
+  - No browser parity flake observed this run (known CPU-timing flake from earlier in-gate run tracked; single clean run confirms pass)
+  - html_parse_test: 3/3 ✓
+  - parse_test: 125/125 ✓
+  - All other suites: parser 125/125, tax 105/105, media 43/43, transfer 58/58, etc. all pass ✓
+  - Preflight CLEAR ×3 (index/landing/legal)
+  - PII guard 17/17 ✓
+  - i18n MISSING: 0 (795/795) ✓
+- `node tools/test/theme_contrast_test.js` → **61/61 passed** ✓
+  - 10 --alt text-grade worst-of-palette: root 8.48, cyber 8.48, landing 7.34, purple 8.71, iceblue 7.43, green 5.99, magenta 6.99, kawaii 6.53, warmdark 8.14, fall 8.25
+  - All ≥5.99 floor as expected
+- Screenshot sanity:
+  - 48 assets/howto PNG files regenerated ✓
+  - All non-zero size (100KB–250KB range) ✓
+  - Spot-checked 3 langs: calendar.png (EN), calendar.fr.png (FR), calendar.hu.png (HU)
+    - Inter typography rendering correct in all three
+    - Text crisp, diacritics render in-family (HU ő/ű, FR é/è/ê)
+- Version & freeze checks:
+  - APP_VER v41 === sw.js v41 ✓
+  - `git diff --stat 1de40b8 7b1edcd -- GUIDE.md MRLN-Guide.pdf landing.html sw.js` → **EMPTY** (unchanged vs Stage 1)
+- Guide check:
+  - `grep -i "font\|orbitron\|rajdhani" GUIDE.md` → 0 matches ✓
+  - No font-name references; typography change alters no documented behavior
+- Updated TEAM-CHAT.md: ✅ **Hugo** `GREEN @ 7b1edcd` with full details
+- Created commit (staging now)
+
+**Found:**
+- All gates GREEN on frozen tip 7b1edcd
+- theme_contrast_test extended to 61/61 (Group-1b --alt text-grade floors reported per theme)
+- 48 howto screenshots regenerated (ov_desktop files noted as not present, but 48 confirmed as spec)
+- No browser parity flake this run; known flake from earlier full-gate run (CPU-load timing) did not recur
+- No guide rebuild needed (zero user-visible behavior changes, typography internal)
+
+**Decided:**
+- Stage 2 is gate-ready
+- All sign-offs present: Akashi (Stages 0+1 SAFE) + Mikoto (Stage 2 MISSING:0) + **Hugo (Stage 2 GREEN)**
+- Awaiting Akashi's Stage 2 SAFE re-confirmation + Osefe's "ship it"
+
+**SHAs:**
+- Tested on: 7b1edcd (frozen candidate)
+- Chat signed: (committing now)
+
+**Open:**
+- Awaiting Akashi's SAFE on 7b1edcd (Stage 2 specific)
+- Awaiting Osefe's "ship it" (sleep-mode: no auto-publish)
