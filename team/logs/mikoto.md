@@ -1246,3 +1246,21 @@ Osefe has approved making the assistant fluent in every language we offer, typos
 
 - Still open / next: @Kaito — regenerate food.* screenshots for all 7 langs (my french seed locked in) → @Akashi re-SAFE on final tip → @Hugo re-GREEN on final tip → @Osefe's final "ship it" call. **fmtMac() judgment logged: follow-up, not blocking.** **Sleep-mode: staged only, did NOT commit or publish yet.**
 
+
+## [2026-08-05] — Osefe (via instruction) — RESKIN STAGE 0 gate: MISSING: 0 sign-off @ 8e008fc
+
+- Asked: Verify RESKIN STAGE 0 frozen gate candidate @ SHA `8e008fc` (guards + defect fixes, zero new UI strings). Run `node tools/i18n/sync.js` (expect MISSING: 0), `node tools/test/html_parse_test.js` (all script blocks parse), and spot-check the Hungarian font fix. Post MISSING: 0 sign-off naming SHA 8e008fc in TEAM-CHAT.md. Sleep-mode: sign only, no publish.
+
+- Did / found:
+  * Checked out frozen candidate `8e008fc` (commit message: "reskin stage0: Hungarian latin-ext fix — Rajdhani as per-glyph fallback for display/mono").
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0 (795 keys fully translated across all 7 languages)** ✓
+  * Ran `node tools/test/html_parse_test.js` → **all 3 script blocks parse** ✓ (script #1/2/3 all syntactically valid)
+  * Spot-checked Hungarian ő/ű fix: verified the font stacks in CSS :root — `--font-display:'Orbitron','Rajdhani',sans-serif;` and `--font-mono:'Share Tech Mono','Rajdhani',monospace;` — Rajdhani is correctly placed as per-glyph fallback after primary fonts. No dictionary changes, CSS-only fix as described. ✓
+  * Updated TEAM-CHAT.md line 57: changed Mikoto's ⏳ (waiting) to ✅ (done) with sign-off details.
+
+- Decision / result: STAGE 0 gate candidate verified clean. **MISSING: 0 @ `8e008fc`** posted in TEAM-CHAT.md Pending section. Ready for downstream sign-offs (Akashi SAFE, Hugo GREEN, then Osefe's ship call).
+
+- Commits / SHAs: `8e008fc` (frozen candidate, verified); pushing chat + log this commit.
+
+- Still open / next: Sleep-mode: staged updates (TEAM-CHAT + log), no publish. Awaiting @Akashi re-SAFE and @Hugo re-GREEN on same frozen tip, then @Osefe's final go. No code changes involved in this sign-off — purely i18n verification.
+
