@@ -247,6 +247,27 @@ Entry format:
 - Still open / next: get landing (mrln.online/landing) content to align funnel; Akashi vet public claims;
   pinned-post + cover copy if Osefe wants; unchanged: gf voice relay, Akashi security audit result.
 
+## [2026-08-05] — direct (Osefe) — ALL-IN-ONE is the positioning + FOUND the killer feature
+- Asked: Osefe: "i want to focus on the all in one" then "isn't that our strongest point" then "yes"
+  (= go ask Kaito if the money↔health connection is a real shipped capability).
+- My take (blunt, not yes-man): all-in-one IS our strongest DIFFERENTIATOR (most unique/defensible per
+  the competitor research) — but "most unique" ≠ "most persuasive." All-in-one as bare convenience
+  ("fewer apps") is a WEAK purchase trigger. The strong version = the money↔health CONNECTION, IF the
+  product delivers it. So I verified in code (no Kaito subagent exists — Kaito = lead/coordinator).
+- FOUND IT (shipped, real): **"S-Tier Life" engine** @ index.html ~3836–3900 (computeMissions/renderTier).
+  Blends **finance score (55%) + computeBodyGrade (45%) → ONE overall life tier S/A/B/C/D/E** (header
+  GRADE pill + Life Tier card). Gated: body half only counts if body stats entered + bodyIncluded() toggle.
+  S-tier msg literally: "Elite — money AND body." tierOf() @4519, blend formula @3886.
+- Decided: THIS is the headline — "one app that grades your whole life, money + body, in a single score."
+  Elevates all-in-one from convenience to a benefit no single-domain app can match. HONESTY LIMITS: it's a
+  blended SCORE, not causal correlation → can say "grades money+health in one score", CANNOT say "shows how
+  spending affects your body." And it's OPTIONAL (needs body stats + toggle).
+- Metric/hypothesis: the Life Grade hook should out-convert generic all-in-one AND privacy-alone; test it.
+- Still open / next: posted @Kaito in TEAM-CHAT for (1) safe-to-feature confirm, (2) PUBLIC NAME lock
+  (Life Grade/S-Tier Life/Life Tier), (3) blended-vs-causal confirm; @Akashi to vet the public claim wording.
+  Once Kaito blesses → rebuild FB bio/pinned/cover + asset-drop hooks around the Life Grade. Do NOT market
+  it until Kaito signs off.
+
 ## [2026-07-03] — via Kaito (asleep dispatch) — FINANCE TEARDOWN: bring MRLN "on par with leading finance apps," offline/private
 - Asked (Osefe green-lit): teardown to bring MRLN's finance features on par with market leaders — (1) market expectation map + what drives RETENTION vs vanity; (2) offline reframe + privacy-as-wedge positioning; (3) shareability ranking by growth-impact ÷ build-cost, what to build FIRST for GTM; (4) 3–5 platform-tuned content hooks. Brutally honest.
 - Grounded in ACTUAL product (index.html read): finance tabs = Overview, Income (variable low/typical/high recap — ALREADY BUILT, assistant returns "typical monthly income is X — low month, good month"), Expenses (categories), Loan (payoff date/APR/terms/notes), Cash Flow simulator (money-in vs out, canvas chart), Savings (goal boxes + "how long to save X" projection), Subscriptions tab, Stats & Grades (SHIPPED: 0–100 financial-health grade across resilience/savings-rate/fixed-costs-ratio/free-cash — a GRADE, not raw $), 12-country tax engine, NL assistant, PASTE-based bank import (applyBankImport — user pastes a statement, app NEVER connects to a bank/Plaid). NO net-worth trend tab, NO share-card export (both would be builds → route to Kaito).
