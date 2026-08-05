@@ -2177,7 +2177,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
     <div class="card">
       <h2>Meal Ideas <span class="tag now" id="mealGoalBadge" style="font-size:11px">—</span></h2>
-      <div class="desc">Meals tuned to <b>your body</b> — your calorie &amp; protein targets, your fat-to-muscle balance, and the physique you're chasing. We weight toward what you like, never suggest a dislike, and tell you <b>how much</b> to eat. Tap any meal for full nutrition.</div>
+      <div class="desc">Meals tuned to <b>your body</b> — your calorie &amp; protein targets, your fat-to-muscle balance, and the physique you're chasing. We weight toward what you like, never suggest a dislike, and tell you <b>how much</b> to eat. Dislikes filter suggestions — they are not a medical allergen check. Tap any meal for full nutrition.</div>
       <div class="form-row">
         <div class="field"><label>Physique you want</label><select id="mealPhysique">
           <option value="healthy">Just healthy / balanced</option>
@@ -2562,18 +2562,18 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="panel-legal"><span data-i18n="Informational estimates — not financial advice.">Informational estimates — not financial advice.</span> · <a href="#" data-legal data-legal-to="lg-disclaimer" data-i18n="Terms · Privacy">Terms · Privacy</a></div>
   </section>
 
-  <footer>// FINANCE HUD v5 · SELF-SUFFICIENT · free offline assistant · auto-save + export · in-file audit log · not financial or medical advice · <span class="legal-open" data-legal role="button" tabindex="0" data-i18n="Terms · Privacy · Disclaimer">Terms · Privacy · Disclaimer</span></footer>
+  <footer>// MRLN · SELF-SUFFICIENT · offline assistant · auto-save + export · in-file audit log · not financial or medical advice · <span class="legal-open" data-legal role="button" tabindex="0" data-i18n="Terms · Privacy · Disclaimer">Terms · Privacy · Disclaimer</span></footer>
 </div>
 
 <!-- Floating: quick-update chat (opens above) + save/export -->
 <div class="savebar">
   <div class="chatwidget" id="chatWidget" style="display:none">
     <div class="chathead">
-      <span>🤖 Assistant MRLN <span class="tag good" style="font-size:8px;padding:1px 5px">FREE · OFFLINE</span></span>
+      <span>🤖 Assistant MRLN <span class="tag good" style="font-size:8px;padding:1px 5px" data-i18n="OFFLINE · PRIVATE">OFFLINE · PRIVATE</span></span>
       <button class="chatx" id="chatClose" title="Close">✕</button>
     </div>
     <div class="chatbody">
-      <div class="chathint">Type a change (one per line) — or ask me anything about the app. Free, in your browser. Nothing changes until you confirm.
+      <div class="chathint">Type a change (one per line) — or ask me anything about the app. Private, in your browser. Nothing changes until you confirm.
         <br><span class="dim">income is now 2600 · add Gym 29/mo to Other · rent is now 1200 · cancel Netflix · note 2026-07-15 Mum's birthday · work is now Acme Ltd</span></div>
       <textarea id="aiText" rows="3" placeholder="income is now 2600&#10;add Gym 29 per month to Other&#10;cancel Netflix"></textarea>
       <button class="btn" id="aiSend" style="width:100%" data-i18n="Send">Send</button>
@@ -5913,7 +5913,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       case 'notebook':  return t('Notebook is free-form private notes, stored only on your device.');
       case 'connect':   return t('Connect is where you back up and move your data between your own devices (a private data code), and import from bank, calendar or health apps. Nothing is ever uploaded.');
       case 'changelog': return t('Change Log records every change you make in the app, so you always have a history of what changed and when.');
-      case 'assistant': return t('That’s me — Assistant MRLN. Type a change in plain language (e.g. “income is now 2600”, “add Gym 29/mo”) and I’ll propose it for you to confirm — or ask me about any feature and I’ll explain it. Free and fully offline.');
+      case 'assistant': return t('That’s me — Assistant MRLN. Type a change in plain language (e.g. “income is now 2600”, “add Gym 29/mo”) and I’ll propose it for you to confirm — or ask me about any feature and I’ll explain it. Private and fully offline.');
       case 'save':      return t('Save / Export downloads a fresh copy of your file with all your data inside — do it after changes so you don’t lose them. “Keep me signed in” bakes your key in so it reopens instantly.');
       case 'privacy':   return t('Everything runs in your browser, offline, on your device. Your numbers are never uploaded — they live only in this file unless you export them yourself.');
       case 'install':   return t('To install MRLN as an app: on Android tap “Get the app” → Install; on iPhone tap Share → Add to Home Screen. It then opens like a real app and works offline.');
