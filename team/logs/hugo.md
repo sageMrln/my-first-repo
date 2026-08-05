@@ -2018,3 +2018,52 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 **Open:**
 - Awaiting Akashi's SAFE on 7b1edcd (Stage 2 specific)
 - Awaiting Osefe's "ship it" (sleep-mode: no auto-publish)
+
+## 2026-08-05 — RESKIN STAGE 2 POLISH re-GREEN sign-off
+
+**Asked:** Kaito froze new tip `f1716e1` after Arthur's POLISH round and requested re-GREEN sign-off. Stage 2 POLISH = fine-tuning Arthur's redlines on 7b1edcd (delta: `.btn` 44px min-height + token padding/radius, tabular-nums optimization, --r-c token usage, œ range trim, stage marker→2).
+
+**Did:**
+- `git checkout f1716e1` (frozen POLISH candidate)
+- `node tools/release/green.js` on frozen tip → **GREEN exit 0** (all 32 sections, 43 suites)
+  - html_parse_test: 3/3 ✓
+  - parse_test: 125/125 ✓
+  - theme_contrast_test: 61/61 ✓ (no change from Stage 2)
+  - All transfer/tax/media/currency suites: all pass ✓
+  - Preflight CLEAR ×3 (index/landing/legal)
+  - PII guard 17/17 ✓
+  - No browser parity flake this run (CPU-timing flake from earlier full-gate did not recur)
+- `node tools/test/parity_harness.js` standalone:
+  - All 6 widths (320/360/390/768/1024/1440): each returns zero page errors + no h-overflow + FABs don't occlude + all 15 destinations reachable ✓
+  - 7 active assertions all passed ✓
+  - 7 future-stage assertions armed for stages 3–5
+- Version & freeze checks:
+  - APP_VER v41 === sw.js v41 ✓
+  - `git diff 7b1edcd f1716e1 -- GUIDE.md MRLN-Guide.pdf landing.html sw.js` → **EMPTY** (only index.html + stage marker + logs moved) ✓
+- Screenshot delta assessment:
+  - `.btn` CSS changed: `min-height:44px` + `padding:var(--s3) var(--s3)` + `border-radius:var(--r-c)`
+  - This IS visible in-app (buttons grow to 44px floor, use token-based spacing/radius)
+  - Shots signed at 7b1edcd show pre-POLISH geometry
+  - Decision: DEFER regeneration per churn rule (POLISH is minor refinement, not major stage)
+- Updated TEAM-CHAT.md with full sign-off detail
+- Staging commit now
+
+**Found:**
+- All gates GREEN on frozen tip f1716e1
+- No parity flake on this run
+- .btn geometry is visibly changed but no other app behavior shifts
+- No guide rebuild needed (published docs unchanged)
+- Screenshot delta is known and documented
+
+**Decided:**
+- POLISH round is gate-ready
+- Screenshot regeneration deferred to next visually-affecting stage per churn rule
+- Sleep-mode: sign only, no publish (Osefe's "ship it" required)
+
+**SHAs:**
+- Tested on: f1716e1 (frozen POLISH candidate)
+- Chat signed: (committing now)
+
+**Open:**
+- Awaiting Akashi's SAFE @ f1716e1 (POLISH-round confirmation)
+- Awaiting Osefe's "ship it"
