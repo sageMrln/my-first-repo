@@ -1,6 +1,6 @@
 # MRLN — The Complete Guide
 
-**Finance & Health HUD · free · offline · private**
+**Finance & Health HUD · offline · private · 30-day money-back guarantee**
 Live app: `https://sagemrln.github.io/my-first-repo/`
 
 ---
@@ -13,12 +13,12 @@ It was built around four hard rules:
 
 | Principle | What it means for you |
 |---|---|
-| **Free** | No subscriptions, no paid APIs, no accounts. Ever. |
+| **Paid — so you are not the product** | MRLN is a paid app: you buy an access key. There is no account to create, no advertising, and nothing about you is sold. The app itself makes no paid calls to anything, so there is never a per-question or per-use fee on top. Every purchase is covered by a **30-day money-back guarantee** — if MRLN isn't for you, email us within 30 days of purchase and we'll refund you (full terms in the Refund Policy on the legal page). |
 | **Offline** | Everything runs in your browser. Once loaded it works with the plane on airplane mode. |
 | **Private** | Your data **never leaves your device**. Nothing is uploaded, tracked, or sold. |
 | **Single file** | The whole app is one self-contained HTML file — nothing to install, easy to back up. |
 
-The purpose: most finance/fitness apps want your data and your money. MRLN wants neither. It gives you the math, the projections, and the honest verdicts — and keeps all of it on your phone.
+The purpose: most finance and fitness apps are free because your data is the product — sold, or used to target ads. MRLN is paid instead, so your data never has to be the payment. It gives you the math, the projections, and the honest verdicts — and keeps all of it on your phone.
 
 ---
 
@@ -44,10 +44,10 @@ MRLN opens **locked**. You unlock it once with an **access key** (a code that lo
 
 Top of the screen is the **locale bar**: 🌐 Language · Currency · Country.
 
-**Languages (7):** English, Español, Dansk, Deutsch, Svenska, Norsk, **Magyar**.
+**Languages (8):** English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar, **Français**.
 Switching translates **the entire interface** instantly — tabs, headings, buttons, help text, the setup wizard, everything. A built-in **language watchdog** runs constantly: it re-checks every screen — including text that only appears in certain situations (your tier verdict, tax breakdown, calendar, logs) — and keeps it all in your chosen language, with nothing left in English.
 
-**Currencies (11):** USD, EUR, GBP, DKK, SEK, NOK, CHF, CAD, AUD, JPY, **HUF**.
+**Currencies (13):** USD, EUR, GBP, DKK, SEK, NOK, CHF, CAD, AUD, JPY, HUF, **SGD**, **KRW**.
 Currency is a **real conversion**, not just a relabel. Switch from kr to € and `8,000 kr` becomes `~1,070 €` at the bundled offline exchange rate. Every stored figure — income, expenses, loan, savings — converts together, and switching back returns the original amount. (Rates are an offline snapshot; no server needed.)
 
 ---
@@ -228,16 +228,16 @@ confirm** before anything changes.
 
 ## 11. 💬 Assistant MRLN — offline Q&A + plain-language commands
 
-Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **free, offline, in your browser** — nothing changes until you confirm. 
+Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **offline, in your browser** — no server, no per-question fee, and nothing changes until you confirm. 
 
-**Questions:** Ask anything about the app in **any of 7 languages** (English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar). The assistant answers from a complete knowledge base covering every tab and feature. You can also ask about **your own numbers** and it computes the answer directly from your data, all locally and offline:
+**Questions:** Ask questions in **English**. The assistant answers from a complete knowledge base covering every tab and feature. You can also ask about **your own numbers** and it computes the answer directly from your data, all locally and offline:
   - **Income** — *"what is my typical income?"*, *"income low month?"*
   - **Spending by category** — *"where does my money go?"*, *"what are my biggest costs?"*
   - **Savings** — *"how much have I saved total?", "savings in Emergency Box?", "how close to my target?"*
   - **Weight** — *"what do I weigh?"*, *"have I lost weight?"*
   - **Affordability & savings time** — *"can I afford 5000?", "how long to save 50000?"*
 
-**Commands:** Update your numbers using natural language — type the way you'd naturally say it. It understands commands in all 7 languages (e.g. *"jeg sparer 400 om måneden"*, *"min alder er 41"*). Your item, employer and note names are always kept exactly as you typed them. It understands:
+**Commands:** Update your numbers using natural language — type the way you'd naturally say it. It understands commands in the same 8 languages (e.g. *"jeg sparer 400 om måneden"*, *"min alder er 41"*, *"mon revenu est 25000"*). Your item, employer and note names are always kept exactly as you typed them. It understands:
 
 - Income — *"income is now 2600"*, *"good month income is 22000"*
 - Costs — *"add Gym 29/mo to Other"*, *"rent is now 1200"*, *"cancel Netflix"*
