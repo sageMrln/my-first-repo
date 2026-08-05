@@ -230,14 +230,14 @@ confirm** before anything changes.
 
 Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **offline, in your browser** — no server, no per-question fee, and nothing changes until you confirm. 
 
-**Questions:** Ask anything about the app in **any of 7 languages** (English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar). The assistant answers from a complete knowledge base covering every tab and feature. *(The interface is fully translated into Français, but the assistant does not yet recognise French questions or commands — ask it in one of the seven above for now.)* You can also ask about **your own numbers** and it computes the answer directly from your data, all locally and offline:
+**Questions:** Ask anything about the app in **any of 8 languages** (English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar, Français). The assistant answers from a complete knowledge base covering every tab and feature. You can also ask about **your own numbers** and it computes the answer directly from your data, all locally and offline:
   - **Income** — *"what is my typical income?"*, *"income low month?"*
   - **Spending by category** — *"where does my money go?"*, *"what are my biggest costs?"*
   - **Savings** — *"how much have I saved total?", "savings in Emergency Box?", "how close to my target?"*
   - **Weight** — *"what do I weigh?"*, *"have I lost weight?"*
   - **Affordability & savings time** — *"can I afford 5000?", "how long to save 50000?"*
 
-**Commands:** Update your numbers using natural language — type the way you'd naturally say it. It understands commands in the same 7 languages (e.g. *"jeg sparer 400 om måneden"*, *"min alder er 41"*); French phrasings are not recognised yet. Your item, employer and note names are always kept exactly as you typed them. It understands:
+**Commands:** Update your numbers using natural language — type the way you'd naturally say it. It understands commands in the same 8 languages (e.g. *"jeg sparer 400 om måneden"*, *"min alder er 41"*, *"mon revenu est 25000"*). Your item, employer and note names are always kept exactly as you typed them. It understands:
 
 - Income — *"income is now 2600"*, *"good month income is 22000"*
 - Costs — *"add Gym 29/mo to Other"*, *"rent is now 1200"*, *"cancel Netflix"*

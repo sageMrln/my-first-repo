@@ -287,6 +287,28 @@ try {
   else console.log('  ✓ build tag matches sw.js (' + av + ')');
 } catch (e) { console.log('  ✗ version check errored: ' + e.message); failed = true; }
 
+// 15) THEME-EXEMPT marker count guard — index.html has 16 intentional theme-scoped overrides.
+//     Each marker justifies why that style must NOT be theme-variable. The count is pinned
+//     below and verified on every release. If the count changes, the pin must be explicitly
+//     updated with a reason in this file. This catches accidental theme-exempt additions
+//     (which should use CSS variables instead) and ensures every exemption is intentional.
+//     To re-pin: node -e "const fs=require('fs');const c=(fs.readFileSync('index.html','utf8').match(/\/\* THEME-EXEMPT:/g)||[]).length;console.log(c)" && sed -i 's/const THEME_EXEMPT_PIN = [0-9]*/const THEME_EXEMPT_PIN = N/' tools/release/green.js
+section('THEME-EXEMPT marker count — index.html overrides must be intentional');
+const THEME_EXEMPT_PIN = 16;
+try {
+  const idx = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const matches = idx.match(/\/\* THEME-EXEMPT:/g);
+  const count = matches ? matches.length : 0;
+  if (count !== THEME_EXEMPT_PIN) {
+    console.log('  ✗ THEME-EXEMPT count changed: ' + count + ' (pinned at ' + THEME_EXEMPT_PIN + '). ' +
+                'Every theme-scoped override must be intentional.');
+    console.log('    To re-pin and justify the change, run the sed command shown in green.js line ~292.');
+    failed = true;
+  } else {
+    console.log('  ✓ THEME-EXEMPT count stable (' + count + ' markers, all justified)');
+  }
+} catch (e) { console.log('  ✗ THEME-EXEMPT check errored: ' + e.message); failed = true; }
+
 section('VERDICT');
 console.log(failed
   ? '✗ RED — do NOT ship. Fix the above, then re-run.'
