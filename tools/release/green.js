@@ -160,6 +160,15 @@ run(['tools/test/allergen_i18n_test.js'], 'allergen i18n ratchet');
 //      FX_RATES, #curSel or curOpts(). A Singaporean silently defaulted to DENMARK. The
 //      list is hardcoded FOUR times independently and nothing related any of them to the
 //      tax engine; this does, so a future 14th country cannot ship half-wired.
+// 11e) theme contrast — every pinned foreground/background pair across all 10 palettes,
+//      plus a scan for undeclared colour literals. Osefe reported one popup looking
+//      cyberpunk; the suite found the guide modal at 1.01:1 (invisible text on the first
+//      screen after setup) and the theme swatch ring at 1.00:1 (you could not see which
+//      theme you had selected). WIRED HERE, because a guard that passes and gates nothing
+//      is not a guard — Mikoto caught that it was landing green without being run.
+section('theme contrast & colour literals — tools/test/theme_contrast_test.js');
+run(['tools/test/theme_contrast_test.js'], 'theme contrast');
+
 section('currency parity — tools/test/currency_parity_test.js');
 run(['tools/test/currency_parity_test.js'], 'currency parity');
 
