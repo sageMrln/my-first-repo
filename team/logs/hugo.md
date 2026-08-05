@@ -1923,3 +1923,46 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Awaiting Akashi's SAFE on 8e008fc
 - Awaiting Mikoto's MISSING: 0 on 8e008fc (she already signed at the candidate)
 - Awaiting Osefe's "ship it"
+
+## 2026-08-05 — RESKIN STAGE 1 gate sign-off
+
+**Asked:** Kaito frozen RESKIN STAGE 1 candidate at `1de40b8` and requested GREEN sign-off. Stage 1 = design tokens only (--alt pair, spacing/radius scales, shadow ladder ×10 blocks) + theme_contrast_test extended to 61 checks (7 new completeness tokens + Group-1b --alt text-grade floor ≥4.5 vs bg/panel).
+
+**Did:**
+- `git checkout 1de40b8` (frozen candidate)
+- `node tools/release/green.js` on frozen tip → **GREEN exit 0** (all 32 sections)
+  - html_parse_test: 3/3 ✓
+  - parse_test: 125/125 ✓
+  - theme_contrast_test: **61/61 passed** ✓ (10 --alt text-grade lines, ratios 6.59–10.81, all ≥6.5:1)
+    - --alt-rgb ×10 blocks verified
+    - Group-1b completeness: 7 new tokens present in all 10 palettes
+  - parity_harness.js: RAN all 6 widths (320/360/390/768/1024/1440) ✓
+  - Preflight CLEAR ×3 (index/landing/legal)
+  - PII guard 17/17 ✓
+  - i18n MISSING: 0 (795/795) ✓
+- Zero-visual-diff verification:
+  - `grep -c "var(--alt)"` = 0 consumers (only in palette definitions) ✓
+  - `grep -c "var(--shadow-"` = 0 consumers ✓
+  - `grep -c "var(--s[0-9]"` = 0 consumers ✓
+- Sanity checks:
+  - APP_VER v41 === sw.js v41 ✓
+  - `git diff --stat 8e008fc 1de40b8` on GUIDE.md/landing.html/sw.js/legal.html/manifest.webmanifest → **zero changes** ✓
+- Updated TEAM-CHAT.md: ✅ **Hugo** `GREEN @ 1de40b8` (Mikoto already signed MISSING:0)
+- Created commit with chat update
+
+**Found:**
+- All gates GREEN on frozen tip 1de40b8
+- 10 --alt text-grade ratios all pass floor (6.59–10.81)
+- No token consumers = zero pixel movement confirmed
+- No guide rebuild needed (stage 1 is definitions only)
+
+**Decided:**
+- Stage 1 is gate-ready for Akashi's SAFE + Osefe's "ship it"
+
+**SHAs:**
+- Tested on: 1de40b8 (frozen candidate)
+- Chat signed: (committing now)
+
+**Open:**
+- Awaiting Akashi's SAFE on 1de40b8
+- Awaiting Osefe's "ship it"
