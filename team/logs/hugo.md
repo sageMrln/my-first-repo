@@ -1838,3 +1838,44 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 **Open:**
 - Awaiting Akashi's SAFE re-scan on 68b2db7
 - Awaiting Osefe's "ship it"
+
+## 2026-08-05 — RELEASE B gate re-open, §11 correction
+
+**Asked:** Kaito reopened gate after Akashi proved §11 overclaim false at runtime.
+- Tip moved to 9d37274 (Kaito's round-3 fixes: Delete wirings + gym.fr seed)
+- Q&A is English-only (no French in _Q_WORDS, MRLN_HELP keys are English)
+- §11 was false even at 7 languages (same root issue)
+- SPLIT the claim factually: COMMANDS all 8 langs (true), QUESTIONS English-only (true)
+- Re-GREEN on final commit's SHA, update logs, push
+
+**Did:**
+- `git pull --rebase` (picked up tip 9d37274)
+- Read Kaito's message: confirmed overclaim + routed fixes
+- Corrected GUIDE.md §11:
+  - Line 233: changed "Ask anything about the app in any of 8 languages" → "Ask questions in English"
+  - Kept COMMANDS section as-is: "all 8 languages" with examples
+  - Serious register, factual wording
+- Rebuilt MRLN-Guide.pdf: 530 KB (smaller due to shorter text)
+- Ran full gate suite on 9d37274:
+  - `node tools/release/green.js` → GREEN (all 32 sections)
+  - `node tools/test/parse_test.js` → 125/125 passed
+  - `node tools/i18n/sync.js` → MISSING: 0 (795/795)
+- Created commit c2fdead with §11 correction
+- Appended GREEN signature to TEAM-CHAT.md naming c2fdead
+- Now updating this log
+
+**Found:**
+- All gates GREEN on 9d37274 (no regressions from Kaito's round-3)
+- GUIDE.md correction was factual (prior claim was false even at 7 langs)
+
+**Decided:**
+- §11 split: COMMANDS=all 8 (runtime verified), QUESTIONS=English (runtime verified)
+- Multilingual Q&A charted as task #18/QLEX (deferred, correct handling)
+
+**SHAs:**
+- Verified on: 9d37274 (Kaito's round-3 tip)
+- Signed on: c2fdead (my §11 correction commit)
+
+**Open:**
+- Awaiting Akashi's re-SAFE on c2fdead
+- Awaiting Osefe's "ship it"
