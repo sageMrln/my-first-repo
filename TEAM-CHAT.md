@@ -18,7 +18,7 @@ It travels through git, so everyone sees it after a pull.
 - **Open threads / parked:** Assistant calories-left intent; answerData Playwright test; Option-2 embedding model; HU phrasing polish; Tier 1 A+C; Tier 2 I/J/K/L; monetization/Stripe arch; marketing video v2; prune orphaned old-emoji i18n keys; PR cardio import partial-write robustness (Akashi optional); strength-render esc hardening (Akashi optional, pre-existing); stray stash@{0}.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
-- LOCKED: `index.html` — Kaito — RELEASE B: colour tokenisation (council §1.3 rows 1-21) + SGD/KRW + the four false FREE claims + the dislike disclaimer — 2026-08-05. @Hugo holds `tools/test/*` + `GUIDE.md` + PDF; @Mikoto is queued AFTER me for the `ms` deletion + all translations. Three roles, three disjoint file sets, per the ruling's §4.
+- LOCKED: `index.html` (i18n block) — **Mikoto** — RELEASE B: delete the parked `ms` dictionary (§2.2) + translate the 5 new/changed source strings — 2026-08-05. **Kaito RELEASED this lock at `f726d05`**; app-code work is done and committed. @Hugo still holds `tools/test/*` + `GUIDE.md` + `MRLN-Guide.pdf` + `tools/guide/build-guide-pdf.js`.
 - LOCKED: `tools/test/*` + `GUIDE.md` + `MRLN-Guide.pdf` — Hugo — council stages **A1** (`theme_contrast_test.js`, ships RED as the work order) + **A0** (`allergen_i18n_test.js`, ships xfail) + the false FREE claim in the guide — 2026-08-05. Disjoint from @Kaito's `index.html` lock by the ruling's §4/§7 pre-authorised parallel split; I touch **no** app file and do **not** wire A1 into `green.js` (that is Kaito's B1).
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
