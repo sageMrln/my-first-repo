@@ -5696,7 +5696,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     note:     'note|notat|notiz|nota|anteckning|notis|jegyzet|megjegyzés',
     workout:  'workout|exercise|træning|træningspas|trening|økt|øvelse|øving|träning|pass|entrenamiento|rutina|ejercicio|edzés|übung|training',
     employer: 'employer|company|arbejdsgiver|arbeidsgiver|arbetsgivare|arbeitgeber|firma|virksomhed|unternehmen|empleador|empresa|compañía|compania|företag|selskap|munkáltató|cég|vállalat',
-    age:      'age|alder|alter|edad|ålder|kor|életkor|életkorom|korom',
+    age:      'age|alder|alter|edad|ålder|kor|életkor|életkorom|korom|âge',
     years:    'years?|år|jahre|años|anos|éves|év',
     name:     'name|navn|namn|nombre|név|nevem',
     birthday: 'birthday|bday|born|fødselsdag|bursdag|geburtstag|cumpleaños|födelsedag|születésnap|født|geboren|nací|född|született',
@@ -5760,7 +5760,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     s = s.replace(/(?<![\p{L}\p{N}])\d[\d.,]*/gu,' ');   // strip standalone numbers, keep alnum names like "Antivirus2"
     // strip currency + period/filler words in all 7 languages, keep the real item name
     s = s.replace(/\b(?:kr|kroner|dkk|sek|nok|eur|euros?|usd|chf|huf|ft|forint)\b/giu,' ');
-    s = s.replace(/(?<![\p{L}])(?:per|month|months|monthly|mo|md|mdr|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of|om|måneden|pr|måned|månedlig|al|mes|por|mensual|pro|monat|monatlich|månad|månaden|i|året|år|mnd|mnd\\.|mån|havonta|évente|hónap|hó|mois|mensuel|mensuelle|année|annuel|annuelle|par|jährlich|jahr|anual|annual|annually|årlig|årligt|yearly|évente|évi|pris|coste|preis|costo)(?![\p{L}])/giu,' ');
+    s = s.replace(/(?<![\p{L}])(?:per|month|months|monthly|mo|md|mdr|quarter|quarterly|quartal|vierteljährlich|kvartal|kvartalet|kvartalsvis|trimestre|trimestral|trimestralmente|trimestriel|trimestrielle|negyedév|negyedévente|negyedévenként|negyedéves|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of|om|måneden|pr|måned|månedlig|al|mes|por|mensual|pro|monat|monatlich|månad|månaden|i|året|år|mnd|mnd\\.|mån|havonta|évente|hónap|hó|mois|mensuel|mensuelle|année|annuel|annuelle|par|jährlich|jahr|anual|annual|annually|årlig|årligt|yearly|évente|évi|pris|coste|preis|costo)(?![\p{L}])/giu,' ');
     s = s.replace(/[\/,]/g,' ').replace(/\s{2,}/g,' ').trim();
     return s;
   }
@@ -5825,8 +5825,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     // Also excludes "year(s)" from the gate (it collides with yearly frequency).
     // copula allowed between the age word and the number ("alder er 41", "age is 41",
     // "Alter ist 41") — a whitelist, so "Alter Ego sub 120" still can't slip through.
-    var _agem = c.match(_re(_WB+'(?:'+LEX.age+')'+_WA+'(?:\\s+(?:is|am|are|was|er|ist|bin|war|är|es|van|vagyok)\\b)?\\s*[:=]?\\s*(\\d{1,3})(?!\\d)'))
-             || c.match(_re('(\\d{1,3})\\s*(?:years?|år|años|anos|jahre|éves|év)'+_WA))
+    var _agem = c.match(_re(_WB+'(?:'+LEX.age+')'+_WA+'(?:\\s+(?:is|am|are|was|er|ist|bin|war|är|es|est|van|vagyok)\\b)?\\s*[:=]?\\s*(\\d{1,3})(?!\\d)'))
+             || c.match(_re('(\\d{1,3})\\s*(?:years?|år|años|anos|jahre|éves|év|ans?)'+_WA))
              || c.match(/\b(?:i(?:'m| am)|jeg er|ich bin|jag är|tengo)\s+(\d{1,3})\b/iu);
     if(_agem){ var an=_agem[1]; if(+an>0 && +an<130) return { op:'setProfile', field:'age', value:an, description:'Set age → '+an }; }
     if((m = c.match(_re(_NAME)))){ var nn=m[1].trim(); return { op:'setProfile', field:'name', value:nn, description:'Set name → '+nn }; }

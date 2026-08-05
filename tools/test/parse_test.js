@@ -235,5 +235,31 @@ check('paiement 500', 'addItem');                   // paie(?!ment) — a PAYMEN
 check('paiement de voiture 320', 'addItem');
 check('moisson 500', 'addItem');                    // 'mois' must not swallow the harvest
 
+// --- FRENCH AGE (Mikoto, RELEASE B final round). The age lexicon and the copula
+//     whitelist both stopped one language short — "mon âge est 41" minted an expense
+//     literally NAMED "mon âge est". Fixed: `âge` in LEX.age, `est` in the copula
+//     whitelist, `ans?` in the N-years form (the canonical "j'ai 41 ans").
+//     Bare "j'ai 41" must NEVER read as age — "j'ai" is "I have", not "I am". ---
+check('mon âge est 41', 'setProfile');
+check('âge: 41', 'setProfile');
+check("j'ai 41 ans", 'setProfile');                 // via the N-ans form, not "j'ai"
+check('fromage 45', 'addItem');                     // 'age' inside a word stays blocked (_WB)
+check('Alter Ego sub 120', 'addItem');              // the original guard must survive `est`
+check("j'ai 500", 'addItem');                       // I HAVE 500 — never an age
+
+// --- QUARTERLY NAME LEAK (Mikoto, same round). _cleanName stripped 'quarter|quarterly'
+//     but none of the six local quarterly words, so the period word leaked into the item
+//     NAME in every language except English — the same one-language-behind class again,
+//     this time 6-wide. WHATS_NEW literally quotes "vierteljährlich"; it must strip. ---
+checkName('Versicherung 1200 vierteljährlich', 'Versicherung'); // de
+checkName('Assurance 1200 trimestriel', 'Assurance');           // fr
+checkName('Assurance 1200 par trimestre', 'Assurance');
+checkName('Forsikring 1200 kvartalsvis', 'Forsikring');         // da/nb
+checkName('Forsikring 1200 pr kvartal', 'Forsikring');
+checkName('Seguro 1200 trimestral', 'Seguro');                  // es
+checkName('Biztosítás 1200 negyedévente', 'Biztosítás');        // hu
+checkName('Försäkring 1200 kvartalsvis', 'Försäkring');         // sv
+checkName('Insurance 1200 quarterly', 'Insurance');             // en control (already worked)
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
