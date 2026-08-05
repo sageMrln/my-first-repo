@@ -182,3 +182,14 @@ hierarchy, not an excuse to leave pages visually stale. Where a mock element
 has no honest backing data (balance series, weight history), the reskin adapts
 the presentation to real data rather than inventing series — flagged to Osefe
 in the ruling, not silently resolved.
+
+## Owner addendum 3 (2026-08-05 — Osefe's rulings on §J of a213555)
+> "Go with all the recommended options and yes add the dated workout log.
+> and yes go with life instead of diary."
+
+All six §J decisions CLOSED: (1) dated weight log ORDERED · (2) dated
+workout-session log ORDERED (overrides the DEFER recommendation — full
+pipeline pass, lands with/after Stage 5) · (3) ONE publish · (4) layouts
+retire via LMIG migration · (5) group label = "Life" · (6) warm copy
+stripped app-wide (serious voice retroactive). The reskin build spec is now
+fully closed: ruling a213555 + these rulings.
