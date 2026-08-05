@@ -1787,3 +1787,54 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
   * Carried: `APP_BUILD` (Kaito says bumped this round — verify at re-GREEN) · `deploy.js --check` exit-1-on-declared-additions (Kaito backlogged) · Spanish `LEX.age` boundary · `_PRICE_STOP` "up" · `sync.js` DEAD-key reporting.
 
 - Process note: edited ONLY `GUIDE.md`, `MRLN-Guide.pdf`, `TEAM-CHAT.md` and this log. Staged explicitly by path, never `git add -A`, left @Maki's dirty `team/logs/maki.md` in the shared tree untouched, and never chained a command after a rebase that can fail.
+
+## 2026-08-05 — RELEASE B closing signature
+
+**Asked:** Kaito spawned me (asleep mode) for RELEASE B closing signature. Final tip: e8e285d. Tasks:
+1. Re-GREEN on exact tip (never take Kaito's GREEN on faith)
+2. Update GUIDE §11 language flip (7→8, French commands now work)
+3. Add THEME-EXEMPT assert to green.js (pin current count, fail if changes without re-pinning)
+4. Check allergen_i18n_test French row scope (mechanical extension vs. food-lexicon judgement)
+5. If GREEN: sign off in TEAM-CHAT.md with exact SHA, update logs, commit, push
+
+**Did:**
+- `git pull --rebase` (already up to date)
+- Ran full gate suite on e8e285d:
+  - `node tools/release/green.js` → GREEN (all 32 sections, VERDICT green)
+  - `node tools/test/parse_test.js` → 125/125 passed
+  - `node tools/i18n/sync.js` → MISSING: 0 (795/795 translated)
+- Updated GUIDE.md §11:
+  - Changed "7 languages" → "8 languages"
+  - Added Français to the list
+  - Removed French-not-supported exception
+  - Added French command example: "mon revenu est 25000"
+- Rebuilt MRLN-Guide.pdf: `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 533 KB
+- Added THEME-EXEMPT marker count guard to green.js:
+  - Regex finds 16 markers in index.html (pinned count)
+  - Fails if count changes without explicit re-pin
+  - Includes sed command for re-pinning with reason
+  - Re-ran green.js after adding: still GREEN
+- Checked allergen_i18n_test:
+  - Currently covers 10 food concepts × 6 languages = 60 non-English terms
+  - French would require 10 French food translations (médicale: fromage, lait, oeuf, poisson, etc.)
+  - This is food-lexicon judgement, not mechanical extension → charted as follow-up (food-log council owns that area)
+  - Did NOT touch app code or test code
+- Created new commit 68b2db7 with my changes to GUIDE, PDF, green.js
+- Appended GREEN signature to TEAM-CHAT.md naming 68b2db7 (my final commit)
+
+**Found:**
+- All gates GREEN on final tip
+- THEME-EXEMPT count actually 16, not 12 (per original task note) — pinned and guarded
+- French commands confirmed working in parse_test.js
+
+**Decided:**
+- Allergen French row is out of scope: requires food vocabulary expertise
+- Charted as follow-up for food-log council
+
+**SHAs:**
+- Verified on: e8e285d (original final tip)
+- Signed on: 68b2db7 (my final commit with GUIDE+PDF+green.js changes)
+
+**Open:**
+- Awaiting Akashi's SAFE re-scan on 68b2db7
+- Awaiting Osefe's "ship it"
