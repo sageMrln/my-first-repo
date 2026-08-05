@@ -1640,6 +1640,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <option value="AUD">AUD $</option>
         <option value="JPY">JPY ¥</option>
         <option value="HUF">HUF Ft</option>
+        <option value="SGD">SGD S$</option>
+        <option value="KRW">KRW ₩</option>
       </select></div>
     <div class="lc"><label data-i18n="Country" for="countryInp">Country</label>
       <input id="countryInp" type="text" placeholder="Country" autocomplete="off" maxlength="40"></div>
@@ -2669,12 +2671,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     SEK:{sym:'kr', before:false, loc:'sv-SE'}, NOK:{sym:'kr', before:false, loc:'nb-NO'},
     CHF:{sym:'CHF',before:true,  loc:'de-CH'}, CAD:{sym:'$',  before:true,  loc:'en-CA'},
     AUD:{sym:'$',  before:true,  loc:'en-AU'}, JPY:{sym:'¥',  before:true,  loc:'ja-JP'},
-    HUF:{sym:'Ft', before:false, loc:'hu-HU'}
+    HUF:{sym:'Ft', before:false, loc:'hu-HU'},
+    SGD:{sym:'S$', before:true,  loc:'en-SG'}, KRW:{sym:'₩',  before:true,  loc:'ko-KR'}
   };
   // Units of each currency per 1 USD (offline snapshot). 8000 DKK / 6.9 ≈ 1159 USD.
   var FX_RATES = {
     asOf:'2026-01',
-    perUSD:{ USD:1, EUR:0.92, GBP:0.79, DKK:6.87, SEK:10.6, NOK:10.7, CHF:0.88, CAD:1.37, AUD:1.52, JPY:150, HUF:358 }
+    perUSD:{ USD:1, EUR:0.92, GBP:0.79, DKK:6.87, SEK:10.6, NOK:10.7, CHF:0.88, CAD:1.37, AUD:1.52, JPY:150, HUF:358, SGD:1.28, KRW:1428 }   // SGD/KRW sourced 2026-08 from live mid-market quotes; the rest are the Jan snapshot
   };
   function fxPerUSD(c){ var r=FX_RATES.perUSD[c]; return (typeof r==='number' && r>0) ? r : 1; }
   // Convert an amount from one currency to another at the snapshot rate.
@@ -8672,7 +8675,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         '<p class="wsub" style="margin-top:10px">'+t('You can skip this and do it later from the <b>Connect</b> tab.')+'</p>';
     }
     function langOpts(sel){ return [['en','English'],['es','Español'],['da','Dansk'],['de','Deutsch'],['sv','Svenska'],['nb','Norsk'],['hu','Magyar']].map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+o[1]+'</option>'; }).join(''); }
-    function curOpts(sel){ return ['USD','EUR','GBP','DKK','SEK','NOK','CHF','CAD','AUD','JPY','HUF'].map(function(c){ return '<option value="'+c+'"'+(c===sel?' selected':'')+'>'+c+'</option>'; }).join(''); }
+    function curOpts(sel){ return ['USD','EUR','GBP','DKK','SEK','NOK','CHF','CAD','AUD','JPY','HUF','SGD','KRW'].map(function(c){ return '<option value="'+c+'"'+(c===sel?' selected':'')+'>'+c+'</option>'; }).join(''); }
     function expTotal(){ return data.expenses.reduce(function(s,e){ var c=Number(e.cost)||0; return s + (e.freq==='yearly'?c/12:e.freq==='quarterly'?c/3:c); },0); }
     function renderExpList(){
       var host=document.getElementById('wExpList'); if(!host) return;
