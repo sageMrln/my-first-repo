@@ -192,6 +192,14 @@ if (has('check')) {
           (sd.notes || []).forEach(n => {
             STATE.notes.push({ id: uid(), title: n.title || '', body: n.body || '', ts: new Date().toISOString() });
           });
+          /* body stats through the REAL inputs (initHealth wires input-event autosave) —
+             without these the gym shot's top frame is a hollow ÂGE/TAILLE/POIDS form,
+             which is what shipped for fr until Akashi opened the file. Same "Alex"
+             sample numbers in every language. */
+          [['bAge', '29'], ['bHeight', '178'], ['bWeight', '74']].forEach(([id, v]) => {
+            const el = document.getElementById(id);
+            if (el) { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }
+          });
           if (typeof refreshEverything === 'function') refreshEverything();
         }, seed);
         /* food seeding happens LATER, after the language switch — see below */

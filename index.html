@@ -4492,7 +4492,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     host.innerHTML = STATE.workouts.map(function(w){
       return '<div class="item-row"><div class="meta"><b>' + esc(w.day||'') + (w.day&&w.title?' — ':'') + esc(w.title||'') + '</b>' +
         (w.body ? '<small>' + esc(w.body).replace(/\n/g,'<br>') + '</small>' : '') + '</div>' +
-        '<button class="btn danger" data-del="' + w.id + '">Delete</button></div>';
+        '<button class="btn danger" data-del="' + w.id + '">'+t('Delete')+'</button></div>';
     }).join('');
   }
 
@@ -8274,7 +8274,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       host.innerHTML=list.map(function(n){
         return '<div class="item-row" data-open="'+n.id+'" style="cursor:pointer;align-items:flex-start"><div class="meta" style="flex:1">'+
           esc(n.title||'Untitled')+'<small>'+esc(preview(n))+' · '+fmtWhen(n.updated)+'</small></div>'+
-          '<button class="btn danger" data-delnote="'+n.id+'" style="padding:5px 10px;font-size:12px">Delete</button></div>';
+          '<button class="btn danger" data-delnote="'+n.id+'" style="padding:5px 10px;font-size:12px">'+t('Delete')+'</button></div>';
       }).join('');
     }
     function openEditor(id){
