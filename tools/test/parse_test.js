@@ -194,5 +194,28 @@ checkName('Seguro 1200 anual', 'Seguro');
 checkName('Forsikring 1200 årligt', 'Forsikring');
 checkName('Insurance 1200 annually', 'Insurance');
 
+// --- THE PERIOD MATRIX. _freq decides whether a number is divided by 1, 3 or 12, so every
+//     miss here is a silent multiplication of the user's money. Two were live:
+//     fr "trimestriel"/"par trimestre" -> MONTHLY (3x overcount); the quarterly regex
+//       carried Spanish "trimestral" and no French at all.
+//     de "vierteljährlich" -> YEARLY (4x UNDERcount), because the yearly test ran FIRST and
+//       "jähr" matches inside "vierteljährlich". ORDER IS LOAD-BEARING: quarterly must be
+//       tested before yearly. Never reorder these two lines.
+//     Both pre-existing and both verified against the shipped v40 build. ---
+checkFreq('Assurance 1200 trimestriel', 'quarterly');       // fr
+checkFreq('Assurance 1200 trimestrielle', 'quarterly');
+checkFreq('Assurance 1200 par trimestre', 'quarterly');
+checkFreq('Versicherung 1200 vierteljährlich', 'quarterly'); // de — was yearly
+checkFreq('Seguro 1200 trimestral', 'quarterly');            // es
+checkFreq('Netflix 99/q', 'quarterly');                      // en
+checkFreq('Forsikring 1200 kvartalsvis', 'quarterly');       // da/nb
+checkFreq('Biztosítás 1200 negyedév', 'quarterly');          // hu
+// the yearly row must not regress now that quarterly runs first
+checkFreq('Versicherung 1200 jährlich', 'yearly');
+checkFreq('Insurance 1200/year', 'yearly');
+checkFreq('Seguro 1200 anual', 'yearly');
+checkFreq('Forsikring 1200 årligt', 'yearly');
+checkFreq('Netflix 99', 'monthly');
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

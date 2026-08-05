@@ -5722,8 +5722,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // (da "dårlige"→"dårlig", nb "lønnen"→"lønn", de "Kreditrate"→"kredit", "måneden"→"måned")
   function _has(g, s){ return _re(_WB+'(?:'+g+')').test(s); }
   function _freq(s){
-    if(/year|annual|\/\s?yr|\bp\.?a\b|å?ret\b|\bår\b|jahr|jähr|\baño|\bano|évent|\bévi\b|årlig|jährlich|anual|yearly|\/\s?an(?![\p{L}])|par\s+an(?![\p{L}])|ann(?:\u00e9e|uel)/iu.test(s)) return 'yearly';   // fr: /an, par an, annee, annuel — bare "an" is EXCLUDED, it is an English article
-    if(/quarter|\/\s?q\b|kvartal|trimestral|vierteljähr|negyedév/iu.test(s)) return 'quarterly';
+    // QUARTERLY IS TESTED FIRST, DELIBERATELY. German "vierteljährlich" CONTAINS "jähr",
+    // so with yearly first it matched YEARLY — a quarterly cost divided by 12 instead of 3,
+    // under-counting by 4x. Pre-existing since the German words were added; found when the
+    // French council flagged the neighbouring French gap. Order is load-bearing: never move
+    // this below the yearly test again.
+    if(/quarter|\/\s?q\b|kvartal|trimestral|trimestriel|trimestrielle|par\s+trimestre|vierteljähr|negyedév|kvartalsvis/iu.test(s)) return 'quarterly';
+    if(/year|annual|\/\s?yr|\bp\.?a\b|å?ret\b|\bår\b|jahr|jähr|\baño|\bano|évent|\bévi\b|årlig|jährlich|anual|yearly|\/\s?an(?![\p{L}])|par\s+an(?![\p{L}])|ann(?:ée|uel)/iu.test(s)) return 'yearly';
     return 'monthly';
   }
   function _esc(re){ return re.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
@@ -8681,7 +8686,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         '<div class="instwrap">'+cards.map(cardHTML).join('')+'</div>'+
         '<p class="wsub" style="margin-top:10px">'+t('You can skip this and do it later from the <b>Connect</b> tab.')+'</p>';
     }
-    function langOpts(sel){ return [['en','English'],['es','Español'],['da','Dansk'],['de','Deutsch'],['sv','Svenska'],['nb','Norsk'],['hu','Magyar']].map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+o[1]+'</option>'; }).join(''); }
+    function langOpts(sel){ return [['en','English'],['es','Español'],['da','Dansk'],['de','Deutsch'],['sv','Svenska'],['nb','Norsk'],['hu','Magyar'],['fr','Français']].map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+o[1]+'</option>'; }).join(''); }
     function curOpts(sel){ return ['USD','EUR','GBP','DKK','SEK','NOK','CHF','CAD','AUD','JPY','HUF','SGD','KRW'].map(function(c){ return '<option value="'+c+'"'+(c===sel?' selected':'')+'>'+c+'</option>'; }).join(''); }
     function expTotal(){ return data.expenses.reduce(function(s,e){ var c=Number(e.cost)||0; return s + (e.freq==='yearly'?c/12:e.freq==='quarterly'?c/3:c); },0); }
     function renderExpList(){
