@@ -143,6 +143,15 @@ run(['tools/test/routing_test.js'], 'routing suite');
 section('nav integrity — tools/test/nav_test.js');
 run(['tools/test/nav_test.js'], 'nav suite');
 
+// 11c-ter) parity harness — real-browser assertions (reskin ruling a213555 §G).
+//      Boots the app in Chromium at 6 widths: zero page errors, zero horizontal
+//      overflow, no permanent fab occlusion at max scroll, all destinations
+//      reachable. Future-stage assertions print themselves as armed. On a
+//      machine without Playwright/Chromium it prints a NAMED skip and exits 0 —
+//      a named skip, never a silent one.
+section('parity harness (browser) — tools/test/parity_harness.js');
+run(['tools/test/parity_harness.js'], 'parity harness');
+
 // 11d) allergen / dislike filter across the six non-English languages we ship.
 //      The app promises "never suggest a dislike" in seven languages; the matcher
 //      is ASCII-only, so most non-English allergen terms hide NOTHING and seven of

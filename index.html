@@ -175,7 +175,7 @@
   html[data-layout=analyst] .tab .ix{ font-size:10px; }
 
   /* CANVAS — consumer fintech, big rounded cards, fixed bottom tab bar */
-  html[data-layout=canvas] .wrap{ max-width:520px; font-size:16px; padding-bottom:84px; }
+  html[data-layout=canvas] .wrap{ max-width:520px; font-size:16px; padding-bottom:216px; }
   html[data-layout=canvas]::before{ display:none; }
   html[data-layout=canvas] body::after{ display:none; }
   html[data-layout=canvas] .card{ border:0; border-radius:22px; box-shadow:0 8px 28px rgba(0,0,0,.14); padding:22px; margin-bottom:16px; }
@@ -344,7 +344,7 @@
   @keyframes bootSysIn{ from{opacity:0;transform:translateY(4px)} to{opacity:.85;transform:none} }
   @keyframes bootSysPulse{ 0%,100%{opacity:.85} 50%{opacity:.5} }
 
-  .wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:26px 16px 80px}
+  .wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:26px 16px 150px}
 
   /* HEADER */
   header.hud{
@@ -895,7 +895,7 @@
 
   /* tablet and below: trim the generous desktop padding */
   @media(max-width:900px){
-    .wrap{padding:20px 14px 96px}
+    .wrap{padding:20px 14px 150px}
     header.hud{padding:16px 16px}
     .card{padding:18px 16px}
     .status{gap:10px}
@@ -903,7 +903,7 @@
 
   /* phone: the big layout shift */
   @media(max-width:620px){
-    .wrap{padding:16px 11px 104px}
+    .wrap{padding:16px 11px 150px}
     .eyebrow{letter-spacing:.22em;font-size:10px}
     .sub{font-size:13px}
     .pillbar{gap:6px}
