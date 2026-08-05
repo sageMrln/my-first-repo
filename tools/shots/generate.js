@@ -194,17 +194,7 @@ if (has('check')) {
           });
           if (typeof refreshEverything === 'function') refreshEverything();
         }, seed);
-        /* food through the REAL input + button, so parsing, totals and the photo-less
-           entry path are exactly what a user gets */
-        for (const f of (seed.food || [])) {
-          const txt = typeof f === 'string' ? f : (f.text || f.name || '');
-          if (!txt) continue;
-          await page.evaluate(t => {
-            const ta = document.getElementById('foodText'); if (ta) ta.value = t;
-            const add = document.getElementById('foodAdd'); if (add) add.click();
-          }, txt);
-          await page.waitForTimeout(120);
-        }
+        /* food seeding happens LATER, after the language switch — see below */
       }
 
       /* Currency through the app's OWN picker too. Writing STATE.prefs.currency directly
@@ -269,6 +259,26 @@ if (has('check')) {
           if (sel) { sel.value = lang; sel.dispatchEvent(new Event('change', { bubbles: true })); }
         }, L);
         await page.waitForTimeout(400);
+      }
+
+      /* food through the REAL input + button, so parsing, totals and the photo-less
+         entry path are exactly what a user gets. This runs AFTER the language switch:
+         the "Added — …" confirmation is written once at click-time and never
+         re-rendered, so seeding before the switch shipped an ENGLISH line inside
+         every localized food shot. The parser is language-agnostic, so the target
+         language's seed lines parse identically here; the income-pin assertions
+         above stay untouched before the switch. */
+      if (seed && mode === 'howto') {
+        for (const f of (seed.food || [])) {
+          const txt = typeof f === 'string' ? f : (f.text || f.name || '');
+          if (!txt) continue;
+          await page.evaluate(t => {
+            const ta = document.getElementById('foodText'); if (ta) ta.value = t;
+            const add = document.getElementById('foodAdd'); if (add) add.click();
+          }, txt);
+          await page.waitForTimeout(120);
+        }
+        await page.waitForTimeout(250);
       }
 
       if (desktop) {
