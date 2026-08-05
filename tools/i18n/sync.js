@@ -24,7 +24,7 @@ const fs = require('fs');
 const path = require('path');
 const HTML = path.resolve(__dirname, '../../index.html');
 const OUT = path.resolve(__dirname, 'need_translate.json');
-const LANGS = ['es', 'da', 'de', 'sv', 'nb', 'hu'];
+const LANGS = ['es', 'da', 'de', 'sv', 'nb', 'hu', 'fr'];
 const src = fs.readFileSync(HTML, 'utf8');
 
 // 1) t('...') / t("...") literal keys
