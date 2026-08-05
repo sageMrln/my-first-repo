@@ -2758,7 +2758,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
   /* ---------- STATE (persisted: localStorage + embedded JSON) ---------- */
   var STORE_KEY = 'financeHudState';
-  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], media:[], tax:{}, checklist:[], savingsBoxes:[], incomeAsk:{}, showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'', theme:'cyber', layout:'pro' } };
+  var DEFAULTS = { version:2, savedAt:null, cfg:null, customItems:[], workouts:[], calendar:{}, log:[], body:{}, prs:[], notes:[], foodLog:[], media:[], tax:{}, checklist:[], savingsBoxes:[], incomeAsk:{}, showKlarna:false, lastSeenBuild:'', tabColors:{}, tabHold:{}, tabOrder:[], prefs:{ lang:'en', currency:'DKK', country:'', theme:'cyber', layout:'command' } };
   function readEmbedded(){
     try{ var e=document.getElementById('hud-state'); if(e && e.textContent.trim()) return JSON.parse(e.textContent); }catch(_){ } return null;
   }
@@ -3528,7 +3528,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   ]; }
 
   // Draw when the Cash Flow tab is opened (canvas needs a visible width).
-  document.querySelector('[data-p="flow"]').addEventListener('click', function(){
+  var _flowTab = document.querySelector('[data-p="flow"]');
+  if(_flowTab) _flowTab.addEventListener('click', function(){
     setTimeout(function(){ setScen(currentScen); }, 60);
   });
   window.addEventListener('resize', function(){ if(document.getElementById('flow').classList.contains('show')) drawChart(); });
@@ -7030,8 +7031,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     // Expenses → Subscriptions (open the editing tab + expand the manage cards)
     var gm=document.getElementById('goManageBtn');
     if(gm) gm.addEventListener('click', function(){
-      var t=document.querySelector('#tabs .tab[data-p="subs"]'); if(t) t.click();
-      document.querySelectorAll('#subs .card[data-collapse]').forEach(function(c){ c.classList.remove('collapsed'); });
+      var t=document.querySelector('#tabs .tab[data-p="expenses"]'); if(t) t.click();
+      document.querySelectorAll('#expenses .card[data-collapse]').forEach(function(c){ c.classList.remove('collapsed'); });
       var mc=document.getElementById('customList'); if(mc && mc.scrollIntoView) try{ mc.scrollIntoView({behavior:'smooth',block:'center'}); }catch(_){}
     });
     // Income → Quick Update (open the updater, pre-focused)

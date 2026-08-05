@@ -137,6 +137,12 @@ run(['tools/test/price_test.js'], 'price suite');
 section('routing & deploy map — tools/test/routing_test.js');
 run(['tools/test/routing_test.js'], 'routing suite');
 
+// 11c-bis) nav integrity — tab/panel bijection + every JS deep-link data-p resolves.
+//      Derived from index.html at run time (reskin ruling a213555 Stage 0); the
+//      hand-copied tab list that carried a phantom `subs` for months is dead.
+section('nav integrity — tools/test/nav_test.js');
+run(['tools/test/nav_test.js'], 'nav suite');
+
 // 11d) allergen / dislike filter across the six non-English languages we ship.
 //      The app promises "never suggest a dislike" in seven languages; the matcher
 //      is ASCII-only, so most non-English allergen terms hide NOTHING and seven of

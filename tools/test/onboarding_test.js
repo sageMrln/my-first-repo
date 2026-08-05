@@ -7,7 +7,14 @@
  *
  * Guards: picked keys come first in pick order, unpicked follow in original order,
  * no tab is lost or duplicated, empty picked list preserves original order, and
- * stale/invalid picked keys don't corrupt the set. */
+ * stale/invalid picked keys don't corrupt the set.
+ *
+ * ALL_TABS is DERIVED from index.html's nav markup at run time — never
+ * hand-copied. The previous hard-coded list carried a phantom `subs` tab for
+ * months and could not notice any nav change (reskin ruling a213555 §H). */
+
+const fs = require('fs');
+const path = require('path');
 
 let pass = 0, fail = 0;
 
@@ -21,45 +28,45 @@ function check(name, got, want) {
   }
 }
 
-/* The pure mapping logic extracted from index.html finish() at line 7278–7285 */
+/* The pure mapping logic extracted from index.html finish() */
 function applyPriorityToTabOrder(allTabKeys, picked) {
   var rest = allTabKeys.filter(function(k) { return picked.indexOf(k) < 0; });
   return picked.concat(rest);
 }
 
-// All 17 real tabs in the app (extracted from index.html data-p attributes)
-const ALL_TABS = [
-  'calendar', 'checklist', 'connect', 'expenses', 'flow', 'food', 'gym',
-  'income', 'klarna', 'loan', 'log', 'media', 'notebook', 'overview',
-  'rule', 'stats', 'subs'
-];
+/* All real tabs, derived from index.html in DOM order (finish() reads #tabs
+ * .tab in DOM order, so this mirrors the app exactly). */
+const html = fs.readFileSync(path.join(__dirname, '..', '..', 'index.html'), 'utf8');
+const navHtml = html.slice(html.indexOf('<nav class="tabs"'), html.indexOf('</nav>', html.indexOf('<nav class="tabs"')));
+const ALL_TABS = [...navHtml.matchAll(/data-p="([a-z]+)"/g)].map(m => m[1]);
 
-// TEST 1: Full set picked in a specific order
-check(
-  'picked all tabs in reverse order',
-  applyPriorityToTabOrder(ALL_TABS, ['subs', 'stats', 'rule', 'overview', 'notebook', 'media', 'log', 'loan', 'klarna', 'income', 'gym', 'food', 'flow', 'expenses', 'connect', 'checklist', 'calendar']),
-  ['subs', 'stats', 'rule', 'overview', 'notebook', 'media', 'log', 'loan', 'klarna', 'income', 'gym', 'food', 'flow', 'expenses', 'connect', 'checklist', 'calendar']
-);
+if (ALL_TABS.length < 15 || new Set(ALL_TABS).size !== ALL_TABS.length) {
+  console.log('✗ FAIL  nav derivation sane (got ' + ALL_TABS.length + ' tabs, ' + new Set(ALL_TABS).size + ' unique)');
+  process.exit(1);
+}
+console.log('✓  nav derivation sane (' + ALL_TABS.length + ' tabs read from index.html)');
+pass++;
+
+// TEST 1: Full set picked in reverse order
+const reversed = ALL_TABS.slice().reverse();
+check('picked all tabs in reverse order', applyPriorityToTabOrder(ALL_TABS, reversed), reversed);
 
 // TEST 2: Partial pick — 3 priority tabs, rest in original order
+const pick3 = ['expenses', 'food', 'gym'];
 check(
-  'pick 3 tabs (expenses, food, gym) — rest follow in original order',
-  applyPriorityToTabOrder(ALL_TABS, ['expenses', 'food', 'gym']),
-  ['expenses', 'food', 'gym', 'calendar', 'checklist', 'connect', 'flow', 'income', 'klarna', 'loan', 'log', 'media', 'notebook', 'overview', 'rule', 'stats', 'subs']
+  'partial pick [expenses, food, gym]',
+  applyPriorityToTabOrder(ALL_TABS, pick3),
+  pick3.concat(ALL_TABS.filter(k => pick3.indexOf(k) < 0))
 );
 
-// TEST 3: Empty pick — original order preserved
-check(
-  'empty pick preserves original order',
-  applyPriorityToTabOrder(ALL_TABS, []),
-  ALL_TABS
-);
+// TEST 3: Empty pick preserves original order
+check('empty pick preserves original order', applyPriorityToTabOrder(ALL_TABS, []), ALL_TABS);
 
 // TEST 4: Single pick
 check(
   'pick single tab (overview)',
   applyPriorityToTabOrder(ALL_TABS, ['overview']),
-  ['overview', 'calendar', 'checklist', 'connect', 'expenses', 'flow', 'food', 'gym', 'income', 'klarna', 'loan', 'log', 'media', 'notebook', 'rule', 'stats', 'subs']
+  ['overview'].concat(ALL_TABS.filter(k => k !== 'overview'))
 );
 
 // TEST 5: All tabs present exactly once (no loss, no duplicate)
@@ -101,19 +108,15 @@ function testPickedOrderPreserved(name, allKeys, picked) {
 
 testPickedOrderPreserved('picked tabs come first in pick order', ALL_TABS, ['food', 'expenses', 'calendar']);
 
-// TEST 7: Stale/invalid picked keys (not in allKeys) are filtered out from the result
-// This guards against a picked key that shouldn't exist — __applyTabOrder will ignore it anyway,
-// but the mapping should be defensive
+// TEST 7: Stale/invalid picked keys (not in allKeys) pass through the mapping.
+// __applyTabOrder filters by present.indexOf(p)>=0, so a NONEXISTENT key is
+// silently dropped from the DOM reorder. The mapping itself doesn't filter —
+// the apply function does. Correct by design.
 check(
-  'picked key not in allKeys (old tab removed) is not in result',
+  'picked key not in allKeys (old tab removed) passes through mapping',
   applyPriorityToTabOrder(ALL_TABS, ['expenses', 'NONEXISTENT', 'food']),
-  ['expenses', 'NONEXISTENT', 'food', 'calendar', 'checklist', 'connect', 'flow', 'gym', 'income', 'klarna', 'loan', 'log', 'media', 'notebook', 'overview', 'rule', 'stats', 'subs']
+  ['expenses', 'NONEXISTENT', 'food'].concat(ALL_TABS.filter(k => k !== 'expenses' && k !== 'food'))
 );
-
-// NOTE: The above test shows the mapping puts NONEXISTENT first (in pick order),
-// but it will never match a real tab. When __applyTabOrder runs, it filters by
-// present.indexOf(p)>=0 (line 2286), so NONEXISTENT is silently dropped from the DOM reorder.
-// The mapping itself doesn't filter — the apply function does. This is correct by design.
 
 // TEST 8: Order of unpicked tabs follows original order
 check(
