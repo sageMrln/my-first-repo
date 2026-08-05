@@ -456,7 +456,7 @@
                 <span class="browser-dots"><i></i><i></i><i></i></span>
                 <span class="browser-url">mrln</span>
               </div>
-              <img class="browser-screen" src="ov_desktop.png" width="2880" height="1800" loading="eager" decoding="async"
+              <img class="browser-screen" data-hero="ov_desktop" src="ov_desktop.png" width="2880" height="1800" loading="eager" decoding="async"
                    alt="The MRLN Overview screen: one dashboard showing budget, income, savings and health at a glance.">
             </div>
             <figcaption class="shot-note">Example data — a demo profile named Alex, not a real person.</figcaption>
@@ -911,7 +911,7 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","Skip to conte
   // Language-aware screenshots: swap each how-to shot to the localized set when one exists.
   // Only Danish has its own set today; every other language falls back to the English shots.
   function updateShots(lang){
-    var LOCSHOTS={da:1,es:1,de:1,sv:1,nb:1,hu:1};   // languages with their own localized screenshot set
+    var LOCSHOTS={da:1,es:1,de:1,sv:1,nb:1,hu:1,fr:1};   // languages with their own localized screenshot set
     var suf = LOCSHOTS[lang] ? ('.'+lang) : '';   // en + fr fall back to the English set
     document.querySelectorAll('.howto-shot img[data-shot]').forEach(function(img){
       var name=img.getAttribute('data-shot'); var want='assets/howto/'+name+suf+'.png';
@@ -920,8 +920,24 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","Skip to conte
         img.setAttribute('src', want);
       }
     });
-    var note=document.getElementById('shotLangNote');
-    if(note){ if(lang==='fr'){ var _frt=(window.__L10N&&window.__L10N.fr&&window.__L10N.fr.t)||{}; var _eng='Screenshots are shown in English; the app itself is fully translated.'; var _tr=_frt[_eng]; if(_tr){ note.textContent=_tr; note.removeAttribute('lang'); } else { note.textContent=_eng; note.setAttribute('lang','en'); } } else { note.textContent=''; note.removeAttribute('lang'); } }
+    /* The HERO is the demo-profile ("Alex") shot at the top of the page. It was English-only
+     while the six how-to shots below it already followed the language — so picking Danish
+     translated the whole page except the biggest image on it. Same suffix + same onerror
+     fallback to English, so a missing localized hero degrades instead of breaking. */
+  document.querySelectorAll('img[data-hero]').forEach(function(img){
+    var base=img.getAttribute('data-hero');
+    var want=base+suf+'.png';
+    if(img.getAttribute('src')!==want){
+      img.onerror=function(){ img.onerror=null; img.src=base+'.png'; };
+      img.setAttribute('src', want);
+    }
+  });
+  var note=document.getElementById('shotLangNote');
+  /* Every language now has its own screenshot set, so the "screenshots are in English"
+     disclosure is retired. It was the sentence that also claimed "l'app elle-même est
+     entièrement traduite" to French visitors while the app had no French at all — the
+     claim is now true AND the images match, so the note has nothing left to disclose. */
+  if(note){ note.textContent=''; note.removeAttribute('lang'); }
   }
   function walk(fn){
     var w=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
