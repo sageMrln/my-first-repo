@@ -155,7 +155,11 @@ const HTML = `<!doctype html><html lang="en"><head><meta charset="utf-8">
     <div class="eyebrow">// Finance &amp; Health HUD</div>
     <h1>MRLN</h1>
     <div class="subt">The Complete Guide</div>
-    <div class="tag"><b>Free</b> &nbsp;&middot;&nbsp; <b>Offline</b> &nbsp;&middot;&nbsp; <b>Private</b> &nbsp;&middot;&nbsp; one self-contained file</div>
+    <!-- This cover line said "Free" until 2026-08-05. It is not in GUIDE.md, so every
+         grep of the guide missed it — and it is the FIRST thing a paying customer reads
+         in the PDF. Keep it factual: the guarantee, not a price (a price baked here is a
+         new drift source), and never a claim the legal page does not already make. -->
+    <div class="tag"><b>Offline</b> &nbsp;&middot;&nbsp; <b>Private</b> &nbsp;&middot;&nbsp; <b>30-day money-back guarantee</b> &nbsp;&middot;&nbsp; one self-contained file</div>
     <div class="rule"></div>
     <div class="link">https://sagemrln.github.io/my-first-repo/</div>
   </section>

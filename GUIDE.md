@@ -1,6 +1,6 @@
 # MRLN — The Complete Guide
 
-**Finance & Health HUD · free · offline · private**
+**Finance & Health HUD · offline · private · 30-day money-back guarantee**
 Live app: `https://sagemrln.github.io/my-first-repo/`
 
 ---
@@ -13,12 +13,12 @@ It was built around four hard rules:
 
 | Principle | What it means for you |
 |---|---|
-| **Free** | No subscriptions, no paid APIs, no accounts. Ever. |
+| **Paid — so you are not the product** | MRLN is a paid app: you buy an access key. There is no account to create, no advertising, and nothing about you is sold. The app itself makes no paid calls to anything, so there is never a per-question or per-use fee on top. Every purchase is covered by a **30-day money-back guarantee** — if MRLN isn't for you, email us within 30 days of purchase and we'll refund you (full terms in the Refund Policy on the legal page). |
 | **Offline** | Everything runs in your browser. Once loaded it works with the plane on airplane mode. |
 | **Private** | Your data **never leaves your device**. Nothing is uploaded, tracked, or sold. |
 | **Single file** | The whole app is one self-contained HTML file — nothing to install, easy to back up. |
 
-The purpose: most finance/fitness apps want your data and your money. MRLN wants neither. It gives you the math, the projections, and the honest verdicts — and keeps all of it on your phone.
+The purpose: most finance and fitness apps are free because your data is the product — sold, or used to target ads. MRLN is paid instead, so your data never has to be the payment. It gives you the math, the projections, and the honest verdicts — and keeps all of it on your phone.
 
 ---
 
@@ -228,7 +228,7 @@ confirm** before anything changes.
 
 ## 11. 💬 Assistant MRLN — offline Q&A + plain-language commands
 
-Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **free, offline, in your browser** — nothing changes until you confirm. 
+Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **offline, in your browser** — no server, no per-question fee, and nothing changes until you confirm. 
 
 **Questions:** Ask anything about the app in **any of 7 languages** (English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar). The assistant answers from a complete knowledge base covering every tab and feature. You can also ask about **your own numbers** and it computes the answer directly from your data, all locally and offline:
   - **Income** — *"what is my typical income?"*, *"income low month?"*
