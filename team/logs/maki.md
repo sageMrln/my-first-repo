@@ -387,3 +387,81 @@ CROSS-CUTTING
   CREDIT (objectivity): the privacy section ("Private by architecture, not by promise" + airplane-mode proof), the FAQ honesty (lose-phone, stop-paying), and the anchor-annual price structure are genuinely strong — do not touch those.
 - Metric it moves: LANDING conversion (content→profile→landing→try→paid key). Hero clarity + funnel-honesty fixes protect the top of the on-page funnel; value stack + price anchor + honest scarcity lift add-to-cart on the qualified privacy buyer.
 - Still open / next: Kaito to confirm (a) mrln.online = lock screen vs any demo/free-look, (b) is there a real free trial or only money-back, (c) 12 vs 13 countries, (d) whether the perf benchmark was run; Akashi to vet the two privacy absolutes; Osefe to green-light the founder-100 offer before it goes on the page. Landing revamp still needs its own full gate (Akashi/Mikoto/Hugo) per Akashi's flag — my copy list feeds that.
+
+## [2026-08-05 b] — via Kaito (asleep dispatch) — FRONTEND BLUEPRINT: claims audit · voice (C1) · Aarhus (C6) · launch beat
+- Asked: Osefe delivered a full frontend blueprint (transcribed to scratchpad `blueprint-2026-08-05.md`, C1–C11 + binding
+  scope addenda S1–S3). My lane = the poster half: (1) rank the blueprint's CLAIMS by refund/trust exposure + give the
+  replacement line for each; (2) argue C1 (warm gamification vs Osefe's serious-register ban) properly and TAKE A SIDE;
+  (3) BUILT IN AARHUS recommendation; (4) sketch the "MRLN 2.0" go-to-market beat.
+- Researched (live, this run): **IG** — Mosseri's top-3 confirmed 2026: watch time #1, **sends-per-reach** = the single
+  strongest signal for reaching NON-followers, likes-per-reach 3rd; first 3s heavily weighted. **TikTok** — completion+
+  watch time ≈40–50% of ranking; NEW PRECISION vs my old note: cold-start pool 200–500 is **stratified**, graduation bar
+  ≈**35% completion + ≥1.5% engagement** → 5–10k pool (the ~70% figure is the "great" bar, not the gate); DM-shares ≈3×
+  likes; pool RATIO beats absolute views. **EU-origin halo** — 8 in 10 consumers in UK/DE/FR say their country is too
+  dependent on US tech; PrivacyTools.io runs a "Made in Europe" list → country-of-origin is a live buying filter for our
+  exact segment. **EU law** — Consumer Rights Directive requires trader identity + **geographic address** for distance
+  contracts (so a location is published regardless); and since **19 Jun 2026 an EU "withdrawal button" is MANDATORY** for
+  online traders selling to EU consumers → possible live compliance gap on our checkout, flagged to Kaito/Akashi, verify.
+- VERIFIED IN CODE (did not take Kaito's conflict list on faith — two corrections):
+  * **C-import: Kaito is WRONG that no import backend exists.** index.html ~2506–2510 ships 🏦 Bank/card statement (CSV)
+    → income & expenses · 📅 Calendar .ics · ⚖️ Weight (Apple Health/CSV) → body stats · 🍽️ Food (MyFitnessPal CSV);
+    `applyBankImport()` @7859. It is REAL but it is FILE import, never a bank connection — the wording is the risk, not
+    the capability.
+  * **C9 is backwards.** `TAX_COUNTRIES` @7427 = **12 named countries + ['XX','🌍 Other / generic']**. The blueprint's
+    "12 countries + Generic Mode" is the HONEST count; the **landing's "13 countries" is the overclaim** (counts the
+    generic fallback as a country) — same species as this week's six false "free" claims. Fix the landing, not the poster.
+  * Assistant affordability answer as SHIPPED @~6053: "Yes — {amt} fits within your typical {left}/month leftover." —
+    factual, no advice voice. Food Log's own shipped desc @2255 is already honest ("Snap a photo if you like, then type
+    what you ate — we estimate…from an offline food list. Rough by design").
+- Produced — CLAIMS AUDIT ranked by refund/trust exposure (exposure = P(buyer discovers) × centrality to purchase ×
+  blast radius). T1 refund-triggering: (1) "Type/snap food → calories" — worst; fails on first use, it's the mainstream
+  buyer's #1 reason to buy, and the mock's photo-thumbnail implies it even if copy is fixed → "Type your meal → offline
+  calorie & macro estimate. Photos attach as your own record." (2) "Import — bank statement, health-app data" → "Import
+  bank/card statement CSV, .ics, Apple Health / MyFitnessPal CSV — files you export yourself, read on your device.
+  **No bank login, ever.**" (3) "Type in any language" (measured 0%) → "8 languages: EN ES DA DE SV NB HU FR. Assistant
+  commands: English." T2 regulatory: (4) "I recommend keeping it under $1,200" → swap for the SHIPPED factual string;
+  it lives in an IMAGE (og:image/screenshots) = least controllable asset we own. (5) Aarhus (below). (6) the 12-vs-13
+  correction. T3 absolutes for **Akashi**: "TOTAL PRIVACY" headline, "100% OFFLINE", "no data collection" → scope them
+  ("Works offline. The data you enter stays on your device." / "We don't collect your financial or health data.").
+  HARD RULE I set: **a mock in a published asset IS a claim** → no poster/screenshot may show a C10 module (Morning
+  Briefing, per-activity streaks, multiple loans, due-date checklist) unless the build ships it.
+- Produced — VOICE (C1): **sided WITH Osefe's serious register, on marketing grounds, and named the steelman I rejected.**
+  Decisive argument = an ASYMMETRY, not taste: streak/praise mechanics pay off when the app can NOTIFY, and MRLN can't
+  (reminders only fire while the app is open, per my Jul-03 audit) → we'd pay the full brand cost for a fraction of the
+  retention benefit. Plus: warm gamification is the *sound of the ad-funded app* we differentiate from (positioning leak
+  on a "we want your subscription, not your data" product); our buyer self-selected friction over convenience (YNAB is
+  the comp, not Duolingo); and 🔥-on-a-FOOD-LOG streak = a streak attached to eating behaviour on a consumer health
+  product w/ no clinical oversight, while praise-on-money-behaviour is the exact Robinhood $7.5M surface. KEPT the
+  mechanics, killed only the voice: streaks as plain counters ("Workout — 12 days"), Morning Briefing kept and rewritten
+  as an actual briefing, grade card = "A · 86/100" not "Great job!". The one warmth allowed: **encouraging about the
+  FUTURE, never evaluative about the PERSON** ("at this rate the emergency fund fills in 7 months"). Falsifier I'll be
+  held to: if paying-user 30-day abandonment >~50% AND exit feedback says "no reason to open", the lever to test is
+  USEFULNESS (better briefing / due-date nudge), not praise.
+- Produced — AARHUS (C6): recommend **"Made in Denmark 🇩🇰" in the badge column; "Aarhus" OFF the poster/og:image/56
+  screenshots; the specific address stays where the law already puts it (legal page — CRD requires a geographic address
+  anyway, and CVR is public, so "keep the location secret" was never achievable).** Country captures ~all of the trust
+  halo, city captures ~none of it and all of the exposure, and a badge gets baked into 8×7 regenerated shots where it's
+  expensive to walk back. Aarhus DOES earn its keep in founder-led CONTENT (a story he controls per-post, not a
+  permanent badge). Akashi keeps the veto on any published byte — he stripped it before.
+- Produced — LAUNCH BEAT: **announce shipped builds, film everything else.** Phase 0 = zero public teasing (no date, no
+  "2.0", no countdown) + FILM NOW (5+ clean min of the CURRENT app across all 5 sections before it's gone; it is
+  un-refilmable) + keep posting on the current app (going dark = launch posts hit a cold pool); one allowed exception =
+  build-in-public PROCESS on X only (parity harness, no promises). Phase 1 (first revertible stage live) = existing
+  buyers told first via Change Log. Phase 2 = full rollout gated GREEN/SAFE/MISSING:0 + Osefe's ship → THEN the beat.
+  Launch week: T-0 TikTok/Reels **before→after hard cut** ("This is the app I sell for $69." → new UI at 2s → "Same app.
+  Same numbers. Same phone, still offline.", <20s, built for the send); T-0 YouTube long "I rebuilt my entire app's
+  interface without changing a single number" (the parity harness IS the conversion asset for a skeptical buyer);
+  T+1..T+5 one module/day native per platform (Assistant clip now safe to show w/ the factual affordability string;
+  Import clip = "no bank login, ever"); T+7 founder note; same-week existing-buyer note "the interface changed; your data
+  didn't move" (refund prevention). **Stated plainly to Kaito: the redesign is NOT a reason to buy** — nobody purchases a
+  finance app because the nav moved; it's a credibility+content event, so posts lead with what the app DOES and use the
+  redesign as the hook, or we get views and zero sales.
+- Metric it moves: protects refund rate + the 30-day money-back window (T1 claims are the ones that trigger chargebacks),
+  and the before/after is the highest-ceiling completion+send asset the brand will have had. Ladder unchanged:
+  content → profile → landing → try → key ($9.99/mo · $69/yr · first-100 founding @ $59 locked).
+- Still open / next: (a) **Akashi** — vet "TOTAL PRIVACY"/"100% OFFLINE"/"no data collection" scoping + rule on Aarhus;
+  (b) **Kaito** — accept the two code corrections (import backend EXISTS; 12+generic, landing's "13 countries" is the
+  overclaim to fix), lock the PUBLIC NAME for the Life Grade (still unanswered from [2026-08-05 a]), confirm what the
+  Body Grade's "above average" is benchmarked against (that phrase is a claim, not copy), and check the EU withdrawal-
+  button requirement against our Stripe checkout; (c) whoever owns the landing fixes "13 countries" NOW, independent of
+  the redesign; (d) girlfriend: start the pre-redesign capture footage this week.
