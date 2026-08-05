@@ -53,7 +53,10 @@
   :root{
   /* font ROLE tokens — reskin a213555 Stage 0. Values unchanged (pixel-identical);
      Stage 2 swaps roles to Inter body per Osefe's C7(b). */
-  --font-display:'Orbitron',sans-serif; --font-body:'Rajdhani',sans-serif; --font-mono:'Share Tech Mono',monospace;
+  /* Orbitron + Share Tech Mono have NO latin-ext upstream (verified: Google
+     serves latin only) — Rajdhani (embedded WITH latin-ext) is the per-glyph
+     fallback so Hungarian ő/ű render in-family, never browser-serif. */
+  --font-display:'Orbitron','Rajdhani',sans-serif; --font-body:'Rajdhani',sans-serif; --font-mono:'Share Tech Mono','Rajdhani',monospace;
 
     --bg:#05080f; --panel:#0b1422; --panel2:#0e1a2e; --line:#1b3a5c;
     --cyan:#00e5ff; --cyan-dim:#0a7e8c; --lime:#7CFFB2; --amber:#ffb547; --red:#ff5c7c;
