@@ -51,6 +51,10 @@
 
   /* ===== PALETTES — 9 themes. :root default = Cyberpunk (the original signature theme). ===== */
   :root{
+  /* font ROLE tokens — reskin a213555 Stage 0. Values unchanged (pixel-identical);
+     Stage 2 swaps roles to Inter body per Osefe's C7(b). */
+  --font-display:'Orbitron',sans-serif; --font-body:'Rajdhani',sans-serif; --font-mono:'Share Tech Mono',monospace;
+
     --bg:#05080f; --panel:#0b1422; --panel2:#0e1a2e; --line:#1b3a5c;
     --cyan:#00e5ff; --cyan-dim:#0a7e8c; --lime:#7CFFB2; --amber:#ffb547; --red:#ff5c7c;
     --txt:#cfeaff; --txt-dim:#6f93b5; --bright:#eaffff; --field-bg:#08111e;
@@ -136,7 +140,7 @@
   html[data-theme="landing"] .card, html[data-theme="iceblue"] .card, html[data-theme="kawaii"] .card{ box-shadow:0 1px 2px rgba(14,28,51,.05)/* THEME-EXEMPT: selector is scoped to the 3 light themes only */, 0 10px 28px rgba(14,28,51,.07)/* THEME-EXEMPT: same light-theme-scoped selector */; border:1px solid var(--line); }
 
   /* ===== LAYOUTS (Arthur) — 5 distinct front-ends over one DOM. Command = default baseline. ===== */
-  html[data-layout=command] .hero-num{ font-family:'Orbitron',sans-serif; }
+  html[data-layout=command] .hero-num{ font-family:var(--font-display); }
   html[data-layout=command] .card{ border-radius:5px; }
 
   /* EDITORIAL — magazine serif, single reading column, ruled sections */
@@ -167,10 +171,10 @@
   html[data-layout=analyst] .card h2{ font-size:14px; letter-spacing:.04em; }
   html[data-layout=analyst] .card h2::before{ transform:scale(.7); }
   html[data-layout=analyst] header.hud{ padding:10px 12px; }
-  html[data-layout=analyst] .hero-num{ font-family:'Share Tech Mono',monospace; font-size:26px; animation:none; text-shadow:none; }
+  html[data-layout=analyst] .hero-num{ font-family:var(--font-mono); font-size:26px; animation:none; text-shadow:none; }
   html[data-layout=analyst] .status{ gap:8px; }
-  html[data-layout=analyst] .stat .val{ font-family:'Share Tech Mono',monospace; }
-  html[data-layout=analyst] .item-row{ padding:5px 8px; font-family:'Share Tech Mono',monospace; }
+  html[data-layout=analyst] .stat .val{ font-family:var(--font-mono); }
+  html[data-layout=analyst] .item-row{ padding:5px 8px; font-family:var(--font-mono); }
   html[data-layout=analyst] .tab{ padding:8px 12px; font-size:12px; }
   html[data-layout=analyst] .tab .ix{ font-size:10px; }
 
@@ -180,7 +184,7 @@
   html[data-layout=canvas] body::after{ display:none; }
   html[data-layout=canvas] .card{ border:0; border-radius:22px; box-shadow:0 8px 28px rgba(0,0,0,.14); padding:22px; margin-bottom:16px; }
   html[data-layout=canvas] .card h2::before{ display:none; }
-  html[data-layout=canvas] .hero-num{ font-family:'Orbitron',sans-serif; font-size:clamp(40px,11vw,60px); }
+  html[data-layout=canvas] .hero-num{ font-family:var(--font-display); font-size:clamp(40px,11vw,60px); }
   html[data-layout=canvas] .stat{ border-radius:999px; }
   /* Bottom bar: 13 tabs won't fit abreast — make it a horizontal SCROLL strip of
      natural-width pills (swipe through them) instead of squishing every label. */
@@ -201,7 +205,7 @@
   html[data-layout=focus] .card{ border:0; box-shadow:none; background:none; padding:0; margin-bottom:56px; }
   html[data-layout=focus] .card h2{ font-weight:400; letter-spacing:.02em; opacity:.8; }
   html[data-layout=focus] .card h2::before{ display:none; }
-  html[data-layout=focus] .hero-num{ font-family:'Rajdhani',sans-serif; font-weight:300; font-size:clamp(64px,20vw,132px); letter-spacing:-.02em; animation:none; text-shadow:none; }
+  html[data-layout=focus] .hero-num{ font-family:var(--font-body); font-weight:300; font-size:clamp(64px,20vw,132px); letter-spacing:-.02em; animation:none; text-shadow:none; }
   html[data-layout=focus] .status{ display:flex; gap:32px; opacity:.78; }
   html[data-layout=focus] .stat{ border:0; background:none; padding:0; }
   html[data-layout=focus] nav.tabs{ justify-content:center; gap:16px; border:0; }
@@ -233,7 +237,7 @@
       radial-gradient(900px 500px at 0% 110%, rgba(var(--pos-rgb),.06), transparent 55%),
       var(--bg);
     color:var(--txt);
-    font-family:'Rajdhani',sans-serif;
+    font-family:var(--font-body);
     min-height:100vh;
     overflow-x:hidden;
     touch-action:manipulation;   /* app-like: no double-tap-to-zoom (panning/scrolling stays free) */
@@ -310,9 +314,9 @@
     mask-image:radial-gradient(120% 90% at 50% 42%,transparent 0%,transparent 20%,#000 78%); opacity:1; }
   #boot::after{ content:""; position:absolute; left:0; right:0; top:0; height:2px; pointer-events:none;
     background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.55),transparent); box-shadow:0 0 18px rgba(var(--accent-rgb),.4); opacity:0; }
-  #boot .boot-logo{ font-family:'Orbitron'; font-weight:900; font-size:clamp(30px,9vw,44px); letter-spacing:.16em;
+  #boot .boot-logo{ font-family:var(--font-display); font-weight:900; font-size:clamp(30px,9vw,44px); letter-spacing:.16em;
     color:var(--bright); text-shadow:var(--glow); opacity:1; position:relative; }
-  #boot .boot-sys{ font-family:'Share Tech Mono'; text-transform:uppercase; color:var(--cyan);
+  #boot .boot-sys{ font-family:var(--font-mono); text-transform:uppercase; color:var(--cyan);
     letter-spacing:.28em; font-size:clamp(10px,2.6vw,12.5px); opacity:.85; }
   /* loading dots — cyan dots add (1→2→3) and clear, looping, like a machine working. Fade in with
      the system line and animate through the 3s hold. Motion-gated; hidden for reduced-motion. */
@@ -361,11 +365,11 @@
     animation:sweep 6s linear infinite;
   }
   @keyframes sweep{to{left:120%}}
-  .eyebrow{font-family:'Share Tech Mono',monospace;color:var(--cyan);letter-spacing:.32em;font-size:11px;text-transform:uppercase}
-  h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(26px,5vw,44px);letter-spacing:.04em;margin:6px 0 2px;color:var(--bright);text-shadow:var(--glow)}
+  .eyebrow{font-family:var(--font-mono);color:var(--cyan);letter-spacing:.32em;font-size:11px;text-transform:uppercase}
+  h1{font-family:var(--font-display);font-weight:900;font-size:clamp(26px,5vw,44px);letter-spacing:.04em;margin:6px 0 2px;color:var(--bright);text-shadow:var(--glow)}
   .sub{color:var(--txt-dim);font-size:15px;font-weight:500}
   .pillbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-  .pill{font-family:'Share Tech Mono',monospace;font-size:11px;border:1px solid var(--line);background:var(--panel2);color:var(--txt-dim);padding:5px 10px;border-radius:20px}
+  .pill{font-family:var(--font-mono);font-size:11px;border:1px solid var(--line);background:var(--panel2);color:var(--txt-dim);padding:5px 10px;border-radius:20px}
   .pill b{color:var(--lime)}
 
   /* STATUS STRIP */
@@ -375,9 +379,9 @@
     background:linear-gradient(180deg,var(--panel2),var(--panel));
     position:relative;
   }
-  .stat .lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--txt-dim);text-transform:uppercase}
-  .stat .val{font-family:'Orbitron',sans-serif;font-weight:700;font-size:clamp(18px,3.4vw,26px);margin-top:6px}
-  .stat .val small{font-size:12px;color:var(--txt-dim);font-family:'Rajdhani'}
+  .stat .lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;color:var(--txt-dim);text-transform:uppercase}
+  .stat .val{font-family:var(--font-display);font-weight:700;font-size:clamp(18px,3.4vw,26px);margin-top:6px}
+  .stat .val small{font-size:12px;color:var(--txt-dim);font-family:var(--font-body)}
   .stat.low .val{color:var(--amber)}
   .stat.avg .val{color:var(--cyan)}
   .stat.high .val{color:var(--lime)}
@@ -390,8 +394,8 @@
   .ih-bar:hover{opacity:.82}
   .ih-list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
   .ih-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:linear-gradient(180deg,var(--panel2),var(--panel))}
-  .ih-row .ih-mo{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--txt-dim);letter-spacing:.05em;min-width:104px}
-  .ih-row .ih-amt{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;margin-left:auto}
+  .ih-row .ih-mo{font-family:var(--font-mono);font-size:12px;color:var(--txt-dim);letter-spacing:.05em;min-width:104px}
+  .ih-row .ih-amt{font-family:var(--font-display);font-weight:700;font-size:15px;margin-left:auto}
   .ih-row .ih-amt.est{opacity:.62;font-style:italic}
   .ih-row .ih-e,.ih-row .ih-x{background:transparent;border:none;color:var(--txt-dim);cursor:pointer;font-size:14px;padding:4px 6px;min-width:30px}
   .ih-row .ih-e:hover{color:var(--cyan)} .ih-row .ih-x:hover{color:var(--red)}
@@ -399,8 +403,8 @@
   @media(max-width:720px){.ih-strip{grid-template-columns:repeat(2,1fr)}}
   /* Arthur H — hero number: the leftover is the app's single most important figure, so it leads the header */
   .hero{margin-top:18px}
-  .hero-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--txt-dim);text-transform:uppercase}
-  .hero-num{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(38px,9vw,60px);line-height:1.02;margin-top:5px;color:var(--lime);text-shadow:0 0 24px rgba(var(--pos-rgb),.32)}
+  .hero-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;color:var(--txt-dim);text-transform:uppercase}
+  .hero-num{font-family:var(--font-display);font-weight:900;font-size:clamp(38px,9vw,60px);line-height:1.02;margin-top:5px;color:var(--lime);text-shadow:0 0 24px rgba(var(--pos-rgb),.32)}
   .hero-num.warn{color:var(--amber);text-shadow:0 0 24px rgba(var(--warn-rgb),.30)}
   .hero-num.bad{color:var(--red);text-shadow:0 0 24px rgba(var(--bad-rgb),.30)}
   .hero-ccy{font-size:.42em;color:var(--txt-dim);font-weight:700;-webkit-text-fill-color:initial}
@@ -412,12 +416,12 @@
   /* NAV BUTTONS */
   nav.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0 20px;justify-content:center}
   .tab{
-    font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.04em;
+    font-family:var(--font-body);font-weight:700;font-size:15px;letter-spacing:.04em;
     border:1px solid var(--line);background:var(--panel);color:var(--txt-dim);
     padding:11px 18px;border-radius:10px;cursor:pointer;transition:all .18s ease;
     position:relative;text-transform:uppercase;
   }
-  .tab .ix{font-family:'Share Tech Mono';font-size:10px;color:var(--cyan-dim);margin-right:7px}
+  .tab .ix{font-family:var(--font-mono);font-size:10px;color:var(--cyan-dim);margin-right:7px}
   .tab:hover{color:var(--txt);border-color:var(--cyan-dim);transform:translateY(-2px)}
   .tab.active{color:var(--on-accent);background:linear-gradient(180deg,var(--cyan),var(--accent-2));border-color:var(--cyan);box-shadow:var(--glow)}
   .tab.active .ix{color:var(--on-accent)}
@@ -491,16 +495,16 @@
     background:linear-gradient(180deg,var(--panel2),var(--panel));
     position:relative;
   }
-  .card h2{font-family:'Orbitron';font-weight:700;font-size:18px;color:var(--bright);letter-spacing:.03em;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+  .card h2{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--bright);letter-spacing:.03em;margin-bottom:4px;display:flex;align-items:center;gap:10px}
   .card h2::before{content:"";width:9px;height:9px;background:var(--cyan);border-radius:2px;box-shadow:var(--glow);transform:rotate(45deg)}
   #moveGet>h2::before,#moveSend>h2::before{display:none}   /* numbered STEP badge replaces the diamond on the move-data steps */
   .card .desc{color:var(--txt-dim);font-size:14px;margin-bottom:14px}
 
   table{width:100%;border-collapse:collapse;font-size:15px}
   th,td{text-align:left;padding:10px 8px;border-bottom:1px solid rgba(var(--line-rgb),.5)}
-  th{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.16em;color:var(--txt-dim);text-transform:uppercase;font-weight:400}
+  th{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;color:var(--txt-dim);text-transform:uppercase;font-weight:400}
   td{color:var(--txt)}
-  td.num{text-align:right;font-family:'Share Tech Mono';color:var(--cyan)}
+  td.num{text-align:right;font-family:var(--font-mono);color:var(--cyan)}
   tr:last-child td{border-bottom:none}
   tr.total td{font-weight:700;color:var(--bright);border-top:1px solid var(--cyan-dim)}
   tr.total td.num{color:var(--lime)}
@@ -508,8 +512,8 @@
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   @media(max-width:720px){.row2{grid-template-columns:1fr}.status{grid-template-columns:1fr}}
 
-  .bignum{font-family:'Orbitron';font-weight:900;font-size:clamp(30px,7vw,52px);color:var(--lime);text-shadow:0 0 22px rgba(var(--pos-rgb),.3);line-height:1}
-  .bignum small{display:block;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.18em;margin-bottom:8px;text-transform:uppercase}
+  .bignum{font-family:var(--font-display);font-weight:900;font-size:clamp(30px,7vw,52px);color:var(--lime);text-shadow:0 0 22px rgba(var(--pos-rgb),.3);line-height:1}
+  .bignum small{display:block;font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);letter-spacing:.18em;margin-bottom:8px;text-transform:uppercase}
 
   .meter{height:14px;border:1px solid var(--line);border-radius:8px;background:var(--field-bg);overflow:hidden;margin:6px 0 2px}
   .meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));border-radius:7px;position:relative}
@@ -518,8 +522,8 @@
   /* Budget summary — per-category share bars (biggest cost reads at a glance) */
   .bud-bars{ margin:2px 0 14px; display:flex; flex-direction:column; gap:11px }
   .bud-bar-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px }
-  .bud-bar-lbl{ font-family:'Rajdhani',sans-serif; font-weight:600; font-size:13.5px; color:var(--txt) }
-  .bud-bar-val{ font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--txt-dim); white-space:nowrap }
+  .bud-bar-lbl{ font-family:var(--font-body); font-weight:600; font-size:13.5px; color:var(--txt) }
+  .bud-bar-val{ font-family:var(--font-mono); font-size:12px; color:var(--txt-dim); white-space:nowrap }
   .bud-bar-val small{ color:var(--cyan); font-size:11px }
   /* Budget: rowBorn — a brief lime confirm flash on an added/edited item (motion-gated) */
   @media (prefers-reduced-motion: no-preference){ .item-row.row-flash{ animation:rowBorn 850ms ease-out; } }
@@ -528,26 +532,26 @@
   .bud-head{ display:flex; align-items:center; gap:12px; }
   .bud-head h2{ margin:0; }
   .bud-toggle{ margin-left:auto; display:inline-flex; align-items:center; gap:6px; background:transparent; border:1px solid var(--cyan-dim);
-    color:var(--cyan); border-radius:999px; font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.04em; padding:7px 14px; cursor:pointer; transition:background .15s,border-color .15s; }
+    color:var(--cyan); border-radius:999px; font-family:var(--font-mono); font-size:12px; letter-spacing:.04em; padding:7px 14px; cursor:pointer; transition:background .15s,border-color .15s; }
   .bud-toggle:hover{ background:rgba(var(--accent-rgb),.08); }
   #expenses.budget-editing .bud-toggle{ background:var(--cyan); color:var(--on-accent); border-color:var(--cyan); font-weight:700; }
   #customList{ display:flex; flex-direction:column; }
   .bud-cat{ display:flex; align-items:center; gap:10px; margin:22px 0 6px; }
-  .bud-cat-name{ font-family:'Orbitron',sans-serif; font-weight:700; font-size:13.5px; color:var(--bright); letter-spacing:.02em; }
-  .bud-cat-sub{ margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:12.5px; color:var(--cyan); font-variant-numeric:tabular-nums; }
+  .bud-cat-name{ font-family:var(--font-display); font-weight:700; font-size:13.5px; color:var(--bright); letter-spacing:.02em; }
+  .bud-cat-sub{ margin-left:auto; font-family:var(--font-mono); font-size:12.5px; color:var(--cyan); font-variant-numeric:tabular-nums; }
   .bud-catdel{ display:none; align-items:center; justify-content:center; width:28px; height:28px; flex:0 0 auto;
     background:transparent; border:1px solid var(--red); color:var(--red); border-radius:8px; cursor:pointer; font-size:12px; }
   .item-row{ display:flex; align-items:center; gap:12px; padding:14px 2px; border-bottom:1px solid rgba(var(--line-rgb),.5); }
   .item-row:last-child{ border-bottom:none; }
   .ir-main{ min-width:0; flex:1 1 auto; }
-  .ir-name{ font-family:'Rajdhani',sans-serif; font-weight:600; font-size:16px; color:var(--txt); line-height:1.2; overflow:hidden; text-overflow:ellipsis; }
-  .ir-added{ font-family:'Share Tech Mono',monospace; font-size:8px; color:var(--cyan); border:1px solid var(--cyan-dim); border-radius:4px; padding:1px 4px; vertical-align:middle; letter-spacing:.05em; }
+  .ir-name{ font-family:var(--font-body); font-weight:600; font-size:16px; color:var(--txt); line-height:1.2; overflow:hidden; text-overflow:ellipsis; }
+  .ir-added{ font-family:var(--font-mono); font-size:8px; color:var(--cyan); border:1px solid var(--cyan-dim); border-radius:4px; padding:1px 4px; vertical-align:middle; letter-spacing:.05em; }
   .ir-until{ display:block; color:var(--txt-dim); font-size:11px; margin-top:3px; letter-spacing:.02em; }
   .ir-until.ok{ color:var(--lime); }
   .ir-price{ flex:0 0 auto; text-align:right; white-space:nowrap; }
-  .ir-amt{ font-family:'Orbitron',sans-serif; font-weight:700; font-size:15px; color:var(--bright); font-variant-numeric:tabular-nums; }
-  .ir-amt small{ font-family:'Share Tech Mono',monospace; font-weight:400; font-size:10px; color:var(--txt-dim); }
-  .ir-price > small{ display:block; color:var(--txt-dim); font-size:10px; font-family:'Share Tech Mono',monospace; margin-top:2px; }
+  .ir-amt{ font-family:var(--font-display); font-weight:700; font-size:15px; color:var(--bright); font-variant-numeric:tabular-nums; }
+  .ir-amt small{ font-family:var(--font-mono); font-weight:400; font-size:10px; color:var(--txt-dim); }
+  .ir-price > small{ display:block; color:var(--txt-dim); font-size:10px; font-family:var(--font-mono); margin-top:2px; }
   .ir-varies{ color:var(--txt-dim); font-size:12.5px; font-style:italic; }
   .ir-skel{ display:inline-block; width:72px; height:15px; border-radius:5px; vertical-align:middle;
     background:linear-gradient(90deg,rgba(var(--accent-rgb),.06),rgba(var(--accent-rgb),.20),rgba(var(--accent-rgb),.06)); background-size:200% 100%; }
@@ -558,14 +562,14 @@
   .ir-e{ border:1px solid var(--cyan-dim); color:var(--cyan); } .ir-e:hover{ background:rgba(var(--accent-rgb),.10); }
   .ir-x{ border:1px solid var(--red); color:var(--red); } .ir-x:hover{ background:rgba(var(--bad-rgb),.10); }
   .ir-editfields{ display:flex; gap:8px; margin-top:9px; }
-  .ir-editfields input{ max-width:130px; background:var(--field-bg); border:1px solid var(--cyan); border-radius:9px; color:var(--txt); padding:9px 11px; font-family:'Rajdhani',sans-serif; font-size:16px; }
+  .ir-editfields input{ max-width:130px; background:var(--field-bg); border:1px solid var(--cyan); border-radius:9px; color:var(--txt); padding:9px 11px; font-family:var(--font-body); font-size:16px; }
   .ir-editfields select{ background:var(--field-bg); border:1px solid var(--line); border-radius:9px; color:var(--txt); padding:9px; }
   /* EDIT MODE reveals the tools + category-delete + the add surfaces; DISPLAY hides them all */
   #expenses.budget-editing .ir-tools{ display:flex; }
   #expenses.budget-editing .bud-catdel{ display:inline-flex; }
   #expenses:not(.budget-editing) #addCostCard{ display:none; }
   #expenses:not(.budget-editing) #budCatAdd{ display:none; }
-  .meterlbl{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin-top:4px}
+  .meterlbl{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);margin-top:4px}
 
   ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px}
   ul.clean li{padding-left:22px;position:relative;font-size:15px;line-height:1.45}
@@ -581,7 +585,7 @@
   .check li .box.done::after{content:"✓";color:var(--on-accent);font-weight:700;font-size:13px}
   .check li.done > span:not(.box){color:var(--txt-dim);text-decoration:line-through}
 
-  .tag{font-family:'Share Tech Mono';font-size:10px;padding:3px 8px;border-radius:6px;letter-spacing:.1em}
+  .tag{font-family:var(--font-mono);font-size:10px;padding:3px 8px;border-radius:6px;letter-spacing:.1em}
   .tag.good{background:rgba(var(--pos-rgb),.12);color:var(--lime);border:1px solid var(--lime)}
   .tag.now{background:rgba(var(--accent-rgb),.12);color:var(--accent-text);border:1px solid var(--cyan-dim)}
   .tag.later{background:rgba(var(--warn-rgb),.12);color:var(--amber);border:1px solid var(--amber)}
@@ -598,23 +602,23 @@
     position:relative;
   }
   .sub-item .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
-  .sub-item .name{font-family:'Orbitron';font-weight:700;font-size:16px;color:var(--bright)}
-  .sub-item .cost{font-family:'Share Tech Mono';font-size:15px;color:var(--cyan);white-space:nowrap}
-  .sub-item .freq{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.14em;color:var(--txt-dim);text-transform:uppercase;margin-top:2px}
+  .sub-item .name{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--bright)}
+  .sub-item .cost{font-family:var(--font-mono);font-size:15px;color:var(--cyan);white-space:nowrap}
+  .sub-item .freq{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;color:var(--txt-dim);text-transform:uppercase;margin-top:2px}
   .sub-item .what{font-size:14px;color:var(--txt);margin-top:8px}
   .sub-item .why{font-size:13px;color:var(--txt-dim);margin-top:6px;border-left:2px solid var(--cyan-dim);padding-left:10px;font-style:italic}
-  .sub-item .why b{color:var(--lime);font-style:normal;font-family:'Share Tech Mono';font-size:10px;letter-spacing:.1em;display:block;margin-bottom:2px}
+  .sub-item .why b{color:var(--lime);font-style:normal;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;display:block;margin-bottom:2px}
   .sub-status{position:absolute;top:14px;right:16px}
-  .pending{color:var(--amber);font-family:'Share Tech Mono';font-size:11px;border:1px dashed var(--amber);padding:8px 12px;border-radius:8px;display:inline-block;margin-top:8px}
+  .pending{color:var(--amber);font-family:var(--font-mono);font-size:11px;border:1px dashed var(--amber);padding:8px 12px;border-radius:8px;display:inline-block;margin-top:8px}
 
   /* EXPENSE GROUPS */
   .exp-group{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;background:var(--panel)}
   .exp-head{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;cursor:pointer;background:linear-gradient(180deg,rgba(var(--accent-rgb),.06),transparent);transition:background .15s}
   .exp-head:hover{background:rgba(var(--accent-rgb),.10)}
-  .exp-head .gname{font-family:'Orbitron';font-weight:700;font-size:15px;color:var(--bright);display:flex;align-items:center;gap:9px}
+  .exp-head .gname{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--bright);display:flex;align-items:center;gap:9px}
   .exp-head .gname .ico{width:8px;height:8px;background:var(--cyan);border-radius:2px;transform:rotate(45deg);box-shadow:var(--glow)}
-  .exp-head .gtot{font-family:'Share Tech Mono';font-size:14px;color:var(--lime)}
-  .exp-head .arrow{font-family:'Share Tech Mono';color:var(--cyan);margin-left:10px;transition:transform .2s;font-size:12px}
+  .exp-head .gtot{font-family:var(--font-mono);font-size:14px;color:var(--lime)}
+  .exp-head .arrow{font-family:var(--font-mono);color:var(--cyan);margin-left:10px;transition:transform .2s;font-size:12px}
   .exp-group.open .arrow{transform:rotate(90deg)}
   .exp-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
   .exp-group.open .exp-body{max-height:600px}
@@ -637,34 +641,34 @@
   .exp-group.just-opened .exp-body tr:nth-child(9){animation-delay:200ms}
   .exp-group.just-opened .exp-body tr:nth-child(n+10){animation-delay:225ms}
 
-  .scen-btn{font-family:'Rajdhani';font-weight:700;font-size:13px;letter-spacing:.04em;border:1px solid var(--line);background:var(--panel);color:var(--txt-dim);padding:8px 14px;border-radius:10px;cursor:pointer;transition:all .18s ease;text-transform:uppercase}
+  .scen-btn{font-family:var(--font-body);font-weight:700;font-size:13px;letter-spacing:.04em;border:1px solid var(--line);background:var(--panel);color:var(--txt-dim);padding:8px 14px;border-radius:10px;cursor:pointer;transition:all .18s ease;text-transform:uppercase}
   .scen-btn:hover{color:var(--txt);border-color:var(--cyan-dim)}
   .scen-btn:active{transform:scale(.95)}   /* Arthur D — press squeeze */
   .scen-btn.active{color:var(--on-accent);background:linear-gradient(180deg,var(--cyan),var(--accent-2));border-color:var(--cyan);box-shadow:var(--glow)}
   .loantoggle{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--txt);background:rgba(var(--accent-rgb),.05);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer}
   .loantoggle input{width:18px;height:18px;accent-color:var(--cyan);cursor:pointer;flex:none}
 
-  footer{text-align:center;color:var(--txt-dim);font-family:'Share Tech Mono';font-size:11px;letter-spacing:.14em;margin-top:30px}
+  footer{text-align:center;color:var(--txt-dim);font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;margin-top:30px}
 
   .slider-wrap{margin-top:8px}
   input[type=range]{width:100%;accent-color:var(--cyan);margin:10px 0}
-  .calc-out{font-family:'Orbitron';font-weight:700;font-size:clamp(22px,5vw,34px);color:var(--lime);text-shadow:0 0 18px rgba(var(--pos-rgb),.3)}
-  .calc-row{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:13px;color:var(--txt-dim);padding:5px 0;border-bottom:1px solid rgba(var(--line-rgb),.4)}
+  .calc-out{font-family:var(--font-display);font-weight:700;font-size:clamp(22px,5vw,34px);color:var(--lime);text-shadow:0 0 18px rgba(var(--pos-rgb),.3)}
+  .calc-row{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:13px;color:var(--txt-dim);padding:5px 0;border-bottom:1px solid rgba(var(--line-rgb),.4)}
   .calc-row b{color:var(--txt)}
   .calc-neg b{color:var(--red)}
 
   /* ---- SELF-SERVICE UI (forms, calendar, save, log) ---- */
   .field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
-  .field label{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.16em;color:var(--txt-dim);text-transform:uppercase}
+  .field label{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;color:var(--txt-dim);text-transform:uppercase}
   .field input,.field select,.field textarea{
     background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);
-    font-family:'Rajdhani';font-size:15px;font-weight:500;padding:9px 11px;outline:none;width:100%;
+    font-family:var(--font-body);font-size:15px;font-weight:500;padding:9px 11px;outline:none;width:100%;
   }
   .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan);box-shadow:var(--glow)}
   .field textarea{resize:vertical;min-height:54px}
   .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   @media(max-width:560px){.form-row{grid-template-columns:1fr}}
-  .btn{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;
+  .btn{font-family:var(--font-body);font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;
     border:1px solid var(--cyan);background:linear-gradient(180deg,var(--cyan),var(--accent-2));color:var(--on-accent);
     padding:10px 18px;border-radius:10px;cursor:pointer;transition:all .15s;box-shadow:var(--glow)}
   .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
@@ -676,23 +680,23 @@
 
   .item-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:8px}
   .item-row .meta{font-size:14px;color:var(--txt)}
-  .item-row .meta small{display:block;color:var(--txt-dim);font-family:'Share Tech Mono';font-size:11px;margin-top:2px}
-  .item-row .amt{font-family:'Share Tech Mono';color:var(--cyan);white-space:nowrap}
+  .item-row .meta small{display:block;color:var(--txt-dim);font-family:var(--font-mono);font-size:11px;margin-top:2px}
+  .item-row .amt{font-family:var(--font-mono);color:var(--cyan);white-space:nowrap}
   .empty{color:var(--txt-dim);font-style:italic;font-size:14px;padding:8px 2px}
 
   /* calendar */
   .cal-nav{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-  .cal-nav button{font-family:'Share Tech Mono';font-size:14px;border:1px solid var(--line);background:var(--panel);color:var(--cyan);width:38px;height:38px;border-radius:9px;cursor:pointer;transition:all .15s}
+  .cal-nav button{font-family:var(--font-mono);font-size:14px;border:1px solid var(--line);background:var(--panel);color:var(--cyan);width:38px;height:38px;border-radius:9px;cursor:pointer;transition:all .15s}
   .cal-nav button:hover{border-color:var(--cyan);box-shadow:var(--glow)}
-  .cal-nav .lbl{font-family:'Orbitron';font-weight:700;font-size:18px;color:var(--bright);min-width:190px;text-align:center}
+  .cal-nav .lbl{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--bright);min-width:190px;text-align:center}
   .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-  .cal-dow{font-family:'Share Tech Mono';font-size:10px;letter-spacing:.1em;color:var(--txt-dim);text-align:center;padding:4px 0;text-transform:uppercase}
+  .cal-dow{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--txt-dim);text-align:center;padding:4px 0;text-transform:uppercase}
   .cal-cell{min-height:62px;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:6px;cursor:pointer;transition:all .12s;position:relative;overflow:hidden}
   .cal-cell:hover{border-color:var(--cyan-dim);background:rgba(var(--accent-rgb),.06)}
   .cal-cell.empty-cell{background:transparent;border:1px solid transparent;cursor:default}
   .cal-cell.today{border-color:var(--cyan);box-shadow:inset 0 0 0 1px var(--cyan-dim)}
   .cal-cell.sel{border-color:var(--lime);box-shadow:0 0 12px rgba(var(--pos-rgb),.3)}
-  .cal-cell .dnum{font-family:'Share Tech Mono';font-size:12px;color:var(--txt-dim)}
+  .cal-cell .dnum{font-family:var(--font-mono);font-size:12px;color:var(--txt-dim)}
   .cal-cell.today .dnum{color:var(--cyan)}
   .cal-cell .ev{font-size:10px;line-height:1.25;color:var(--lime);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cal-cell .more{font-size:9px;color:var(--txt-dim)}
@@ -700,12 +704,12 @@
 
   /* floating save */
   .savebar{position:fixed;right:18px;bottom:18px;z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
-  .savebar .savebtn{font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;
+  .savebar .savebtn{font-family:var(--font-body);font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;
     border:1px solid var(--lime);background:linear-gradient(180deg,var(--lime),var(--lime));color:var(--on-accent);
     padding:13px 20px;border-radius:12px;cursor:pointer;box-shadow:0 0 22px rgba(var(--pos-rgb),.4);transition:all .15s}
   .savebar .savebtn:hover{filter:brightness(1.08);transform:translateY(-2px)}
-  .savebar .badge{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;max-width:260px;text-align:right}
-  .bakechk{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;cursor:pointer;user-select:none}
+  .savebar .badge{font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;max-width:260px;text-align:right}
+  .bakechk{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:20px;cursor:pointer;user-select:none}
   .bakechk input{accent-color:var(--cyan);cursor:pointer;margin:0}
   /* mobile: collapse the save bar into one round button so it stops eating the screen */
   .savefab{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:1px solid var(--cyan);background:var(--panel2);color:var(--cyan);font-size:24px;line-height:1;cursor:pointer;box-shadow:var(--glow);align-self:flex-end;transition:all .15s}
@@ -732,25 +736,25 @@
   .savebar.haswarn .badge{display:flex}
   .savebar.haswarn .savefab{border-color:var(--red);color:var(--red);box-shadow:0 0 18px rgba(var(--bad-rgb),.45)}
   .savebar.haswarn .badge{color:var(--red);border-color:var(--red)}
-  .chattoggle{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--cyan-dim);background:var(--panel2);color:var(--cyan);padding:10px 16px;min-height:44px;border-radius:12px;cursor:pointer;transition:all .15s}
+  .chattoggle{font-family:var(--font-body);font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--cyan-dim);background:var(--panel2);color:var(--cyan);padding:10px 16px;min-height:44px;border-radius:12px;cursor:pointer;transition:all .15s}
   .chattoggle:hover{border-color:var(--cyan);box-shadow:var(--glow);color:var(--bright)}
   .chatwidget{width:340px;max-width:calc(100vw - 36px);max-height:72vh;overflow-y:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 14px 44px rgba(0,0,0,.55);text-align:left;transform-origin:bottom right}
   /* B6 — chat entrance: the assistant widget scales+rises in each time it's shown (display none→block
      re-triggers the animation), mirroring the modal 2c motion instead of snapping open. */
   @media (prefers-reduced-motion: no-preference){ .chatwidget{ animation:chatIn 200ms cubic-bezier(.22,1,.36,1) } }
   @keyframes chatIn{ from{opacity:0; transform:scale(.96) translateY(8px)} to{opacity:1; transform:none} }
-  .chathead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);font-family:'Orbitron';font-weight:700;font-size:13px;color:var(--bright);position:sticky;top:0;background:var(--panel2);z-index:1}
+  .chathead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--bright);position:sticky;top:0;background:var(--panel2);z-index:1}
   .chatx{background:none;border:none;color:var(--txt-dim);font-size:15px;cursor:pointer;line-height:1;padding:2px 4px}
   .chatx:hover{color:var(--red)}
   .chatbody{padding:14px}
   .chathint{font-size:12px;color:var(--txt);margin-bottom:10px;line-height:1.45}
-  .chathint .dim{color:var(--txt-dim);font-family:'Share Tech Mono';font-size:10px;letter-spacing:.02em}
-  .chatbody textarea{width:100%;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:'Rajdhani';font-size:15px;padding:9px 11px;outline:none;resize:vertical;min-height:54px;margin-bottom:10px}
+  .chathint .dim{color:var(--txt-dim);font-family:var(--font-mono);font-size:10px;letter-spacing:.02em}
+  .chatbody textarea{width:100%;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:var(--font-body);font-size:15px;padding:9px 11px;outline:none;resize:vertical;min-height:54px;margin-bottom:10px}
   .chatbody textarea:focus{border-color:var(--cyan);box-shadow:var(--glow)}
 
   .logtable td{font-size:13px;vertical-align:top}
-  .logtable .ts{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);white-space:nowrap}
-  .logtable .act{font-family:'Share Tech Mono';font-size:11px;color:var(--cyan);text-transform:uppercase}
+  .logtable .ts{font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);white-space:nowrap}
+  .logtable .act{font-family:var(--font-mono);font-size:11px;color:var(--cyan);text-transform:uppercase}
 
   /* ---- ACCESS LOCK ---- */
   #lockScreen{position:fixed;inset:0;z-index:100000;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:center;padding:24px;
@@ -761,15 +765,15 @@
   html.lk-noscroll, html.lk-noscroll body{overflow:hidden;overscroll-behavior:none;height:100%}
   .lockcard{width:100%;max-width:380px;border:1px solid var(--line);border-radius:16px;
     background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 18px 60px rgba(0,0,0,.6);padding:30px 26px;text-align:center}
-  .lockcard .lk-logo{font-family:'Orbitron';font-weight:900;font-size:26px;letter-spacing:.16em;color:var(--bright);text-shadow:var(--glow)}
-  .lockcard .lk-sub{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin:6px 0 24px;letter-spacing:.05em}
-  .lockcard label{display:block;font-family:'Rajdhani';font-weight:600;font-size:13px;color:var(--txt);text-align:left;margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em}
-  .lockcard input{width:100%;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:'Share Tech Mono';font-size:13px;padding:12px 13px;outline:none}
+  .lockcard .lk-logo{font-family:var(--font-display);font-weight:900;font-size:26px;letter-spacing:.16em;color:var(--bright);text-shadow:var(--glow)}
+  .lockcard .lk-sub{font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);margin:6px 0 24px;letter-spacing:.05em}
+  .lockcard label{display:block;font-family:var(--font-body);font-weight:600;font-size:13px;color:var(--txt);text-align:left;margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em}
+  .lockcard input{width:100%;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:var(--font-mono);font-size:13px;padding:12px 13px;outline:none}
   .lockcard input:focus{border-color:var(--cyan);box-shadow:var(--glow)}
-  .lockcard .lk-btn{width:100%;margin-top:16px;font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;
+  .lockcard .lk-btn{width:100%;margin-top:16px;font-family:var(--font-body);font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;
     border:none;border-radius:10px;cursor:pointer;padding:13px;background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:var(--on-accent);box-shadow:0 0 22px rgba(var(--accent-rgb),.4);transition:all .15s}
   .lockcard .lk-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
-  .lockcard .lk-status{min-height:18px;margin-top:14px;font-family:'Share Tech Mono';font-size:12px;line-height:1.5}
+  .lockcard .lk-status{min-height:18px;margin-top:14px;font-family:var(--font-mono);font-size:12px;line-height:1.5}
   .lockcard .lk-foot{margin-top:20px;font-size:11px;color:var(--txt-dim);line-height:1.55}
   /* big obvious "get the app" banner at the top of the dashboard */
   .install-banner{display:flex;align-items:center;gap:13px;margin:0 0 16px;padding:13px 14px;border-radius:14px;
@@ -778,18 +782,18 @@
   @keyframes ibpulse{0%,100%{box-shadow:0 0 18px rgba(var(--accent-rgb),.16)}50%{box-shadow:0 0 30px rgba(var(--accent-rgb),.34)}}
   .install-banner .ib-icon{font-size:26px;line-height:1;flex:none}
   .install-banner .ib-text{flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--txt)}
-  .install-banner .ib-text b{color:var(--bright);font-size:15px;font-family:'Orbitron',sans-serif;letter-spacing:.02em}
+  .install-banner .ib-text b{color:var(--bright);font-size:15px;font-family:var(--font-display);letter-spacing:.02em}
   .install-banner .ib-go{flex:none;background:linear-gradient(180deg,var(--cyan),var(--accent-2));color:var(--on-accent);border:0;border-radius:10px;
-    font-family:'Orbitron',sans-serif;font-weight:800;font-size:13px;letter-spacing:.04em;padding:11px 18px;cursor:pointer;
+    font-family:var(--font-display);font-weight:800;font-size:13px;letter-spacing:.04em;padding:11px 18px;cursor:pointer;
     box-shadow:0 0 16px rgba(var(--accent-rgb),.5)}
   .install-banner .ib-go:active{transform:translateY(1px)}
   .install-banner .ib-x{flex:none;background:transparent;border:0;color:var(--txt-dim);font-size:15px;cursor:pointer;padding:4px 6px;align-self:flex-start}
   #installBody ol{margin:6px 0 0;padding-left:24px;font-size:14px;line-height:1.65;color:var(--txt)}
   #installBody ol li{margin:7px 0}
-  #installBody ol li::marker{color:var(--cyan);font-family:'Share Tech Mono';font-weight:700}
+  #installBody ol li::marker{color:var(--cyan);font-family:var(--font-mono);font-weight:700}
   #installBody .ib-note{font-size:12.5px;color:var(--txt-dim);margin-top:10px;line-height:1.5}
   #installBody .ib-now{display:block;width:100%;margin:4px 0 4px;background:linear-gradient(180deg,var(--cyan),var(--accent-2));color:var(--on-accent);
-    border:0;border-radius:11px;font-family:'Orbitron',sans-serif;font-weight:800;font-size:15px;letter-spacing:.03em;padding:14px;cursor:pointer;box-shadow:0 0 18px rgba(var(--accent-rgb),.45)}
+    border:0;border-radius:11px;font-family:var(--font-display);font-weight:800;font-size:15px;letter-spacing:.03em;padding:14px;cursor:pointer;box-shadow:0 0 18px rgba(var(--accent-rgb),.45)}
   /* SAVE SAFETY — amber warning variant of the install banner + modal zones + lock escape hatch */
   .install-banner.warn{ border-color:var(--amber); border-left:3px solid var(--amber);
     background:linear-gradient(180deg, rgba(var(--warn-rgb),.10), rgba(var(--warn-rgb),.03));
@@ -797,37 +801,37 @@
   .install-banner.warn .ib-text b{ color:var(--amber) }
   .install-banner.warn .ib-icon{ color:var(--amber) }
   .ss-zone{ border:1px solid var(--line); border-radius:12px; padding:12px 13px; margin:10px 0; background:rgba(var(--line-rgb),.4) }
-  .ss-zone .ss-h{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:.03em; color:var(--bright); margin-bottom:8px }
-  .ss-url{ font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--cyan); word-break:break-all; background:var(--field-bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:8px; user-select:all }
-  .lockcard .lk-openlink{ display:block; width:100%; margin-top:14px; background:transparent; border:1px solid var(--cyan-dim); border-radius:10px; color:var(--cyan); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer }
-  .lockcard .lk-about{ display:block; width:100%; margin-top:10px; background:transparent; border:1px solid var(--line); border-radius:10px; color:var(--txt-dim); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer; text-decoration:none; text-align:center; transition:border-color .15s, color .15s }
+  .ss-zone .ss-h{ font-family:var(--font-body); font-weight:700; font-size:13px; letter-spacing:.03em; color:var(--bright); margin-bottom:8px }
+  .ss-url{ font-family:var(--font-mono); font-size:12px; color:var(--cyan); word-break:break-all; background:var(--field-bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:8px; user-select:all }
+  .lockcard .lk-openlink{ display:block; width:100%; margin-top:14px; background:transparent; border:1px solid var(--cyan-dim); border-radius:10px; color:var(--cyan); font-family:var(--font-mono); font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer }
+  .lockcard .lk-about{ display:block; width:100%; margin-top:10px; background:transparent; border:1px solid var(--line); border-radius:10px; color:var(--txt-dim); font-family:var(--font-mono); font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer; text-decoration:none; text-align:center; transition:border-color .15s, color .15s }
   .lockcard .lk-about:hover{ border-color:var(--cyan-dim); color:var(--cyan) }
   /* Data escape hatch — always available while locked, so your data is never held hostage
      by a lapsed key. Exports the raw local data as a plain JSON file (no key, no armed app). */
-  .lockcard .lk-export{ display:block; width:100%; margin-top:10px; background:transparent; border:1px solid var(--line); border-radius:10px; color:var(--txt-dim); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer; text-align:center; transition:border-color .15s, color .15s }
+  .lockcard .lk-export{ display:block; width:100%; margin-top:10px; background:transparent; border:1px solid var(--line); border-radius:10px; color:var(--txt-dim); font-family:var(--font-mono); font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer; text-align:center; transition:border-color .15s, color .15s }
   .lockcard .lk-export:hover{ border-color:var(--amber); color:var(--amber) }
   .lockcard .lk-savehelp{ margin-top:10px; text-align:left }
-  .lockcard .lk-savehelp-url{ font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--cyan); word-break:break-all; background:var(--field-bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; user-select:all }
-  .lockcard .lk-savehelp-copy{ margin-top:8px; width:100%; background:linear-gradient(180deg,var(--cyan),var(--cyan-dim)); color:var(--on-accent); border:none; border-radius:9px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; padding:9px; cursor:pointer }
+  .lockcard .lk-savehelp-url{ font-family:var(--font-mono); font-size:11px; color:var(--cyan); word-break:break-all; background:var(--field-bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; user-select:all }
+  .lockcard .lk-savehelp-copy{ margin-top:8px; width:100%; background:linear-gradient(180deg,var(--cyan),var(--cyan-dim)); color:var(--on-accent); border:none; border-radius:9px; font-family:var(--font-body); font-weight:700; font-size:13px; padding:9px; cursor:pointer }
   #openSaveBtn{ min-height:44px; padding:9px 12px }   /* THE recovery affordance — honest 44px touch target (Arthur) */
   /* Build tag — a subtle at-a-glance version so a device serving a stale cache is diagnosable
      (read it off desktop vs phone). Pure display; the number is set from the single APP_VER const. */
-  .lockcard .lk-ver{ margin-top:16px; font-family:'Share Tech Mono',monospace; font-size:10.5px; letter-spacing:.14em; color:var(--txt-dim); opacity:.6; text-transform:uppercase }
+  .lockcard .lk-ver{ margin-top:16px; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.14em; color:var(--txt-dim); opacity:.6; text-transform:uppercase }
   .lockcard .lk-ver .lk-upd{ display:none; margin-left:9px; color:var(--cyan); opacity:1; cursor:pointer; border-bottom:1px dotted var(--cyan-dim); padding-bottom:1px }
   .lockcard .lk-ver.has-upd{ opacity:.9 }
   .lockcard .lk-ver.has-upd .lk-upd{ display:inline }
   /* install guides that flank the lock card (wide) / stack below it (phones) */
   .lk-guide{width:100%;max-width:238px;flex:0 0 auto;border:1px solid var(--line);border-radius:14px;background:rgba(var(--line-rgb),.5);padding:14px 16px;box-shadow:0 0 16px rgba(0,0,0,.25)}
-  .lk-guide-h{font-family:'Share Tech Mono';font-size:12px;letter-spacing:.05em;color:var(--cyan);margin-bottom:9px}
+  .lk-guide-h{font-family:var(--font-mono);font-size:12px;letter-spacing:.05em;color:var(--cyan);margin-bottom:9px}
   .lk-guide-h b{color:var(--cyan);font-weight:700}
   .lk-guide-steps{margin:0;padding-left:20px;font-size:12.5px;line-height:1.5;color:var(--txt)}
   .lk-guide-steps li{margin:5px 0}
-  .lk-guide-steps li::marker{color:var(--cyan);font-family:'Share Tech Mono'}
+  .lk-guide-steps li::marker{color:var(--cyan);font-family:var(--font-mono)}
   @media(max-width:859px){ .lk-guide{max-width:340px;order:2} }
   @media(min-width:860px){ .lk-guide.ios{order:-1} .lockcard{order:0} .lk-guide.android{order:1} }
   .lockcard .lk-lang{margin-bottom:18px;display:flex;align-items:center;justify-content:flex-end;gap:7px}
   .lockcard .lk-lang .lk-globe{font-size:15px;line-height:1;filter:drop-shadow(0 0 5px rgba(var(--accent-rgb),.5))}
-  .lockcard .lk-lang select{background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:999px;color:var(--cyan);font-family:'Share Tech Mono';font-size:12px;letter-spacing:.04em;padding:6px 12px;outline:none;cursor:pointer;box-shadow:0 0 12px rgba(var(--accent-rgb),.12)}
+  .lockcard .lk-lang select{background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:999px;color:var(--cyan);font-family:var(--font-mono);font-size:12px;letter-spacing:.04em;padding:6px 12px;outline:none;cursor:pointer;box-shadow:0 0 12px rgba(var(--accent-rgb),.12)}
   .lockcard .lk-lang select:focus{border-color:var(--cyan)}
 
   /* ============ LOCK-SCREEN ALIVE — self-contained cyberpunk ambient INSIDE the opaque overlay.
@@ -881,10 +885,10 @@
   }
 
   /* ---- LOCALE BAR ---- */
-  .localebar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:flex-end;margin:0 0 14px;font-family:'Rajdhani',sans-serif}
+  .localebar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:flex-end;margin:0 0 14px;font-family:var(--font-body)}
   .localebar .lc{display:flex;align-items:center;gap:6px}
   .localebar label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--txt-dim);font-weight:600}
-  .localebar select,.localebar input{background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:'Share Tech Mono';font-size:12px;padding:6px 9px;outline:none;max-width:180px}
+  .localebar select,.localebar input{background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:var(--font-mono);font-size:12px;padding:6px 9px;outline:none;max-width:180px}
   .localebar select:focus,.localebar input:focus{border-color:var(--cyan);box-shadow:var(--glow)}
   .localebar .globe{color:var(--cyan);font-size:14px}
 
@@ -981,11 +985,11 @@
   .modal-back.show{display:flex}
   .modal{width:100%;max-width:420px;border:1px solid var(--line);border-radius:16px;
     background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 20px 60px rgba(0,0,0,.6);padding:24px 22px}
-  .modal h3{font-family:'Orbitron';font-size:17px;color:var(--bright);margin-bottom:10px;display:flex;align-items:center;gap:9px}
+  .modal h3{font-family:var(--font-display);font-size:17px;color:var(--bright);margin-bottom:10px;display:flex;align-items:center;gap:9px}
   .modal .mwarn{font-size:14px;color:var(--txt);line-height:1.5}
   .modal .mwarn b{color:var(--amber)}
   .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;flex-wrap:wrap}
-  .modal-actions button{font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:.03em;border-radius:10px;padding:10px 16px;cursor:pointer;border:1px solid var(--line);transition:all .15s}
+  .modal-actions button{font-family:var(--font-body);font-weight:700;font-size:14px;letter-spacing:.03em;border-radius:10px;padding:10px 16px;cursor:pointer;border:1px solid var(--line);transition:all .15s}
   .modal-actions .mcancel{background:var(--panel2);color:var(--txt)}
   .modal-actions .mcancel:hover{border-color:var(--cyan);color:var(--bright)}
   .modal-actions .mok{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:var(--on-accent);border-color:var(--cyan)}
@@ -1010,7 +1014,7 @@
   .modal.legal .lg-close:hover{border-color:var(--cyan);color:var(--bright)}
   .modal.legal .lg-body{overflow-y:auto;padding:18px 20px 22px}
   .modal.legal .lg-note{font-size:11px;color:var(--txt-dim);margin:0 0 16px;font-style:italic;line-height:1.5}
-  .modal.legal .lg-body h4{font-family:'Rajdhani';font-size:15.5px;color:var(--bright);margin:22px 0 8px;letter-spacing:.02em}
+  .modal.legal .lg-body h4{font-family:var(--font-body);font-size:15.5px;color:var(--bright);margin:22px 0 8px;letter-spacing:.02em}
   .modal.legal .lg-body h4:first-of-type{margin-top:2px}
   .modal.legal .lg-body h5{font-size:12.5px;color:var(--cyan);margin:13px 0 4px;font-weight:700;letter-spacing:.01em}
   .modal.legal .lg-body p{font-size:12.5px;line-height:1.6;color:var(--txt);margin:0 0 9px}
@@ -1115,38 +1119,38 @@
   #onboard.show{display:flex}
   .wiz{width:100%;max-width:460px;border:1px solid var(--line);border-radius:18px;
     background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 24px 70px rgba(0,0,0,.65);padding:26px 24px;margin:auto}
-  .wiz .wlogo{font-family:'Orbitron';font-weight:900;font-size:24px;letter-spacing:.14em;color:var(--bright);text-shadow:var(--glow);text-align:center}
-  .wiz .wstepd{font-family:'Share Tech Mono';font-size:11px;color:var(--cyan);letter-spacing:.06em;text-align:center;margin:4px 0 2px}
+  .wiz .wlogo{font-family:var(--font-display);font-weight:900;font-size:24px;letter-spacing:.14em;color:var(--bright);text-shadow:var(--glow);text-align:center}
+  .wiz .wstepd{font-family:var(--font-mono);font-size:11px;color:var(--cyan);letter-spacing:.06em;text-align:center;margin:4px 0 2px}
   .wiz .wbar{height:5px;border-radius:4px;background:var(--panel2);overflow:hidden;margin:12px 0 18px}
   .wiz .wbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width .3s}
-  .wiz h2{font-family:'Orbitron';font-size:18px;color:var(--bright);margin-bottom:6px}
+  .wiz h2{font-family:var(--font-display);font-size:18px;color:var(--bright);margin-bottom:6px}
   .wiz p.wsub{color:var(--txt-dim);font-size:13.5px;line-height:1.5;margin-bottom:16px}
   .wiz label{display:block;font-size:12px;font-weight:600;color:var(--txt);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 5px}
   .wiz input,.wiz select{width:100%;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);
-    font-family:'Rajdhani';font-size:15px;padding:11px 12px;outline:none}
+    font-family:var(--font-body);font-size:15px;padding:11px 12px;outline:none}
   .wiz input:focus,.wiz select:focus{border-color:var(--cyan);box-shadow:var(--glow)}
   .wiz .wrow{display:flex;gap:10px}.wiz .wrow > div{flex:1;min-width:0}
   .wiz .chips{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 6px}
-  .wiz .chip{font-family:'Rajdhani';font-weight:600;font-size:12.5px;border:1px solid var(--cyan-dim);background:var(--panel);color:var(--cyan);
+  .wiz .chip{font-family:var(--font-body);font-weight:600;font-size:12.5px;border:1px solid var(--cyan-dim);background:var(--panel);color:var(--cyan);
     padding:6px 11px;border-radius:20px;cursor:pointer;transition:all .15s}
   .wiz .chip:hover{border-color:var(--cyan);box-shadow:var(--glow);color:var(--bright)}
   .wiz .wlist{margin:8px 0 4px;display:flex;flex-direction:column;gap:7px;max-height:34vh;overflow-y:auto}
   .wiz .wexp{display:flex;align-items:center;gap:8px;justify-content:space-between;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--panel)}
   .wiz .wexp .nm{font-size:14px;color:var(--txt)}
-  .wiz .wexp .am{font-family:'Share Tech Mono';font-size:13px;color:var(--cyan);white-space:nowrap}
+  .wiz .wexp .am{font-family:var(--font-mono);font-size:13px;color:var(--cyan);white-space:nowrap}
   .wiz .wexp .x{background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;line-height:1;padding:0 2px}
-  .wiz .wtot{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:13px;color:var(--txt-dim);border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
+  .wiz .wtot{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:13px;color:var(--txt-dim);border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
   .wiz .wtot b{color:var(--lime)}
   .wiz .wsum{display:flex;flex-direction:column;gap:9px;margin:8px 0}
   .wiz .wsum .r{display:flex;justify-content:space-between;font-size:14px;color:var(--txt);border-bottom:1px solid rgba(var(--line-rgb),.5);padding-bottom:8px}
-  .wiz .wsum .r .v{font-family:'Share Tech Mono';color:var(--cyan)}
+  .wiz .wsum .r .v{font-family:var(--font-mono);color:var(--cyan)}
   .wiz .wsum .r.big .v{color:var(--lime);font-size:16px}
   .wiz .instwrap{display:flex;flex-direction:column;gap:10px;margin:4px 0;max-height:46vh;overflow-y:auto}
   .wiz .instcard{border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:var(--panel)}
   .wiz .instcard.hot{border-color:var(--lime);background:linear-gradient(180deg,rgba(var(--pos-rgb),.07),transparent)}
   .wiz .instcard .ih{font-size:14.5px;color:var(--txt);margin-bottom:6px}
   .wiz .instcard .ih b{color:var(--bright)}
-  .wiz .instcard .yours{font-family:'Share Tech Mono';font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--on-accent);background:var(--lime);border-radius:6px;padding:2px 6px;margin-left:4px;vertical-align:middle}
+  .wiz .instcard .yours{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--on-accent);background:var(--lime);border-radius:6px;padding:2px 6px;margin-left:4px;vertical-align:middle}
   .wiz .instcard ol.isteps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px}
   .wiz .instcard ol.isteps li{font-size:13px;color:var(--txt-dim);line-height:1.45}
   .wiz .instcard ol.isteps li b{color:var(--txt)}
@@ -1156,11 +1160,11 @@
   .wiz .pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px}
   .wiz .pcard{position:relative;border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:11px;min-height:88px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;gap:8px}
   .wiz .pcard.picked{border-color:var(--cyan);box-shadow:var(--glow)}
-  .wiz .pbadge{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--cyan);color:var(--on-accent);font-family:'Orbitron';font-size:12px;display:flex;align-items:center;justify-content:center}
+  .wiz .pbadge{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--cyan);color:var(--on-accent);font-family:var(--font-display);font-size:12px;display:flex;align-items:center;justify-content:center}
   .wiz .pcard .ptitle{font-size:12.5px;color:var(--bright)}
   .wiz .pmok{display:flex;flex-direction:column;gap:3px;min-height:34px;justify-content:center}
-  .wiz .mok-num{font-family:'Orbitron';font-size:20px;color:var(--lime);line-height:1}
-  .wiz .mok-lbl{font-family:'Share Tech Mono';font-size:9px;letter-spacing:.08em;color:var(--txt-dim);text-transform:uppercase}
+  .wiz .mok-num{font-family:var(--font-display);font-size:20px;color:var(--lime);line-height:1}
+  .wiz .mok-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;color:var(--txt-dim);text-transform:uppercase}
   .wiz .mok-bar{height:4px;border-radius:3px;background:var(--cyan)}
   .wiz .mok-bar.lime{background:var(--lime)}
   .wiz .mok-row{display:flex;align-items:center;gap:6px}
@@ -1168,11 +1172,11 @@
   .wiz .mok-row i{height:5px;border-radius:3px;background:var(--cyan);margin-left:auto}
   .wiz .mok-split{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
   .wiz .mok-split i{display:block;height:100%;background:var(--cyan)}
-  .wiz .mok-rank{display:flex;justify-content:space-between;font-family:'Share Tech Mono';font-size:11px}
+  .wiz .mok-rank{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px}
   .wiz .mok-rank span{color:var(--txt-dim)}
   .wiz .mok-rank b{color:var(--cyan)}
   .wiz .wact{display:flex;gap:10px;margin-top:20px}
-  .wiz .wact button{flex:1;font-family:'Rajdhani';font-weight:700;font-size:15px;letter-spacing:.03em;text-transform:uppercase;
+  .wiz .wact button{flex:1;font-family:var(--font-body);font-weight:700;font-size:15px;letter-spacing:.03em;text-transform:uppercase;
     border-radius:11px;padding:13px;cursor:pointer;border:1px solid var(--line);transition:all .15s}
   .wiz .wact .wnext{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:var(--on-accent);border-color:var(--cyan);box-shadow:0 0 20px rgba(var(--accent-rgb),.35)}
   .wiz .wact .wback{background:var(--panel2);color:var(--txt-dim);flex:0 0 auto;padding:13px 18px}
@@ -1189,9 +1193,9 @@
   #tourTip .tt-txt{font-size:14px;color:var(--txt);line-height:1.5}
   #tourTip .tt-txt b{color:var(--bright)}
   #tourTip .tt-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
-  #tourTip .tt-step{font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim)}
+  #tourTip .tt-step{font-family:var(--font-mono);font-size:11px;color:var(--txt-dim)}
   #tourTip .tt-btns{display:flex;gap:8px}
-  #tourTip button{font-family:'Rajdhani';font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--txt);transition:all .15s}
+  #tourTip button{font-family:var(--font-body);font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--txt);transition:all .15s}
   #tourTip button.tt-next{background:linear-gradient(180deg,var(--cyan),var(--cyan-dim));color:var(--on-accent);border-color:var(--cyan)}
   #tourTip button:hover{transform:translateY(-1px)}
   #tourTip .tt-skip{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--txt-dim);font-size:15px;padding:2px 5px}
@@ -1199,7 +1203,7 @@
   /* help / setup buttons in locale bar */
   /* bare .iconbtn is used outside the locale bar too (Checklist ✕, Savings ✎/🗑) — style it
      globally so those never fall back to the white browser-default button. */
-  .iconbtn{border:1px solid var(--line);background:var(--panel2);color:var(--cyan);font-family:'Share Tech Mono';font-size:12px;
+  .iconbtn{border:1px solid var(--line);background:var(--panel2);color:var(--cyan);font-family:var(--font-mono);font-size:12px;
     border-radius:8px;padding:6px 10px;cursor:pointer;transition:all .15s;white-space:nowrap;
     display:inline-flex;align-items:center;justify-content:center;line-height:1}
   .iconbtn:hover{border-color:var(--cyan);box-shadow:var(--glow);color:var(--bright)}
@@ -1422,7 +1426,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 <div class="modal-back" id="incBack">
   <div class="modal" role="dialog" aria-modal="true" style="max-width:400px">
     <h3 id="incTitle">How much did you get paid?</h3>
-    <div class="mwarn" id="incSub" style="background:transparent;border:none;padding:0;margin:-6px 0 12px;font-family:'Share Tech Mono',monospace;letter-spacing:.06em;color:var(--cyan)"></div>
+    <div class="mwarn" id="incSub" style="background:transparent;border:none;padding:0;margin:-6px 0 12px;font-family:var(--font-mono);letter-spacing:.06em;color:var(--cyan)"></div>
     <label for="incAmt" style="display:block;font-size:12px;color:var(--txt-dim);margin-bottom:6px" data-i18n="Take-home this month (after tax)">Take-home this month (after tax)</label>
     <input id="incAmt" type="number" inputmode="numeric" min="0" step="1" placeholder="0" style="width:100%;margin-bottom:14px">
     <div class="modal-actions" style="flex-wrap:wrap;gap:8px;justify-content:flex-end">
@@ -1446,7 +1450,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="desc" data-i18n="Position in the menu" style="font-size:12.5px;margin:14px 0 8px">Position in the menu</div>
     <div style="display:flex;align-items:center;gap:8px;justify-content:center">
       <button class="btn ghost" id="catPosDown" data-i18n-skip title="Move earlier" style="padding:6px 13px;font-size:15px">◀</button>
-      <input id="catPos" type="number" min="1" inputmode="numeric" data-i18n-skip style="width:66px;text-align:center;background:var(--field-bg);border:1px solid var(--cyan);border-radius:8px;color:var(--txt);font-family:'Share Tech Mono';font-size:16px;padding:7px">
+      <input id="catPos" type="number" min="1" inputmode="numeric" data-i18n-skip style="width:66px;text-align:center;background:var(--field-bg);border:1px solid var(--cyan);border-radius:8px;color:var(--txt);font-family:var(--font-mono);font-size:16px;padding:7px">
       <button class="btn ghost" id="catPosUp" data-i18n-skip title="Move later" style="padding:6px 13px;font-size:15px">▶</button>
       <span class="desc" id="catPosOf" data-i18n-skip style="font-size:12px;color:var(--txt-dim)"></span>
     </div>
@@ -1486,10 +1490,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="field" style="margin-top:8px"><label>Renew an existing file? <span style="color:var(--txt-dim)">(paste its File ID — leave blank to make a brand-new file)</span></label><input id="mintFid" placeholder="blank = new file · or e.g. F-7K2P9X" autocomplete="off"></div>
     <button class="btn" id="mintGo" style="margin-top:14px;width:100%">Create file + key</button>
     <div id="mintOut" style="display:none;margin-top:14px">
-      <div id="mintFidOut" style="font-family:'Share Tech Mono';font-size:12px;color:var(--cyan);margin-bottom:8px"></div>
+      <div id="mintFidOut" style="font-family:var(--font-mono);font-size:12px;color:var(--cyan);margin-bottom:8px"></div>
       <label style="font-size:12px;color:var(--txt-dim)">The key for this file — copy &amp; send it with the file</label>
-      <div id="mintKey" style="background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:12px;padding:11px;word-break:break-all;line-height:1.5;margin-top:4px"></div>
-      <div id="mintMeta" style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);margin-top:6px"></div>
+      <div id="mintKey" style="background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:var(--font-mono);font-size:12px;padding:11px;word-break:break-all;line-height:1.5;margin-top:4px"></div>
+      <div id="mintMeta" style="font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);margin-top:6px"></div>
       <button class="btn ghost" id="mintCopy" style="margin-top:8px">Copy key</button>
     </div>
     <div class="modal-actions"><button class="mcancel" id="mintClose">Close</button></div>
@@ -1850,9 +1854,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <div class="calc-row"><span>Income (after tax)</span><b id="cfInc">—</b></div>
         <div class="calc-row"><span>Recurring costs (all your bills &amp; subscriptions)</span><b id="cfOut2">—</b></div>
         <div class="calc-row" id="cfLoanRow"><span>Loan / debt payment</span><b id="cfLoan">—</b></div>
-        <div style="margin-top:14px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">LEFT OVER</small><div class="calc-out" id="cfOut">—</div></div>
+        <div style="margin-top:14px"><small style="font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);letter-spacing:.16em">LEFT OVER</small><div class="calc-out" id="cfOut">—</div></div>
         <div class="calc-row" id="cfMatchRow" style="margin-top:14px"><span>↳ Savings transfer</span><b id="cfMatch">—</b></div>
-        <div style="margin-top:8px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">FREE TO SPEND</small><div class="calc-out" id="cfFree" style="color:var(--cyan)">—</div></div>
+        <div style="margin-top:8px"><small style="font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);letter-spacing:.16em">FREE TO SPEND</small><div class="calc-out" id="cfFree" style="color:var(--cyan)">—</div></div>
       </div>
       <div class="note" id="cfNote">Slide to see any month.</div>
     </div>
@@ -1862,7 +1866,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc">How your savings pool grows month by month if you stick to the rule. The income scenario changes the curve: each month you bank your savings transfer <b>plus 30% of that month's spare money</b> (the rest is yours to spend). Good months save more, low months save less.</div>
 
       <div style="margin-bottom:14px">
-        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">INCOME SCENARIO</small>
+        <small style="font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">INCOME SCENARIO</small>
         <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="scenBtns">
           <button class="scen-btn" onclick="setScen('low')" id="btnLow">Low</button>
           <button class="scen-btn active" onclick="setScen('avg')" id="btnAvg">Typical</button>
@@ -1940,7 +1944,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="card" id="sbProjCard">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
         <h2 style="margin:0">📈 <span data-i18n="What it becomes">What it becomes</span></h2>
-        <div style="font-family:'Share Tech Mono';font-size:12px;color:var(--txt-dim)"><span data-i18n="in">in</span> <b id="sbYrsLbl" style="color:var(--cyan)">5</b> <span data-i18n="years">years</span></div>
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--txt-dim)"><span data-i18n="in">in</span> <b id="sbYrsLbl" style="color:var(--cyan)">5</b> <span data-i18n="years">years</span></div>
       </div>
       <input type="range" id="sbYrs" min="1" max="30" step="1" value="5" style="width:100%;margin-top:10px" aria-label="years">
       <div id="sbList" style="margin-top:14px"></div>
@@ -1973,7 +1977,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc" data-i18n="Your own list — add anything you want to get done. It saves with your data, on your device only.">Your own list — add anything you want to get done. It saves with your data, on your device only.</div>
       <ul class="check" id="checklist-list" style="margin-bottom:4px"></ul>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <input id="ckNew" data-i18n-ph="Add an item…" placeholder="Add an item…" maxlength="200" style="flex:1;min-width:0;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:10px 12px;font-family:Rajdhani;font-size:15px">
+        <input id="ckNew" data-i18n-ph="Add an item…" placeholder="Add an item…" maxlength="200" style="flex:1;min-width:0;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:10px 12px;font-family:var(--font-body);font-size:15px">
         <button class="btn" id="ckAdd" title="Add" aria-label="Add item" style="flex:0 0 auto;padding:10px 18px;font-size:18px;line-height:1">+</button>
       </div>
     </div>
@@ -1988,7 +1992,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc">A free, zero-interest cash tool — explained simply. With pay-in-2, Klarna sends the <b>full amount</b> to your bank now, and you pay it back over the next 2 months in two equal, interest-free instalments. Because there's no interest, you return <b>exactly</b> what you borrowed — it's really just bringing your own future salary forward to today, for free.</div>
 
       <div style="background:rgba(var(--warn-rgb),.08);border:1px solid var(--amber);border-radius:10px;padding:14px 16px;margin-bottom:16px">
-        <div style="font-family:'Share Tech Mono';font-size:11px;letter-spacing:.14em;color:var(--amber);margin-bottom:8px">⚠ THE ONE RULE TO NEVER FORGET</div>
+        <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;color:var(--amber);margin-bottom:8px">⚠ THE ONE RULE TO NEVER FORGET</div>
         <div style="font-size:14px;color:var(--txt)">The money is <b>NOT yours to keep</b> — it's your own future salary pulled forward, and you return every bit over the next 2 months. Think "borrowing from myself, interest-free," never "free money." Treat it as keep-money and it will hurt you; treat it as a short bridge and it's a powerful free tool.</div>
       </div>
 
@@ -2030,7 +2034,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc">Pick the kind of month, then slide the amount you'd borrow. It shows the two repayments, whether they fit your cash after every expense and any loan payment, and a clear good→bad signal. Your surplus changes a lot with income, so the month matters.</div>
 
       <div style="margin-bottom:14px">
-        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">WHICH KIND OF MONTH?</small>
+        <small style="font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;color:var(--txt-dim)">WHICH KIND OF MONTH?</small>
         <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="klScenBtns">
           <button class="scen-btn" onclick="klSetScen('low')" id="klBtnLow">Low</button>
           <button class="scen-btn active" onclick="klSetScen('avg')" id="klBtnAvg">Typical</button>
@@ -2049,7 +2053,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </div>
 
       <div id="klVerdict" style="margin-top:16px;border-radius:12px;padding:16px 18px;border:1px solid var(--amber);background:rgba(var(--warn-rgb),.08)">
-        <div style="font-family:'Orbitron';font-weight:700;font-size:22px;color:var(--amber)" id="klVtag">⚠ TIGHT</div>
+        <div style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--amber)" id="klVtag">⚠ TIGHT</div>
         <div style="font-size:14px;color:var(--txt);margin-top:6px" id="klVmsg">Right at your limit.</div>
       </div>
 
@@ -2158,7 +2162,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2>Calorie Simulator</h2>
       <div class="desc">Drag to test any daily intake. It compares to your maintenance and shows what happens — steady fat loss, muscle gain, or a danger zone.</div>
       <div style="margin-bottom:14px">
-        <small style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;color:var(--txt-dim)" data-i18n="QUICK GOAL">QUICK GOAL</small>
+        <small style="font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;color:var(--txt-dim)" data-i18n="QUICK GOAL">QUICK GOAL</small>
         <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap" id="goalBtns">
           <button class="scen-btn" data-goal="cut" data-i18n="🔻 Cut (lose fat)">🔻 Cut (lose fat)</button>
           <button class="scen-btn active" data-goal="maintain" data-i18n="⚖️ Maintain">⚖️ Maintain</button>
@@ -2169,7 +2173,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <input type="range" id="calSlider" min="800" max="4500" step="50" value="2200">
         <div class="calc-row"><span>Daily intake</span><b id="calIntake">—</b></div>
         <div class="calc-row"><span>Your maintenance (TDEE)</span><b id="calTDEE">—</b></div>
-        <div style="margin-top:14px"><small style="font-family:'Share Tech Mono';font-size:11px;color:var(--txt-dim);letter-spacing:.16em">SURPLUS / DEFICIT</small><div class="calc-out" id="calDelta">—</div></div>
+        <div style="margin-top:14px"><small style="font-family:var(--font-mono);font-size:11px;color:var(--txt-dim);letter-spacing:.16em">SURPLUS / DEFICIT</small><div class="calc-out" id="calDelta">—</div></div>
         <div class="calc-row" style="margin-top:14px"><span>Projected weight change</span><b id="calWeek">—</b></div>
       </div>
       <div class="note" id="calVerdict">Set your body stats above, then drag the slider.</div>
@@ -2354,17 +2358,17 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div class="desc">Jot anything down — ideas, lists, passwords-hints, anything you don't want to lose. Notes save with your file and stay on your device. Nothing leaves it.</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
         <button class="btn" id="noteNew">＋ New note</button>
-        <input id="noteSearch" placeholder="🔍 Search notes" style="flex:1;min-width:160px;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+        <input id="noteSearch" placeholder="🔍 Search notes" style="flex:1;min-width:160px;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:var(--font-body)">
       </div>
       <div id="noteList"></div>
     </div>
     <div class="card" id="noteEditorCard" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
-        <input id="noteTitle" placeholder="Title" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--bright);font-family:'Orbitron';font-size:16px;padding:6px 2px">
+        <input id="noteTitle" placeholder="Title" style="flex:1;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--bright);font-family:var(--font-display);font-size:16px;padding:6px 2px">
         <button class="btn danger" id="noteDelete" style="padding:6px 11px;font-size:12px">🗑</button>
         <button class="btn ghost" id="noteClose" style="padding:6px 11px;font-size:12px">Done</button>
       </div>
-      <textarea id="noteBody" placeholder="Start writing…" style="width:100%;min-height:260px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:Rajdhani;font-size:15px;line-height:1.55;resize:vertical"></textarea>
+      <textarea id="noteBody" placeholder="Start writing…" style="width:100%;min-height:260px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-family:var(--font-body);font-size:15px;line-height:1.55;resize:vertical"></textarea>
       <div class="note" id="noteMeta" style="margin-top:8px">—</div>
     </div>
 
@@ -2377,7 +2381,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2 data-i18n="🎬 Media Log">🎬 Media Log</h2>
       <div class="desc" data-i18n="Every film and show you've seen — rated and auto-ranked, so when someone asks your favourite you have an answer. Private, offline, yours.">Every film and show you've seen — rated and auto-ranked, so when someone asks your favourite you have an answer. Private, offline, yours.</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 8px">
-        <input id="medTitle" data-i18n-ph="Add a film or show…" placeholder="Add a film or show…" style="flex:1;min-width:160px;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+        <input id="medTitle" data-i18n-ph="Add a film or show…" placeholder="Add a film or show…" style="flex:1;min-width:160px;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:var(--font-body)">
         <button class="btn" id="medAdd" data-i18n="＋ Add">＋ Add</button>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 8px">
@@ -2386,9 +2390,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
           <button type="button" class="btn ghost medTypeBtn" data-mtype="show" style="flex:1;min-height:44px;padding:7px 0" data-i18n="Show">Show</button>
           <button type="button" class="btn ghost medTypeBtn" data-mtype="game" style="flex:1;min-height:44px;padding:7px 0" data-i18n="Game">Game</button>
         </div>
-        <input id="medGenre" data-i18n-ph="Genre (optional)" placeholder="Genre (optional)" style="flex:1;min-width:130px;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+        <input id="medGenre" data-i18n-ph="Genre (optional)" placeholder="Genre (optional)" style="flex:1;min-width:130px;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:var(--font-body)">
       </div>
-      <input id="medSearch" data-i18n-ph="🔍 Search your list" placeholder="🔍 Search your list" style="width:100%;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:Rajdhani">
+      <input id="medSearch" data-i18n-ph="🔍 Search your list" placeholder="🔍 Search your list" style="width:100%;background:var(--field-bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-family:var(--font-body)">
       <div id="medMsg" class="note" style="display:none;margin-top:8px"></div>
     </div>
 
@@ -2402,7 +2406,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
         <h2 style="margin:0" data-i18n="📥 To watch">📥 To watch</h2>
-        <small id="medToWatchCount" style="color:var(--txt-dim);font-family:'Share Tech Mono'">—</small>
+        <small id="medToWatchCount" style="color:var(--txt-dim);font-family:var(--font-mono)">—</small>
       </div>
       <div id="medToWatch" data-i18n-skip></div>
     </div>
@@ -2417,20 +2421,20 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
     <div class="card" id="medRateCard" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
-        <b id="medRateTitle" data-i18n-skip style="font-family:'Orbitron';color:var(--bright);font-size:15px">—</b>
+        <b id="medRateTitle" data-i18n-skip style="font-family:var(--font-display);color:var(--bright);font-size:15px">—</b>
         <button class="btn ghost" id="medRateClose" style="padding:6px 11px;font-size:12px" data-i18n="Cancel">Cancel</button>
       </div>
-      <div style="text-align:center;margin:6px 0"><span id="medRateVal" style="font-family:'Orbitron';font-size:40px;color:var(--lime)">—</span><span style="color:var(--txt-dim);font-size:16px"> / 10</span></div>
+      <div style="text-align:center;margin:6px 0"><span id="medRateVal" style="font-family:var(--font-display);font-size:40px;color:var(--lime)">—</span><span style="color:var(--txt-dim);font-size:16px"> / 10</span></div>
       <div id="medChips" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px"></div>
       <div id="medNudge" style="display:flex;gap:8px;justify-content:center;align-items:center;margin-bottom:10px">
-        <button class="btn ghost" id="medMinus" style="min-width:56px;font-family:'Share Tech Mono'">−0.1</button>
-        <button class="btn ghost" id="medPlus" style="min-width:56px;font-family:'Share Tech Mono'">+0.1</button>
+        <button class="btn ghost" id="medMinus" style="min-width:56px;font-family:var(--font-mono)">−0.1</button>
+        <button class="btn ghost" id="medPlus" style="min-width:56px;font-family:var(--font-mono)">+0.1</button>
       </div>
       <div id="medCompare" style="display:none;background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:10px;padding:11px;margin-bottom:10px;font-size:13px"></div>
       <div id="medRateForm">
-        <input id="medRateGenre" data-i18n-ph="Genre (optional)" placeholder="Genre (optional)" style="width:100%;margin-bottom:8px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px">
+        <input id="medRateGenre" data-i18n-ph="Genre (optional)" placeholder="Genre (optional)" style="width:100%;margin-bottom:8px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:var(--font-body);font-size:14px">
         <label class="note" data-i18n="A note to your future self (optional)" style="display:block;margin-bottom:4px">A note to your future self (optional)</label>
-        <textarea id="medComment" data-i18n-ph="Why this score? Note it for your future self." placeholder="Why this score? Note it for your future self." style="width:100%;min-height:70px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px;resize:vertical"></textarea>
+        <textarea id="medComment" data-i18n-ph="Why this score? Note it for your future self." placeholder="Why this score? Note it for your future self." style="width:100%;min-height:70px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:var(--font-body);font-size:14px;resize:vertical"></textarea>
         <button class="btn" id="medRateSave" style="width:100%;margin-top:10px" data-i18n="Save rating">Save rating</button>
       </div>
     </div>
@@ -2448,7 +2452,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <div id="moveSteps" style="display:flex;flex-direction:column;gap:16px;margin-top:16px">
         <!-- GET: bring data ONTO this device (the hero when freshly installed) -->
         <div id="moveGet" style="border:1px solid var(--line);border-radius:12px;padding:16px">
-          <h2 style="font-size:14px;margin:0;display:flex;align-items:center;gap:8px"><span class="stepBadge" id="getStep" style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;padding:2px 7px;border-radius:6px;white-space:nowrap"></span><span data-i18n="📥 Bring my data onto this device">📥 Bring my data onto this device</span></h2>
+          <h2 style="font-size:14px;margin:0;display:flex;align-items:center;gap:8px"><span class="stepBadge" id="getStep" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;padding:2px 7px;border-radius:6px;white-space:nowrap"></span><span data-i18n="📥 Bring my data onto this device">📥 Bring my data onto this device</span></h2>
           <div class="desc" style="font-size:12.5px;margin-top:8px">Already tapped <b>“Copy my data”</b> on your other phone or browser? Tap below — we’ll find it and bring everything in.</div>
           <button class="btn" id="bringInBtn" data-i18n="📋 Bring in my data" style="width:100%;margin-top:12px;font-size:16px;padding:13px">📋 Bring in my data</button>
           <div id="bringInMsg" class="note" style="display:none;margin-top:10px"></div>
@@ -2472,7 +2476,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
         <!-- SEND: copy data OFF this device -->
         <div id="moveSend" style="border:1px solid var(--line);border-radius:12px;padding:16px">
-          <h2 style="font-size:14px;margin:0;display:flex;align-items:center;gap:8px"><span class="stepBadge" id="sendStep" style="font-family:'Share Tech Mono';font-size:10px;letter-spacing:.18em;padding:2px 7px;border-radius:6px;white-space:nowrap"></span><span data-i18n="📤 Copy my data off this device">📤 Copy my data off this device</span></h2>
+          <h2 style="font-size:14px;margin:0;display:flex;align-items:center;gap:8px"><span class="stepBadge" id="sendStep" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;padding:2px 7px;border-radius:6px;white-space:nowrap"></span><span data-i18n="📤 Copy my data off this device">📤 Copy my data off this device</span></h2>
           <div class="desc" data-i18n="Tap to copy your data, then open MRLN on your other device and tap “📋 Bring in my data”." style="font-size:12.5px;margin-top:8px">Tap to copy your data, then open MRLN on your other device and tap “📋 Bring in my data”.</div>
           <div class="note" data-i18n="Food photos aren’t in this copy — send them with “📤 Export my photos” below." style="font-size:11.5px;margin-top:6px;color:var(--txt-dim)">Food photos aren’t in this copy — send them with “📤 Export my photos” below.</div>
           <button class="btn ghost" id="copyOutBtn" data-i18n="📋 Copy my data" style="width:100%;margin-top:12px;font-size:15px;padding:12px">📋 Copy my data</button>
@@ -2481,7 +2485,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
             <summary data-i18n="Other ways to send (file, code)" style="cursor:pointer;color:var(--cyan);font-size:12.5px">Other ways to send (file, code)</summary>
             <button class="btn ghost" id="dataExportBtn" data-i18n="Show my data code" style="margin-top:10px">Show my data code</button>
             <div id="dataExportWrap" style="display:none;margin-top:10px">
-              <div id="dataCode" style="background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:'Share Tech Mono';font-size:11px;padding:11px;word-break:break-all;line-height:1.45;max-height:120px;overflow:auto;cursor:pointer;user-select:text"></div>
+              <div id="dataCode" style="background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:10px;color:var(--lime);font-family:var(--font-mono);font-size:11px;padding:11px;word-break:break-all;line-height:1.45;max-height:120px;overflow:auto;cursor:pointer;user-select:text"></div>
               <div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" id="dataCopy" style="flex:1">Copy code</button><button class="btn ghost" id="dataDownload" style="flex:1">Download as file</button></div>
             </div>
           </details>
@@ -2555,7 +2559,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2>Latest update</h2>
       <div class="desc">See what changed in the version you're on right now.</div>
       <button class="btn ghost" id="whatsNewBtn" style="margin-top:6px">What’s new</button>
-      <div class="desc" id="buildTag" style="margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.06em;opacity:.7">Build <b id="buildApp">—</b></div>
+      <div class="desc" id="buildTag" style="margin-top:12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;opacity:.7">Build <b id="buildApp">—</b></div>
     </div>
     <div class="card">
       <h2>Change Log <span class="tag now" id="logCount">0</span></h2>
@@ -2583,11 +2587,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <button class="btn" id="aiSend" style="width:100%" data-i18n="Send">Send</button>
       <div id="aiStatus" class="note" style="display:none;margin-top:8px"></div>
       <div id="aiAnswer" style="display:none;margin-top:12px;border:1px solid var(--cyan-dim);border-radius:10px;padding:12px;background:var(--panel2)">
-        <div style="font-family:'Orbitron';font-weight:700;font-size:13px;color:var(--bright);margin-bottom:6px">🤖 Assistant MRLN</div>
+        <div style="font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--bright);margin-bottom:6px">🤖 Assistant MRLN</div>
         <div id="aiAnswerBody" style="font-size:13px;color:var(--txt);line-height:1.5"></div>
       </div>
       <div id="aiProposal" style="display:none;margin-top:12px;border:1px solid var(--cyan-dim);border-radius:10px;padding:12px;background:var(--panel2)">
-        <div style="font-family:'Orbitron';font-weight:700;font-size:13px;color:var(--bright);margin-bottom:6px">Proposed changes</div>
+        <div style="font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--bright);margin-bottom:6px">Proposed changes</div>
         <div id="aiSummary" style="font-size:13px;color:var(--txt);margin-bottom:8px"></div>
         <div id="aiChanges"></div>
         <div id="aiRec" class="note" style="margin-top:8px"></div>
@@ -3605,7 +3609,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
             '<button class="iconbtn sb-del" data-id="'+esc(b.id)+'" title="'+t('Delete')+'" style="padding:4px 8px">🗑</button>'+
           '</div>'+
         '</div>'+
-        '<div style="font-family:\'Share Tech Mono\';font-size:12px;color:var(--cyan);margin-top:6px">'+t('Now')+': <b>'+M(+b.balance||0)+'</b> · '+t('you add')+' '+contrib+rateBit+'</div>'+
+        '<div style="font-family:var(--font-mono);font-size:12px;color:var(--cyan);margin-top:6px">'+t('Now')+': <b>'+M(+b.balance||0)+'</b> · '+t('you add')+' '+contrib+rateBit+'</div>'+
         tgtHtml+
         '<div style="margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:13px">'+
           tf('In {y} years: ', {y:yrs})+'<b style="color:var(--lime);font-size:15px">'+M(p.final)+'</b>'+
@@ -3904,7 +3908,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var bodyBit = !B.ok ? '   ·   💪 '+t('Body')+' <span style="color:var(--txt-dim)">'+t('add stats in Gym')+'</span>'
         : !bodyIncluded() ? '   ·   💪 '+t('Body')+' <span style="color:var(--txt-dim)">'+B.tier+' '+t('(off — not counted)')+'</span>'
         : '   ·   💪 '+t('Body')+' <b style="color:rgb('+tierRGB(B.tier)+')">'+B.tier+' · '+B.score+'</b>';
-      var sub = '<div style="margin-top:8px;font-style:normal;font-family:\'Share Tech Mono\';font-size:11px">💰 '+t('Finance')+' <b style="color:rgb('+tierRGB(M.tier)+')">'+M.tier+' · '+fin+'</b>'+bodyBit+'</div>';
+      var sub = '<div style="margin-top:8px;font-style:normal;font-family:var(--font-mono);font-size:11px">💰 '+t('Finance')+' <b style="color:rgb('+tierRGB(M.tier)+')">'+M.tier+' · '+fin+'</b>'+bodyBit+'</div>';
       msg.innerHTML='<b>'+esc(tf('{tier}-tier · {n}/100 overall.',{tier:oTier,n:overall}))+'</b> '+line+sub;
     }
   }
@@ -3981,8 +3985,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var s=GRADE_SOURCES[srcKey];
       return '<div style="border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px">'+
         '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b style="font-size:14px">'+esc(label)+'</b>'+
-        (letter?('<span style="font-family:Orbitron;font-weight:800;color:rgb('+rgb+');font-size:19px;flex:none">'+esc(letter)+'</span>'):'')+'</div>'+
-        '<div style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--cyan);margin-top:3px">'+esc(value)+'</div>'+
+        (letter?('<span style="font-family:var(--font-display);font-weight:800;color:rgb('+rgb+');font-size:19px;flex:none">'+esc(letter)+'</span>'):'')+'</div>'+
+        '<div style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);margin-top:3px">'+esc(value)+'</div>'+
         '<div style="font-size:13px;color:var(--txt);margin-top:6px;line-height:1.5">'+esc(why)+'</div>'+
         (s?('<a href="'+s.url+'" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--cyan);display:inline-block;margin-top:8px;word-break:break-word">↗ '+t('Source:')+' '+esc(s.label)+'</a>'):'')+'</div>';
     }
@@ -5392,8 +5396,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var bpace=prPace(best.secs, distIn(best));
         var header = bpace ? tf('best {dist} {unit} · {pace}/{unit}',{dist:distIn(best),unit:gu,pace:bpace}) : tf('best {dist} {unit}',{dist:distIn(best),unit:gu});
         html += '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline">'+
-          '<b style="font-family:\'Orbitron\';font-size:14px;color:var(--bright)">'+esc(best.ex)+'</b>'+
-          '<span style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--lime)">'+esc(header)+'</span></div>';
+          '<b style="font-family:var(--font-display);font-size:14px;color:var(--bright)">'+esc(best.ex)+'</b>'+
+          '<span style="font-family:var(--font-mono);font-size:11px;color:var(--lime)">'+esc(header)+'</span></div>';
         html += arr.map(function(p){
           var dv=distIn(p), pc=prPace(p.secs, dv);
           return '<div class="item-row"><div class="meta">'+esc(dv+' '+gu+(pc?(' · '+pc+'/'+gu):''))+(p.id===best.id?' <span class="tag now" style="font-size:8px;padding:1px 5px">PR</span>':'')+
@@ -5404,8 +5408,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var sarr=arr.slice().sort(function(a,b){ return epley1rm(b.wt,b.reps)-epley1rm(a.wt,a.reps); });
         var best=sarr[0];
         html += '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline">'+
-          '<b style="font-family:\'Orbitron\';font-size:14px;color:var(--bright)">'+esc(best.ex)+'</b>'+
-          '<span style="font-family:\'Share Tech Mono\';font-size:11px;color:var(--lime)">best '+best.wt+'kg×'+best.reps+' · ~'+Math.round(epley1rm(best.wt,best.reps))+'kg 1RM</span></div>';
+          '<b style="font-family:var(--font-display);font-size:14px;color:var(--bright)">'+esc(best.ex)+'</b>'+
+          '<span style="font-family:var(--font-mono);font-size:11px;color:var(--lime)">best '+best.wt+'kg×'+best.reps+' · ~'+Math.round(epley1rm(best.wt,best.reps))+'kg 1RM</span></div>';
         html += sarr.map(function(p){
           return '<div class="item-row"><div class="meta">'+p.wt+' kg × '+p.reps+(p.id===best.id?' <span class="tag now" style="font-size:8px;padding:1px 5px">PR</span>':'')+
             '<small>'+esc(p.date)+' · est 1RM '+Math.round(epley1rm(p.wt,p.reps))+' kg</small></div>'+
@@ -7669,7 +7673,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         '<div class="calc-row"><span>≈ per month</span><b>'+M(R.net/12)+'</b></div>'+
         '<div class="calc-row"><span>Marginal rate (next kr/€/$)</span><b>'+R.marg+'%</b></div></div>';
       if(R.recon){ var d=R.recon.diff; html+='<div class="note" style="margin-top:12px;'+(d>=0?'color:var(--lime)':'color:var(--amber)')+'">'+(d>=0?('✅ '+tf('Estimated refund')+(R.country==='DK'?' (overskydende skat)':'')+': <b>'+M(d)+'</b>'):('⚠️ '+tf('You may owe')+(R.country==='DK'?' (restskat)':'')+': <b>'+M(-d)+'</b>'))+' — '+tf('withheld')+' '+M(R.recon.withheld)+' '+tf('vs estimated')+' '+M(R.recon.computed)+'.</div>'; }
-      if(R.dk){ html+='<div style="margin-top:14px;background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:12px;padding:14px"><b style="font-family:Orbitron;font-size:13px;color:var(--bright)">📋 Forskudsopgørelse — suggested entries</b>'+
+      if(R.dk){ html+='<div style="margin-top:14px;background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:12px;padding:14px"><b style="font-family:var(--font-display);font-size:13px;color:var(--bright)">📋 Forskudsopgørelse — suggested entries</b>'+
         '<div class="calc-row" style="margin-top:8px"><span>Trækprocent</span><b>'+R.dk.traek+' %</b></div>'+
         '<div class="calc-row"><span>Fradrag / month</span><b>'+M(R.dk.fradragMo)+'</b></div>'+
         '<div class="calc-row"><span>Fradrag / 14 days</span><b>'+M(R.dk.fradrag14)+'</b></div>'+
@@ -7680,7 +7684,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var exp=R.gross, lo=Math.max(1000,Math.round(exp*0.3/1000)*1000), hi=Math.round(exp*2/1000)*1000;
         var act=(STATE.tax.actual>=lo && STATE.tax.actual<=hi)?STATE.tax.actual:exp;
         html+='<div style="margin-top:14px;background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:12px;padding:14px">'+
-          '<b style="font-family:Orbitron;font-size:13px;color:var(--bright)">📊 Over / under-estimate simulator</b>'+
+          '<b style="font-family:var(--font-display);font-size:13px;color:var(--bright)">📊 Over / under-estimate simulator</b>'+
           '<div class="note" style="margin:4px 0 10px">Your estimate is <b>'+M(exp)+'</b>. Drag the bar to your <b>actual</b> income to see the year-end refund or bill — and what to update your withholding to.</div>'+
           '<input type="range" id="txSimSlider" min="'+lo+'" max="'+hi+'" step="1000" value="'+act+'" style="width:100%">'+
           '<div id="txSimOut" style="margin-top:8px"></div></div>';
@@ -7699,8 +7703,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     function renderSim(actual){
       var out=document.getElementById('txSimOut'); if(!out) return;
       var s=taxSim(actual), M=function(n){ return txMoney(n,s.ccy); }, d=s.diff;
-      var big = d>=0 ? '<div style="color:var(--lime);font-size:22px;font-family:Orbitron;margin-top:2px"><b>+'+M(d)+'</b></div>'
-                     : '<div style="color:var(--amber);font-size:22px;font-family:Orbitron;margin-top:2px"><b>'+M(-d)+'</b></div>';
+      var big = d>=0 ? '<div style="color:var(--lime);font-size:22px;font-family:var(--font-display);margin-top:2px"><b>+'+M(d)+'</b></div>'
+                     : '<div style="color:var(--amber);font-size:22px;font-family:var(--font-display);margin-top:2px"><b>'+M(-d)+'</b></div>';
       out.innerHTML='<div class="calc-row"><span>Actual income this year</span><b>'+M(actual)+'</b></div>'+
         '<div class="calc-row"><span>Tax withheld (at your estimate)</span><b>'+M(s.withheld)+'</b></div>'+
         '<div class="calc-row"><span>Actual tax owed ('+s.eff+'%)</span><b>'+M(s.actualTax)+'</b></div>'+
@@ -8155,7 +8159,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
             '<small>'+e.total.kcal+' kcal · P '+e.total.p+'g · C '+e.total.c+'g · F '+e.total.f+'g</small></div></div>'+
             '<button class="btn danger" data-delfood="'+e.id+'" style="padding:5px 10px;font-size:12px;flex:0 0 auto">✕</button></div>';
         }).join('');
-        return '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline"><b style="font-family:Orbitron;font-size:13px;color:var(--bright)">'+dayLabel(d)+'</b><small style="color:var(--txt-dim)">'+dt.kcal.toLocaleString('en-GB')+' kcal · '+dt.p+'g protein</small></div>'+rows;
+        return '<div style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:baseline"><b style="font-family:var(--font-display);font-size:13px;color:var(--bright)">'+dayLabel(d)+'</b><small style="color:var(--txt-dim)">'+dt.kcal.toLocaleString('en-GB')+' kcal · '+dt.p+'g protein</small></div>'+rows;
       }).join('');
     }
     function del(id){ STATE.foodLog=log().filter(function(e){ return e.id!==id; }); if(MEDIA.supported()) MEDIA.del(id); logChange('food-del','Removed a meal'); autosave(); renderToday(); renderHistory(); }
@@ -8346,7 +8350,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     function msg(text, ok){ var m=document.getElementById('medMsg'); if(!m) return; m.style.display='block'; m.style.color= ok?'var(--lime)':'var(--amber)'; m.textContent=text; }
     function matchQ(m){ if(!q) return true; var ql=q.toLowerCase(); return ((m.title||'')+' '+(m.comment||'')+' '+(m.genre||'')).toLowerCase().indexOf(ql)>=0; }
     // type + optional genre, dim under the title (lists are data-i18n-skip so type is t()'d at render)
-    function subLine(m){ return '<small style="color:var(--txt-dim);font-family:\'Share Tech Mono\';font-size:11px">'+esc(t(TYPE_LABEL[typeOf(m)]))+(m.genre?(' · '+esc(m.genre)):'')+'</small>'; }
+    function subLine(m){ return '<small style="color:var(--txt-dim);font-family:var(--font-mono);font-size:11px">'+esc(t(TYPE_LABEL[typeOf(m)]))+(m.genre?(' · '+esc(m.genre)):'')+'</small>'; }
     // Akashi's safe outbound pattern: encodeURIComponent(title) + esc(href), static label, noreferrer.
     function imdb(m){ var href='https://www.imdb.com/find/?q='+encodeURIComponent(m.title||''); return '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer" class="btn ghost" data-i18n-skip title="IMDb" style="min-height:36px;display:inline-flex;align-items:center;padding:4px 10px;font-size:11px;flex:0 0 auto;text-decoration:none">↗ IMDb</a>'; }
     function paintSeg(host, attr, val){ if(!host) return; var b=host.querySelectorAll('button'); for(var i=0;i<b.length;i++){ var on=b[i].getAttribute(attr)===val; b[i].style.background=on?'var(--cyan-dim)':''; b[i].style.borderColor=on?'var(--cyan)':''; b[i].style.color=on?'var(--bright)':''; } }
@@ -8455,10 +8459,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
           var rankNo=full.indexOf(m)+1;
           var cm=m.comment?('<div data-cm="'+m.id+'" style="display:none;color:var(--txt-dim);font-size:12px;margin-top:4px;white-space:pre-wrap">'+esc(m.comment)+' <span style="opacity:.6">· '+esc(whenY(m.rated))+'</span></div>'):'';
           var cmBtn=m.comment?('<button class="btn ghost" data-togcm="'+m.id+'" style="min-height:36px;display:inline-flex;align-items:center;padding:3px 8px;font-size:11px;flex:0 0 auto">'+t('note')+'</button>'):'';
-          return '<div class="item-row" style="align-items:center;flex-wrap:wrap;gap:8px"><span style="font-family:\'Share Tech Mono\';color:var(--txt-dim);width:26px;flex:0 0 auto">'+rankNo+'</span>'+
+          return '<div class="item-row" style="align-items:center;flex-wrap:wrap;gap:8px"><span style="font-family:var(--font-mono);color:var(--txt-dim);width:26px;flex:0 0 auto">'+rankNo+'</span>'+
             '<div style="display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:60%">'+
               '<div class="meta" style="flex:0 1 auto;min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(m.title)+'</div>'+subLine(m)+'</div>'+
-              '<b style="font-family:\'Orbitron\';color:var(--lime);flex:0 0 auto;margin:0">'+fmtR(m.rating)+'</b>'+
+              '<b style="font-family:var(--font-display);color:var(--lime);flex:0 0 auto;margin:0">'+fmtR(m.rating)+'</b>'+
             '</div>'+
             '<div class="med-actions" style="display:flex;gap:6px;flex:0 0 auto;align-items:center">'+
               imdb(m)+cmBtn+
@@ -8878,9 +8882,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function showPersonalizeReminder(){
     if(document.getElementById('personalizeNag')) return;
     var bar=document.createElement('div'); bar.id='personalizeNag';
-    bar.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9000;max-width:92%;background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--cyan,#0ce);border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center;font-family:Rajdhani,sans-serif';
-    bar.innerHTML='<div style="flex:1;min-width:0"><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">Finish personalizing</b><div style="color:var(--txt-dim,#9bb);font-size:13px">Your dashboard works, but adding your income, expenses &amp; body stats makes every grade and simulator real.</div></div>'+
-      '<button id="nagGo" style="background:var(--cyan,#0ce);color:var(--on-accent);border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-family:Orbitron,sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">Finish setup</button>'+
+    bar.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9000;max-width:92%;background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--cyan,#0ce);border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center;font-family:var(--font-body)';
+    bar.innerHTML='<div style="flex:1;min-width:0"><b style="color:var(--bright);font-family:var(--font-display);font-size:13px">Finish personalizing</b><div style="color:var(--txt-dim,#9bb);font-size:13px">Your dashboard works, but adding your income, expenses &amp; body stats makes every grade and simulator real.</div></div>'+
+      '<button id="nagGo" style="background:var(--cyan,#0ce);color:var(--on-accent);border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-family:var(--font-display);font-size:12px;cursor:pointer;white-space:nowrap">Finish setup</button>'+
       '<button id="nagX" aria-label="Dismiss" style="background:transparent;color:var(--txt-dim,#9bb);border:0;font-size:20px;cursor:pointer;line-height:1">✕</button>';
     document.body.appendChild(bar);
     document.getElementById('nagGo').addEventListener('click', function(){ window.WIZOPEN(true); });
@@ -8902,12 +8906,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     ];
     var back=document.createElement('div'); back.className='modal-back show'; back.id='guideBack';
     back.style.cssText='position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.78)/* THEME-EXEMPT: neutral scrim */;padding:16px';
-    var rows=GUIDE.map(function(g){ return '<div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(var(--line-rgb),.9)"><span style="font-size:20px;flex:0 0 26px">'+g[0]+'</span><div><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">'+g[1]+'</b><div style="color:var(--txt-dim,#9bb);font-size:13px;margin-top:2px">'+g[2]+'</div></div></div>'; }).join('');
+    var rows=GUIDE.map(function(g){ return '<div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(var(--line-rgb),.9)"><span style="font-size:20px;flex:0 0 26px">'+g[0]+'</span><div><b style="color:var(--bright);font-family:var(--font-display);font-size:13px">'+g[1]+'</b><div style="color:var(--txt-dim,#9bb);font-size:13px;margin-top:2px">'+g[2]+'</div></div></div>'; }).join('');
     back.innerHTML='<div style="background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--cyan,#0ce);border-radius:16px;max-width:460px;width:100%;max-height:88vh;overflow:auto;padding:20px 20px 16px;box-shadow:0 12px 50px rgba(0,0,0,.6)">'+
-      '<h2 style="font-family:Orbitron,sans-serif;color:var(--bright);font-size:17px;margin:0 0 4px">What\'s in here 🗺️</h2>'+
+      '<h2 style="font-family:var(--font-display);color:var(--bright);font-size:17px;margin:0 0 4px">What\'s in here 🗺️</h2>'+
       '<p style="color:var(--txt-dim,#9bb);font-size:13px;margin:0 0 10px">A quick tour of each section so you know where everything lives.</p>'+
       rows+
-      '<button id="guideDone" style="margin-top:16px;width:100%;background:var(--cyan,#0ce);color:var(--on-accent);border:0;border-radius:10px;padding:12px;font-weight:700;font-family:Orbitron,sans-serif;font-size:13px;cursor:pointer">Got it — show me around</button></div>';
+      '<button id="guideDone" style="margin-top:16px;width:100%;background:var(--cyan,#0ce);color:var(--on-accent);border:0;border-radius:10px;padding:12px;font-weight:700;font-family:var(--font-display);font-size:13px;cursor:pointer">Got it — show me around</button></div>';
     document.body.appendChild(back);
     document.getElementById('guideDone').addEventListener('click', function(){ back.remove(); if(typeof cb==='function') cb(); });
   }
@@ -9279,8 +9283,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     d.style.cssText='position:fixed;inset:0;z-index:97000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.86)/* THEME-EXEMPT: neutral scrim */';
     d.innerHTML='<div style="max-width:380px;text-align:center;border:1px solid var(--cyan);border-radius:18px;padding:30px 24px;background:linear-gradient(180deg,rgba(var(--accent-rgb),.12),var(--panel2));box-shadow:var(--glow)">'+
       '<div style="font-size:52px;line-height:1">🎂</div>'+
-      '<div style="font-family:\'Orbitron\';font-weight:800;font-size:23px;color:var(--bright);margin-top:10px">Happy Birthday'+(name?(', '+esc(name)):'')+'!</div>'+
-      (age!=null?'<div style="font-family:\'Orbitron\';font-weight:700;font-size:16px;color:var(--lime);margin-top:10px">⬆ LEVEL UP — you\'re now '+age+'</div>':'<div style="font-size:15px;color:var(--lime);margin-top:10px;font-weight:700">⬆ LEVEL UP!</div>')+
+      '<div style="font-family:var(--font-display);font-weight:800;font-size:23px;color:var(--bright);margin-top:10px">Happy Birthday'+(name?(', '+esc(name)):'')+'!</div>'+
+      (age!=null?'<div style="font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--lime);margin-top:10px">⬆ LEVEL UP — you\'re now '+age+'</div>':'<div style="font-size:15px;color:var(--lime);margin-top:10px;font-weight:700">⬆ LEVEL UP!</div>')+
       '<div style="font-size:14px;color:var(--txt);margin-top:12px">Another year stronger. Here\'s to smart money and big gains this year. 💪</div>'+
       '<button class="btn" id="bdayClose" style="margin-top:18px;width:100%">Thanks</button></div>';
     document.body.appendChild(d);
@@ -9331,7 +9335,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var perm=document.getElementById('remPerm');
     if(perm){
       var st=notifyState();
-      if(st==='granted'){ perm.innerHTML='<span style="color:var(--lime);font-size:12px;font-family:\'Share Tech Mono\'">✓ '+t('Notifications on')+'</span>'; }
+      if(st==='granted'){ perm.innerHTML='<span style="color:var(--lime);font-size:12px;font-family:var(--font-mono)">✓ '+t('Notifications on')+'</span>'; }
       else if(st==='denied'){ perm.innerHTML='<span style="color:var(--amber);font-size:12px">⚠️ '+t('Notifications are blocked — turn them on for MRLN in your browser settings.')+'</span>'; }
       else if(st==='unsupported'){ perm.innerHTML=''; }
       else { perm.innerHTML='<button class="btn ghost" id="remEnable" style="padding:6px 12px;font-size:12px">🔔 '+t('Turn on notifications')+'</button>'; }
@@ -9340,7 +9344,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var host=document.getElementById('remList'); if(!host) return;
     var R=STATE.reminders||[];
     host.innerHTML = R.length ? R.slice().sort(function(a,b){ return a.time<b.time?-1:1; }).map(function(r){
-      return '<div class="sub-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b style="font-family:\'Share Tech Mono\'">'+esc(r.time)+'</b> · <span data-i18n-skip>'+esc(r.label||t('Reminder'))+'</span>'+(r.agenda?' <span class="tag now" style="font-size:8px;padding:1px 5px">📅 '+t('agenda')+'</span>':'')+'</div>'+
+      return '<div class="sub-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b style="font-family:var(--font-mono)">'+esc(r.time)+'</b> · <span data-i18n-skip>'+esc(r.label||t('Reminder'))+'</span>'+(r.agenda?' <span class="tag now" style="font-size:8px;padding:1px 5px">📅 '+t('agenda')+'</span>':'')+'</div>'+
         '<button class="btn ghost" data-delrem="'+r.id+'" style="padding:4px 10px">✕</button></div>';
     }).join('') : '<div class="empty">'+t('No reminders yet.')+'</div>';
     host.querySelectorAll('[data-delrem]').forEach(function(b){ b.addEventListener('click', function(){ var id=b.getAttribute('data-delrem'); STATE.reminders=(STATE.reminders||[]).filter(function(x){ return x.id!==id; }); autosave(); renderReminders(); }); });

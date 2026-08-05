@@ -352,7 +352,7 @@ var PINS = [
   { id: 'guide modal heading',
     what: 'showSetupGuide() — WORST IN THE APP; fires on the FIRST SCREEN AFTER SETUP',
     kind: 'text',
-    fg: function () { return grab(/<h2 style="font-family:Orbitron,sans-serif;color:([^;"]+)/, 'guide modal h2 colour'); },
+    fg: function () { return grab(/<h2 style="font-family:var\(--font-display\);color:([^;"]+)/, 'guide modal h2 colour'); },
     bg: function () { return grab(/back\.innerHTML='<div style="background:([^;"]+)/, 'guide modal panel background'); },
     under: ['rgba(0,0,0,1)'] },
 
