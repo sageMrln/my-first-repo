@@ -230,7 +230,7 @@ confirm** before anything changes.
 
 Your personal finance & health assistant. Tap **💬 Assistant MRLN** to ask questions about **any feature** (how does savings work? what is the food log?) or **change your data** with plain-language commands (one per line). Everything runs **offline, in your browser** — no server, no per-question fee, and nothing changes until you confirm. 
 
-**Questions:** Ask anything about the app in **any of 8 languages** (English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar, Français). The assistant answers from a complete knowledge base covering every tab and feature. You can also ask about **your own numbers** and it computes the answer directly from your data, all locally and offline:
+**Questions:** Ask questions in **English**. The assistant answers from a complete knowledge base covering every tab and feature. You can also ask about **your own numbers** and it computes the answer directly from your data, all locally and offline:
   - **Income** — *"what is my typical income?"*, *"income low month?"*
   - **Spending by category** — *"where does my money go?"*, *"what are my biggest costs?"*
   - **Savings** — *"how much have I saved total?", "savings in Emergency Box?", "how close to my target?"*
