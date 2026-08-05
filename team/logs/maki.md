@@ -233,6 +233,20 @@ Entry format:
   verify render; env's `cryptography` rust binding is broken so pypdf/pdfplumber fail — used fitz to QA).
   NOT committed to the repo (strategy artifact, not app/gh-pages content) — delivered directly to Osefe.
 
+## [2026-07-31 b] — direct (Osefe) — MRLN Facebook Page bio (first public presence)
+- Asked: Osefe screenshotted the FB Page setup ("Mrlnapp") and asked for the Bio.
+- REAL ASSETS REVEALED (remember these): landing page EXISTS at **mrln.online/landing**; public contact
+  email **mrlnkontakt@gmail.com**; FB page name **Mrlnapp**; location **Aarhus**. (Answers the old open
+  "who builds the landing page" — there's a landing live now; get its actual content to align funnel copy.)
+- Produced: FB bio applying the NEW combo positioning (lead combo, privacy = proof). Short (~89ch, fits
+  FB's ~101 bio cap): "Your money and your health in one app — fully offline. Your data never leaves your
+  phone." + an alt + a ~215ch About paragraph ("...Built in Aarhus."). Serious/zero-emoji per voice rule.
+- Guardrail: flagged privacy lines for Akashi rubber-stamp (within safe-true set: offline/on-device/no
+  bank connection/pay-not-product; still route public claims past Akashi). Offered first pinned post +
+  cover tagline next.
+- Still open / next: get landing (mrln.online/landing) content to align funnel; Akashi vet public claims;
+  pinned-post + cover copy if Osefe wants; unchanged: gf voice relay, Akashi security audit result.
+
 ## [2026-07-03] — via Kaito (asleep dispatch) — FINANCE TEARDOWN: bring MRLN "on par with leading finance apps," offline/private
 - Asked (Osefe green-lit): teardown to bring MRLN's finance features on par with market leaders — (1) market expectation map + what drives RETENTION vs vanity; (2) offline reframe + privacy-as-wedge positioning; (3) shareability ranking by growth-impact ÷ build-cost, what to build FIRST for GTM; (4) 3–5 platform-tuned content hooks. Brutally honest.
 - Grounded in ACTUAL product (index.html read): finance tabs = Overview, Income (variable low/typical/high recap — ALREADY BUILT, assistant returns "typical monthly income is X — low month, good month"), Expenses (categories), Loan (payoff date/APR/terms/notes), Cash Flow simulator (money-in vs out, canvas chart), Savings (goal boxes + "how long to save X" projection), Subscriptions tab, Stats & Grades (SHIPPED: 0–100 financial-health grade across resilience/savings-rate/fixed-costs-ratio/free-cash — a GRADE, not raw $), 12-country tax engine, NL assistant, PASTE-based bank import (applyBankImport — user pastes a statement, app NEVER connects to a bank/Plaid). NO net-worth trend tab, NO share-card export (both would be builds → route to Kaito).
