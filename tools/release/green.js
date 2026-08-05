@@ -154,6 +154,15 @@ run(['tools/test/allergen_i18n_test.js'], 'allergen i18n ratchet');
 //     from phase 3 on. The map is the single source of truth for the deploy set, and
 //     --role carries the security profile across the rename. Fails closed: an unreadable
 //     map stops the gate rather than silently checking nothing.
+// 11d) currency parity — the tax engine and the currency picker must never diverge.
+//      TAX_CCY mapped SG->SGD and KR->KRW, txMoney rendered S$ and won, and tax_test
+//      asserted Singapore in 6 assertions — while neither currency existed in CURRENCIES,
+//      FX_RATES, #curSel or curOpts(). A Singaporean silently defaulted to DENMARK. The
+//      list is hardcoded FOUR times independently and nothing related any of them to the
+//      tax engine; this does, so a future 14th country cannot ship half-wired.
+section('currency parity — tools/test/currency_parity_test.js');
+run(['tools/test/currency_parity_test.js'], 'currency parity');
+
 section('preflight — every published HTML page (role-driven, from tools/publish/deploy_map.json)');
 let pfPages = null;
 try {
