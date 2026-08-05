@@ -1879,3 +1879,47 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 **Open:**
 - Awaiting Akashi's re-SAFE on c2fdead
 - Awaiting Osefe's "ship it"
+
+## 2026-08-05 — RESKIN STAGE 0 gate sign-off
+
+**Asked:** Kaito frozen RESKIN STAGE 0 candidate at `8e008fc` and requested GREEN sign-off. Gate must include two new suites: nav_test.js (48 checks) and parity_harness.js (browser, 6 widths).
+
+**Did:**
+- `git checkout 8e008fc` (frozen candidate)
+- `node tools/release/green.js` on frozen tip → **GREEN exit 0** (all 32 sections)
+  - html_parse_test: 3/3 ✓
+  - parse_test: 125/125 ✓
+  - nav_test.js: 48/48 ✓ (deep-link resolution verified)
+  - onboarding_test: 11/11 ✓ (ALL_TABS derived from index.html)
+  - parity_harness.js: RAN all 6 widths (320/360/390/768/1024/1440) ✓
+    - 4 active assertions passed: zero errors, zero overflow, fab occlusion, destination reachability
+    - 7 armed for future stages
+  - All other suites: parser 125/125, tax 105/105, media 43/43, transfer 58/58, etc.
+  - Preflight CLEAR ×3 (index/landing/legal)
+  - PII guard 17/17 ✓
+  - i18n MISSING: 0 (795/795)
+  - THEME-EXEMPT 16 markers ✓
+- Sanity checks:
+  - APP_VER v41 === sw.js VERSION v41 ✓
+  - `git diff --stat a213555 8e008fc -- index.html landing.html sw.js GUIDE.md MRLN-Guide.pdf legal.html manifest.webmanifest` → **only index.html changed** (188 ins, 180 del, stage-0 diffs as expected) ✓
+  - GUIDE.md/MRLN-Guide.pdf/landing.html/sw.js/legal.html unchanged vs ruling a213555 ✓
+- Updated TEAM-CHAT.md: ✅ **Hugo** `GREEN @ 8e008fc` with full details
+- Created commit 27b92df (chat sign-off)
+
+**Found:**
+- All gates GREEN on frozen tip 8e008fc
+- Parity harness confirmed RAN (not skipped) — all 6 width sections in output
+- No guide rebuild needed (zero user-visible behavior changes this stage)
+
+**Decided:**
+- Stage 0 is gate-ready
+- App code is clean, all new test suites wired and passing
+
+**SHAs:**
+- Tested on: 8e008fc (frozen candidate)
+- Chat signed: 27b92df (my sign-off commit)
+
+**Open:**
+- Awaiting Akashi's SAFE on 8e008fc
+- Awaiting Mikoto's MISSING: 0 on 8e008fc (she already signed at the candidate)
+- Awaiting Osefe's "ship it"
