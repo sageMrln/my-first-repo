@@ -217,5 +217,23 @@ checkFreq('Seguro 1200 anual', 'yearly');
 checkFreq('Forsikring 1200 årligt', 'yearly');
 checkFreq('Netflix 99', 'monthly');
 
+// --- FRENCH COMMANDS (Hugo, at the RELEASE B guide pass). 8e5605d added French PERIOD
+//     words but no command vocabulary, so the day French became SELECTABLE,
+//     "mon revenu est 25000" minted a 25,000/MONTH EXPENSE — the Hungarian bevételem
+//     class, in the language we had just shipped. Both directions pinned, as always. ---
+check('mon revenu est 25000', 'setIncome');
+check('je gagne 25000', 'setIncome');
+check('mon salaire est 25000', 'setIncome');
+check('ma paie est 25000', 'setIncome');
+check('revenu 25000', 'setIncome');
+check("j'économise 400/mois", 'setSavingsMatch');   // needed LEX.month += mois too
+check("j'économise 400 par mois", 'setSavingsMatch');
+// the collision sweep — the opposite direction, learned three times today
+check('impôt sur le revenu 3000', 'addItem');       // income TAX is an expense (lookbehind:
+check('déclaration de revenus 500', 'addItem');     //   the tax word comes FIRST in French)
+check('paiement 500', 'addItem');                   // paie(?!ment) — a PAYMENT
+check('paiement de voiture 320', 'addItem');
+check('moisson 500', 'addItem');                    // 'mois' must not swallow the harvest
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
