@@ -149,47 +149,117 @@ if (has('check')) {
       }, null, { timeout: 15000 }).catch(() => { });
       await page.evaluate(() => { const b = document.getElementById('boot'); if (b) b.remove(); });
 
-      await page.evaluate(seed => {
+      await page.evaluate(() => {
         document.getElementById('lockScreen').classList.add('unlocked');
         __sys.arm();
         if (typeof loadDemoData === 'function') loadDemoData();
-        /* localized demo CONTENT (note text, media titles) where we have it — the UI
-           chrome is translated by the app itself, this only makes the sample data read
-           natively too */
-        if (seed) { try { window.__SEED = seed; } catch (_) { } }
-
-        /* THE MARKETING PROFILE — explicit, so every language's hero is the SAME profile in
-           a different language, which is the whole point of a localized screenshot set.
-           The shipped English hero showed "Alex · Acme · USD · 3,400/3,800/4,300" but
-           DEFAULT_MODEL is "Sample · no employer · DKK · 2,400/2,800/3,400": it had been
-           hand-typed and was not reproducible from any committed data. Pinning it here is
-           what makes the whole set regenerable. Sample data only — never the owner's. */
+        /* marketing profile — the same "Alex" in every language (sample data, never the
+           owner's). Income is pinned LATER, after the currency switch. */
         try {
           MODEL.profile = MODEL.profile || {};
           MODEL.profile.name = 'Alex';
           MODEL.profile.employer = 'Acme';
         } catch (_) { }
-      }, SEED[L] || null);
+      });
+
+      /* SEED APPLICATION — Hugo's RED blocker 1. The previous version assigned
+         window.__SEED and NOTHING EVER READ IT, so 5 of 6 French how-to shots showed an
+         EMPTY app ("Aucune note", 0 kcal, no events) — every file existed, every dimension
+         was right, and only opening the images caught it. This version drives the app's
+         OWN add flows (the same handlers a real user's taps hit), so if a flow breaks the
+         seeding breaks loudly instead of producing hollow marketing images. */
+      const seed = SEED[L] || null;
+      if (seed && mode === 'howto') {
+        await page.evaluate(sd => {
+          /* workouts + calendar: exact record shapes copied from the app's own save
+             handlers (STATE.workouts.push({id,day,title,body}); calendar[date].push
+             ({id,text,repeat})). */
+          (sd.workouts || []).forEach(w => {
+            STATE.workouts.push({ id: uid(), day: w.day || '', title: w.title || '', body: w.body || '' });
+          });
+          const base = new Date(); base.setDate(3);
+          (sd.calendar || []).forEach((txt, i) => {
+            const d = new Date(base); d.setDate(3 + i * 4);
+            const key = d.toISOString().slice(0, 10);
+            STATE.calendar[key] = STATE.calendar[key] || [];
+            STATE.calendar[key].push({ id: uid(), text: String(txt), repeat: 'none' });
+          });
+          (sd.media || []).forEach(m => {
+            STATE.media.push({ id: uid(), title: m.title || '', type: m.type || 'film',
+              status: m.status || 'watched', rating: (m.rating != null ? m.rating : null),
+              comment: m.comment || '', genre: m.genre || '' });
+          });
+          (sd.notes || []).forEach(n => {
+            STATE.notes.push({ id: uid(), title: n.title || '', body: n.body || '', ts: new Date().toISOString() });
+          });
+          if (typeof refreshEverything === 'function') refreshEverything();
+        }, seed);
+        /* food through the REAL input + button, so parsing, totals and the photo-less
+           entry path are exactly what a user gets */
+        for (const f of (seed.food || [])) {
+          const txt = typeof f === 'string' ? f : (f.text || f.name || '');
+          if (!txt) continue;
+          await page.evaluate(t => {
+            const ta = document.getElementById('foodText'); if (ta) ta.value = t;
+            const add = document.getElementById('foodAdd'); if (add) add.click();
+          }, txt);
+          await page.waitForTimeout(120);
+        }
+      }
 
       /* Currency through the app's OWN picker too. Writing STATE.prefs.currency directly
          left the selector reading "DKK kr" while the figures rendered "$2,400" — the
          formatter's symbol is derived elsewhere and never re-read. Half-set state produces
          a screenshot that is visibly wrong in a way no file check would catch. */
       await page.evaluate(() => {
+        /* capture the demo numerals BEFORE the switch so they can be restored after it */
+        window.__preSwitchAmts = [];
+        (MODEL.groups || []).forEach(g => (g.items || []).forEach(it => window.__preSwitchAmts.push(it.amt)));
+        window.__preSwitchSave = MODEL.savingsMatch; window.__preSwitchLoan = MODEL.loanPayment;
         const cur = document.getElementById('curSel');
         if (cur) { cur.value = 'USD'; cur.dispatchEvent(new Event('change', { bubbles: true })); }
       });
       await page.waitForTimeout(350);
 
-      /* Income is pinned AFTER the currency switch, never before: convertAllMoney() rewrites
-         every stored figure on a currency change, so a pre-set 3400 became $349 (2400 DKK
-         / 6.87). Set the display currency first, then the numbers we want shown in it. */
-      await page.evaluate(() => {
+      /* Income pin — Hugo's RED blocker 2. Two prior failures compound here:
+         (a) pin BEFORE the currency switch and convertAllMoney() divides it (3400 -> $349);
+         (b) pin after, and recomputeIncome() re-derives MODEL.income from the demo's
+             income LOG, silently overwriting the pin on the next refresh.
+         So: currency first, then empty the income log and pin income AND incomeGuess (the
+         derive fallback), then recompute + refresh, then READ THE RENDERED DOM AND ASSERT.
+         A pin that is not asserted is exactly how 8 wrong heroes shipped. */
+      /* Keep the demo's NUMERALS and change only the symbol — the way the original
+         hand-made hero was composed. Letting convertAllMoney divide the DKK demo by 6.87
+         produced $161 rent and a $3,540 leftover on $3,800 income: internally consistent,
+         economically silly, and a visible downgrade from the live marketing asset. */
+      const pinned = await page.evaluate(() => {
         try {
+          if (window.__preSwitchAmts) {
+            let k = 0;
+            (MODEL.groups || []).forEach(g => (g.items || []).forEach(it => { it.amt = window.__preSwitchAmts[k++]; }));
+            if (window.__preSwitchSave != null) MODEL.savingsMatch = window.__preSwitchSave;
+            if (window.__preSwitchLoan != null) MODEL.loanPayment = window.__preSwitchLoan;
+          }
+          MODEL.incomeLog = [];
           MODEL.income = { low: 3400, avg: 3800, high: 4300 };
+          MODEL.incomeGuess = { low: 3400, avg: 3800, high: 4300 };
+          /* country: set through the visible field like a user, not by poking prefs */
+          const lab = [...document.querySelectorAll('label[data-i18n="Country"]')][0];
+          const inp = lab ? document.getElementById(lab.getAttribute('for')) : null;
+          if (inp) { inp.value = 'US'; inp.dispatchEvent(new Event('input', { bubbles: true })); inp.dispatchEvent(new Event('change', { bubbles: true })); }
+          if (typeof recomputeIncome === 'function') recomputeIncome();
           if (typeof refreshEverything === 'function') refreshEverything();
-        } catch (_) { }
+          const txt = (document.body.innerText || '').replace(/\s+/g, ' ');
+          let amtsOk = true, k = 0;
+          (MODEL.groups || []).forEach(g => (g.items || []).forEach(it => { if (it.amt !== window.__preSwitchAmts[k++]) amtsOk = false; }));
+          return { low: /3,400/.test(txt), avg: /3,800/.test(txt), high: /4,300/.test(txt),
+                   amts: amtsOk, country: inp ? inp.value : '(no field)' };
+        } catch (e) { return { err: String(e) }; }
       });
+      if (pinned.err || !(pinned.low && pinned.avg && pinned.high && pinned.amts)) {
+        console.log('  \u2717 ' + L + ' — income pin did not take: ' + JSON.stringify(pinned));
+        failed++; await ctx.close(); continue;
+      }
       await page.waitForTimeout(300);
 
       /* switch language through the app's OWN picker, so we capture what a user sees */

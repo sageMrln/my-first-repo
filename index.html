@@ -8681,7 +8681,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         ? '<button class="chip" id="wInstallNow" style="margin:2px 0 14px;border-color:var(--lime);color:var(--lime)">⬇ '+t('Install now (one tap)')+'</button>'
         : '';
       return '<h2>'+t('Add it to your home screen 📲')+'</h2>'+
-        '<p class="wsub">'+t('Installing makes MRLN open like a real app — full-screen, works offline, and keeps your data safe between visits. It\'s free and takes 10 seconds.')+'</p>'+
+        '<p class="wsub">'+t('Installing makes MRLN open like a real app — full-screen, works offline, and keeps your data safe between visits. It takes 10 seconds.')+'</p>'+
         oneTap +
         '<div class="instwrap">'+cards.map(cardHTML).join('')+'</div>'+
         '<p class="wsub" style="margin-top:10px">'+t('You can skip this and do it later from the <b>Connect</b> tab.')+'</p>';
@@ -9015,16 +9015,15 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
      A forced, one-time popup shown to returning users whenever they load a
      newer build. Bump APP_BUILD + the notes when you ship; everyone online
      sees it once on their next open (auto, via the network-first SW). */
-  var APP_BUILD = '2026-06-27.1';
+  var APP_BUILD = '2026-08-05.1';
   var WHATS_NEW = {
     intro: 'MRLN just updated — here’s what landed:',
     items: [
-      '🎨 Double-tap any tab to pin (“hold”) it and give it its own colour shade.',
-      '💱 Real currency conversion — switching currency now converts every figure, with the Hungarian Forint (HUF) added.',
-      '🌐 The whole interface translates — now including Magyar (Hungarian), 7 languages total.',
-      '📦 Run your master on the app — Connect → “Import my master file” loads everything (incl. the Klarna tab).',
-      '✎ Clearer editing — hints in Expenses & Income, plus weight/height via 💬 Quick Update.',
-      '📲 Setup now shows how to install MRLN on iPhone, Android and PC.'
+      '🌐 Français added — the full interface now ships in 8 languages.',
+      '💱 New currencies: Singapore dollar (S$) and Korean won (₩).',
+      '✎ Costs written as yearly or quarterly (“1200/an”, “vierteljährlich”) are now read correctly in every language.',
+      '📋 The Checklist is yours now — it starts empty and holds whatever you add.',
+      '🎨 Every theme now passes contrast checks — text stays readable in all 9.'
     ]
   };
   var UPDATE = (function(){
