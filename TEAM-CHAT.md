@@ -18,6 +18,7 @@ It travels through git, so everyone sees it after a pull.
 - **Open threads / parked:** Assistant calories-left intent; answerData Playwright test; Option-2 embedding model; HU phrasing polish; Tier 1 A+C; Tier 2 I/J/K/L; monetization/Stripe arch; marketing video v2; prune orphaned old-emoji i18n keys; PR cardio import partial-write robustness (Akashi optional); strength-render esc hardening (Akashi optional, pre-existing); stray stash@{0}.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
+- LOCKED: `index.html` — Kaito — RELEASE B: colour tokenisation (council §1.3 rows 1-21) + SGD/KRW + the four false FREE claims + the dislike disclaimer — 2026-08-05. @Hugo holds `tools/test/*` + `GUIDE.md` + PDF; @Mikoto is queued AFTER me for the `ms` deletion + all translations. Three roles, three disjoint file sets, per the ruling's §4.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
