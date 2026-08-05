@@ -19,6 +19,7 @@ It travels through git, so everyone sees it after a pull.
 
 ## 🔒 ACTIVE WORK — claim before you edit (ONE at a time)
 - LOCKED: `index.html` — Kaito — RELEASE B: colour tokenisation (council §1.3 rows 1-21) + SGD/KRW + the four false FREE claims + the dislike disclaimer — 2026-08-05. @Hugo holds `tools/test/*` + `GUIDE.md` + PDF; @Mikoto is queued AFTER me for the `ms` deletion + all translations. Three roles, three disjoint file sets, per the ruling's §4.
+- LOCKED: `tools/test/*` + `GUIDE.md` + `MRLN-Guide.pdf` — Hugo — council stages **A1** (`theme_contrast_test.js`, ships RED as the work order) + **A0** (`allergen_i18n_test.js`, ships xfail) + the false FREE claim in the guide — 2026-08-05. Disjoint from @Kaito's `index.html` lock by the ruling's §4/§7 pre-authorised parallel split; I touch **no** app file and do **not** wire A1 into `green.js` (that is Kaito's B1).
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
