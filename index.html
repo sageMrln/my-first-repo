@@ -8114,7 +8114,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       }
       logChange('food-log','Logged a meal — '+r.total.kcal+' kcal'); autosave();
       ta.value=''; setPhoto(null); liveEstimate();
-      if(msg){ msg.style.display='block'; msg.style.color='var(--lime)'; msg.textContent='Added — '+fmtMac(r.total)+(r.unknown.length?(' · '+r.unknown.length+' item(s) couldn\'t be estimated'):''); }
+      if(msg){ msg.style.display='block'; msg.style.color='var(--lime)'; msg.textContent=t('Added')+' — '+fmtMac(r.total)+(r.unknown.length?(' · '+r.unknown.length+' '+t('item(s) couldn’t be estimated')):''); }
       renderToday(); renderHistory();
     }
     function todayEntries(){ var d=todayKey(); return log().filter(function(e){ return e.date===d; }); }
@@ -8124,7 +8124,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       set('foodTKcal', t.kcal.toLocaleString('en-GB')); set('foodTP', t.p+' g'); set('foodTC', t.c+' g'); set('foodTF', t.f+' g');
       var T=(typeof nutritionTargets==='function')?nutritionTargets():null;
       var bar=elv('foodKcalBar'), note=elv('foodTodayNote'), badge=elv('foodTodayBadge');
-      if(badge) badge.textContent=todayEntries().length?(todayEntries().length+' logged'):'—';
+      if(badge) badge.textContent=todayEntries().length?(t('# logged').replace('#', todayEntries().length)):'—';
       if(T && T.kcal>0){
         var pct=Math.min(100,Math.round(t.kcal/T.kcal*100));
         if(bar){ bar.style.width=pct+'%'; bar.style.background=pct>110?'var(--red)':pct>90?'var(--lime)':'linear-gradient(90deg,var(--cyan),var(--lime))'; }
