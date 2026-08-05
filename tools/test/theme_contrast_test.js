@@ -214,7 +214,9 @@ console.log('  10 palette blocks parsed: ' + BLOCK_ORDER.join(', '));
 /* ---------- GROUP 1 — token completeness ---------------------------------- */
 var REQUIRED = ['--bg','--panel','--panel2','--line','--cyan','--cyan-dim','--lime','--amber','--red',
   '--txt','--txt-dim','--bright','--field-bg','--accent-rgb','--pos-rgb','--line-rgb','--warn-rgb',
-  '--bad-rgb','--accent-2','--on-accent','--accent-text','--glow-strength'];
+  '--bad-rgb','--accent-2','--on-accent','--accent-text','--glow-strength',
+  /* Stage 1 (reskin a213555): the --alt accent pair + the 5-step shadow ladder */
+  '--alt','--alt-rgb','--shadow-1','--shadow-2','--shadow-3','--shadow-4','--shadow-5'];
 /* --glow is the ONE named exemption: its value is a lazy token stream resolved
    at the use site (rgba(var(--accent-rgb), calc(...))), so defining it once on
    :root is correct — a per-theme copy would be 9 identical strings. */
@@ -227,6 +229,19 @@ if (GROUPS.indexOf(1) >= 0) {
   });
   if (THEMES.root['--glow'] === undefined) bad('--glow defined on :root', 'the documented single exemption vanished');
   else ok('--glow is :root-only by design (lazy token stream) — documented exemption');
+
+  /* Stage 1 (a213555): --alt is TEXT-GRADE by contract — every theme's value
+     must hold >= 4.5:1 against both --bg and --panel, so any future component
+     may use it for text/values without a per-site audit. */
+  BLOCK_ORDER.forEach(function (b) {
+    var alt = parseColor(resolve(THEMES[b]['--alt'], b, 0));
+    var bg = parseColor(resolve(THEMES[b]['--bg'], b, 0));
+    var pn = parseColor(resolve(THEMES[b]['--panel'], b, 0));
+    if (!alt || !bg || !pn) { bad('--alt text-grade floor [' + b + ']', 'unresolvable token'); return; }
+    var c1 = contrast(alt, bg), c2 = contrast(alt, pn);
+    if (c1 >= 4.5 && c2 >= 4.5) ok('--alt text-grade [' + b + ']  vs bg ' + c1.toFixed(2) + ' · vs panel ' + c2.toFixed(2));
+    else bad('--alt text-grade [' + b + ']', 'vs bg ' + c1.toFixed(2) + ' / vs panel ' + c2.toFixed(2) + ' — floor is 4.50');
+  });
 }
 
 /* ---------- GROUP 2 — property-aware literal scan -------------------------- */

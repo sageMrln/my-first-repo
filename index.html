@@ -66,6 +66,12 @@
     --accent-2:#23a7c4; --on-accent:#04121a; --accent-text:var(--cyan);
     --glow-strength:1;
     --glow:0 0 18px rgba(var(--accent-rgb), calc(.35 * var(--glow-strength)));
+    /* Stage 1 (a213555): spacing/radius scales — govern NEW/RESTYLED rules only */
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px; --s9:48px; --s10:64px;
+    --r-s:8px; --r-m:12px; --r-l:16px; --r-xl:22px; --r-pill:999px;
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#C4A7F8; --alt-rgb:196,167,248;
+    --shadow-1:0 1px 2px rgba(0,0,0,.40); --shadow-2:0 2px 8px rgba(0,0,0,.45); --shadow-3:0 4px 16px rgba(0,0,0,.50),0 0 12px rgba(var(--accent-rgb),calc(.10*var(--glow-strength))); --shadow-4:0 8px 28px rgba(0,0,0,.55),0 0 18px rgba(var(--accent-rgb),calc(.12*var(--glow-strength))); --shadow-5:0 16px 48px rgba(0,0,0,.60);
   }
   [data-theme="cyber"]{ /* Cyberpunk — DARK (the original; explicit = same as :root default) */
     --bg:#05080f; --panel:#0b1422; --panel2:#0e1a2e; --line:#1b3a5c;
@@ -73,6 +79,10 @@
     --txt:#cfeaff; --txt-dim:#6f93b5; --bright:#eaffff; --field-bg:#08111e;
     --accent-rgb:0,229,255; --pos-rgb:124,255,178; --line-rgb:27,58,92;
     --warn-rgb:255,181,71; --bad-rgb:255,92,124; --accent-2:#23a7c4; --on-accent:#04121a; --accent-text:var(--cyan); --glow-strength:1;
+  
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#C4A7F8; --alt-rgb:196,167,248;
+    --shadow-1:0 1px 2px rgba(0,0,0,.40); --shadow-2:0 2px 8px rgba(0,0,0,.45); --shadow-3:0 4px 16px rgba(0,0,0,.50),0 0 12px rgba(var(--accent-rgb),calc(.10*var(--glow-strength))); --shadow-4:0 8px 28px rgba(0,0,0,.55),0 0 18px rgba(var(--accent-rgb),calc(.12*var(--glow-strength))); --shadow-5:0 16px 48px rgba(0,0,0,.60);
   }
   [data-theme="landing"]{ /* Daylight — LIGHT (explicit) */
     --bg:#FBF8F3; --panel:#FFFDFA; --panel2:#FFFFFF; --line:#ECE4D8;
@@ -80,6 +90,10 @@
     --txt:#3A4A63; --txt-dim:#566579; --bright:#0E1C33; --field-bg:#FFFFFF;
     --accent-rgb:37,91,190; --pos-rgb:10,110,67; --line-rgb:236,228,216;
     --warn-rgb:152,84,0; --bad-rgb:200,36,59; --accent-2:#1C48A0; --on-accent:#FFFFFF; --accent-text:var(--cyan); --glow-strength:.04;
+  
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#5B3EA8; --alt-rgb:91,62,168;
+    --shadow-1:0 1px 2px rgba(30,34,44,.06); --shadow-2:0 2px 8px rgba(30,34,44,.08); --shadow-3:0 4px 16px rgba(30,34,44,.10); --shadow-4:0 8px 28px rgba(30,34,44,.12); --shadow-5:0 16px 48px rgba(30,34,44,.16);
   }
   [data-theme="purple"]{ /* Amethyst — DARK */
     --bg:#0E0A18; --panel:#1A1330; --panel2:#241A40; --line:#3A345B;
@@ -87,6 +101,10 @@
     --txt:#F0D8E6; --txt-dim:#B49CC0; --bright:#FBF2F8; --field-bg:#140E24;
     --accent-rgb:221,147,195; --pos-rgb:95,227,161; --line-rgb:58,52,91;
     --warn-rgb:240,178,75; --bad-rgb:255,84,104; --accent-2:#B96AA3; --on-accent:#140E24; --accent-text:var(--cyan); --glow-strength:.85;
+  
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#C9B2FF; --alt-rgb:201,178,255;
+    --shadow-1:0 1px 2px rgba(0,0,0,.40); --shadow-2:0 2px 8px rgba(0,0,0,.45); --shadow-3:0 4px 16px rgba(0,0,0,.50),0 0 12px rgba(var(--accent-rgb),calc(.10*var(--glow-strength))); --shadow-4:0 8px 28px rgba(0,0,0,.55),0 0 18px rgba(var(--accent-rgb),calc(.12*var(--glow-strength))); --shadow-5:0 16px 48px rgba(0,0,0,.60);
   }
   [data-theme="iceblue"]{ /* Glacier — LIGHT */
     --bg:#DCEDF4; --panel:#FFFFFF; --panel2:#F4FAFC; --line:#BFD8E2;
@@ -94,6 +112,10 @@
     --txt:#173038; --txt-dim:#4A6572; --bright:#0E2129; --field-bg:#FFFFFF;
     --accent-rgb:46,107,130; --pos-rgb:10,110,67; --line-rgb:191,216,226;
     --warn-rgb:152,84,0; --bad-rgb:200,30,56; --accent-2:#21536A; --on-accent:#FFFFFF; --accent-text:var(--cyan); --glow-strength:.04;
+  
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#53398F; --alt-rgb:83,57,143;
+    --shadow-1:0 1px 2px rgba(30,34,44,.06); --shadow-2:0 2px 8px rgba(30,34,44,.08); --shadow-3:0 4px 16px rgba(30,34,44,.10); --shadow-4:0 8px 28px rgba(30,34,44,.12); --shadow-5:0 16px 48px rgba(30,34,44,.16);
   }
   [data-theme="green"]{ /* Evergreen — DARK */
     --bg:#04231C; --panel:#0A3327; --panel2:#124436; --line:#1F4D3A;
@@ -101,6 +123,10 @@
     --txt:#E7F1EC; --txt-dim:#9FC3B2; --bright:#F4FBF7; --field-bg:#04211A;
     --accent-rgb:53,214,190; --pos-rgb:134,245,160; --line-rgb:31,77,58;
     --warn-rgb:240,178,75; --bad-rgb:255,96,96; --accent-2:#1FB49E; --on-accent:#04231C; --accent-text:var(--cyan); --glow-strength:.8;
+  
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#CDB2FF; --alt-rgb:205,178,255;
+    --shadow-1:0 1px 2px rgba(0,0,0,.40); --shadow-2:0 2px 8px rgba(0,0,0,.45); --shadow-3:0 4px 16px rgba(0,0,0,.50),0 0 12px rgba(var(--accent-rgb),calc(.10*var(--glow-strength))); --shadow-4:0 8px 28px rgba(0,0,0,.55),0 0 18px rgba(var(--accent-rgb),calc(.12*var(--glow-strength))); --shadow-5:0 16px 48px rgba(0,0,0,.60);
   }
   [data-theme="magenta"]{ /* Carmine — DARK */
     --bg:#0D0E22; --panel:#191B37; --panel2:#23264A; --line:#33375F;
@@ -108,6 +134,10 @@
     --txt:#ECDCEC; --txt-dim:#AC9BC2; --bright:#FBF2FA; --field-bg:#0C0D1F;
     --accent-rgb:245,88,155; --pos-rgb:82,227,155; --line-rgb:51,55,95;
     --warn-rgb:255,181,71; --bad-rgb:251,84,66; --accent-2:#D63C82; --on-accent:#0D0E22; --accent-text:var(--cyan); --glow-strength:.9;
+  
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#BFA6FF; --alt-rgb:191,166,255;
+    --shadow-1:0 1px 2px rgba(0,0,0,.40); --shadow-2:0 2px 8px rgba(0,0,0,.45); --shadow-3:0 4px 16px rgba(0,0,0,.50),0 0 12px rgba(var(--accent-rgb),calc(.10*var(--glow-strength))); --shadow-4:0 8px 28px rgba(0,0,0,.55),0 0 18px rgba(var(--accent-rgb),calc(.12*var(--glow-strength))); --shadow-5:0 16px 48px rgba(0,0,0,.60);
   }
   [data-theme="kawaii"]{ /* Rose — LIGHT */
     --bg:#FAF5EC; --panel:#FFFCF6; --panel2:#FDF3E9; --line:#EED8C8;
@@ -115,6 +145,10 @@
     --txt:#43272F; --txt-dim:#7A5C64; --bright:#2A171C; --field-bg:#FFFFFF;
     --accent-rgb:196,60,99; --pos-rgb:10,110,67; --line-rgb:238,216,200;
     --warn-rgb:152,84,0; --bad-rgb:206,43,68; --accent-2:#A82F52; --on-accent:#FFFFFF; --accent-text:#A62E4F; --glow-strength:.03;
+  
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#6D3FA9; --alt-rgb:109,63,169;
+    --shadow-1:0 1px 2px rgba(30,34,44,.06); --shadow-2:0 2px 8px rgba(30,34,44,.08); --shadow-3:0 4px 16px rgba(30,34,44,.10); --shadow-4:0 8px 28px rgba(30,34,44,.12); --shadow-5:0 16px 48px rgba(30,34,44,.16);
   }
   [data-theme="warmdark"]{ /* Umber — DARK */
     --bg:#0C1519; --panel:#162127; --panel2:#2A2320; --line:#3A3534;
@@ -122,6 +156,10 @@
     --txt:#EEE3D6; --txt-dim:#A99687; --bright:#FBF4EC; --field-bg:#0A1014;
     --accent-rgb:207,157,123; --pos-rgb:116,212,154; --line-rgb:58,53,52;
     --warn-rgb:245,166,35; --bad-rgb:255,92,92; --accent-2:#B9855F; --on-accent:#0C1519; --accent-text:var(--cyan); --glow-strength:.55;
+  
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#CBB0F5; --alt-rgb:203,176,245;
+    --shadow-1:0 1px 2px rgba(0,0,0,.40); --shadow-2:0 2px 8px rgba(0,0,0,.45); --shadow-3:0 4px 16px rgba(0,0,0,.50),0 0 12px rgba(var(--accent-rgb),calc(.10*var(--glow-strength))); --shadow-4:0 8px 28px rgba(0,0,0,.55),0 0 18px rgba(var(--accent-rgb),calc(.12*var(--glow-strength))); --shadow-5:0 16px 48px rgba(0,0,0,.60);
   }
   [data-theme="fall"]{ /* Ember — DARK */
     --bg:#1B1009; --panel:#2A1B10; --panel2:#38271A; --line:#5A3C22;
@@ -129,6 +167,10 @@
     --txt:#ECD9B4; --txt-dim:#B89A72; --bright:#FBF1DE; --field-bg:#170D06;
     --accent-rgb:229,142,66; --pos-rgb:111,209,153; --line-rgb:90,60,34;
     --warn-rgb:243,198,75; --bad-rgb:255,94,82; --accent-2:#C9722E; --on-accent:#170D06; --accent-text:var(--cyan); --glow-strength:.7;
+  
+    /* Stage 1 (a213555): --alt accent + shadow ladder (dark=glow composite, light=neutral) */
+    --alt:#D6B8FF; --alt-rgb:214,184,255;
+    --shadow-1:0 1px 2px rgba(0,0,0,.40); --shadow-2:0 2px 8px rgba(0,0,0,.45); --shadow-3:0 4px 16px rgba(0,0,0,.50),0 0 12px rgba(var(--accent-rgb),calc(.10*var(--glow-strength))); --shadow-4:0 8px 28px rgba(0,0,0,.55),0 0 18px rgba(var(--accent-rgb),calc(.12*var(--glow-strength))); --shadow-5:0 16px 48px rgba(0,0,0,.60);
   }
 
   /* ===== LIGHT-MODE FX GATE (Arthur) — kill neon FX, add real card elevation. Applies to the
