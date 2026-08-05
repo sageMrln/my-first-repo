@@ -235,12 +235,15 @@ if (GROUPS.indexOf(1) >= 0) {
      may use it for text/values without a per-site audit. */
   BLOCK_ORDER.forEach(function (b) {
     var alt = parseColor(resolve(THEMES[b]['--alt'], b, 0));
-    var bg = parseColor(resolve(THEMES[b]['--bg'], b, 0));
-    var pn = parseColor(resolve(THEMES[b]['--panel'], b, 0));
-    if (!alt || !bg || !pn) { bad('--alt text-grade floor [' + b + ']', 'unresolvable token'); return; }
-    var c1 = contrast(alt, bg), c2 = contrast(alt, pn);
-    if (c1 >= 4.5 && c2 >= 4.5) ok('--alt text-grade [' + b + ']  vs bg ' + c1.toFixed(2) + ' · vs panel ' + c2.toFixed(2));
-    else bad('--alt text-grade [' + b + ']', 'vs bg ' + c1.toFixed(2) + ' / vs panel ' + c2.toFixed(2) + ' — floor is 4.50');
+    /* all four text-bearing surfaces (Akashi, Stage-1 audit): bg, panel, panel2, field-bg */
+    var surfs = ['--bg', '--panel', '--panel2', '--field-bg'].map(function (t) {
+      return { t: t, c: parseColor(resolve(THEMES[b][t], b, 0)) };
+    });
+    if (!alt || surfs.some(function (s) { return !s.c; })) { bad('--alt text-grade floor [' + b + ']', 'unresolvable token'); return; }
+    var worst = surfs.map(function (s) { return { t: s.t, r: contrast(alt, s.c) }; })
+                     .sort(function (a, b2) { return a.r - b2.r; })[0];
+    if (worst.r >= 4.5) ok('--alt text-grade [' + b + ']  worst ' + worst.r.toFixed(2) + ' (' + worst.t + ')');
+    else bad('--alt text-grade [' + b + ']', 'worst ' + worst.r.toFixed(2) + ' on ' + worst.t + ' — floor is 4.50');
   });
 }
 
