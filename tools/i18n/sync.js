@@ -12,13 +12,19 @@
  * step (one pass per language) and merge the results back into the AUTO-MERGED
  * block. If this prints "MISSING: 0", the UI is fully translatable.
  *
- * The supported languages are: es, da, de, sv, nb, hu, ms  (en is the source).
+ * The supported languages are: es, da, de, sv, nb, hu  (en is the source).
+ *
+ * `ms` (Malay) was REMOVED on 2026-08-05 together with its dictionary — it was never
+ * selectable in #langSel/#lkLangSel/langLocale(), was 95.8% byte-identical English, and
+ * held this gate permanently at MISSING: 61. Council ruling
+ * team/council/2026-08-05-theming-and-singapore.md §2.2(c), approved by Osefe.
+ * The 69 real Malay translations are kept in tools/i18n/ms-salvage.json.
  */
 const fs = require('fs');
 const path = require('path');
 const HTML = path.resolve(__dirname, '../../index.html');
 const OUT = path.resolve(__dirname, 'need_translate.json');
-const LANGS = ['es', 'da', 'de', 'sv', 'nb', 'hu', 'ms'];
+const LANGS = ['es', 'da', 'de', 'sv', 'nb', 'hu'];
 const src = fs.readFileSync(HTML, 'utf8');
 
 // 1) t('...') / t("...") literal keys
@@ -79,7 +85,9 @@ if (s >= 0) {
   const open = seg.indexOf('})(') + 3, close = seg.lastIndexOf(');');
   try {
     const extra = JSON.parse(seg.slice(open, close).trim());
-    for (const L in extra) Object.assign(dict[L], extra[L]);
+    // guard: a dictionary language that is not in LANGS (a parked/retired locale) must be
+    // ignored, not crash the gate with "Cannot convert undefined to object".
+    for (const L in extra) if (dict[L]) Object.assign(dict[L], extra[L]);
   } catch (e) { console.error('could not parse AUTO-MERGED block:', e.message); }
 }
 // a key is fully covered only when EVERY language has it — a key present in just
