@@ -470,9 +470,10 @@
   .tab.tab-held{position:relative}
   .tab.tab-held::after{content:'📌';position:absolute;top:-7px;right:-3px;font-size:11px;filter:drop-shadow(0 1px 2px #000)}
   /* colour swatches in the category options popup */
-  .catsw{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);cursor:pointer;color:#06121a;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;transition:transform .1s}
+  .catsw{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);cursor:pointer;color:#06121a/* THEME-EXEMPT: sits on the palette SWATCH fill, a fixed colour sample, not a theme surface */;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;transition:transform .1s}
   .catsw:hover{transform:translateY(-2px)}
-  .catsw.sel{outline:2px solid #fff;outline-offset:2px}
+    .catsw.none{color:var(--txt)}   /* the "Default" swatch has no fill, so its glyph sits on a THEME surface and must follow it */
+  .catsw.sel{outline:2px solid var(--bright);outline-offset:2px}
   #catHoldBtn.on{border-color:var(--lime);color:var(--lime)}
 
   /* PANELS */
@@ -536,7 +537,7 @@
   .bud-cat-sub{ margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:12.5px; color:var(--cyan); font-variant-numeric:tabular-nums; }
   .bud-catdel{ display:none; align-items:center; justify-content:center; width:28px; height:28px; flex:0 0 auto;
     background:transparent; border:1px solid var(--red); color:var(--red); border-radius:8px; cursor:pointer; font-size:12px; }
-  .item-row{ display:flex; align-items:center; gap:12px; padding:14px 2px; border-bottom:1px solid rgba(255,255,255,.055); }
+  .item-row{ display:flex; align-items:center; gap:12px; padding:14px 2px; border-bottom:1px solid rgba(var(--line-rgb),.5); }
   .item-row:last-child{ border-bottom:none; }
   .ir-main{ min-width:0; flex:1 1 auto; }
   .ir-name{ font-family:'Rajdhani',sans-serif; font-weight:600; font-size:16px; color:var(--txt); line-height:1.2; overflow:hidden; text-overflow:ellipsis; }
@@ -795,7 +796,7 @@
     box-shadow:0 0 18px rgba(var(--warn-rgb),.16); animation:none }
   .install-banner.warn .ib-text b{ color:var(--amber) }
   .install-banner.warn .ib-icon{ color:var(--amber) }
-  .ss-zone{ border:1px solid var(--line); border-radius:12px; padding:12px 13px; margin:10px 0; background:rgba(8,19,31,.5) }
+  .ss-zone{ border:1px solid var(--line); border-radius:12px; padding:12px 13px; margin:10px 0; background:rgba(var(--line-rgb),.4) }
   .ss-zone .ss-h{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:.03em; color:var(--bright); margin-bottom:8px }
   .ss-url{ font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--cyan); word-break:break-all; background:var(--field-bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:8px; user-select:all }
   .lockcard .lk-openlink{ display:block; width:100%; margin-top:14px; background:transparent; border:1px solid var(--cyan-dim); border-radius:10px; color:var(--cyan); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px; cursor:pointer }
@@ -816,7 +817,7 @@
   .lockcard .lk-ver.has-upd{ opacity:.9 }
   .lockcard .lk-ver.has-upd .lk-upd{ display:inline }
   /* install guides that flank the lock card (wide) / stack below it (phones) */
-  .lk-guide{width:100%;max-width:238px;flex:0 0 auto;border:1px solid var(--line);border-radius:14px;background:rgba(8,19,31,.66);padding:14px 16px;box-shadow:0 0 16px rgba(0,0,0,.25)}
+  .lk-guide{width:100%;max-width:238px;flex:0 0 auto;border:1px solid var(--line);border-radius:14px;background:rgba(var(--line-rgb),.5);padding:14px 16px;box-shadow:0 0 16px rgba(0,0,0,.25)}
   .lk-guide-h{font-family:'Share Tech Mono';font-size:12px;letter-spacing:.05em;color:var(--cyan);margin-bottom:9px}
   .lk-guide-h b{color:var(--cyan);font-weight:700}
   .lk-guide-steps{margin:0;padding-left:20px;font-size:12.5px;line-height:1.5;color:var(--txt)}
@@ -976,7 +977,7 @@
 
   /* ===================== MODAL / CONFIRM ===================== */
   .modal-back{position:fixed;inset:0;z-index:90000;display:none;align-items:center;justify-content:center;padding:20px;
-    background:rgba(3,7,14,.78);backdrop-filter:blur(3px)}
+    background:rgba(0,0,0,.78)/* THEME-EXEMPT: neutral scrim, deliberately theme-agnostic */;backdrop-filter:blur(3px)}
   .modal-back.show{display:flex}
   .modal{width:100%;max-width:420px;border:1px solid var(--line);border-radius:16px;
     background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 20px 60px rgba(0,0,0,.6);padding:24px 22px}
@@ -994,7 +995,7 @@
   /* ===== LEGAL LAYER — per-section disclaimer footers, lock-screen acceptance line,
      and the scrollable Terms/Privacy/Disclaimer modal. Deliberately quiet: small, dim,
      out of the way — informs without distracting. Pure presentation, zero data. ===== */
-  .panel-legal{margin-top:22px;padding-top:11px;border-top:1px solid rgba(255,255,255,.06);
+  .panel-legal{margin-top:22px;padding-top:11px;border-top:1px solid rgba(var(--line-rgb),.55);
     font-size:10.5px;line-height:1.5;color:var(--txt-dim);letter-spacing:.02em;text-align:center;opacity:.7}
   .panel-legal a,.legal-open{color:var(--txt-dim);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
   .panel-legal a:hover,.legal-open:hover{color:var(--cyan)}
@@ -1110,7 +1111,7 @@
 
   /* ===================== ONBOARDING WIZARD ===================== */
   #onboard{position:fixed;inset:0;z-index:95000;display:none;align-items:center;justify-content:center;padding:18px;
-    background:radial-gradient(1000px 600px at 50% -10%, rgba(var(--accent-rgb),.10), transparent 60%), rgba(3,7,14,.92);overflow-y:auto}
+    background:radial-gradient(1000px 600px at 50% -10%, rgba(var(--accent-rgb),.10), transparent 60%), rgba(0,0,0,.92)/* THEME-EXEMPT: neutral scrim under an accent-tinted wash */;overflow-y:auto}
   #onboard.show{display:flex}
   .wiz{width:100%;max-width:460px;border:1px solid var(--line);border-radius:18px;
     background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 24px 70px rgba(0,0,0,.65);padding:26px 24px;margin:auto}
@@ -1182,7 +1183,7 @@
 
   /* ===================== GUIDED TOUR ===================== */
   #tourRing{position:fixed;z-index:96000;border-radius:12px;pointer-events:none;display:none;
-    box-shadow:0 0 0 4px var(--cyan), 0 0 0 9999px rgba(3,7,14,.78);transition:all .25s ease}
+    box-shadow:0 0 0 4px var(--cyan), 0 0 0 9999px rgba(0,0,0,.78)/* THEME-EXEMPT: neutral spotlight scrim */;transition:all .25s ease}
   #tourTip{position:fixed;z-index:96001;max-width:300px;width:calc(100vw - 28px);display:none;
     border:1px solid var(--cyan);border-radius:13px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 14px 40px rgba(0,0,0,.6);padding:16px 16px 14px}
   #tourTip .tt-txt{font-size:14px;color:var(--txt);line-height:1.5}
@@ -2421,7 +2422,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <button class="btn ghost" id="medMinus" style="min-width:56px;font-family:'Share Tech Mono'">−0.1</button>
         <button class="btn ghost" id="medPlus" style="min-width:56px;font-family:'Share Tech Mono'">+0.1</button>
       </div>
-      <div id="medCompare" style="display:none;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:11px;margin-bottom:10px;font-size:13px"></div>
+      <div id="medCompare" style="display:none;background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:10px;padding:11px;margin-bottom:10px;font-size:13px"></div>
       <div id="medRateForm">
         <input id="medRateGenre" data-i18n-ph="Genre (optional)" placeholder="Genre (optional)" style="width:100%;margin-bottom:8px;background:var(--field-bg);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px;font-family:Rajdhani;font-size:14px">
         <label class="note" data-i18n="A note to your future self (optional)" style="display:block;margin-bottom:4px">A note to your future self (optional)</label>
@@ -2492,7 +2493,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <div id="photoMoveMsg" class="note" style="display:none;margin-top:10px"></div>
         <div id="persistWarn" class="note" data-i18n="This browser may clear stored photos when space runs low. Keep an exported photo file as backup." style="display:none;margin-top:10px;color:var(--amber)">This browser may clear stored photos when space runs low. Keep an exported photo file as backup.</div>
       </div>
-      <div id="deviceTip" style="display:none;margin-top:14px;background:#08121f;border:1px solid var(--cyan-dim);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--txt)"></div>
+      <div id="deviceTip" style="display:none;margin-top:14px;background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--txt)"></div>
     </div>
 
     <div class="card">
@@ -3213,7 +3214,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var sel = (c[1]===cur);
         var bg = c[1] || 'transparent';
         var label = c[1] ? '' : '✕';
-        return '<button class="catsw'+(sel?' sel':'')+'" data-col="'+c[1]+'" title="'+esc(t(c[0]))+'" '+
+        return '<button class="catsw'+(c[1]?'':' none')+(sel?' sel':'')+'" data-col="'+c[1]+'" title="'+esc(t(c[0]))+'" '+
           'style="background:'+bg+'">'+label+'</button>';
       }).join('');
     }
@@ -7652,7 +7653,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         '<div class="calc-row"><span>≈ per month</span><b>'+M(R.net/12)+'</b></div>'+
         '<div class="calc-row"><span>Marginal rate (next kr/€/$)</span><b>'+R.marg+'%</b></div></div>';
       if(R.recon){ var d=R.recon.diff; html+='<div class="note" style="margin-top:12px;'+(d>=0?'color:var(--lime)':'color:var(--amber)')+'">'+(d>=0?('✅ '+tf('Estimated refund')+(R.country==='DK'?' (overskydende skat)':'')+': <b>'+M(d)+'</b>'):('⚠️ '+tf('You may owe')+(R.country==='DK'?' (restskat)':'')+': <b>'+M(-d)+'</b>'))+' — '+tf('withheld')+' '+M(R.recon.withheld)+' '+tf('vs estimated')+' '+M(R.recon.computed)+'.</div>'; }
-      if(R.dk){ html+='<div style="margin-top:14px;background:#08131f;border:1px solid var(--line);border-radius:12px;padding:14px"><b style="font-family:Orbitron;font-size:13px;color:var(--bright)">📋 Forskudsopgørelse — suggested entries</b>'+
+      if(R.dk){ html+='<div style="margin-top:14px;background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:12px;padding:14px"><b style="font-family:Orbitron;font-size:13px;color:var(--bright)">📋 Forskudsopgørelse — suggested entries</b>'+
         '<div class="calc-row" style="margin-top:8px"><span>Trækprocent</span><b>'+R.dk.traek+' %</b></div>'+
         '<div class="calc-row"><span>Fradrag / month</span><b>'+M(R.dk.fradragMo)+'</b></div>'+
         '<div class="calc-row"><span>Fradrag / 14 days</span><b>'+M(R.dk.fradrag14)+'</b></div>'+
@@ -7662,7 +7663,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(R.country!=='XX' && R.gross>0){
         var exp=R.gross, lo=Math.max(1000,Math.round(exp*0.3/1000)*1000), hi=Math.round(exp*2/1000)*1000;
         var act=(STATE.tax.actual>=lo && STATE.tax.actual<=hi)?STATE.tax.actual:exp;
-        html+='<div style="margin-top:14px;background:#08131f;border:1px solid var(--line);border-radius:12px;padding:14px">'+
+        html+='<div style="margin-top:14px;background:var(--field-bg);border:1px solid var(--cyan-dim);border-radius:12px;padding:14px">'+
           '<b style="font-family:Orbitron;font-size:13px;color:var(--bright)">📊 Over / under-estimate simulator</b>'+
           '<div class="note" style="margin:4px 0 10px">Your estimate is <b>'+M(exp)+'</b>. Drag the bar to your <b>actual</b> income to see the year-end refund or bill — and what to update your withholding to.</div>'+
           '<input type="range" id="txSimSlider" min="'+lo+'" max="'+hi+'" step="1000" value="'+act+'" style="width:100%">'+
@@ -8374,7 +8375,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var whole=Math.floor(draft.rating);
       for(var i=1;i<=10;i++){ (function(n){
         var b=document.createElement('button'); b.className='btn ghost'; b.textContent=n;
-        b.style.cssText='min-width:44px;min-height:44px;padding:6px 0'+(n===whole?';background:var(--cyan-dim);border-color:var(--cyan);color:#eaffff':'');   // 44px tap-target floor (Arthur)
+        b.style.cssText='min-width:44px;min-height:44px;padding:6px 0'+(n===whole?';background:var(--cyan);border-color:var(--cyan);color:var(--on-accent)':'');   // 44px tap-target floor (Arthur)
         b.addEventListener('click', function(){ var dec=draft.rating-Math.floor(draft.rating); draft.rating=(n===10)?10:clamp(n+dec); paintVal(); buildChips(); });
         host.appendChild(b);
       })(i); }
@@ -8863,7 +8864,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var bar=document.createElement('div'); bar.id='personalizeNag';
     bar.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9000;max-width:92%;background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--cyan,#0ce);border-radius:14px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.5);display:flex;gap:12px;align-items:center;font-family:Rajdhani,sans-serif';
     bar.innerHTML='<div style="flex:1;min-width:0"><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">Finish personalizing</b><div style="color:var(--txt-dim,#9bb);font-size:13px">Your dashboard works, but adding your income, expenses &amp; body stats makes every grade and simulator real.</div></div>'+
-      '<button id="nagGo" style="background:var(--cyan,#0ce);color:#021019;border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-family:Orbitron,sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">Finish setup</button>'+
+      '<button id="nagGo" style="background:var(--cyan,#0ce);color:var(--on-accent);border:0;border-radius:9px;padding:9px 13px;font-weight:700;font-family:Orbitron,sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">Finish setup</button>'+
       '<button id="nagX" aria-label="Dismiss" style="background:transparent;color:var(--txt-dim,#9bb);border:0;font-size:20px;cursor:pointer;line-height:1">✕</button>';
     document.body.appendChild(bar);
     document.getElementById('nagGo').addEventListener('click', function(){ window.WIZOPEN(true); });
@@ -8884,13 +8885,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       ['💾','Save / Export','Everything lives on your device. Export a private backup file whenever you make changes.']
     ];
     var back=document.createElement('div'); back.className='modal-back show'; back.id='guideBack';
-    back.style.cssText='position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(2,8,16,.78);padding:16px';
-    var rows=GUIDE.map(function(g){ return '<div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(120,200,255,.1)"><span style="font-size:20px;flex:0 0 26px">'+g[0]+'</span><div><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">'+g[1]+'</b><div style="color:var(--txt-dim,#9bb);font-size:13px;margin-top:2px">'+g[2]+'</div></div></div>'; }).join('');
-    back.innerHTML='<div style="background:linear-gradient(160deg,#0c1c2e,#081320);border:1px solid var(--cyan,#0ce);border-radius:16px;max-width:460px;width:100%;max-height:88vh;overflow:auto;padding:20px 20px 16px;box-shadow:0 12px 50px rgba(0,0,0,.6)">'+
+    back.style.cssText='position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.78);padding:16px';
+    var rows=GUIDE.map(function(g){ return '<div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(var(--line-rgb),.55)"><span style="font-size:20px;flex:0 0 26px">'+g[0]+'</span><div><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">'+g[1]+'</b><div style="color:var(--txt-dim,#9bb);font-size:13px;margin-top:2px">'+g[2]+'</div></div></div>'; }).join('');
+    back.innerHTML='<div style="background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--cyan,#0ce);border-radius:16px;max-width:460px;width:100%;max-height:88vh;overflow:auto;padding:20px 20px 16px;box-shadow:0 12px 50px rgba(0,0,0,.6)">'+
       '<h2 style="font-family:Orbitron,sans-serif;color:var(--bright);font-size:17px;margin:0 0 4px">What\'s in here 🗺️</h2>'+
       '<p style="color:var(--txt-dim,#9bb);font-size:13px;margin:0 0 10px">A quick tour of each section so you know where everything lives.</p>'+
       rows+
-      '<button id="guideDone" style="margin-top:16px;width:100%;background:var(--cyan,#0ce);color:#021019;border:0;border-radius:10px;padding:12px;font-weight:700;font-family:Orbitron,sans-serif;font-size:13px;cursor:pointer">Got it — show me around</button></div>';
+      '<button id="guideDone" style="margin-top:16px;width:100%;background:var(--cyan,#0ce);color:var(--on-accent);border:0;border-radius:10px;padding:12px;font-weight:700;font-family:Orbitron,sans-serif;font-size:13px;cursor:pointer">Got it — show me around</button></div>';
     document.body.appendChild(back);
     document.getElementById('guideDone').addEventListener('click', function(){ back.remove(); if(typeof cb==='function') cb(); });
   }
@@ -9260,8 +9261,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(document.getElementById('bdayPop')) return;
     var name=(MODEL.profile&&MODEL.profile.name)||'';
     var d=document.createElement('div'); d.id='bdayPop';
-    d.style.cssText='position:fixed;inset:0;z-index:97000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(3,7,14,.86)';
-    d.innerHTML='<div style="max-width:380px;text-align:center;border:1px solid var(--cyan);border-radius:18px;padding:30px 24px;background:linear-gradient(180deg,rgba(0,229,255,.12),var(--panel2));box-shadow:var(--glow)">'+
+    d.style.cssText='position:fixed;inset:0;z-index:97000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.86)';
+    d.innerHTML='<div style="max-width:380px;text-align:center;border:1px solid var(--cyan);border-radius:18px;padding:30px 24px;background:linear-gradient(180deg,rgba(var(--accent-rgb),.12),var(--panel2));box-shadow:var(--glow)">'+
       '<div style="font-size:52px;line-height:1">🎂</div>'+
       '<div style="font-family:\'Orbitron\';font-weight:800;font-size:23px;color:var(--bright);margin-top:10px">Happy Birthday'+(name?(', '+esc(name)):'')+'!</div>'+
       (age!=null?'<div style="font-family:\'Orbitron\';font-weight:700;font-size:16px;color:var(--lime);margin-top:10px">⬆ LEVEL UP — you\'re now '+age+'</div>':'<div style="font-size:15px;color:var(--lime);margin-top:10px;font-weight:700">⬆ LEVEL UP!</div>')+
