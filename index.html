@@ -5745,10 +5745,15 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function _cleanName(clause){
     var s = clause.replace(_re('^\\s*(?:'+LEX.add+')[\\p{L}]*\\s+'), '');
     s = s.replace(_re('\\s+(?:'+LEX.to+')\\s+[\\p{L}\\d&\'’ ]+$'), '');
+    // de/hu put the add-verb LAST ("Gym 29/Monat hinzufügen", "... hozzáadása"), so the
+    // start-anchored strip above never reached it and it became part of the item name.
+    // Only applied when a name survives, so an item actually named "New" is not erased.
+    try{ var _tv = s.replace(_re('\\s+(?:'+LEX.add+')[\\p{L}]*\\s*$'), '');
+         if(_tv.replace(/[^\p{L}]/gu,'').length) s = _tv; }catch(e){ try{ console.warn('MRLN: trailing-verb strip failed', e); }catch(_){ } }
     s = s.replace(/(?<![\p{L}\p{N}])\d[\d.,]*/gu,' ');   // strip standalone numbers, keep alnum names like "Antivirus2"
     // strip currency + period/filler words in all 7 languages, keep the real item name
     s = s.replace(/\b(?:kr|kroner|dkk|sek|nok|eur|euros?|usd|chf|huf|ft|forint)\b/giu,' ');
-    s = s.replace(/(?<![\p{L}])(?:per|month|months|monthly|mo|md|mdr|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of|om|måneden|pr|måned|månedlig|al|mes|por|mensual|pro|monat|monatlich|månad|månaden|i|året|år|havonta|évente|hónap|pris|coste|preis|costo)(?![\p{L}])/giu,' ');
+    s = s.replace(/(?<![\p{L}])(?:per|month|months|monthly|mo|md|mdr|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of|om|måneden|pr|måned|månedlig|al|mes|por|mensual|pro|monat|monatlich|månad|månaden|i|året|år|mnd|mnd\\.|mån|havonta|évente|hónap|hó|pris|coste|preis|costo)(?![\p{L}])/giu,' ');
     s = s.replace(/[\/,]/g,' ').replace(/\s{2,}/g,' ').trim();
     return s;
   }

@@ -42,6 +42,16 @@ function check(input, wantOp) {
   console.log((ok ? '✓' : '✗ FAIL') + '  [' + String(wantOp).padEnd(15) + '] got ' + String(got).padEnd(15) + '  «' + input + '»');
 }
 
+/* op-level checks are not enough: a clause can route to the RIGHT op and still produce a
+   corrupted item NAME, which is what the user actually sees in their budget. */
+function checkName(input, wantName) {
+  const r = parseClause(input);
+  const got = r ? (r.name === undefined ? '(no name)' : r.name) : '(null)';
+  const ok = got === wantName;
+  ok ? pass++ : fail++;
+  console.log((ok ? '✓' : '✗ FAIL') + '  [name: ' + String(wantName).padEnd(13) + '] got ' + String(got).padEnd(15) + '  «' + input + '»');
+}
+
 // --- merchant/bank names must NOT become money/profile ops (Akashi's FP set + bank guards) ---
 check('add Netto 2000/mo', 'addItem');
 check('Spar membership 99/mo', 'addItem');
@@ -136,6 +146,22 @@ check('jag sparar 300 per månad', 'setSavingsMatch');  // sv inflected save
 check('sparen 400 monatlich', 'setSavingsMatch');      // de inflected save
 check('tilføj Spotify 99/md', 'addItem');          // da add-verb
 check('lægg til Disney 79', 'addItem');            // da/nb add-verb variant
+
+// --- _cleanName: the ITEM NAME, not just the op. Found by Mikoto running the app's OWN
+//     six assistant examples through the live parseInstructions() instead of reading them:
+//     3 of 6 minted a CORRUPTED expense, in a shipped build, past every op-level case here.
+//     Two causes: the period-filler list carried Danish md/mdr but not Norwegian mnd or
+//     Hungarian hó, and the add-verb strip was START-ANCHORED so German and Hungarian,
+//     which put the verb LAST, could never have it removed. ---
+checkName('Gym 29/Monat hinzufügen', 'Gym');        // de — trailing verb was becoming the name
+checkName('Edzőterem 29/hó hozzáadása', 'Edzőterem');// hu — trailing verb + missing /hó
+checkName('Fitness 29/mnd', 'Fitness');             // nb — mnd was not a known month abbrev
+checkName('Gym 29/md', 'Gym');                      // da worked; nb/hu did not, same sentence
+checkName('Gym 29/månad', 'Gym');                   // sv
+checkName('add Gym 29/mo', 'Gym');                  // en control
+checkName('tilføj Spotify 99/md', 'Spotify');       // leading verb must still strip
+checkName('add Spare parts 300/mo', 'Spare parts'); // a name CONTAINING a filler-ish word
+checkName('Alter Ego sub 120', 'Alter Ego sub');    // never over-strip a real product name
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
