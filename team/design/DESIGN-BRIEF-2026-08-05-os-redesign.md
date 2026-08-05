@@ -154,3 +154,16 @@ Improve only the presentation, hierarchy, usability and visual polish while main
 - Fact-check against current app: 16 tabs (overview income expenses loan flow
   rule checklist klarna gym food calendar stats notebook media connect log);
   5 opt-in layouts + 9 themes exist; default = Cyberpunk/Command.
+
+---
+
+## Owner addendum (2026-08-05, later same day — verbatim intent)
+> "Instead of having 16 tabs, combine them into less tabs with sub-categories
+> inside of it. Make it very easy for a consumer to consume."
+
+Ruling effect: the grouped-navigation question is CLOSED — Osefe orders
+consolidation (few top-level tabs, sub-categories within each). Open for the
+Chairman under this directive: exact group count (mock showed 4; standing
+blueprint ruling `a8abee4` decided 5 incl. MORE), group names ("Diary" flagged
+as unpredictable by the Outsider seat), and where connect/log/settings live.
+Consumer-ease is the deciding criterion Osefe named.
