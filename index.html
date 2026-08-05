@@ -8889,7 +8889,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     ];
     var back=document.createElement('div'); back.className='modal-back show'; back.id='guideBack';
     back.style.cssText='position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.78)/* THEME-EXEMPT: neutral scrim */;padding:16px';
-    var rows=GUIDE.map(function(g){ return '<div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(var(--line-rgb),.55)"><span style="font-size:20px;flex:0 0 26px">'+g[0]+'</span><div><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">'+g[1]+'</b><div style="color:var(--txt-dim,#9bb);font-size:13px;margin-top:2px">'+g[2]+'</div></div></div>'; }).join('');
+    var rows=GUIDE.map(function(g){ return '<div style="display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(var(--line-rgb),.9)"><span style="font-size:20px;flex:0 0 26px">'+g[0]+'</span><div><b style="color:var(--bright);font-family:Orbitron,sans-serif;font-size:13px">'+g[1]+'</b><div style="color:var(--txt-dim,#9bb);font-size:13px;margin-top:2px">'+g[2]+'</div></div></div>'; }).join('');
     back.innerHTML='<div style="background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--cyan,#0ce);border-radius:16px;max-width:460px;width:100%;max-height:88vh;overflow:auto;padding:20px 20px 16px;box-shadow:0 12px 50px rgba(0,0,0,.6)">'+
       '<h2 style="font-family:Orbitron,sans-serif;color:var(--bright);font-size:17px;margin:0 0 4px">What\'s in here 🗺️</h2>'+
       '<p style="color:var(--txt-dim,#9bb);font-size:13px;margin:0 0 10px">A quick tour of each section so you know where everything lives.</p>'+

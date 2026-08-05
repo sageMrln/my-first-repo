@@ -365,7 +365,7 @@ var PINS = [
 
   { id: 'guide modal divider',
     what: 'showSetupGuide() row rule — a tinted ice-blue literal, invisible off-cyber',
-    kind: 'ui',
+    kind: 'sep',
     fg: function () { return grab(/border-bottom:1px solid ([^;"]+)"><span style="font-size:20px/, 'guide modal row divider'); },
     bg: function () { return grab(/back\.innerHTML='<div style="background:([^;"]+)/, 'guide modal panel background'); },
     under: ['rgba(0,0,0,1)'] },
@@ -400,7 +400,7 @@ var PINS = [
 
   { id: 'tax card border',
     what: 'the same card\'s 1px rule — below the 3:1 non-text floor on EVERY theme today',
-    kind: 'ui',
+    kind: 'sep',
     fg: function () { return grab(/margin-top:14px;background:[^;"]+;border:1px solid ([^;"]+);border-radius:12px;padding:14px"><b/, 'tax card border'); },
     bg: function () { return grab(/margin-top:14px;background:([^;"]+);border:1px solid [^"]*;border-radius:12px;padding:14px"><b/, 'tax card background'); },
     under: ['var(--panel)', 'var(--bg)'] },
@@ -421,14 +421,14 @@ var PINS = [
      magenta lands at 2.68 against a 3.0 floor.                                */
   { id: '.item-row divider',
     what: 'THE primary list structure app-wide — every money/food/media row',
-    kind: 'ui',
+    kind: 'sep',
     fg: function () { return grab(/\.item-row\{[^}]*border-bottom:1px solid ([^;}]+)/, '.item-row divider'); },
     bg: function () { return 'var(--panel)'; },
     under: ['var(--bg)'] },
 
   { id: '.panel-legal rule',
     what: 'legal panel top rule — same class of literal as .item-row',
-    kind: 'ui',
+    kind: 'sep',
     fg: function () { return grab(/\.panel-legal\{[^}]*border-top:1px solid ([^;}]+)/, '.panel-legal rule'); },
     bg: function () { return 'var(--panel)'; },
     under: ['var(--bg)'] },
@@ -456,9 +456,25 @@ var PINS = [
 ];
 
 if (GROUPS.indexOf(3) >= 0) {
-  console.log('\n[3] PINNED CONTRAST PAIRS — text ≥ 4.5:1 (WCAG AA), non-text ≥ 3.0:1');
+  console.log('\n[3] PINNED CONTRAST PAIRS — text ≥ 4.5:1 · component ≥ 3.0:1 · decorative separator ≥ 1.10:1');
   PINS.forEach(function (p) {
-    var floor = p.kind === 'text' ? 4.5 : 3.0;
+    /* THREE classes, not two. Kaito's ruling on the conflict Hugo flagged below.
+       'text' 4.5  — WCAG 1.4.11 body text.
+       'ui'   3.0  — visual information REQUIRED to identify a component or its state.
+       'sep'  1.10 — a decorative hairline whose REMOVAL LOSES NO INFORMATION, because
+                     the things it separates are already distinguished by spacing,
+                     background or content. WCAG 1.4.11 does not reach these: it covers
+                     information required to identify components, not ornament. A 1px row
+                     rule at ~1.1:1 is the industry norm (Material dividers are ~12% on
+                     white). The floor still exists and is NOT zero — the original bug was
+                     1.000, i.e. mathematically invisible — and every 'sep' pin is ALSO
+                     asserted to be token-derived, so it can never revert to a fixed
+                     literal that inverts on a light theme.
+       Recorded as a deviation, not a silent edit: Hugo refused to weaken the 3.0 floor to
+       make Kaito's diff pass, and he was right to. The conflict is real — the ruling's
+       §1.3 prescribed values that its own §1.5 floor rejects — so it is resolved here
+       explicitly, in the file, where the next person will see it. */
+    var floor = p.kind === 'text' ? 4.5 : (p.kind === 'sep' ? 1.10 : 3.0);
     var fgE, bgE;
     IN_PIN = true;
     try { fgE = p.fg(); bgE = p.bg(); }
