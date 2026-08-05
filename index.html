@@ -5722,7 +5722,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // (da "dårlige"→"dårlig", nb "lønnen"→"lønn", de "Kreditrate"→"kredit", "måneden"→"måned")
   function _has(g, s){ return _re(_WB+'(?:'+g+')').test(s); }
   function _freq(s){
-    if(/year|annual|\/\s?yr|\bp\.?a\b|å?ret\b|\bår\b|jahr|jähr|\baño|\bano|évent|\bévi\b|årlig|jährlich|anual|yearly/iu.test(s)) return 'yearly';
+    if(/year|annual|\/\s?yr|\bp\.?a\b|å?ret\b|\bår\b|jahr|jähr|\baño|\bano|évent|\bévi\b|årlig|jährlich|anual|yearly|\/\s?an(?![\p{L}])|par\s+an(?![\p{L}])|ann(?:\u00e9e|uel)/iu.test(s)) return 'yearly';   // fr: /an, par an, annee, annuel — bare "an" is EXCLUDED, it is an English article
     if(/quarter|\/\s?q\b|kvartal|trimestral|vierteljähr|negyedév/iu.test(s)) return 'quarterly';
     return 'monthly';
   }
@@ -5755,7 +5755,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     s = s.replace(/(?<![\p{L}\p{N}])\d[\d.,]*/gu,' ');   // strip standalone numbers, keep alnum names like "Antivirus2"
     // strip currency + period/filler words in all 7 languages, keep the real item name
     s = s.replace(/\b(?:kr|kroner|dkk|sek|nok|eur|euros?|usd|chf|huf|ft|forint)\b/giu,' ');
-    s = s.replace(/(?<![\p{L}])(?:per|month|months|monthly|mo|md|mdr|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of|om|måneden|pr|måned|månedlig|al|mes|por|mensual|pro|monat|monatlich|månad|månaden|i|året|år|mnd|mnd\\.|mån|havonta|évente|hónap|hó|pris|coste|preis|costo)(?![\p{L}])/giu,' ');
+    s = s.replace(/(?<![\p{L}])(?:per|month|months|monthly|mo|md|mdr|quarter|quarterly|year|years|yearly|yr|annually|annual|each|a|an|for|at|costs?|of|om|måneden|pr|måned|månedlig|al|mes|por|mensual|pro|monat|monatlich|månad|månaden|i|året|år|mnd|mnd\\.|mån|havonta|évente|hónap|hó|mois|mensuel|mensuelle|année|annuel|annuelle|par|jährlich|jahr|anual|annual|annually|årlig|årligt|yearly|évente|évi|pris|coste|preis|costo)(?![\p{L}])/giu,' ');
     s = s.replace(/[\/,]/g,' ').replace(/\s{2,}/g,' ').trim();
     return s;
   }

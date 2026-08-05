@@ -169,6 +169,28 @@ run(['tools/test/allergen_i18n_test.js'], 'allergen i18n ratchet');
 section('theme contrast & colour literals — tools/test/theme_contrast_test.js');
 run(['tools/test/theme_contrast_test.js'], 'theme contrast');
 
+// 11f) i18n coverage — MISSING must be 0 for every SELECTABLE language. This was never in
+//      the gate: it lived only in Mikoto's signature, so a release could ship a language
+//      half-translated if her sign-off were skipped. French is now selectable, which made
+//      that gap load-bearing. Armed at MISSING: 0, so it goes green the moment it exists.
+//      NOTE what it does NOT prove: sync.js only sees t()/tf()/data-i18n/WHATS_NEW, so
+//      MISSING: 0 has been true and MISLEADING before (~600 prose keys are invisible to
+//      it, and ~22 raw strings in showSetupGuide were never counted at all).
+section('i18n coverage — MISSING must be 0 for every selectable language');
+try {
+  const out = execFileSync('node', ['tools/i18n/sync.js'], { cwd: root, encoding: 'utf8', maxBuffer: 1 << 28 });
+  const m = out.match(/MISSING\s*:\s*(\d+)/);
+  if (!m) { console.log('  \u2717 sync.js printed no MISSING count'); failed = true; }
+  else if (+m[1] !== 0) {
+    const langs = [...new Set((out.match(/\u2717 ([a-z]{2})/g) || []).map(x => x.slice(2)))];
+    console.log('  \u2717 MISSING: ' + m[1] + (langs.length ? '  (' + langs.join(', ') + ')' : ''));
+    failed = true;
+  } else console.log('  \u2713 MISSING: 0 across every selectable language');
+} catch (e) {
+  console.log('  \u2717 sync.js failed to run \u2014 ' + e.message.split('\n')[0]);
+  failed = true;
+}
+
 section('currency parity — tools/test/currency_parity_test.js');
 run(['tools/test/currency_parity_test.js'], 'currency parity');
 

@@ -44,6 +44,15 @@ function check(input, wantOp) {
 
 /* op-level checks are not enough: a clause can route to the RIGHT op and still produce a
    corrupted item NAME, which is what the user actually sees in their budget. */
+/* freq is money: a yearly cost read as monthly is a 12x error in every downstream figure. */
+function checkFreq(input, wantFreq) {
+  const r = parseClause(input);
+  const got = r ? (r.freq === undefined ? '(no freq)' : r.freq) : '(null)';
+  const ok = got === wantFreq;
+  ok ? pass++ : fail++;
+  console.log((ok ? '✓' : '✗ FAIL') + '  [freq: ' + String(wantFreq).padEnd(13) + '] got ' + String(got).padEnd(15) + '  «' + input + '»');
+}
+
 function checkName(input, wantName) {
   const r = parseClause(input);
   const got = r ? (r.name === undefined ? '(no name)' : r.name) : '(null)';
@@ -162,6 +171,28 @@ checkName('add Gym 29/mo', 'Gym');                  // en control
 checkName('tilføj Spotify 99/md', 'Spotify');       // leading verb must still strip
 checkName('add Spare parts 300/mo', 'Spare parts'); // a name CONTAINING a filler-ish word
 checkName('Alter Ego sub 120', 'Alter Ego sub');    // never over-strip a real product name
+
+// --- FRENCH command support, and the YEARLY hole it exposed in every language.
+//     Mikoto found this by running French phrasings through the live parser the day French
+//     shipped. LEX had no French period vocabulary at all, so:
+//       "Assurance 1200/an"  -> freq MONTHLY. A French user logging a yearly premium had it
+//       counted TWELVE TIMES OVER in every downstream figure. Not cosmetic — a money error.
+//     Digging in, the MONTHLY words were in the strip list for all seven languages but the
+//     YEARLY ones never were, so de/es/da/en all put the period word in the item name. ---
+check('Assurance 1200/an', 'addItem');
+checkFreq('Assurance 1200/an', 'yearly');           // fr — was monthly, a 12x error
+checkFreq('Assurance 1200 par an', 'yearly');
+checkFreq('Assurance 1200 annuel', 'yearly');
+checkFreq('Abonnement 99 par année', 'yearly');
+checkFreq('add an item 500', 'monthly');            // the English ARTICLE must never mean a year
+checkFreq('add an apple 20', 'monthly');
+checkName('Gym 29/mois', 'Gym');                    // fr monthly forms must strip
+checkName('Gym 29 par mois', 'Gym');
+checkName('Gym 29 mensuel', 'Gym');
+checkName('Versicherung 1200 jährlich', 'Versicherung');  // pre-existing, all languages
+checkName('Seguro 1200 anual', 'Seguro');
+checkName('Forsikring 1200 årligt', 'Forsikring');
+checkName('Insurance 1200 annually', 'Insurance');
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
