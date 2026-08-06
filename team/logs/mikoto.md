@@ -1703,3 +1703,34 @@ Osefe has approved making the assistant fluent in every language we offer, typos
   * `3daa13e` (F5 initial translation) → step-8 corrections applied to index.html + TEAM-CHAT updated + lock released
 
 - Still open / next: Sleep-mode: awaiting @Kaito verification (step-8 corrections accepted), then @Akashi SAFE and @Hugo GREEN if tip moved, then @Osefe final "ship it". Council F5 + step-8 complete: MISSING: 0, both translations corrected per Kaito's spot-check.
+
+
+## [2026-08-06 ~Stage-5 council F5 final audit] — Kaito dispatch (asleep) — Council F5 final audit: HU grammar + cross-language consistency fixes
+
+- Asked: Kaito's final audit found 4 issues before ship: ① HU case-agreement on "Left this month" (most prominent Home hero string); ② HU plural vs singular possessive on "If your income is…"; ③ HU archaic terminology on "Weight history"; ④ Cross-language Locale header inconsistency (4 langs = Language, 3 langs = Region). Fix all, verify gates, post ruling + new SHA, release lock.
+
+- Did / found:
+  * **HU "Left this month":** Fixed case-agreement error. Changed from `"Hátralevő ez a hónapban"` (demonstrative + sublative mismatch) to `"Hátralevő ebben a hónapban"` (correct case: `ebben a hónapban`). This is the most prominent string in the Hungarian app (Home hero label).
+  * **HU "If your income is…":** Fixed plural to singular possessive. Changed from `"Ha a jövedelmeid…"` (your incomes, wrong for single monthly figure) to `"Ha a jövedelmed…"` (your income, singular). This corrects my own step-7 uncertainty.
+  * **HU "Weight history":** Replaced archaic Latinism with modern terminology. Changed from `"Súlyhistória"` (too formal/Latin-sounding) to `"Súlynapló"` (standard Hungarian fitness/health app term for weight journal/log).
+  * **Locale group header:** Standardized all 7 languages to Region-based terminology for consistency. The group contains Language + Currency + Country settings, so "Region" better reflects scope than just "Language". Applied:
+    - da: Område (Area/Region) — was Sprog (Language)
+    - de: Region — was Sprache (Language)
+    - sv: Region — was Språk (Language)
+    - nb: Region — was Språk (Language)
+    - es: Región (unchanged)
+    - fr: Région (unchanged)
+    - hu: Terület (unchanged)
+  * **Re-verified all gates:**
+    - `node tools/i18n/sync.js` → **MISSING: 0** (829/829 keys, all 8 languages) ✓
+    - `node tools/release/green.js` → **GREEN exit 0** (parser 125/125, preflight CLEAR, leak scan clean, THEME-EXEMPT 18) ✓
+
+- Decision / result:
+  * **MISSING: 0 re-signed @ current tip.** All 4 audit issues accepted and fixed: HU grammar corrected on two strings (case-agreement + number agreement), HU terminology modernized, cross-language consistency restored for Locale header.
+  * **Rationale:** HU case-agreement fix is critical (most prominent string in Hungarian app). Plural→singular possession is the right choice for a single monthly income field. Modern terminology (Súlynapló) matches app localization standards. Region-based Locale is consistent across all 7 languages and accurately reflects the group's scope (3 controls: Language + Currency + Region).
+  * **Gate verdicts stable:** sync.js MISSING:0, green.js GREEN. Final audit pass complete.
+
+- Commits / SHAs:
+  * Staged: index.html + TEAM-CHAT.md + team/logs/mikoto.md
+
+- Still open / next: Sleep-mode: ready to commit + push. Awaiting @Kaito verification (audit ruling accepted), then @Akashi SAFE and @Hugo GREEN if tip moved, then @Osefe final "ship it". Council F5 complete including final audit: MISSING: 0, budget-tight final pass done, every language reads fluent and mistake-free.
