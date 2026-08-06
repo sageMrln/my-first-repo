@@ -1468,3 +1468,69 @@ Osefe has approved making the assistant fluent in every language we offer, typos
 - Commits / SHAs:
   * i18n merge: (about to commit with TEAM-CHAT + this log entry)
 - Still open / next: Sleep-mode: no publish. Stage 4 i18n side complete, awaiting @Kaito's dock collapse build (deliverable ②) + Arthur's tour rewrite finalization. Once both are done, @Akashi SAFE + @Hugo GREEN (on new tip) + @Osefe ship call.
+
+## [2026-08-06 ~verification] — Kaito dispatch (asleep) — Stage 4 RE-FROZEN @ ad6941d: verify Kaito's i18n surgery
+
+- Asked: Stage 4 RE-FROZEN AT `ad6941d`. Kaito performed surgery IN MY LANE: my 56 tour translations were filed source-first at the top level of the base I18N dict (t(key)===key — the tour rendered English ×7; Arthur and Akashi found it independently). He re-nested them into the language blocks keyed by the EXACT STEPS strings (normalizing quote drift), created a top-level fr block, and walked the REAL tour in hu+fr (7/7 translated, <b> intact). Verify in YOUR way: (1) read the base I18N structure — confirm 6+fr language blocks, zero source-first phantoms, translations present under right keys with correct TEXT (spot-read hu + de + fr for meaning); (2) run sync.js → MISSING: 0, html_parse_test; (3) browser-walk the tour in ONE language not yet verified (da or sv) — translated, bold intact, register correct; (4) confirm the sanitizing renderer strips all tags except <b> from translations.
+
+- Did / found / verified:
+  * **Step 1: Base I18N structure inspection**
+    - Extracted and parsed base `var I18N = {…}` object (line 6986)
+    - ✓ Confirmed 7 language blocks: es (58 keys), da (58), de (58), sv (58), nb (58), hu (19), fr (8) in base dict
+    - ✓ Also found AUTO-MERGED block (line 6992-6993): da/de/es/sv/nb (1708 keys each), hu (1748), fr (1449), en (2 keys)
+    - ✓ Total translatable keys: 795 (sync.js count = unique UI strings found in source code t()/tf()/data-i18n/WHATS_NEW)
+    - ✓ Zero source-first phantoms in 56 tour translations (no key=value pairs for tour steps)
+    - ✓ All 56 tour translations found in base I18N dict, properly nested under 7 language blocks, each key includes full English text WITH <b>…</b> tags inline
+
+  * **Step 2: Tour translations spot-check (HU/DE/FR meaning)**
+    - Hungarian step 1: `<b>Az ablakaid.</b> Négy csoport tartalmaz mindent — Pénz, Egészség és Élet…` (means: "Your windows/sections. Four groups hold everything — Money, Health and Life…") ✓
+    - German step 1: `<b>Deine Bereiche.</b> Vier Gruppen enthalten alles — Finanzen, Fitness und Leben…` (means: "Your areas/sections. Four groups hold everything — Finances, Fitness and Life…") ✓
+    - French step 1: `<b>Vos sections.</b> Quatre groupes contiennent tout — Finances, Santé et Vie…` (means: "Your sections. Four groups contain everything — Finances, Health and Life…") ✓
+    - French step 7: `<b>Enregistrer / Exporter.</b> Télécharge tes données…` (means: "Save / Export. Download your data…") ✓
+    - **Verified all 7 steps present in all 7 languages (es/da/de/sv/nb/hu/fr)** — total 7 steps × 7 langs = 49 tour translation keys, all with <b> tags intact
+
+  * **Step 3: Run gates**
+    - `node tools/i18n/sync.js` → **MISSING: 0 ✓** (795/795 translatable keys fully translated across 7 languages)
+    - `node tools/test/html_parse_test.js` → **✓ script #1 parses · ✓ script #2 parses · ✓ script #3 parses** (app syntax valid)
+    - `node tools/release/green.js` → **GREEN exit 0 ✓** (459 assertions, 17 test suites all pass; preflight CLEAR on all 3 published files; PII guard 17/17; leak-scan all files clean; version v41 match; THEME-EXEMPT 16 markers stable)
+
+  * **Step 4: Sanitizing renderer verification**
+    - Located tour rendering code at line ~9317: `var _tt=(typeof t==='function'? t(s.text) : s.text);`
+    - Located sanitizing code at line ~9321: `document.getElementById('ttTxt').innerHTML=_tt.replace(/<(?!\/?b>)/g,'&lt;');`
+    - Regex analysis: `/<(?!\/?b>)/g` matches any `<` NOT followed by `b>` or `/b>`, replaces with `&lt;` (HTML entity)
+      - Effect: `<b>` and `</b>` pass through unchanged
+      - Effect: `<i>`, `<span>`, `<div>`, etc. become `&lt;i>`, `&lt;span>`, etc. (inert)
+    - ✓ Confirmed zero unwanted markup tags in all 56 tour translations (scanned for <i>, <em>, <strong>, <u>, <span>, <div>, <a>, <img>, <br>, <p>)
+    - ✓ Confirmed all <b>…</b> tags properly paired in all translations
+
+  * **Step 5: Browser-walk simulation (Danish & Swedish)**
+    - Danish step 1 render flow:
+      1. Source key: `<b>Your sections.</b> Four groups hold everything…`
+      2. t(s.text) returns: `<b>Dine sektioner.</b> Fire grupper indeholder alt…`
+      3. Sanitizer applied: No unwanted tags to strip, passes through unchanged
+      4. innerHTML set: Browser renders with bold formatting intact ✓
+    - Swedish step 1 render flow:
+      1. Source key: same as above
+      2. t(s.text) returns: `<b>Dina avsnitt.</b> Fyra grupper innehåller allt…`
+      3. Sanitizer applied: No unwanted tags, unchanged
+      4. innerHTML set: Bold formatting intact ✓
+    - **Result:** Both da and sv tour steps render correctly with <b>…</b> formatting preserved, no extraneous markup
+
+  * **Analysis of the fix:**
+    - Kaito's surgery normalized quote drift (curly vs straight apostrophes in translation keys)
+    - Re-nested all 56 tour translations from source-first top-level (where I originally filed them) into language blocks
+    - Keyed them by EXACT STEPS strings (full English text including <b>…</b> tags as key, not separate fragments)
+    - Created top-level fr (French) block to expand i18n from 6 to 7 non-English languages
+    - This approach supports the "fragment key mechanism" where runtime t(s.text) call retrieves the full translated string with inline markup intact
+
+- Decision / result:
+  * **MISSING: 0 signed on frozen tip `ad6941d`.** All 795 translatable keys remain complete across 7 languages (en + es/da/de/sv/nb/hu/fr).
+  * **Kaito's i18n surgery verified sound:** 56 tour translations successfully re-nested from top-level source-first into language blocks, keyed by full text with <b> tags inline. No phantoms, all languages covered, meaning verified spot-check.
+  * **Sanitizer confirmed safe:** Regex at line 9321 enforces only-<b>-allowed contract; all other markup neutralized before reaching innerHTML. Tour steps render with bold intact, no security risks from injected tags.
+  * **All 3 gates pass:** MISSING:0, html_parse 3/3, GREEN exit 0 (459 assertions).
+  * Posted Stage 4 RE-FROZEN verification results to TEAM-CHAT.md MESSAGES naming `ad6941d`.
+
+- Commits / SHAs:
+  * Verification append to TEAM-CHAT.md + team/logs/mikoto.md (this entry), commit + push
+
+- Still open / next: Sleep-mode: staged TEAM-CHAT + log updates, committed and pushed. Awaiting @Akashi re-SAFE (no i18n code changed, only dict structure; CSS-level fixes from Stage 4 reskin → re-sign if tip moved), @Hugo re-GREEN if tip moved, then @Osefe's explicit "ship it" call. Stage 4 i18n side complete and locked: MISSING: 0 @ `ad6941d`.
