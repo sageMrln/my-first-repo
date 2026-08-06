@@ -3239,6 +3239,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(lb.querySelector('.gear-group')) return;
       var globe=lb.querySelector('.globe'); if(globe) globe.style.display='none';
       function lc(id){ var el=lb.querySelector('#'+id); return el ? (el.closest('.lc')||el) : null; }
+      /* Step-8 catch: T(g[0]) with array values is INVISIBLE to sync.js's literal
+         scanner — these four headers shipped English in all 7 languages while
+         MISSING read 0. Literal t() calls put them in the counted pool; the
+         runtime data-i18n attr keeps them live on language change. */
+      var names={ 'Locale':(typeof t==='function'?t('Locale'):'Locale'),
+                  'Appearance':(typeof t==='function'?t('Appearance'):'Appearance'),
+                  'Help':(typeof t==='function'?t('Help'):'Help'),
+                  'Data':(typeof t==='function'?t('Data'):'Data') };
       [['Locale',     [lc('langSel'), lc('curSel'), lc('countryInp')]],
        ['Appearance', [lc('themeSel'), lc('layoutSel')]],
        ['Help',       [lb.querySelector('#tourBtn'), lb.querySelector('#setupBtn'), lb.querySelector('#soundBtn')]],
@@ -3246,7 +3254,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       ].forEach(function(g){
         var wrap=document.createElement('div'); wrap.className='gear-group';
         var h=document.createElement('div'); h.className='gear-group-h';
-        h.setAttribute('data-i18n', g[0]); h.textContent=T(g[0]);
+        h.setAttribute('data-i18n', g[0]); h.textContent=names[g[0]]||g[0];
         wrap.appendChild(h);
         g[1].forEach(function(n){ if(n) wrap.appendChild(n); });
         lb.appendChild(wrap);
