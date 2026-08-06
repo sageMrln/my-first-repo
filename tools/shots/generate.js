@@ -323,6 +323,13 @@ if (has('check')) {
              (Arthur's Stage-4 framing spec). Legacy tabs mode keeps the old origin. */
           const scrollInfo = await page.evaluate(async () => {
             if (document.documentElement.getAttribute('data-nav') !== 'sections') return null;
+            /* P1-N16 (Arthur): terms-of-service prose has no place in a marketing
+               shot — hide the global footer + per-panel legal strips during capture
+               (restored in the cleanup evaluate below). Hide BEFORE measuring: it
+               changes scrollHeight. */
+            document.querySelectorAll('footer, .panel-legal').forEach(e => {
+              e.setAttribute('data-shothide', ''); e.style.display = 'none';
+            });
             const panel = [...document.querySelectorAll('section.panel')]
               .find(s => getComputedStyle(s).display !== 'none');
             if (!panel) return { noPanel: true };
@@ -343,10 +350,23 @@ if (has('check')) {
             const target = Math.min(max, Math.max(0, want));
             window.scrollTo(0, target);
             await new Promise(r => setTimeout(r, 250));
-            return { target: Math.round(target), y: Math.round(window.scrollY), doc: document.documentElement.scrollHeight };
+            /* P1-N17 (Arthur): the target-vs-scrollY check compared two numbers that
+               are equal by construction — 40/48 shots framed 23-30px low and it never
+               fired. What matters is where the PANEL landed: correct once after the
+               settle, then ASSERT on the real geometry. */
+            let pt = panel.getBoundingClientRect().top;
+            if (Math.abs(pt - 8) > 2) {
+              window.scrollBy(0, pt - 8);
+              await new Promise(r => setTimeout(r, 120));
+              pt = panel.getBoundingClientRect().top;
+            }
+            return { target: Math.round(target), y: Math.round(window.scrollY),
+                     doc: document.documentElement.scrollHeight, panelTop: Math.round(pt * 10) / 10 };
           });
-          if (scrollInfo && Math.abs((scrollInfo.y || 0) - (scrollInfo.target || 0)) > 4)
-            console.log('  ! scroll drift on ' + t.shot + ': ' + JSON.stringify(scrollInfo));
+          if (scrollInfo && !scrollInfo.noPanel && Math.abs((scrollInfo.panelTop ?? 8) - 8) > 2) {
+            console.log('  ✗ ' + L + '/' + t.shot + ' — panel framed at y=' + scrollInfo.panelTop + ' (want 8±2)');
+            failed++;
+          }
           await page.waitForTimeout(150);
           const navY = await page.evaluate(() => {
             if (document.documentElement.getAttribute('data-nav') === 'sections') return 0;
@@ -355,7 +375,12 @@ if (has('check')) {
           });
           const out = howtoPath(t.shot, L);
           await page.screenshot({ path: out, clip: { x: 0, y: navY, width: 390, height: 800 } });
-          await page.evaluate(() => { document.getElementById('__shotspacer')?.remove(); });
+          await page.evaluate(() => {
+            document.getElementById('__shotspacer')?.remove();
+            document.querySelectorAll('[data-shothide]').forEach(e => {
+              e.style.display = ''; e.removeAttribute('data-shothide');
+            });
+          });
           if (!(await notSplash(page, out))) { failed++; } else { wrote++; }
         }
       }

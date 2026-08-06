@@ -270,6 +270,50 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
     });
     if (rt.noTour) bad('#tour-i18n render (hu)', 'tour tip not found');
     else check(!rt.english && rt.bold, '#tour-i18n renders translated in hu with <b> intact' + (rt.english ? ' — STILL ENGLISH' : '') + (!rt.bold ? ' — <b> LOST' : ''));
+    /* #nav-i18n census — the Stage-4 escape both audits hit (Akashi L1/L2, Arthur
+       P0-N10/N11): MISSING:0 and green.js are blind to RENDERED language. Assert the
+       rendered dock label text in ALL 8 languages against the team's expected table
+       (Mikoto's, TEAM-CHAT Stage-4 label table) — this catches wrong dictionary
+       values (misfiled runs) AND walker rewrites ("Vie"→"Fre" Friday) in one check.
+       Sentinel: no <select> option may read "Mån"/"Søn" (the P0-N11 blast radius). */
+    const NAV_EXPECT = {
+      en: { Home: 'Home', Money: 'Money', Health: 'Health', Life: 'Life', Settings: 'Settings' },
+      es: { Home: 'Inicio', Money: 'Dinero', Health: 'Salud', Life: 'Vida', Settings: 'Ajustes' },
+      da: { Home: 'Hjem', Money: 'Økonomi', Health: 'Sundhed', Life: 'Liv', Settings: 'Indstil' },
+      de: { Home: 'Start', Money: 'Finanzen', Health: 'Gesundheit', Life: 'Leben', Settings: 'Optionen' },
+      sv: { Home: 'Hem', Money: 'Ekonomi', Health: 'Hälsa', Life: 'Liv', Settings: 'Inställ' },
+      nb: { Home: 'Hjem', Money: 'Økonomi', Health: 'Helse', Life: 'Liv', Settings: 'Innstil' },
+      hu: { Home: 'Kezdőlap', Money: 'Pénz', Health: 'Egészség', Life: 'Élet', Settings: 'Beállítás' },
+      fr: { Home: 'Accueil', Money: 'Finances', Health: 'Santé', Life: 'Vie', Settings: 'Réglages' }
+    };
+    console.log('=== stage-4 #nav-i18n census — rendered dock labels ×8 languages ===');
+    for (const lg of Object.keys(NAV_EXPECT)) {
+      const r = await page.evaluate(async (lgIn) => {
+        const sel = document.querySelector('#gearPanel #langSel') || document.getElementById('langSel');
+        if (!sel) return { noSel: true };
+        sel.value = lgIn; sel.dispatchEvent(new Event('change', { bubbles: true }));
+        await new Promise(res => setTimeout(res, 600));
+        const out = { labels: {} };
+        for (const k of ['Home', 'Money', 'Health', 'Life']) {
+          const c = document.querySelector('nav.dock button[data-sect="' + k + '"] .dock-lbl');
+          out.labels[k] = c ? c.textContent.trim() : '(missing)';
+        }
+        out.settingsT = (typeof t === 'function') ? t('Settings') : '(no t)';
+        const u = document.querySelector('nav.dock .dockutil-bot .dock-lbl');
+        out.utilLbl = u ? u.textContent.trim() : '(missing)';
+        out.badOpt = [...document.querySelectorAll('select option')]
+          .map(o => o.textContent.trim()).filter(x => x === 'Mån' || x === 'Søn').slice(0, 3);
+        return out;
+      }, lg);
+      if (r.noSel) { bad('#nav-i18n ' + lg, '#langSel not found'); continue; }
+      const exp = NAV_EXPECT[lg];
+      const wrong = ['Home', 'Money', 'Health', 'Life'].filter(k => r.labels[k] !== exp[k])
+        .map(k => k + '="' + r.labels[k] + '" (want "' + exp[k] + '")');
+      if (r.settingsT !== exp.Settings) wrong.push('t(Settings)="' + r.settingsT + '" (want "' + exp.Settings + '")');
+      if (r.utilLbl === 'MRLN' || r.utilLbl === '(missing)') wrong.push('util label="' + r.utilLbl + '" (must be a word, not the brand)');
+      if (r.badOpt.length) wrong.push('weekday corruption in <option>: ' + r.badOpt.join(','));
+      check(wrong.length === 0, '#nav-i18n ' + lg.toUpperCase() + ' renders its own language' + (wrong.length ? ' — ' + wrong.join(' · ') : ''));
+    }
     await page.context().close();
     await b4.close();
   } else {
