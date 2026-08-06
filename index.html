@@ -278,9 +278,11 @@
   nav.dock{ display:none; }
   html[data-nav=sections] nav.dock{ display:flex; position:fixed; left:0; right:0; bottom:0; z-index:60;
     background:var(--panel); border-top:1px solid var(--line); box-shadow:var(--shadow-2);
-    gap:2px; overflow-x:auto; overflow-y:hidden; scrollbar-width:none;
     padding:4px 6px calc(4px + env(safe-area-inset-bottom)); }
-  html[data-nav=sections] nav.dock::-webkit-scrollbar{ display:none; }
+  /* P1 (Arthur): the scroller+mask live on an INNER wrapper so the fade never
+     eats the dock's own background/border; the head stays a pinned sibling. */
+  .dock-scroll{ display:flex; gap:2px; flex:1; min-width:0; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; }
+  .dock-scroll::-webkit-scrollbar{ display:none; }
   nav.dock button{ flex:0 0 auto; min-width:48px; min-height:56px; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:2px; background:none; border:0; border-radius:var(--r-c);
     color:var(--txt-dim); font-family:var(--font-body); font-size:11px; font-weight:600; letter-spacing:.01em;
@@ -290,8 +292,8 @@
   nav.dock button{ position:relative; }
   nav.dock button.on::before{ content:''; position:absolute; left:8px; right:8px; top:0; height:3px;
     border-radius:0 0 3px 3px; background:var(--accent-text); }
-  /* A3 (Arthur): edge fades say "continues both ways" — the hidden scrollbar left no cue (HU@390 peek was 0.0px) */
-  html[data-nav=sections] nav.dock{ -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 32px),transparent 100%);
+  /* A3 (Arthur): edge fades say "continues both ways" — on the WRAPPER (P1) */
+  html[data-nav=sections] .dock-scroll{ -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 32px),transparent 100%);
     mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 32px),transparent 100%); }
   .dock-head{ display:none; }
   /* A8 (Arthur): lifted savebar must never push its top button above a short viewport */
@@ -300,13 +302,14 @@
   html[data-nav=sections] .savebar{ bottom:calc(76px + env(safe-area-inset-bottom)); }
   @media (min-width:860px){
     html[data-nav=sections] nav.dock{ left:0; right:auto; top:0; bottom:0; width:216px;
-      flex-direction:column; overflow-x:hidden; overflow-y:auto; justify-content:flex-start;
-      border-top:0; border-right:1px solid var(--line); box-shadow:none; padding:18px 10px; gap:4px; }
-    html[data-nav=sections] nav.dock button{ width:100%; flex-direction:row; justify-content:flex-start;
-      gap:10px; font-size:14px; min-height:44px; padding:8px 12px; }
-    html[data-nav=sections] nav.dock{ mask-image:none; -webkit-mask-image:none;
+      flex-direction:column; justify-content:flex-start;
+      border-top:0; border-right:1px solid var(--line); box-shadow:none; padding:18px 10px; }
+    html[data-nav=sections] .dock-scroll{ flex-direction:column; overflow-x:hidden; overflow-y:auto; gap:4px;
       scrollbar-width:thin; scrollbar-color:var(--line) transparent; }
-    html[data-nav=sections] nav.dock::-webkit-scrollbar{ display:block; width:6px; }
+    html[data-nav=sections] .dock-scroll::-webkit-scrollbar{ display:block; width:6px; }
+    html[data-nav=sections] nav.dock button{ width:100%; flex-direction:row; justify-content:flex-start;
+      gap:10px; font-size:14px; min-height:44px; padding:8px 12px; white-space:normal; line-height:1.25; text-align:left; }
+    html[data-nav=sections] .dock-scroll{ mask-image:none; -webkit-mask-image:none; }
     html[data-nav=sections] nav.dock button.on::before{ left:0; top:8px; bottom:8px; width:3px; height:auto;
       right:auto; border-radius:0 3px 3px 0; }
     html[data-nav=sections] nav.dock button:hover{ background:rgba(var(--accent-rgb),.06); }
@@ -533,7 +536,6 @@
   .tab.active .ix{color:var(--on-accent)}
   .tab:focus-visible,.btn:focus-visible,.scen-btn:focus-visible,.dockbtn:focus-visible{outline:2px solid var(--lime);outline-offset:2px;box-shadow:0 0 0 4px rgba(var(--pos-rgb),.12)}  /* Arthur F — focus glow */
   .tab:active{transform:translateY(0) scale(.97)}   /* Arthur D — press squeeze */
-  .dockbtn:active{transform:scale(.95)}   /* Arthur D — press squeeze (dock) */
 
   /* ===== INTERACTION LAYER — Tier 1 (Arthur): every tappable senses touch + cursor. Press feedback
      on ALL controls (touch + mouse, <100ms), desktop-gated hover, focus-visible rings. Transform/
@@ -543,13 +545,13 @@
   @media (prefers-reduced-motion: no-preference){
     /* shared transition so press + hover actually animate (covers the common animated props, not
        `all` → no layout thrash). Standardizes interaction feel across every control. */
-    .item-row,.sub-item,.exp-head,.cal-cell,.catsw,.cal-nav button,.iconbtn,
+    .item-row,.sub-item,.exp-head,.cal-cell,.catsw,.cal-nav button,.iconbtn,.dockbtn,
     .savebtn,.savefab,.chattoggle,.lk-btn,.modal-actions button,.medSeedChip,.chip{
       transition:transform .1s cubic-bezier(.2,0,0,1), filter .1s ease, box-shadow .14s ease,
         border-color .14s ease, background .14s ease, color .14s ease; }
     /* 1a — universal PRESS. Large surfaces push in (no translate); small controls squeeze. */
     .item-row:active,.sub-item:active,.exp-head:active,.cal-cell:active{ transform:scale(.99); filter:brightness(1.07); }
-    .catsw:active,.cal-nav button:active,.iconbtn:active,.savebtn:active,.savefab:active,
+    .catsw:active,.cal-nav button:active,.iconbtn:active,.savebtn:active,.savefab:active,.dockbtn:active,
     .chattoggle:active,.lk-btn:active,.modal-actions button:active,.medSeedChip:active,.chip:active{ transform:scale(.95); filter:brightness(1.06); }
   }
   /* 1b — desktop HOVER, gated (hover:hover)+(pointer:fine) → zero mobile cost, no sticky-hover.
@@ -2951,6 +2953,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       dock.setAttribute('aria-label', (typeof t==='function'? t('Sections') : 'Sections'));
       var head=document.createElement('div'); head.className='dock-head'; head.setAttribute('aria-hidden','true');
       head.textContent='MRLN'; dock.appendChild(head);   // rail top anchor (≥860 only via CSS)
+      var sc=document.createElement('div'); sc.className='dock-scroll'; dock.appendChild(sc);   // P1: mask+scroll live here
       tabsNav.querySelectorAll('.tab').forEach(function(tb){
         if(tb.style.display==='none') return;              // klarna stays hidden until revealed
         var b=document.createElement('button'); b.type='button';
@@ -2960,12 +2963,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         if(active) b.setAttribute('aria-current','page');  // A2: assistive "you are here"
         b.setAttribute('data-dock', tb.getAttribute('data-p')||'');
         b.addEventListener('click', function(){ tb.click(); });
-        dock.appendChild(b);
+        sc.appendChild(b);
       });
       /* A4 (Arthur): after programmatic nav the .on cell can sit past the edge —
          centre it WITHIN the dock only (never scrollIntoView: it can move the document) */
       var on=dock.querySelector('.on');
-      if(on) dock.scrollLeft=Math.max(0,Math.min(dock.scrollWidth-dock.clientWidth,on.offsetLeft-(dock.clientWidth-on.offsetWidth)/2));
+      if(on) sc.scrollLeft=Math.max(0,Math.min(sc.scrollWidth-sc.clientWidth,on.offsetLeft-(sc.clientWidth-on.offsetWidth)/2));
       if(hadFocus){ var f=dock.querySelector('[data-dock="'+hadFocus+'"]'); if(f) f.focus(); }
     }
     /* A7 (Arthur): the off-canvas strip leaves the a11y tree + tab order — BOTH
@@ -9135,8 +9138,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       /* Stage-3 polish (Arthur A1 residue): a dock cell can sit past the strip's
          right edge — centre it WITHIN the dock (its own scroller; never moves the
          document) so the ring points at a visible cell. */
-      try{ var _dk=el.closest && el.closest('nav.dock');
-        if(_dk && el!==_dk) _dk.scrollLeft=Math.max(0,Math.min(_dk.scrollWidth-_dk.clientWidth, el.offsetLeft-(_dk.clientWidth-el.offsetWidth)/2));
+      try{ var _dk=el.closest && el.closest('.dock-scroll');
+        if(_dk) _dk.scrollLeft=Math.max(0,Math.min(_dk.scrollWidth-_dk.clientWidth, el.offsetLeft-(_dk.clientWidth-el.offsetWidth)/2));
       }catch(_){ }
       ring.style.display='block'; tip.style.display='block';
       document.getElementById('ttTxt').innerHTML=s.text;
