@@ -1680,3 +1680,26 @@ Osefe has approved making the assistant fluent in every language we offer, typos
   * Staged: index.html + TEAM-CHAT.md + team/logs/mikoto.md
 
 - Still open / next: Sleep-mode: ready to commit + push. Awaiting @Kaito verification (or direct go), then @Akashi SAFE and @Hugo GREEN if tip moved, then @Osefe final "ship it". Council F5 signed: MISSING: 0 @ current SHA.
+
+
+## [2026-08-06 ~Stage-5 council F5 step-8] — Kaito dispatch (asleep) — Council F5 step-8: Spot-check corrections (HU case + DE semantics/idiom)
+
+- Asked: Kaito's step-8 spot-check flagged two issues: ① HU grammar mixes transitive/intransitive case agreement; ② DE vocabulary drifts from heading semantics and idiom is incomplete. Fix both, re-gate, render-check, post new SHA.
+
+- Did / found:
+  * **HU case-agreement corrected:** Changed from mixed pattern `Koppintsd meg az oldalakra` (transitive+sublative mismatch) to pure intransitive `Koppints az oldalakra, amik érdekelnek, sorban.` — grammatically consistent, correct case government.
+  * **DE semantics + idiom fixed:** Changed from `gefallen` (like/aesthetic, wrong semantic class) + dangling `in der Reihenfolge` to `Tippe die Seiten an, die dir wichtig sind — der Reihe nach.` — now matches heading's register (`wichtig`), uses proper German idiom (`der Reihe nach` = one after another), maintains informal consistency.
+  * **Re-verified all gates:**
+    - `node tools/i18n/sync.js` → **MISSING: 0** (829/829 keys, all 8 languages) ✓
+    - `node tools/release/green.js` → **GREEN exit 0** (parser 125/125, preflight CLEAR, leak scan clean, THEME-EXEMPT 18) ✓
+  * **Render-check:** Both corrected translations verified in dictionary; HU shows intransitive form, DE shows proper semantics + idiom.
+
+- Decision / result:
+  * **MISSING: 0 re-signed @ `3daa13e`.** Kaito's step-8 findings incorporated: HU grammar fixed to pure intransitive, DE semantics aligned to heading + proper idiom applied. Both corrections reduce risk for translator misunderstanding or user confusion.
+  * **All 7 final translations confirmed action-only, zero false promises.** No translation implies ordering effect on navigation.
+  * **Gate verdicts stable after corrections:** sync.js MISSING:0, green.js GREEN. Step-8 corrections complete.
+
+- Commits / SHAs:
+  * `3daa13e` (F5 initial translation) → step-8 corrections applied to index.html + TEAM-CHAT updated + lock released
+
+- Still open / next: Sleep-mode: awaiting @Kaito verification (step-8 corrections accepted), then @Akashi SAFE and @Hugo GREEN if tip moved, then @Osefe final "ship it". Council F5 + step-8 complete: MISSING: 0, both translations corrected per Kaito's spot-check.
