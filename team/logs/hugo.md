@@ -2381,3 +2381,58 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Tested on: current HEAD
 
 **Commit + push:** TEAM-CHAT.md + hugo.md (this entry) only, no app changes
+
+## 2026-08-06 sleep-mode RE-VERIFY — Stage-4 Round-4 Candidate `3f10d04`
+
+**Asked:** Re-run full gate on Stage-4 round-4 candidate `3f10d04` per Kaito's re-sign request. Incident #3 spot-check rule: cite exact file name + concrete detail read FROM it (with file open).
+
+**Did:**
+1. `node tools/release/green.js` on current HEAD (candidate tip 3f10d04 + chat marker 0ce8dc7 after)
+   - Exit code 0 GREEN
+   - Parser suite + 32 sections + all assertions passed
+   - i18n MISSING: 0
+   - Preflight CLEAR (index.html / landing.html / legal.html)
+   - Version: APP_VER v41 === sw.js v41
+   - THEME-EXEMPT: 17 markers stable
+   - PII guard: 17/17
+   - All published files leak-free
+
+2. `node tools/test/parity_harness.js` on all 6 widths (320/360/390/768/1024/1440)
+   - **#nav-i18n census section printed: 8/8 green** (all 8 languages render dock labels, exact match to expected table + Mån/Søn sentinel)
+   - All active stage-3 + stage-4 assertions passed
+   - Zero flake
+
+3. `node tools/test/nav_test.js`
+   - 44/44 checks passed (stage marker 4 consistent with shipped shell, marker-lag guard armed)
+
+4. `node tools/test/parse_test.js`
+   - 125/125 passed, 0 failed
+
+5. **Spot-check with files open (incident #3 rule):**
+   - `assets/howto/expenses.nb.png` — read dock labels: "Hjem" (home) · "Økonomi" (active, money) · "Helse" (health) · "Liv" (life) · "Assistent" (assistant) ✓
+   - `assets/howto/expenses.de.png` — read dock labels: "Start" (home) · "Finanzen" (active, money) · "Gesundheit" (health) · "Leben" (life) · "Assistent" (assistant) ✓
+   - `assets/howto/expenses.sv.png` — read dock labels: "Hem" (home) · "Ekonomi" (active, money) · "Hälsa" (health) · "Liv" (life) · "Assistent" (assistant) ✓
+   - `assets/howto/notebook.png` — Notebook panel at top, "+ NEW NOTE" button, search bar, "No notes yet" message; no Terms/Privacy legal strip visible; dock at bottom with "Home · Money · Health · Life · Assistant"; panel flush at top ✓
+
+6. Verified published files match candidate SHA 3f10d04 (no published-file changes post-candidate in current branch)
+
+**Found:**
+- All gates GREEN on frozen tip 3f10d04
+- #nav-i18n census newly active, all 8 languages render correctly
+- Dock labels verified in 4 screenshot files, exact match to expected strings
+- No legal/Terms strip in notebook shot (generator now hides it + footer during capture)
+- Shots generator hard-fails on frame |top−8|>2 (good catch on en/notebook y=30.8 first run)
+- GUIDE.md line 273 tab-strip rewrite still tracked as Stage-5 blocker (confirmed in docket)
+
+**Decided:**
+- `3f10d04` is gate-ready, all checks GREEN
+- **Hugo GREEN signature posted to TEAM-CHAT.md @ 3f10d04** ✓
+- Incident #3 mechanism acknowledged: spot-checks must name exact file + concrete detail read FROM it (with file open); files were opened, text was read, all matched
+- Sleep-mode: sign only, no auto-publish; awaiting Akashi SAFE + Osefe "ship it"
+
+**SHAs:**
+- Candidate frozen: `3f10d04` (code `1279e6f` · shots `3f10d04`)
+- Chat marker: `0ce8dc7`
+- Tested on: current HEAD (3f10d04 + chat marker)
+
+**Commit + push:** TEAM-CHAT.md + team/logs/hugo.md only, no app changes
