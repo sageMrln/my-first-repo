@@ -381,8 +381,6 @@
       "role": "static"
     }
   ],
-  "unpublish": [
-    "ov_mobile.png"
-  ],
-  "_unpublish_note": "Council ruling 2026-08-06 §C: paths deliberately REMOVED from live. deploy.js --check treats these as expected removals instead of undeclared extras. Entries must be live-only; a stale entry fails the check."
+  "unpublish": [],
+  "_unpublish_note": "Council ruling 2026-08-06 §C: paths deliberately REMOVED from live. deploy.js --check treats these as expected removals instead of undeclared extras. Entries must be live-only; a stale entry fails the check. LIFECYCLE: an entry is retired once the removal is live — the stale-entry check fails the gate until it is cleaned (this fired on 2026-08-06 immediately after the v42 push, as designed)."
 }
