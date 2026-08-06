@@ -1651,3 +1651,32 @@ Osefe has approved making the assistant fluent in every language we offer, typos
 
 - Still open / next: Sleep-mode: staged index.html + TEAM-CHAT.md, committed and pushed to remote. Awaiting @Kaito final verification (or direct thumbs-up if he confirms the En-plan changes match his intent), then @Akashi re-SAFE (i18n dict structure changed, no security code touched), @Hugo re-GREEN if tip moved, then @Osefe explicit "ship it" call. Stage 5 i18n complete: MISSING: 0 @ f0bbf1d, parity 8/8, green.js GREEN, En-plan resolved.
 
+
+## [2026-08-06 ~Stage-5 council F5] — Kaito dispatch (asleep) — Council F5: Translate 1 key ×7 languages
+
+- Asked: Council ruling F5: translate the new wizard sub-line key `"Tap the pages you care about, in order."` into all 6 non-English languages, delete the old orphaned key from all 7 blocks, verify sync.js/green.js gates, render-check, post MISSING:0.
+
+- Did / found:
+  * **Added new key to all 8 language blocks:** Translated `"Tap the pages you care about, in order."` (action-only, no false ordering promises) into 7 languages:
+    - da: "Tryk på de sider, du er interesseret i, i rækkefølge."
+    - de: "Tippe die Seiten, die dir gefallen, in der Reihenfolge."
+    - es: "Toca las páginas que te importan, en orden."
+    - fr: "Appuyez sur les pages qui vous intéressent, dans l'ordre."
+    - hu: "Koppintsd meg az oldalakra, amik érdekelnek, sorban."
+    - nb: "Trykk på sidene du bryr deg om, i rekkefølge."
+    - sv: "Tryck på de sidor du bryr dig om, i ordning."
+  * **Deleted old orphaned key** `"Tap the pages you care about, in order. Your first pick becomes tab 1."` from 7 language blocks (was never in EN, already cleaned by Kaito). File size: 2198331 → 2197963 bytes after both operations.
+  * **Verified all gates pass:**
+    - `node tools/i18n/sync.js` → **MISSING: 0** (829/829 keys fully translated across 8 languages) ✓
+    - `node tools/release/green.js` → **GREEN exit 0** (parser 125/125, preflight CLEAR, leak scan clean, THEME-EXEMPT 18 stable) ✓
+    - **Render-check:** all 8 language translations confirmed in dictionary; none falsely promise ordering effect ✓
+
+- Decision / result:
+  * **MISSING: 0 signed @ current tip.** Council F5 complete: new key added to all 8 languages in alphabetical position, old orphaned key cleaned from all 7 non-English blocks, both gates pass.
+  * **All 7 translations are action-only:** no translation implies that tapping the pages "becomes tab 1" or otherwise changes navigation behavior (which is false under the new inert sections shell).
+  * **Gate verdicts stable:** sync.js MISSING:0, green.js GREEN. i18n side of council ruling F5 complete.
+
+- Commits / SHAs:
+  * Staged: index.html + TEAM-CHAT.md + team/logs/mikoto.md
+
+- Still open / next: Sleep-mode: ready to commit + push. Awaiting @Kaito verification (or direct go), then @Akashi SAFE and @Hugo GREEN if tip moved, then @Osefe final "ship it". Council F5 signed: MISSING: 0 @ current SHA.
