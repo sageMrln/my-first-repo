@@ -26,7 +26,7 @@ const argv = process.argv.slice(2);
 const CHECK = argv.includes('--check');
 const outIx = argv.indexOf('--out');
 const OUT = outIx >= 0 ? argv[outIx + 1] : null;
-const BRANCH = 'origin/gh-pages';
+const BRANCH = process.env.MRLN_LIVE_REF || 'origin/gh-pages';  // split-repo design (task #22): retargetable, default-preserving
 
 function die(msg) { console.error('✗ ' + msg); process.exit(1); }
 
