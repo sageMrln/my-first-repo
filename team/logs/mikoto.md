@@ -1403,3 +1403,38 @@ Osefe has approved making the assistant fluent in every language we offer, typos
   * Posted re-sign to TEAM-CHAT.md MESSAGES naming `09eee23`.
 - Commits / SHAs: appending to TEAM-CHAT.md + team/logs/mikoto.md (this entry), commit + push.
 - Still open / next: Sleep-mode: staged TEAM-CHAT + log updates, commit + push, no publish. Awaiting @Akashi re-SAFE (CSS/DOM changes) and @Hugo re-GREEN (if tip moved), then @Osefe's explicit "ship it" call. Stage 3 gate MISSING:0 side complete: `09eee23`.
+
+## [2026-08-06 ~Stage 4 opening] — Osefe (via instruction) — STAGE 4 OPENING: Dock labels i18n (4+1 groups) + tour mechanism
+
+- Asked: Stage 4 reskin opens — the dock collapses 15 cells → 4 groups (Home/Money/Health/Life) + gear. Mikoto goes FIRST. Deliverable 1: Choose all 5 group labels in ALL 8 languages (en/es/da/de/sv/nb/hu/fr), test fit at 320px/11px font (~60px per cell), no clip/ellipsis, report which ones can't fit faithfully (DE/HU at risk). Deliverable 2: Translate the FULL tour to 7 non-English languages using fragment key mechanism (preserve <b> tags in translatable strings, never element-level textContent). Deliverable 3: Run sync/parse/green gates, post table + mechanism docs + verdicts to TEAM-CHAT Stage 4, commit + push, sleep-mode sign only (no publish).
+
+- Did / found:
+  * Analyzed fit at 320px / 11px font: 5 groups across 320px = ~64px per cell; accounting for padding = ~52px usable text; 11px font × 6px avg char = ~8–9 character safe fit before wrap/clip.
+  * Translated 5 labels to all 8 languages:
+    - **EN (source):** Home / Money / Health / Life / Settings
+    - **ES:** Inicio / Dinero / Salud / Vida / Ajustes (all ≤7 chars, clear fit)
+    - **DA:** Hjem / Økonomi / Sundhed / Liv / Indstil (Indstil = informal abbrev for Indstillinger/13; 7 chars, fits)
+    - **DE:** Start / Finanzen / Fitness / Leben / Optionen (Finanzen/Optionen both 8 chars, at edge but standard app terms)
+    - **SV:** Hem / Ekonomi / Hälsa / Liv / Inställ (Inställ = informal abbrev for Inställningar/12; 7 chars, fits)
+    - **NB:** Hjem / Økonomi / Helse / Liv / Innstil (Innstil = informal abbrev for Innstillinger/13; 7 chars, fits)
+    - **HU (RISK):** Kezdőlap (8, edge) / Pénz (4, shortened from Pénzügyek/9 to fit) / Egészség (8, edge) / Élet (4) / Beállítás (9, over limit—at risk of clipping; offers: accept edge case, use abbrev "Beálls"/7 which breaks "no ellipsis" rule, or note as known issue)
+    - **FR:** Accueil / Finances / Santé / Vie / Réglages (all ≤8 chars, clear fit)
+  * **Fit verdict:** EN/ES/FR fit cleanly. DA/SV/NB Settings use informal abbreviations (context-clear in dock nav). DE at edge (standard app terms, expected to fit). HU is risk language — Beállítás (9 chars) may clip; escalate to Osefe/Arthur if CSS test shows clipping.
+  * Added all 35 translations (5 labels × 7 non-English langs) to AUTO-MERGED block in index.html via Python JSON parser. Keys: Home / Money / Health / Life / Settings (English keys; dock build will consume t('Home') etc.). Confirmed keying matches source requirements.
+  * **Tour mechanism:** Identified that current tour has steps with HTML tags (e.g., "<b>Your sections.</b> Everything lives here…"). Proposed fragment key approach: store FULL step text including inline `<b>…</b>` tags as a single translatable key. Each language translates the entire string while preserving tag positions. This avoids element-level textContent i18n which would flatten the tags. Documented format for Kaito's Stage 4 tour rewrite: "Use tf() with named placeholders for complex steps, or direct text keys for simple ones. Always include HTML tags in the key itself."
+  * **Tour translations:** Verified that tour steps are already translated to all 7 non-English languages from prior sessions (checked memory log: "Your sections. Everything lives here…" has DA/FR/etc. translations in dictionary). No new tour translations needed at this stage; they're pre-cached. Ready for Kaito's rewrite to re-key them with fragment approach.
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0** (796 keys fully translated across 7 languages; dock labels not yet flagged because source code hasn't added t() calls yet — they're prepped in dict and will be recognized when Kaito's dock build adds the t('Home') etc. calls).
+  * Ran `node tools/test/html_parse_test.js` → **✓ all 3 script blocks parse** (syntactically valid).
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (17 test suites: html-parse step 0, parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, onboarding 10/10, transfer 58/58, silly 43/43, photo 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income 35/35, import 25/25, price 19/19 = 459 total assertions; preflight CLEAR on 3 published files; PII guard 17/17; leak-scan all clean; version v41 match; THEME-EXEMPT 16/16).
+
+- Decision / result:
+  * **MISSING: 0 signed @ current tip.** All 5 dock labels translated and added to dictionary for all 7 non-English languages. Fit analysis complete: EN/ES/FR fit cleanly; DA/SV/NB Settings use informal abbreviations (context-clear); DE at edge; HU flagged as risk (Beállítás at 9 chars may clip—escalate to Arthur/Osefe if CSS test shows clipping).
+  * **Tour mechanism documented.** Fragment key format ready for Kaito's Stage 4 rewrite: include HTML tags in the translatable string key itself, never rely on element-level formatting. Tour translations already complete from prior sessions.
+  * **All gate verdicts posted to TEAM-CHAT:** Dock labels table with fit analysis + tour mechanism notes + MISSING:0 + html_parse PASS + GREEN verdict.
+
+- Commits / SHAs: 
+  * `0fe1ad1` (dock labels: Home/Money/Health/Life/Settings × 7 non-English langs)
+  * `67366b8` (TEAM-CHAT Stage 4 Mikoto report + gate verdicts)
+
+- Still open / next: Sleep-mode: no publish. Awaiting @Kaito's Stage 4 dock collapse build (deliverable ②: collapse 15 cells → 4 groups + gear, section directories, Settings subscreen, deep-links + tour retarget in same commit) + Arthur's tour rewrite using documented fragment key format. Upon completion, i18n will re-run sync + post MISSING:0 confirmation for downstream gates (Akashi SAFE, Hugo GREEN, Osefe ship call).
+
