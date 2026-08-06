@@ -347,8 +347,22 @@
   .dockbtn.on .dock-ic{ stroke-width:2; fill:currentColor; fill-opacity:.16; }
   .dock-lbl{ font-size:11px; line-height:1.1; }
   /* P1-N15 (Arthur structural ruling, third leg): corrected German is 253.0px in a
-     253.0px strip at 320 — 0px slack. 10px labels under 361px buy ~21px of headroom. */
-  @media (max-width:360px){ .dock-lbl{ font-size:10px; } }
+     253.0px strip at 320 — 0px slack. 10px labels under 361px buy ~21px of headroom.
+     Stage-5 r5 return: cell padding 8→6 under 361px reclaims ~12px more (DE was
+     still 1px over, HU 8px, with the pinned Assistant cell in the strip). */
+  @media (max-width:360px){ .dock-lbl{ font-size:10px; }
+    html[data-nav=sections] nav.dock button{ padding-left:6px; padding-right:6px; } }
+  /* Stage 5 (Arthur, 5th-stage carry — opens the stage): short-landscape trim.
+     Cells go inline (icon+label in a row, 44px) so the dock stops costing 16.7%
+     of an 844x390 viewport; clearances shrink with it. */
+  @media (max-height:480px){
+    html[data-nav=sections] nav.dock button{ flex-direction:row; gap:6px; min-height:44px; padding:2px 10px; }
+    html[data-nav=sections] .dock-ic{ width:20px; height:20px; }
+    html[data-nav=sections] nav.dock{ padding:2px 6px calc(2px + env(safe-area-inset-bottom)); }
+    html[data-nav=sections] .wrap{ padding-bottom:calc(72px + env(safe-area-inset-bottom)); }
+    html[data-nav=sections] .savebar{ bottom:calc(54px + env(safe-area-inset-bottom)); }
+    .dock-dir{ bottom:calc(54px + env(safe-area-inset-bottom)); max-height:70dvh; }
+  }
   header.hud{ position:relative; }
   /* P0-N12 (Arthur): centre the pair on the wordmark's row (top 44 = h1 optical centre
      66 − 22) inside the content column (right 16), and RESERVE the lane so the
@@ -358,6 +372,9 @@
      location · status) — the demo profile's shortness is not a layout guarantee.
      All three lines reserve the lane. */
   @media (max-width:859px){ header.hud .eyebrow, header.hud h1, header.hud .sub{ padding-right:112px; } }
+  /* N24 (Arthur r5): "Status: ACTIVE" is a constant carrying zero bits — below 860
+     it cost a wrapped line in a 152px lane. Phones drop it; desktop keeps the HUD line. */
+  @media (max-width:859px){ .hdr-status{ display:none; } }
   @media (min-width:1440px){ .hdr-utils{ right:22px; } }
   .hdrbtn{ width:44px; height:44px; display:flex; align-items:center; justify-content:center;
     background:var(--panel); border:1px solid var(--line); border-radius:var(--r-c);
@@ -1711,14 +1728,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     <h3 id="dayMTitle">📅 Day</h3>
     <div id="dayMList" style="max-height:46vh;overflow-y:auto;margin-bottom:4px"></div>
     <div class="field" style="margin-top:12px"><label data-i18n="Add to this day">Add to this day</label>
-      <input id="dayMInput" placeholder="e.g. Mum's birthday 🎂 / Rent due / Dentist 14:00"></div>
+      <input id="dayMInput" placeholder="e.g. Mum's birthday / Rent due / Dentist 14:00"></div>
     <div style="display:flex;gap:10px;align-items:flex-end;margin-top:8px">
       <div class="field" style="flex:1;margin:0"><label data-i18n="Repeat">Repeat</label>
         <select id="dayMRepeat">
           <option value="none" data-i18n="One-off">One-off</option>
           <option value="weekly" data-i18n="Every week">Every week</option>
           <option value="monthly" data-i18n="Every month">Every month</option>
-          <option value="yearly" data-i18n="Every year 🎂">Every year 🎂</option>
+          <option value="yearly" data-i18n="Every year">Every year</option>
         </select></div>
       <button class="btn" id="dayMAdd" style="flex:0 0 auto">+ Add</button>
     </div>
@@ -2518,7 +2535,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2 id="dayTitle">Select a day</h2>
       <div class="desc" id="dayHint">Click any day in the calendar above to add notes to it.</div>
       <div id="dayNotes"></div>
-      <div class="field" style="margin-top:10px"><label>New note for this day</label><input id="dayInput" placeholder="e.g. Mum's birthday 🎂 / Rent due / Dentist 14:00"></div>
+      <div class="field" style="margin-top:10px"><label>New note for this day</label><input id="dayInput" placeholder="e.g. Mum's birthday / Rent due / Dentist 14:00"></div>
       <button class="btn" id="dayAdd">+ Add note</button>
     </div>
 
@@ -3092,11 +3109,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(gearPanel) return;
       gearPanel=document.createElement('div'); gearPanel.className='gear-panel'; gearPanel.id='gearPanel';
       gearPanel.setAttribute('role','dialog');
+      gearPanel.setAttribute('aria-modal','true');   // N20 (Arthur, 4th-stage carry): AT must not read through the dialog
       var gh=document.createElement('div'); gh.className='gear-head';
       gh.setAttribute('data-i18n-skip','');   // self-translated via T() on every open — walkers keep out (P0-N11 class)
       var gt=document.createElement('span'); gt.textContent=T('Settings'); gh.appendChild(gt);
       var gx=document.createElement('button'); gx.type='button'; gx.className='btn ghost gear-close';
-      gx.textContent=T('Back'); gx.addEventListener('click', function(){ gearPanel.classList.remove('open'); });
+      gx.textContent=T('Back'); gx.addEventListener('click', function(){ closeGearSettings(); });
       gh.appendChild(gx); gearPanel.appendChild(gh);
       var body=document.createElement('div'); body.className='gear-body'; gearPanel.appendChild(body);
       var lb=document.querySelector('.localebar');
@@ -3125,7 +3143,15 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var ttl=gearPanel.querySelector('.gear-head span'); if(ttl) ttl.textContent=T('Settings');
       var bk=gearPanel.querySelector('.gear-close'); if(bk) bk.textContent=T('Back');
       gearPanel.classList.add('open');
+      try{ syncInert(); }catch(_){ }               // N20: shell is inert behind the open dialog
       try{ gearPanel.querySelector('.gear-close').focus(); }catch(_){ }
+    }
+    function closeGearSettings(){
+      if(!gearPanel || !gearPanel.classList.contains('open')) return;
+      gearPanel.classList.remove('open');
+      try{ syncInert(); }catch(_){ }
+      /* N20 (WAI-ARIA APG): closing a dialog returns focus to its invoker */
+      try{ var g=document.getElementById('hdrGear'); if(g) g.focus(); }catch(_){ }
     }
     function openDir(sec, cell){
       dir.innerHTML='';
@@ -3232,7 +3258,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     window.addEventListener('resize', function(){ if(_updMask) _updMask(); }, {passive:true});
     dirBack.addEventListener('click', closeDir);
     document.addEventListener('keydown', function(e){
-      if(e.key==='Escape'){ closeDir(); if(gearPanel) gearPanel.classList.remove('open'); return; }
+      if(e.key==='Escape'){ closeDir(); closeGearSettings(); return; }
       /* focus trap while the settings dialog is open (Arthur) */
       if(e.key==='Tab' && gearPanel && gearPanel.classList.contains('open')){
         var f=gearPanel.querySelectorAll('button,select,input,[tabindex]:not([tabindex="-1"])');
@@ -3267,9 +3293,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var lk=document.getElementById('lockScreen');
     function syncInert(){
       var locked = lk && !lk.classList.contains('unlocked');
-      ['.wrap','.savebar','#dockDir','#dockDirBack','#gearPanel'].forEach(function(s){ var el=document.querySelector(s); if(el){ try{ el.inert=locked; }catch(_){ } } });
-      try{ dock.inert=locked; }catch(_){ }
-      try{ if(headerUtils) headerUtils.inert=locked; }catch(_){ }
+      /* N20: the open settings dialog also inerts the shell behind it — composed
+         with the lock so neither state can clear the other's inert. */
+      var gearOpen = gearPanel && gearPanel.classList.contains('open');
+      ['.wrap','.savebar','#dockDir','#dockDirBack'].forEach(function(s){ var el=document.querySelector(s); if(el){ try{ el.inert=locked || gearOpen; }catch(_){ } } });
+      try{ if(gearPanel) gearPanel.inert=locked; }catch(_){ }   // the dialog itself: only the lock inerts it
+      try{ dock.inert=locked || gearOpen; }catch(_){ }
+      try{ if(headerUtils) headerUtils.inert=locked || gearOpen; }catch(_){ }
     }
     if(lk){ syncInert(); try{ new MutationObserver(syncInert).observe(lk,{attributes:true,attributeFilter:['class']}); }catch(_){ } }
   })();
@@ -4691,8 +4721,15 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var e = document.getElementById('hdrEmployer'); if(e) e.textContent = p.employer || '—';
     var s = document.getElementById('hdrSub');
     if(s){
-      var bits = [p.name||t('Operator'), p.location].filter(function(x){ return x; });
-      s.textContent = bits.join(' · ') + ' · ' + t('Status: ACTIVE');
+      /* N24 (Arthur r5): non-breaking spaces inside each unit so proper nouns never
+         split ("San / Francisco"); the constant status rides in its own span, hidden
+         below 860 (see .hdr-status). textContent only — no markup surface. */
+      var bits = [p.name||t('Operator'), p.location].filter(function(x){ return x; })
+        .map(function(x){ return String(x).replace(/ /g,' '); });
+      s.textContent = bits.join(' · ');
+      var st = document.createElement('span'); st.className = 'hdr-status';
+      st.textContent = ' · ' + t('Status: ACTIVE').replace(/ /g, ' ');
+      s.appendChild(st);
     }
   }
   function setProfile(field, value){
@@ -9418,11 +9455,20 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       if(T<4){ H-=(4-T); T=4; }
       if(L+W>innerWidth-4){ W=Math.max(40, innerWidth-4-L); }
       if(T+H>innerHeight-4){ H=Math.max(40, innerHeight-4-T); }
+      W=Math.max(40,W); H=Math.max(40,H);   // Akashi r5: a fully off-viewport target made W/H negative — CSSOM dropped the write
       ring.style.left=L+'px'; ring.style.top=T+'px';
       ring.style.width=W+'px'; ring.style.height=H+'px';
       var tr=tip.getBoundingClientRect();
-      var top=r.bottom+12; if(top+tr.height > window.innerHeight-10) top=Math.max(10, r.top-tr.height-12);
-      var left=Math.min(Math.max(10, r.left), Math.max(10, window.innerWidth-tr.width-10));
+      var top, left;
+      if(r.height >= innerHeight*0.7){
+        /* N23 (Arthur, 4th filing): a full-height target (the desktop rail) put the
+           tip OVER the destinations the copy names — place it beside instead. */
+        left=Math.min(r.right+12, innerWidth-tr.width-10);
+        top=Math.max(10, Math.min(r.top+8, innerHeight-tr.height-10));
+      } else {
+        top=r.bottom+12; if(top+tr.height > window.innerHeight-10) top=Math.max(10, r.top-tr.height-12);
+        left=Math.min(Math.max(10, r.left), Math.max(10, window.innerWidth-tr.width-10));
+      }
       tip.style.top=top+'px'; tip.style.left=left+'px';
     }
     function place(){
