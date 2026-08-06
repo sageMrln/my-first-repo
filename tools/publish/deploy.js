@@ -74,13 +74,27 @@ if (CHECK) {
   const live = new Set(liveList.split('\n').map(s => s.trim()).filter(Boolean));
   const want = new Set(entries.map(e => e.published));
 
+  /* Council ruling 2026-08-06 §C — SANCTIONED UNPUBLISH. The map could say what to
+     publish but had no word for "deliberately remove this from live", so a legitimate
+     removal (ov_mobile.png, flagged twice by Akashi) hard-failed the interlock, and the
+     only ways out were to override the guard at the exact moment the tree is rewritten,
+     or to re-publish the file we meant to delete. Both were refused. A path listed in
+     map.unpublish is an EXPECTED removal: still reported, no longer fatal — and it must
+     be a live-only path, so the list cannot silently mask a file the map still ships. */
+  const unpublish = new Set(Array.isArray(map.unpublish) ? map.unpublish : []);
   const missing = [...want].filter(p => !live.has(p)).sort();   // map publishes it, live lacks it
-  const extra = [...live].filter(p => !want.has(p)).sort();     // live serves it, map forgot it
+  const extraAll = [...live].filter(p => !want.has(p)).sort();  // live serves it, map does not
+  const extra = extraAll.filter(p => !unpublish.has(p));        // …minus the sanctioned removals
+  const planned = extraAll.filter(p => unpublish.has(p));
+  const staleSanction = [...unpublish].filter(p => want.has(p) || !live.has(p)).sort();
 
   console.log('\n— PATH SET vs ' + BRANCH + ' (must be empty) —');
   missing.forEach(p => console.log('  + would ADD    ' + p));
+  planned.forEach(p => console.log('  - will REMOVE  ' + p + '   ← sanctioned unpublish (map.unpublish)'));
   extra.forEach(p => console.log('  - would REMOVE ' + p + '   ← live file the map does not declare'));
-  if (!missing.length && !extra.length) console.log('  ✓ identical (' + want.size + ' files)');
+  staleSanction.forEach(p => console.log('  ! stale unpublish entry: ' + p + '   ← already gone from live, or still published by the map'));
+  if (!missing.length && !extra.length) console.log('  ✓ path set verified (' + want.size + ' published'
+    + (planned.length ? ', ' + planned.length + ' sanctioned removal' + (planned.length > 1 ? 's' : '') : '') + ')');
 
   console.log('\n— CONTENT (informational: source legitimately runs ahead of live between releases) —');
   let differing = 0;
@@ -98,6 +112,7 @@ if (CHECK) {
   });
   if (!differing) console.log('  ✓ every published file is byte-identical to live');
 
+  if (staleSanction.length) die('map.unpublish lists ' + staleSanction.length + ' path(s) that are already gone from live or still published — clean the list');
   if (missing.length || extra.length) die('PATH SET DIFFERS — do not deploy until the map matches');
   console.log('\n✓ deploy map path set verified against ' + BRANCH);
 }

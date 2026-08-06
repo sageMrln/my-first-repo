@@ -4531,6 +4531,15 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function refreshFinance(){
     recomputeIncome();          // materialise MODEL.income from history/guess (also migrates old saves)
     recomputeGrand();
+    /* F1 (council ruling 2026-08-06 §D). rebuildScenarios paints TWELVE money displays —
+       the Home band (stLow/stAvg/stHigh), the Income tab trio, and the scenario + Klarna
+       buttons — and after Akashi's S2 poison spread those values carry __sys.token().
+       It ran only at boot (:10292), while the token is still NaN, and nothing re-ran it
+       after arming: every user saw "NaN" in all twelve until some money action fired.
+       Every rig missed it because loadDemoData() calls refreshEverything(). Runs here,
+       after the token arms on unlock. No recursion: rebuildScenarios calls none of
+       refreshFinance / refreshEverything / renderDerived. */
+    if(window.rebuildScenarios) window.rebuildScenarios();
     renderExpenses();
     // Re-draw the Budget item list here too — this runs AFTER the integrity token arms on unlock,
     // so the per-item prices resolve to real numbers instead of the NaN they show if drawn at boot.
@@ -9352,7 +9361,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   var WIZ = (function(){
     var STEPS=['welcome','stage','profile','income','expenses','hobbies','transport','priority','install','review'];
     // Smart-onboarding maps (Arthur spec). Life stage pre-highlights relevant picker cards;
-    // the picker (tap-to-rank) writes STATE.tabOrder so the user's #1 page becomes tab 1.
+    // the picker (tap-to-rank) writes STATE.tabOrder — INERT under the sections shell
+    // (ruling a213555 §C); kept as a stored preference, not a live nav effect.
     var PICK_CARDS=['overview','income','expenses','flow','rule','gym','food','media'];
     var STAGE_PICK={ school:['media','food','gym'], working:['income','expenses','media','gym','flow'], managing:['overview','flow','expenses','rule'] };
     var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -9501,7 +9511,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
           '<div class="pmok">'+mok(p)+'</div><div class="ptitle">'+pickTitle(p)+'</div></div>';
       }).join('');
       return '<h2>'+t('Put your top things first')+'</h2>'+
-        '<p class="wsub">'+t('Tap the pages you care about, in order. Your first pick becomes tab 1.')+'</p>'+
+        /* F2 (council ruling §D): the old copy promised "Your first pick becomes tab 1" —
+           STATE.tabOrder is inert under the sections shell (ruling a213555 §C), so the
+           product's first screen was asserting an effect it no longer performs. The step's
+           fate (honour the order in the dock, or retire it) is a Stage-6 design decision. */
+        '<p class="wsub">'+t('Tap the pages you care about, in order.')+'</p>'+
         '<div class="pgrid">'+cards+'</div>'+
         '<button class="chip" id="wPrioSkip" style="margin-top:12px;min-height:44px">'+t('Skip for now')+'</button>';
     }

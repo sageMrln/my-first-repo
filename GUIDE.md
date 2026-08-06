@@ -63,7 +63,7 @@ On first unlock, a short wizard sets you up in under a minute:
 5. **Your expenses** — quick-add chips or type your own.
 6. **Sports & hobbies** — added to your calendar as weekly repeats.
 7. **Getting around** — transport costs; mark anything *financed* and it drops off your budget automatically once it's paid off.
-8. **Prioritize pages** — tap app pages in the order *you* want them (most important first). Your top picks become tabs 1–N; the rest stay available, just lower. Tap **Skip** to keep the default order.
+8. **Prioritize pages** — tap app pages in the order *you* want them (most important first). Your picks are saved with your file. Tap **Skip** to move on.
 9. **Install** — tailored guide to add MRLN to your home screen (iPhone / Android / PC).
 10. **Review** — your starting picture.
 
