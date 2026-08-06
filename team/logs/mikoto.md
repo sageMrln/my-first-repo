@@ -1621,3 +1621,33 @@ Osefe has approved making the assistant fluent in every language we offer, typos
   * Stage-5 step-7 translation merge (index.html + seed_langs.json + TEAM-CHAT.md message + this log entry)
 
 - Still open / next: Sleep-mode: staged + committed, no publish. Awaiting @Kaito's step-8 spot-check verification of translations (meaning + length), then @Akashi SAFE and @Hugo GREEN on the current tip, then @Osefe explicit "ship it" call. Stage 5 i18n complete: MISSING: 0 @ current SHA, parity 8/8 census stable, green.js GREEN.
+
+## [2026-08-06 ~Stage-5 step-8] — Kaito dispatch (asleep) — Stage-5 step-8: Add gear panel group headers ×7 langs + En-plan review
+
+- Asked: Stage 5 step-7 complete, but Kaito's step-8 spot-check caught 4 keys invisible to sync.js: the gear panel's groupGear() function was calling T(g[0]) with array values, which the literal t() scanner couldn't detect. Kaito fixed the wiring (literal t() calls added at line 3246-3249), but the translations need to land in the AUTO-MERGED block. Additionally, he flagged "In plan" (Workouts scope label) for French and Spanish: French "en plan" idiomatically reads as stranded/ditched (rester en plan); Spanish "en plan" is colloquial-slang adjacent. Translate the 4 new keys (Locale/Appearance/Help/Data) in all 7 non-English languages, review En-plan and fix if needed, verify sync/parity/green gates, report.
+
+- Did / found:
+  * **Added 4×7 translations to AUTO-MERGED block.** Chose natural settings-panel nouns for each language:
+    - Locale (language + currency + region grouping): es "Región" / da "Sprog" / de "Sprache" / sv "Språk" / nb "Språk" / hu "Terület" / fr "Région"
+    - Appearance (visual/theme settings): es "Apariencia" / da "Udseende" / de "Darstellung" / sv "Utseende" / nb "Utseende" / hu "Megjelenés" / fr "Apparence"
+    - Help (documentation, tour, support): es "Ayuda" / da "Hjælp" / de "Hilfe" / sv "Hjälp" / nb "Hjelp" / hu "Súgó" / fr "Aide"
+    - Data (export, import, backup, account): es "Datos" / da "Data" / de "Daten" / sv "Data" / nb "Data" / hu "Adatok" / fr "Données"
+  * **Reviewed En-plan translations:** Confirmed Kaito's flags are valid:
+    - French "en plan": YES, idiomatically problematic (= stranded/ditched). Fixed to "au programme" (on the program/schedule — natural Workouts scope).
+    - Spanish "en plan": YES, colloquial-slang (informal "like"/"kind of"). Fixed to "en el plan" (in the plan — formal, with article to clarify intent).
+  * **Verified all gates:**
+    - `sync.js` → **MISSING: 0** (829/829 keys, all 7 languages fully translated) ✓
+    - `parity_harness.js` → **all active assertions passed** (including #nav-i18n 8/8 languages) ✓
+    - `green.js` → **GREEN exit 0** (17 suites, preflight CLEAR ×3, PII 17/17, leak scan clean, version v41 match, THEME-EXEMPT 18 stable) ✓
+
+- Decision / result:
+  * **MISSING: 0 verified @ current tip.** All 4 gear group headers now in dictionary for all 7 languages (Locale/Appearance/Help/Data), with translations chosen for natural fit in settings panels.
+  * **En-plan fixed in both languages.** French "au programme" and Spanish "en el plan" resolve the meaning-class issues Kaito caught.
+  * **All gate verdicts pass:** sync.js MISSING:0, parity_harness all assertions, green.js GREEN. i18n side of Stage 5 step-8 complete and locked: MISSING: 0 @ f0bbf1d.
+
+- Commits / SHAs:
+  * a8d5368 (chat: claim lock)
+  * f0bbf1d (stage5 step-8: add 4 gear group headers × 7 languages + fix En-plan)
+
+- Still open / next: Sleep-mode: staged index.html + TEAM-CHAT.md, committed and pushed to remote. Awaiting @Kaito final verification (or direct thumbs-up if he confirms the En-plan changes match his intent), then @Akashi re-SAFE (i18n dict structure changed, no security code touched), @Hugo re-GREEN if tip moved, then @Osefe explicit "ship it" call. Stage 5 i18n complete: MISSING: 0 @ f0bbf1d, parity 8/8, green.js GREEN, En-plan resolved.
+
