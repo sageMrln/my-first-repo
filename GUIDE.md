@@ -42,7 +42,7 @@ MRLN opens **locked**. You unlock it once with an **access key** (a code that lo
 
 ## 3. Languages & currencies
 
-Top of the screen is the **locale bar**: 🌐 Language · Currency · Country.
+Tap the **⚙ gear icon** (top right) and open **Settings** → **Locale** to change language, currency, and country. The **locale controls** (🌐 Language · Currency · Country) live in that group.
 
 **Languages (8):** English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar, **Français**.
 Switching translates **the entire interface** instantly — tabs, headings, buttons, help text, the setup wizard, everything. A built-in **language watchdog** runs constantly: it re-checks every screen — including text that only appears in certain situations (your tier verdict, tax breakdown, calendar, logs) — and keeps it all in your chosen language, with nothing left in English.
@@ -309,25 +309,18 @@ Each card is a button; tap it to go to the detailed page (Gym for workouts, Food
 Under the Gym tab, the **dated weight log** records one entry per day. You can:
 - **Log manually** — tap the day, enter your weight (reads from a Bluetooth scale if you have one, or type it in).
 - **Auto-log from CSV** — import a CSV file (date · weight columns) to backfill history.
-- **See history** — scroll the list to see all your entries; the Home card shows your delta since 30 days ago (or the last entry if fewer than 30 days exist).
-
-Each entry is a date + weight value, saved to your file.
+- **See history** — scroll the list to see all your entries; the Home card shows your delta since 30 days ago (or the last entry if fewer than 30 days exist). Each entry is a date + weight value, saved to your file.
 
 **Settings Panel**
 
-Tap the gear icon (top right) to open Settings. The form is grouped into four sections:
+Tap the **⚙ gear icon** (top right) to open the Settings panel. It's a full-screen sheet on phones, or a 560px card on desktop (the dock stays visible beside it). The panel groups controls into four sections:
 
-1. **Profile** — name, life stage, birthday, phone, main device
-2. **Money** — currency, country, income (take-home this month, low/good/high adjustments), debt payment, savings target
-3. **Body** — sex, age, height, weight, activity level, body-fat %, body grade toggle
-4. **Account** — language, sound toggle (🔊/🔇), export my data, move my data, log out
+1. **Locale** — Language (change which of the 8 languages the whole interface reads in) · Currency (pick your currency and see every figure in that denomination) · Country (set your region for tax math and health thresholds)
+2. **Appearance** — Theme (9 themes: Cyberpunk/Amethyst/Glacier/Evergreen/Carmine/Rose/Umber/Ember/Daylight) · Layout (options for how the dashboard fits your screen)
+3. **Help** — Tour (guided walkthrough of every page) · Setup (the first-time wizard, run anytime) · Sound (on/off toggle for UI chimes — turn off if you prefer silent)
+4. **Data** — Open / Save (the one button to save your data as a file, or load a saved file back in)
 
-Each section can be expanded or collapsed. Changes save instantly.
-
-Below the settings form are the other header buttons:
-- **📤 Export my data** — download your data as a file (always available, even if locked)
-- **📥 Move my data** — transfer everything to a new phone or device
-- **📋 Change Log** — read-only log of every transaction and edit you've made, with timestamps
+Each section shows its heading and controls inline. Changes save instantly. A **Back** button sits top-left to close the panel. The Settings panel is the only way to reach these controls — there is no "Accounts" or "Profiles" area.
 
 ---
 
