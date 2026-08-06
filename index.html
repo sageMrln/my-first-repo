@@ -1993,7 +1993,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </div>
       <div class="hh-viz" id="hhViz" style="display:none">
         <div class="hh-viz-lbl" data-i18n="Income history">Income history</div>
-        <div id="hhChart"></div>
+        <div id="hhChart" data-i18n-skip></div><!-- Akashi step-4 note: SVG <text> carries money figures — walkers keep out -->
       </div>
     </div>
     <div class="home-cards" id="homeCards">
@@ -2064,7 +2064,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <h2>📈 <span data-i18n="Income history">Income history</span> <span class="tag now" id="incHistState" style="font-size:11px">—</span></h2>
       <div class="desc" data-i18n="Log what you actually get paid each month and MRLN sets your low, typical and high from the real numbers — no bank connection, everything stays on your device.">Log what you actually get paid each month and MRLN sets your low, typical and high from the real numbers — no bank connection, everything stays on your device.</div>
       <div class="ih-strip status" id="incHistStrip"></div>
-      <div class="ih-chart" id="incHistChart"></div>
+      <div class="ih-chart" id="incHistChart" data-i18n-skip></div>
       <div class="note ih-manual" id="incHistManual" style="display:none;border-color:var(--cyan-dim);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <span data-i18n="These figures are set by hand — they override your history until you log next month.">These figures are set by hand — they override your history until you log next month.</span>
         <button class="btn" id="incUseHistBtn" style="padding:6px 12px;font-size:12px">📈 <span data-i18n="Use my history">Use my history</span></button>

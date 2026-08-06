@@ -202,7 +202,18 @@ try {
     failed = true;
   } else console.log('  \u2713 MISSING: 0 across every selectable language');
 } catch (e) {
-  console.log('  \u2717 sync.js failed to run \u2014 ' + e.message.split('\n')[0]);
+  /* Akashi (Stage-5 step 4): sync.js exits 1 when it REPORTS debt, which threw here
+     and hid the number behind "failed to run" \u2014 one day a real crash hides behind an
+     expected count. Parse the captured stdout first; only a run with NO parseable
+     MISSING line is a tool failure. */
+  const out = (e.stdout || '') + '';
+  const m = out.match(/MISSING\s*:\s*(\d+)/);
+  if (m) {
+    const langs = [...new Set((out.match(/\u2717 ([a-z]{2})/g) || []).map(x => x.slice(2)))];
+    console.log('  \u2717 MISSING: ' + m[1] + (langs.length ? '  (' + langs.join(', ') + ')' : ''));
+  } else {
+    console.log('  \u2717 sync.js CRASHED (no MISSING count in output) \u2014 ' + e.message.split('\n')[0]);
+  }
   failed = true;
 }
 
