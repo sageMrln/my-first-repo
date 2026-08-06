@@ -1568,3 +1568,29 @@ Osefe has approved making the assistant fluent in every language we offer, typos
   * 8b00014 (Stage 4 round-3: Fix DE Health collision — dock label 'Gesundheit')
 
 - Still open / next: Sleep-mode: this fix is complete and signed off locally. Awaiting push to remote, then @Akashi re-SAFE (dict structure changed, dock labels now keyed correctly; tip moved from 6951a67), @Hugo re-GREEN on new tip, then @Osefe final "ship it" call. Stage 4 i18n side NOW complete: dock labels wired, all 7 languages, no collisions, MISSING: 0 @ current SHA.
+
+## [2026-08-06 ~assistant-key] — Kaito dispatch (asleep) — Add Assistant key ×7 languages
+
+- Asked: Kaito's Stage-4 commit 1279e6f fixed the misfiled dock-label nesting (nb was German, sv was French) and added a sweepRemnants engine guard. The dock's new Assistant cell renders T('Assistant') instead of the brand "MRLN" (Arthur P2-N19: the least-obvious cell must carry a translated word). The key "Assistant" does NOT exist in any dictionary. Add it in all 7 non-English languages in alphabetical position in the AUTO-MERGED block, verify parity_harness.js #nav-i18n census passes 8/8, and report.
+
+- Did / found:
+  * Identified that T() is a wrapper around t() that returns the key if translation is not available (line 3103)
+  * Confirmed "Assistant" key missing from all 8 languages in AUTO-MERGED block
+  * Chose translations for each language (natural, short words appropriate for 11px dock label at 320px width):
+    - da: "Assistent" / de: "Assistent" / es: "Asistente" / fr: "Assistant"
+    - hu: "Asszisztens" / nb: "Assistent" / sv: "Assistent"
+  * Added entries to AUTO-MERGED JSON via Python script, preserving JSON structure
+  * Verified alphabetical placement: each "Assistant" key positioned between "April" and "Assistant MRLN" keys in each language's sorted order
+
+- Decision / result:
+  * **MISSING: 0 verified** (sync.js confirms all 795 translatable keys remain fully translated across 7 languages)
+  * **Parity harness #nav-i18n census passes 8/8** — dock util label (Assistant cell) renders correct translated word in all 8 languages (EN/ES/DA/DE/SV/NB/HU/FR), no "MRLN" fallback, no "(missing)" state
+  * All stage-3 + stage-4 assertions passing
+  * Commit 31b219d signed
+
+- Commits / SHAs:
+  * 768be78 (chat: claim lock)
+  * 31b219d (stage4: Assistant key ×7 languages)
+
+- Still open / next: Sleep-mode: staged index.html + TEAM-CHAT.md, committed and pushed to remote. Awaiting Kaito to verify, then @Akashi re-SAFE, @Hugo re-GREEN if tip moved, then @Osefe explicit "ship it". Assistant key complete: MISSING: 0 @ 31b219d, parity 8/8.
+

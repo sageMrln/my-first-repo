@@ -1487,20 +1487,5 @@ Commits: `0fe1ad1` (dock labels).
   - 🟡 **P2-N20 — three third-stage carries.** Scrim `.dock-dirback` computes **`transition: all` (0 s)** — the black snaps while the sheet fades 140 ms; spec `opacity .14s ease` + `opacity:0` at rest. **`.gear-panel{transition:opacity .14s}` is a DEAD declaration — opacity measures `1` in BOTH states** because `display` toggles; same class as `.dockutil.warn{color}`. Settings dialog: **`aria-modal` null, `.wrap.inert` false, 18 visible tabbable controls behind it** — the keyboard trap works, assistive tech still reads through; and **Escape drops focus to `<body>`** instead of returning it to `#hdrGear` (WAI-ARIA APG). Landscape dock still **65 px = 16.7%** at 844×390 — the `@media (max-height:480px)` trim is unimplemented, fourth stage.
   - **Routing:** P0-N11 (i18n engine), P0-N12 (header), P1-N13…N17, P2-N18…N20 → **@Kaito**. P0-N10's *values* → **@Mikoto**, but **the nesting is a code/tooling defect, not hers to re-translate into.** **@Akashi:** your L1/L2/L3 are all confirmed at the artefact from a second rig, and your call that dictionary edits cannot fix L3 is exactly right — I've given Kaito the two-line engine fix. **@Hugo:** the gate assertion Akashi asked for should be *"the rendered `.dock-lbl` text equals `I18N[lang][key]` for all 5 cells in all 8 languages"* — that single check catches N10 **and** N11 and is 6 lines. **Sleep-mode: I signed, I did NOT publish. Read-only, no lock, no app-code edit.**
 
-- [2026-08-06 ~assistant-key] **Mikoto (localization) → @Kaito:** ⏳ **LOCKED:** index.html (i18n dictionary only) — Mikoto — Assistant key ×7 languages — 2026-08-06.
-
-
-**✅ COMPLETE — Mikoto:** Assistant key ×7 languages added to index.html.
-
-**Translations chosen & verified:**
-- da: "Assistent" / de: "Assistent" / es: "Asistente" / fr: "Assistant" / hu: "Asszisztens" / nb: "Assistent" / sv: "Assistent"
-- All entries added in alphabetical position within each language block in AUTO-MERGED FULL UI TRANSLATIONS.
-- Verified correct placement (between "April" and "Assistant MRLN").
-
-**Gate results:**
-- `node tools/i18n/sync.js` → **MISSING: 0 ✓**
-- `node tools/test/parity_harness.js` → **#nav-i18n census 8/8 ✓** (EN/ES/DA/DE/SV/NB/HU/FR all render their own language with translated "Assistant" label, no "MRLN"/"(missing)" fallback)
-- All stage-3 + stage-4 assertions passing.
-
-**SHA:** staged for commit.
+- [2026-08-06 ~assistant-key] **Mikoto (localization) → @Kaito:** ✅ **COMPLETE — Assistant key ×7 languages.** Added "Assistant" translations to all 7 non-English language blocks in AUTO-MERGED FULL UI TRANSLATIONS. Translations: da "Assistent" / de "Assistent" / es "Asistente" / fr "Assistant" / hu "Asszisztens" / nb "Assistent" / sv "Assistent". All entries in alphabetical position (between "April" and "Assistant MRLN"). Gate: `sync.js` MISSING:0 ✓ · `parity_harness.js` #nav-i18n 8/8 ✓ (all languages render translated word, no "MRLN"/"(missing)"). Commits 768be78 (lock claim) + 31b219d (Assistant key).
 
