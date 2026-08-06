@@ -652,7 +652,6 @@
   .hh-viz{ margin-top:14px; }
   .hh-viz-lbl{ font-size:12px; font-weight:600; color:var(--txt-dim); margin-bottom:4px; }
   .hh-viz svg{ max-width:100%; height:auto; display:block; }
-  @media (min-width:860px){ .hh-viz svg{ width:100%; max-width:520px; } }  /* P13: not a 200px orphan in a 1068px column */
   .home-cards{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0 16px; }
   .kcard{ min-height:88px; text-align:left; background:var(--panel2); border:1px solid var(--line);
     border-radius:var(--r-l); padding:12px 14px; display:flex; flex-direction:column; gap:4px;
@@ -4020,7 +4019,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function renderHomeViz(){
     var host=document.getElementById('hhChart'), wrap=document.getElementById('hhViz');
     if(!host||!wrap) return;
-    var svg=''; try{ svg=(typeof incomeChartSVG==='function')?incomeChartSVG():''; }catch(_){ }
+    /* P13: on a wide column, draw WIDER bars (glyphs stay 10px 1:1) — never scale
+       the SVG up, which inflates its labels past the band's own type. */
+    var wide=(host.clientWidth||0)>=520 || window.innerWidth>=860;
+    var svg=''; try{ svg=(typeof incomeChartSVG==='function')?incomeChartSVG(wide?40:22, wide?22:13):''; }catch(_){ }
     host.innerHTML=svg;                       // app-generated SVG only; labels esc()'d inside incomeChartSVG
     wrap.style.display = svg ? '' : 'none';   // §I: a sparkline with no series never ships
   }
@@ -5025,10 +5027,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function incomeMonthLogged(ym){ return (MODEL.incomeLog||[]).some(function(e){ return e && e.ym===ym; }); }
 
   /* -------- Income history: strip + hand-drawn monthly bars + editable month list -------- */
-  function incomeChartSVG(){
+  function incomeChartSVG(bwOpt, gapOpt){
     if(isNaN(__sys.token())) return '';   // poisoned copy: refuse to draw the income bars (mirrors the savings chart)
     var e=incomeEntries().slice(-INCOME_WINDOW); if(!e.length) return '';
-    var H=100, pad=10, bw=22, gap=13;
+    var H=100, pad=10, bw=Number(bwOpt)||22, gap=Number(gapOpt)||13;
     var vals=e.map(function(x){ return Math.max(0,Number(x.amt)||0); });
     var max=Math.max.apply(null, vals)||1, med=_median(vals);
     var x=pad, bars='';
