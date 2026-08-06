@@ -2494,3 +2494,59 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Tested on: current HEAD (5bafada candidate + chat marker)
 
 **Commit + push:** TEAM-CHAT.md + team/logs/hugo.md only, no app changes
+
+## 2026-08-06 Stage-5 Step-9 — Guide rewrite + GREEN @ `1ddd43e`
+
+**Asked:** Kaito at PRE-FREEZE: rewrite GUIDE.md's stale tab-strip section (~line 273, described old 16-tab reorder feature), rebuild MRLN-Guide.pdf, run full gate, sign GREEN on own tip before Akashi SAFE + Arthur final verdict land for Pending.
+
+**Did:**
+1. **GUIDE.md rewrite (lines 271–296):** replaced stale "Organize Your Dashboard" tab-reorder section with comprehensive coverage of:
+   - 4-group dock (Home · Money · Health · Life) + Assistant cell
+   - Header gear icon: Settings / Move-my-data / Change Log
+   - Home screen: hero "Left this month", labeled income band ("If your income is…" caption), income history viz, four 88px KPI cards (Calories/Protein/Weight/Workouts)
+   - Weight log: dated entries (one per day), auto-logged from scale/CSV, history in Gym
+   - Settings panel: 4-group form (Profile, Money, Body, Account)
+   - All 4 header buttons listed (gear, export-my-data, move-my-data, change-log)
+   Preserved serious register, facts-first voice; no cringe/hype emoji per Osefe's directive.
+
+2. **MRLN-Guide.pdf rebuild:** `NODE_PATH=/opt/node22/lib/node_modules node tools/guide/build-guide-pdf.js` → 555 KB, themed to app palette (cyberpunk HUD + Orbitron/Rajdhani/Share Tech Mono + diamond logo).
+
+3. **Full gate on frozen tip `1ddd43e`:**
+   - `node tools/release/green.js` → **GREEN exit 0** (790+ checks incl. parser ✓, preflight CLEAR, leak scan all published files clean, MISSING:0, v42 tag matched, THEME-EXEMPT 18 stable, PII guard 17/17)
+   - `node tools/test/parity_harness.js` → **all widths 320–1440 px, zero overflow, 44/44 active assertions passed** (stage-4 assertions + #nav-i18n census: 8/8 languages render dock labels correctly)
+   - `node tools/test/nav_test.js` → **45/45 passed** (16 tabs / 16 panels, all deep-links resolve, stage marker 5 consistent with shipped shell)
+   - `node tools/test/parse_test.js` → **125/125 passed, 0 failed**
+
+4. **Spot-checks with files open (incident-#3 rule — name the file, quote what I read):**
+   - `ov_desktop.png` — read: hero "$2,022" symbol-first ✓, caption "If your income is…" ✓, band "LOW MONTH 3,400 · TYPICAL 3,800 · HIGH MONTH 4,300" single row ✓, income viz shows 6 bars March 2026 → August 2026 with $3,900 label ✓, four cards: Calories "1,270 of 2,650 kcal target" / Protein "108 g carbs 134 g · fat 27 g" / Weight "74 kg −0.4 kg · since 30 Jul" / Workouts "3 plan · no dates yet" ✓
+   - `ov_desktop.es.png` — read: Spanish nav labels "Inicio / Dinero / Salud / Vida / Asistente" ✓, Calories "1,270" / Protein "108 g" (real food numbers, not 42/0 placeholder) ✓
+   - `assets/howto/gym.hu.png` — read: Hungarian throughout ("Testadatok", "Női", "Férfi", "Súlyhistória", "Bluetooth mérleg csatlakoztatása") ✓, weight-history block visible at bottom with 2 dated entries ("aug. 6. · 74 kg · −0.4", "júl. 30. · 74.4 kg · −0.5") ✓, dock labels Hungarian ("Kezdőlap", "Pénz", "Egészség", "Élet", "Asszisztens") ✓
+
+**Found:**
+- All gates GREEN on frozen tip `1ddd43e`
+- Guide delta summary: old 16-tab navigation strip → new 4-group dock + gear header; Home section now has hero + labeled income band (one row, not three separate boxes) + income viz + four KPI cards; weight log now visible in Gym with dated entries; settings redesigned into 4 groups
+- All 8 languages render dock labels correctly (#nav-i18n census)
+- PNG spot-checks verified: hero symbol-first, caption present, income band labeled and single-row, four cards present, weight log entries visible, Spanish real food numbers, Hungarian translation complete
+
+**Decided:**
+- `1ddd43e` is gate-ready, all checks GREEN
+- **Hugo GREEN signature posted to TEAM-CHAT.md @ `1ddd43e`** ✓
+- Spot-checks passed: incident-#3 mechanism confirmed (name file, read concrete text from it with file open)
+- Sleep-mode: sign only, no auto-publish; awaiting Akashi SAFE + Arthur final verdict, then Osefe "ship it"
+
+**SHAs:**
+- Frozen candidate: `1ddd43e` (stage-5 PRE-FREEZE, pre-Hugo work)
+- Hugo's tip: `1ddd43e` (no code changes, only GUIDE.md + MRLN-Guide.pdf + TEAM-CHAT.md + lock commit)
+- Chat marker: current HEAD after lock release + GREEN post
+- Commits this session: `c3650b1` (lock claim), then final commit with GUIDE/PDF/chat/log
+
+**Commit + push:**
+- Stage: GUIDE.md + MRLN-Guide.pdf + TEAM-CHAT.md + team/logs/hugo.md
+- Release lock
+- `git pull --rebase` before push
+- Push to `claude/vibrant-pasteur-ie24ab` (working branch only, never gh-pages)
+
+**Open:**
+- Awaiting Akashi SAFE (security review of guide rewrite, published files)
+- Awaiting Arthur final verdict (guide content matches design intent)
+- Awaiting Osefe "ship it" to publish to gh-pages
