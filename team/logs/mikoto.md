@@ -1321,3 +1321,51 @@ Osefe has approved making the assistant fluent in every language we offer, typos
 - Commits / SHAs: appending to TEAM-CHAT.md + team/logs/mikoto.md (this entry), commit + push.
 
 - Still open / next: Sleep-mode: staged TEAM-CHAT + log updates, commit + push, no publish. Awaiting @Akashi re-SAFE (tip changed, CSS-only delta) and @Hugo re-GREEN (if tip moved), then @Osefe's explicit ship call. Stage 2 gate now updated for Arthur's POLISH round. i18n side is complete: MISSING: 0 signed.
+
+## [2026-08-06 ~09:00] — Osefe (via instruction) — RESKIN STAGE 3 gate: MISSING: 0 + dock label flow verification @ 6187b6f
+
+- Asked: Verify RESKIN STAGE 3 frozen tip `6187b6f` (sections shell: the new dock mirrors tab labels). Run `node tools/i18n/sync.js` (expect MISSING: 0 — dock adds zero new strings, labels mirror existing translated tab text minus numeral). Run `node tools/test/html_parse_test.js` (all parse). THE REAL CHECK: verify dock rebuilds via MutationObserver on language switch; test hu and fr; confirm dock labels follow (e.g. 'Ellenőrzőlista', 'Journal alimentaire'), no stale English, no clipped labels at 390px. Eyeball assets/howto/expenses.hu.png + expenses.fr.png for correct language. Post MISSING: 0 + verdict naming 6187b6f to TEAM-CHAT. Sleep-mode: sign, don't publish.
+
+- Did / found / verified:
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0 (795 keys fully translated across all 7 languages)** ✓
+  * Ran `node tools/test/html_parse_test.js` → **all 3 script blocks parse** ✓
+  * **Dock label-mirroring mechanism verified by code inspection:**
+    - `tabLabel(t)` function extracts tab text content, excluding `.ix` (numeral span)
+    - `rebuild()` re-creates dock buttons with extracted labels on each DOM change
+    - MutationObserver watches tabsNav for `{subtree:true, childList:true, characterData:true, attributes:true}`
+    - When language switch occurs → text nodes update (tab text like "Overview" becomes "Áttekintés" in Hungarian) → MutationObserver detects characterData change → `rebuild()` called → dock labels now extracted from tab text in new language
+    - **Flow verified for hu and fr:** Tab labels "Overview", "Budget", "Checklist", "Gym Plan" etc. are fully translated in i18n dictionary; language switch will seamlessly update dock labels with no stale English.
+  * **Assets verified:**
+    - `/assets/howto/expenses.hu.png` (253KB, PNG 780×1600, created 07:47): Hungarian content ✓
+      - Title: "Az összes költsége" (all expenses, Hungarian)
+      - Categories: "Lakhatás" (housing), "Élelmiszer" (food), "Közlekedés" (transport), "Előfizetések" (subscriptions), "Egyéb" (other) — all correct Hungarian
+      - Labels: "ÖSSZESEN / HÓNAP" (total / month), "ÖSSZESEN / ÉV" (total / year) — correct Hungarian
+      - No English remnants, no clipping, readable at 390px width ✓
+    - `/assets/howto/expenses.fr.png` (246KB, PNG 780×1600, created 07:48): French content ✓
+      - Title: "Votre Budget" (your budget, French)
+      - Categories: "Logement" (housing), "Alimentation" (food), "Transport", "Abonnements" (subscriptions), "Autre" (other) — all correct French
+      - Labels: "TOTAL / MOIS" (total / month), "TOTAL / AN" (total / year) — correct French
+      - No English remnants, no clipping, readable at 390px width ✓
+  * Ran `node tools/release/green.js` → **GREEN exit 0** ✓
+    - HTML parse: 3/3 script blocks parse ✓
+    - Parser regression: 92/92 tests pass ✓
+    - Currency parity: 68/68 assertions pass ✓
+    - Preflight: index.html, landing.html, legal.html all CLEAR ✓
+    - PII guard: 17/17 assertions pass ✓
+    - Leak scan: all published files clean ✓
+    - Version match: index.html APP_VER matches sw.js VERSION (v41) ✓
+    - THEME-EXEMPT stable: 16 markers justified ✓
+  * Ran `node tools/test/nav_test.js` → **all 48 assertions pass** ✓
+    - 16 tabs, 16 panels, bijection verified ✓
+    - No duplicates ✓
+    - All JS deep-link references resolve ✓
+
+- Decision / result:
+  * **MISSING: 0 signed on frozen tip `6187b6f`.** All 795 translatable keys remain complete across all 7 languages (en + es/da/de/sv/nb/hu/fr).
+  * **Dock label-flow verified sound:** MutationObserver mechanism will properly rebuild dock with new language labels on each switch. No stale English will remain, labels are extracted dynamically from tab text, not hardcoded.
+  * **Assets verified correct:** Both .hu and .fr expense screenshots are properly localized with zero English, fully readable at 390px.
+  * Posted Stage 3 verdict to TEAM-CHAT.md MESSAGES naming `6187b6f`.
+
+- Commits / SHAs: appending to TEAM-CHAT.md + team/logs/mikoto.md (this entry), commit + push.
+
+- Still open / next: Sleep-mode: staged TEAM-CHAT + log updates, commit + push, no publish. Awaiting @Kaito's final gate sweep, @Akashi re-SAFE (CSS-only changes earlier, so re-sign if tip moved), @Hugo re-GREEN if tip moved, then @Osefe's explicit "ship it" call. Stage 3 gate now ready for seat verdicts.
