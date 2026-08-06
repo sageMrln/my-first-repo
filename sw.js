@@ -4,7 +4,7 @@
    - Cache-first for static assets (icons/manifest) that rarely change.
    - Full offline fallback to the cached app when there's no network.
    Bump VERSION only to force-flush old caches (e.g. when the asset list changes). */
-var VERSION = 'v41';
+var VERSION = 'v42';
 var CACHE = 'mrln-' + VERSION;
 var CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
@@ -24,7 +24,9 @@ self.addEventListener('fetch', function(e){
     // network-first: always try for the freshest app, fall back to cache offline
     e.respondWith(
       fetch(req).then(function(resp){
-        try{ var cp = resp.clone(); caches.open(CACHE).then(function(c){ c.put(req, cp); }); }catch(_){}
+        // Akashi (split-repo audit): never cache a bad answer — a 404/503 window
+        // would permanently poison the offline copy of the app for that user.
+        try{ if(resp && resp.ok && resp.type === 'basic'){ var cp = resp.clone(); caches.open(CACHE).then(function(c){ c.put(req, cp); }); } }catch(_){}
         return resp;
       }).catch(function(){ return caches.match(req).then(function(r){ return r || caches.match('./index.html'); }); })
     );
@@ -33,7 +35,7 @@ self.addEventListener('fetch', function(e){
     e.respondWith(
       caches.match(req).then(function(hit){
         return hit || fetch(req).then(function(resp){
-          try{ var cp = resp.clone(); caches.open(CACHE).then(function(c){ c.put(req, cp); }); }catch(_){}
+          try{ if(resp && resp.ok && resp.type === 'basic'){ var cp = resp.clone(); caches.open(CACHE).then(function(c){ c.put(req, cp); }); } }catch(_){}
           return resp;
         }).catch(function(){ return hit; });
       })

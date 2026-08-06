@@ -42,7 +42,7 @@ MRLN opens **locked**. You unlock it once with an **access key** (a code that lo
 
 ## 3. Languages & currencies
 
-Top of the screen is the **locale bar**: 🌐 Language · Currency · Country.
+Tap the **⚙ gear icon** (top right) and open **Settings** → **Locale** to change language, currency, and country. The **locale controls** (🌐 Language · Currency · Country) live in that group.
 
 **Languages (8):** English, Español, Dansk, Deutsch, Svenska, Norsk, Magyar, **Français**.
 Switching translates **the entire interface** instantly — tabs, headings, buttons, help text, the setup wizard, everything. A built-in **language watchdog** runs constantly: it re-checks every screen — including text that only appears in certain situations (your tier verdict, tax breakdown, calendar, logs) — and keeps it all in your chosen language, with nothing left in English.
@@ -63,7 +63,7 @@ On first unlock, a short wizard sets you up in under a minute:
 5. **Your expenses** — quick-add chips or type your own.
 6. **Sports & hobbies** — added to your calendar as weekly repeats.
 7. **Getting around** — transport costs; mark anything *financed* and it drops off your budget automatically once it's paid off.
-8. **Prioritize pages** — tap app pages in the order *you* want them (most important first). Your top picks become tabs 1–N; the rest stay available, just lower. Tap **Skip** to keep the default order, or reorder anytime later by double-tapping a tab.
+8. **Prioritize pages** — tap app pages in the order *you* want them (most important first). Your picks are saved with your file. Tap **Skip** to move on.
 9. **Install** — tailored guide to add MRLN to your home screen (iPhone / Android / PC).
 10. **Review** — your starting picture.
 
@@ -270,9 +270,59 @@ Sounds are **soft by design** (~0.09–0.12 gain) and **respect reduced-motion**
 
 These mechanics are **per-device, never synced** (they reset if you import to a new phone) and are **stripped from any file you share** — so a customer file or a test upload stays clean, and the habit counters don't follow your export.
 
-**📍 Organize Your Dashboard** — Double-tap any navigation tab (Money, Health, Calendar, etc.) to open its options. You'll see a "Position in the menu" control (◀ _number_ ▶) that lets you **reorder the tabs** in your navigation bar. Slide a tab to position 1 and it jumps to the front; a smooth ripple animates the other tabs into place. Your custom order saves automatically and persists across sessions. Make the app work your way.
+---
 
-**🔊 Category Sounds** — When you open an Expense category (Groceries, Transport, etc.) to see what you're spending, it plays a soft, satisfying "unfold" chime. Like the streak fanfare and Apply success chime, it's **voice outcome, not input** — the sound says *"look what opened"* without needing to explain it. Fully offline, no files, and respects your mute toggle (🔊/🔇).
+## 📍 The Dashboard — navigation & home screen
+
+The dashboard organizes all your data into **four main sections** plus a gear menu:
+
+**Navigation (a bottom dock on phones; a left sidebar on wide screens):**
+- **Home** — overview and stats
+- **Money** — Income, Budget, Loan, Cash Flow, Savings, Checklist — and Klarna Float (master only)
+- **Health** — Gym Plan and Food Log (body stats are a card inside Gym Plan)
+- **Life** — calendar, notebook, media log
+- **⚙️ Gear** (top right, header icon) — Settings, Connect (move your data), and Change Log
+- **🤖 Assistant** — dock cell to open the offline Q&A assistant
+
+Tap any group to open its sections; tap again to collapse.
+
+**Home Screen — at a glance**
+
+The **Home** tab (default first tab) gives you your financial picture in one screen:
+
+1. **Hero number: "Left this month"** — What remains after every bill, debt payment, and before savings, in a typical month. The number you watch.
+
+2. **Income scale:** A row labeled **"If your income is…"** shows three reference points — Low Month / Typical / High Month — derived from your actual income history (or your guess if you're just starting). This isn't a choice; it's the range your app uses internally for all simulators and projections. At a glance, you see how far apart your low/typical/good months really are.
+
+3. **Income history** — A mini-chart that appears once you have logged real months; it shows up to your last 12 logged months, with the first and last month labelled and the latest value shown above its bar.
+
+4. **Four KPI cards** — Four core metrics, each one tap-able to go deeper:
+   - **Calories** — today's total, with your daily kcal target in the sub-line
+   - **Protein** — today's total (grams), with carbs and fat breakdown in the sub-line
+   - **Weight** — current weight and change since your previous logged entry
+   - **Workouts** — count of workouts in your plan, with a sub showing "plan · no dates yet" (plan entries have no scheduled dates)
+
+Each card is a button; tap it to go to the detailed page (Gym for workouts, Food for calories/protein, Gym weight log for weight history).
+
+**Weight Log — tracking body changes**
+
+Under the Gym tab, the **dated weight log** records your weight history with dated entries. You can log weight three ways:
+- **Weight field** — type your weight into the Weight field in your body stats (Gym tab); each entry is auto-dated when logged.
+- **Bluetooth scale** — connect to a compatible scale and it logs automatically.
+- **CSV import** — upload a CSV file (date · weight columns); the app reads the most recent row and logs it as one dated entry.
+
+The log shows all your entries; the Home Weight card displays your current weight and the change since your previous logged entry.
+
+**Settings Panel**
+
+Tap the **⚙ gear icon** (top right) to open the Settings panel. It's a full-screen sheet on phones, or a 560px card on desktop (the dock stays visible beside it). The panel groups controls into four sections:
+
+1. **Locale** — Language (change which of the 8 languages the whole interface reads in) · Currency (pick your currency and see every figure in that denomination) · Country (set your region for tax math and health thresholds)
+2. **Appearance** — Theme (9 themes: Cyberpunk/Amethyst/Glacier/Evergreen/Carmine/Rose/Umber/Ember/Daylight) · Layout (options for how the dashboard fits your screen)
+3. **Help** — Tour (guided walkthrough of every page) · Setup (the first-time wizard, run anytime) · Sound (on/off toggle for UI chimes — turn off if you prefer silent)
+4. **Data** — Open / Save (the one button to save your data as a file, or load a saved file back in)
+
+Each section shows its heading and controls inline. Changes save instantly. A **Back** button sits top-left to close the panel. The Settings panel is the only way to reach these controls — there is no "Accounts" or "Profiles" area.
 
 ---
 
