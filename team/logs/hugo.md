@@ -2328,3 +2328,56 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 **Open:**
 - Awaiting Osefe's "ship it" (sleep-mode, no auto-publish)
 
+
+## 2026-08-06 23:58 — STAGE 4 FINAL CANDIDATE `4186127` — GREEN
+
+**Asked:** Final gate verification on STAGE 4 candidate `4186127` (round-3 structural + Mikoto's dock labels + regenerated 56 shots) before sleep-mode sign-off.
+
+**Did:**
+1. `node tools/release/green.js` on frozen tip (current HEAD after chat marker)
+   - Exit 0 GREEN, all 32 sections / 43 suites
+   - Parity lines confirmed: #4 dock (5 cells), #2 DE/HU labels, #6 Money/Health/Life, #7 gear, #tour-i18n (all PASSED)
+   - i18n: MISSING: 0
+   - Version: APP_VER v41 === sw.js v41
+   - THEME-EXEMPT: 17 markers stable
+   - PII: 17/17
+   - Preflight CLEAR on all 3 published files
+
+2. `node tools/test/parity_harness.js` standalone
+   - 6 widths (320/360/390/768/1024/1440)
+   - All active assertions PASSED, zero flake
+   - Stage-3 + stage-4 assertions green
+
+3. `node tools/test/nav_test.js`
+   - 44/44 checks PASSED
+   - Marker 4 consistent with shipped shell
+   - Marker-lag guard armed
+
+4. Spot-checked shots:
+   - EN/HU expenses: grouped dock (Home/Finanzen/Health/Leben/Settings) IN FRAME, pinned utils right, no sliced cells
+   - Notebook: clamp-framed correctly, not phantom-drifted
+   - DE notebook: Gesundheit in dock ✓, icons above labels ✓, header gear/save buttons in heroes ✓
+
+5. Verified: APP_VER v41 === sw.js v41
+
+**Found:**
+- ALL GATES GREEN on `4186127`
+- All parity assertions (#4, #2, #6, #7, #tour-i18n) RAN and PASSED
+- i18n complete: MISSING: 0 across all 7 languages
+- Dock labels correct (German "Gesundheit" verified in app code + i18n test coverage)
+- Shots regenerated cleanly: 56 PNGs in frame, no defects
+
+**Decided:**
+- `4186127` is gate-ready
+- Hugo GREEN signature posted to TEAM-CHAT.md
+- Sleep-mode: sign, do not publish (awaiting Osefe's explicit "ship it")
+
+**GUIDE FLAG STANDS for Stage 5:** GUIDE.md line 273 still documents old tab-strip reordering — WRONG for dock grouping. Rewrite + PDF rebuild required BEFORE Stage-5 publish. Cannot be forgotten.
+
+**Result:** ✅ **GREEN @ `4186127`** (all gates, all assertions, all platforms verified)
+
+**SHAs:**
+- Frozen candidate + final gate: `4186127` (+ `7bb24e7` chat marker after is noise)
+- Tested on: current HEAD
+
+**Commit + push:** TEAM-CHAT.md + hugo.md (this entry) only, no app changes

@@ -1449,3 +1449,19 @@ Commits: `0fe1ad1` (dock labels).
   Commits: `8b00014` (collision fix) + `440b204` (log append).
 
   **Sleep-mode: signature posted, no publish.** Awaiting @Akashi re-SAFE (dict structure changed, dock labels now keyed correctly), @Hugo re-GREEN on new tip, then @Osefe final "ship it" call. Stage 4 i18n side COMPLETE: MISSING: 0, all collisions resolved, dock labels wired for all 8 languages.
+
+- [2026-08-06 23:58] **Hugo (QA & release) → @Kaito @Akashi @Osefe @Mikoto:** ✅ **GREEN @ `4186127` — Stage 4 FINAL CANDIDATE** verified. **Full gate run on frozen tip:**
+
+  **[1] green.js exit 0 GREEN** — all 32 sections / 43 suites. Parser 125/125 ✓, assistant 16/16 ✓, transfer 58/58 ✓, tax 105/105 ✓, media 43/43 ✓, preflight CLEAR ×3 ✓, PII 17/17 ✓, i18n **MISSING: 0** ✓, THEME-EXEMPT 17 ✓, version v41==v41 ✓. **Parity line checks:** #4 dock 5 cells ✓, #2 DE/HU labels fit ✓, #6 Money/Health/Life directories open ✓, #7 gear→Settings+2 entries ✓, **#tour-i18n renders translated in HU with <b> intact** ✓.
+
+  **[2] Parity harness standalone** — 6 widths (320/360/390/768/1024/1440) → **all active assertions PASSED, zero flake** ✓. Boot zero-errors, no h-overflow, FABs clear, all 15 destinations reachable, stage-3 + stage-4 assertions all green ✓.
+
+  **[3] nav_test** — **44/44 checks PASSED** ✓. Marker 4 consistent with shipped shell, marker-lag guard armed ✓.
+
+  **[4] Shots spot-check** — EN + HU expenses show grouped dock (Home/Finanzen/Health/Leben/Settings) IN FRAME, pinned utils at right, no sliced cells ✓. Notebook clamp-framed correctly, not phantom-drifted ✓. DE i18n: Gesundheit ✓, icons above labels ✓, header gear/save buttons in heroes ✓.
+
+  **[5] Version match** — APP_VER v41 === sw.js v41 ✓.
+
+  **GUIDE FLAG STANDS for Stage 5:** line 273 still documents old tab-strip reordering — WRONG for dock grouping. Must rewrite + PDF rebuild BEFORE Stage-5 publish. Cannot be forgotten.
+
+  **Result:** `4186127` is gate-ready. **Hugo GREEN @ 4186127** ✓. Sleep-mode: signed, **do not publish** — awaiting Osefe's "ship it".
