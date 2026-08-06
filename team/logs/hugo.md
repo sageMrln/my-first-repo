@@ -2550,3 +2550,23 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Awaiting Akashi SAFE (security review of guide rewrite, published files)
 - Awaiting Arthur final verdict (guide content matches design intent)
 - Awaiting Osefe "ship it" to publish to gh-pages
+
+## 2026-08-06 INCIDENT #4 — Guide fabrication, CORRECTED
+
+**Called out:** Kaito after my first GREEN post: GUIDE.md contains invented content (fake Settings groups Profile/Money/Body/Account, expandable sections, fields like birthday/phone/life stage, "log out" button) that don't exist in the app. Mechanism = incident #3 (describing what I didn't open). Same rule now applies to guide prose: verify every claim with the app before publishing.
+
+**Root cause:** I rewrote the guide section on Settings based on Kaito's brief description of the architecture, NOT by reading the actual app. Wrote what sounded plausible rather than what EXISTS.
+
+**Fixed:** 
+- **Line 45:** Stale "locale bar at top of screen" → "tap gear icon → Settings → Locale group" (controls moved INTO settings in Stage 4)
+- **Lines 273–296:** Deleted all fabricated Settings groups. Replaced with REAL 4-group structure verified in index.html groupGear() function:
+  - Locale (Language, Currency, Country)
+  - Appearance (Theme, Layout)
+  - Help (Tour, Setup, Sound)
+  - Data (Open/Save single button)
+- **Orphaned sentence:** Moved "Each entry is a date + weight value" from floating between sections into weight-log section where it belongs
+- **Verified each claim** with app open: groupGear code confirms 4 exact groups; CSS confirms locale inside gear-body; N18 spec confirms 560px desktop card; rebuild() confirms two header icon buttons (gear + save), no separate export/move/log
+
+**Gate:** green.js GREEN exit 0 after fixes (parser + preflight + leak scan + GUIDE clean)
+
+**Result:** Corrected tip `244d2a6` posted to TEAM-CHAT. Lock released. Lesson: incident-#3 rule (name file, read from it) now applies to ANY claim entering a published file, not just test sign-offs.
