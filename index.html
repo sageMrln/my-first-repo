@@ -613,6 +613,26 @@
   @media(max-width:720px){.ih-strip{grid-template-columns:repeat(2,1fr)}}
   /* Arthur H — hero number: the leftover is the app's single most important figure, so it leads the header */
   .hero{margin-top:18px}
+  /* Stage 5 §D — Home hero + four cards (Arthur's card anatomy: label 12px/600,
+     value 28px/700 tabular-nums, min-height 88px, explicit time-scope on every card) */
+  .home-hero{ padding:2px 0 0; }
+  .home-hero .hero{ margin-top:6px; }
+  .hh-why{ font-size:12px; color:var(--txt-dim); margin-top:4px; max-width:560px; line-height:1.45; }
+  .hh-viz{ margin-top:14px; }
+  .hh-viz-lbl{ font-size:12px; font-weight:600; color:var(--txt-dim); margin-bottom:4px; }
+  .hh-viz svg{ max-width:100%; height:auto; display:block; }
+  .home-cards{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0 16px; }
+  .kcard{ min-height:88px; text-align:left; background:var(--panel2); border:1px solid var(--line);
+    border-radius:var(--r-l); padding:12px 14px; display:flex; flex-direction:column; gap:4px;
+    justify-content:flex-start; cursor:pointer; color:var(--txt); font-family:var(--font-body); }
+  .kcard:hover{ border-color:var(--cyan-dim); }
+  .kcard:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; }
+  .kc-lbl{ font-size:12px; font-weight:600; }
+  .kc-scope{ color:var(--txt-dim); font-weight:500; text-transform:lowercase; }
+  .kc-val{ font-size:28px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--bright); line-height:1.15; }
+  .kc-val--s{ font-size:18px; padding-top:5px; }
+  .kc-sub{ font-size:12px; color:var(--txt-dim); }
+  @media (min-width:860px){ .home-cards{ grid-template-columns:repeat(4,1fr); } }
   .hero-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;color:var(--txt-dim);text-transform:uppercase}
   .hero-num{font-family:var(--font-display);font-weight:900;font-size:clamp(38px,9vw,60px);line-height:1.02;margin-top:5px;color:var(--lime);text-shadow:0 0 24px rgba(var(--pos-rgb),.32)}
   .hero-num.warn{color:var(--amber);text-shadow:0 0 24px rgba(var(--warn-rgb),.30)}
@@ -1891,16 +1911,6 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       <span class="pill" id="streakPill" data-i18n-skip style="display:none" title="Days in a row you've used MRLN">STREAK <b id="streakN">0</b></span>
     </div>
 
-    <div class="hero" title="What's left after every bill and any debt payment, in a typical month — before you move money to savings.">
-      <div class="hero-lbl" data-i18n="YOU KEEP · TYPICAL">YOU KEEP · TYPICAL</div>
-      <div class="hero-num" id="heroLeft"><span id="heroLeftVal">—</span><span class="ccySuffix hero-ccy"> kr</span></div>
-    </div>
-
-    <div class="status">
-      <div class="stat low"><div class="lbl">Low Month</div><div class="val" id="stLow">—</div></div>
-      <div class="stat avg"><div class="lbl">Typical</div><div class="val" id="stAvg">—</div></div>
-      <div class="stat high"><div class="lbl">High Month</div><div class="val" id="stHigh">—</div></div>
-    </div>
   </header>
 
   <!-- NAV -->
@@ -1925,6 +1935,49 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
 
   <!-- 01 OVERVIEW -->
   <section class="panel show" id="overview">
+    <!-- Stage 5 §D (ruling a213555): Home = hero + four cards. The hero moved OUT of
+         the shared header (same IDs — render code is location-independent); the
+         Low/Typical/High band is its secondary line, the "why" is a visible sub-label,
+         and the incomeLog mini-viz renders only when a real series exists (§I: a
+         sparkline with no series never ships). -->
+    <div class="home-hero" id="homeHero">
+      <div class="hero" title="What's left after every bill and any debt payment, in a typical month — before you move money to savings.">
+        <div class="hero-lbl" data-i18n="Left this month">Left this month</div>
+        <div class="hero-num" id="heroLeft"><span id="heroLeftVal">—</span><span class="ccySuffix hero-ccy"> kr</span></div>
+        <div class="hh-why" data-i18n="What's left after every bill and any debt payment, in a typical month — before you move money to savings.">What's left after every bill and any debt payment, in a typical month — before you move money to savings.</div>
+      </div>
+      <div class="status">
+        <div class="stat low"><div class="lbl">Low Month</div><div class="val" id="stLow">—</div></div>
+        <div class="stat avg"><div class="lbl">Typical</div><div class="val" id="stAvg">—</div></div>
+        <div class="stat high"><div class="lbl">High Month</div><div class="val" id="stHigh">—</div></div>
+      </div>
+      <div class="hh-viz" id="hhViz" style="display:none">
+        <div class="hh-viz-lbl" data-i18n="Income history">Income history</div>
+        <div id="hhChart"></div>
+      </div>
+    </div>
+    <div class="home-cards" id="homeCards">
+      <button type="button" class="kcard" data-goto="food">
+        <div class="kc-lbl"><span data-i18n="Calories">Calories</span> <span class="kc-scope" data-i18n="Today">Today</span></div>
+        <div class="kc-val" id="kcCal">—</div>
+        <div class="kc-sub" id="kcCalSub"></div>
+      </button>
+      <button type="button" class="kcard" data-goto="food">
+        <div class="kc-lbl"><span data-i18n="Macros">Macros</span> <span class="kc-scope" data-i18n="Today">Today</span></div>
+        <div class="kc-val kc-val--s" id="kcMac">—</div>
+        <div class="kc-sub" data-i18n="protein · carbs · fat">protein · carbs · fat</div>
+      </button>
+      <button type="button" class="kcard" data-goto="gym">
+        <div class="kc-lbl"><span data-i18n="Weight">Weight</span> <span class="kc-scope" data-i18n="Current">Current</span></div>
+        <div class="kc-val" id="kcWt">—</div>
+        <div class="kc-sub" id="kcWtSub"></div>
+      </button>
+      <button type="button" class="kcard" data-goto="gym">
+        <div class="kc-lbl"><span data-i18n="Workouts">Workouts</span> <span class="kc-scope" data-i18n="In your plan">In your plan</span></div>
+        <div class="kc-val" id="kcWo">—</div>
+        <div class="kc-sub" id="kcWoSub"></div>
+      </button>
+    </div>
     <div class="card">
       <h2>Mission Briefing</h2>
       <div class="desc">Your whole plan in one screen. Built from your own figures — income, bills and subscriptions. Every number below is computed from one shared model, so the tabs always agree.</div>
@@ -1937,7 +1990,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
           </ul>
         </div>
         <div>
-          <div class="bignum"><small>Left over · typical month</small><span id="ovLeft">—</span><span class="ccySuffix" style="font-size:20px"> kr</span></div>
+          <!-- Stage 5 §D: the 42px duplicate of the hero number is gone (parity #5:
+               exactly ONE focal number on Home); the explanation stays. -->
           <div class="note">What's left after every bill and any debt payment, before you move money to savings. Comfort money after savings: <b id="ovComfort">—</b>. This is the "spend without doing checkout math" number.</div>
         </div>
       </div>
@@ -3829,6 +3883,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     set('ovWorst',   '+' + fmt(leftOver(MODEL.income.low)));
     set('vdWorst',   '+' + fmtN(leftOver(MODEL.income.low)) + ' ✅');
     setHeroLeftover();
+    if(typeof renderHomeCards==='function'){ try{ renderHomeCards(); renderHomeViz(); }catch(_){ } }
   }
   // Arthur H — the header hero number = typical-month leftover, colour-coded by health
   // (lime ok · amber if it's under 10% of income · red if negative). Reads the same
@@ -3846,6 +3901,46 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   }
   renderExpenses();
   renderDerived();
+
+  /* ---------- STAGE 5 §D — HOME CARDS + INCOME-HISTORY MINI-VIZ ---------- */
+  // Four 88px cards under the hero: Calories today · Macros today · Weight current ·
+  // Workouts in-plan. Health numbers render raw (only money carries the poison
+  // multiplier, matching every existing health surface); the whole render REFUSES on a
+  // poisoned copy (ruling a213555 §G Stage-5: refusal guard on everything new here).
+  function renderHomeCards(){
+    try{ if(isNaN(__sys.token())) return; }catch(_){ return; }
+    var set=function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+    var tot={kcal:0,p:0,c:0,f:0};
+    try{ var d=todayKey();
+      (STATE.foodLog||[]).forEach(function(e){ if(e && e.date===d && e.total){
+        tot.kcal+=Number(e.total.kcal)||0; tot.p+=Number(e.total.p)||0; tot.c+=Number(e.total.c)||0; tot.f+=Number(e.total.f)||0; } });
+    }catch(_){ }
+    set('kcCal', tot.kcal.toLocaleString('en-GB'));
+    var T=null; try{ T=(typeof nutritionTargets==='function')?nutritionTargets():null; }catch(_){ }
+    set('kcCalSub', (T&&T.kcal>0) ? tf('of {n} kcal target',{n:T.kcal.toLocaleString('en-GB')}) : t('kcal'));
+    set('kcMac', tot.p+'P · '+tot.c+'C · '+tot.f+'F');
+    var w=Number((STATE.body||{}).weight)||0;
+    set('kcWt', w>0 ? (w+' kg') : '—');
+    set('kcWtSub', w>0 ? '' : t('Add body stats in Gym'));
+    set('kcWo', String((STATE.workouts||[]).length));
+  }
+  function renderHomeViz(){
+    var host=document.getElementById('hhChart'), wrap=document.getElementById('hhViz');
+    if(!host||!wrap) return;
+    var svg=''; try{ svg=(typeof incomeChartSVG==='function')?incomeChartSVG():''; }catch(_){ }
+    host.innerHTML=svg;                       // app-generated SVG only; labels esc()'d inside incomeChartSVG
+    wrap.style.display = svg ? '' : 'none';   // §I: a sparkline with no series never ships
+  }
+  (function wireHomeCards(){
+    document.querySelectorAll('#homeCards .kcard').forEach(function(b){
+      b.addEventListener('click', function(){
+        var tb=document.querySelector('#tabs .tab[data-p="'+b.getAttribute('data-goto')+'"]');
+        if(tb) tb.click();
+      });
+    });
+    var ov=document.querySelector('#tabs .tab[data-p="overview"]');
+    if(ov) ov.addEventListener('click', function(){ setTimeout(function(){ try{ renderHomeCards(); renderHomeViz(); }catch(_){ } },0); });
+  })();
 
   /* ---------- CASH FLOW SIMULATOR ---------- */
   var slider = document.getElementById('incSlider');
@@ -7612,6 +7707,38 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     MODEL = JSON.parse(JSON.stringify(window.__DEMO_MODEL));
     ensureIds(MODEL); STATE.cfg = MODEL;
     STATE.demo=true; STATE.fresh=false; STATE.cleanMode=false;
+    /* Stage 5 (Arthur r5 order): the demo must not look unused — two seeded notes
+       (t()-keyed so they render in the active language; serious register) and a
+       6-month income series so the Home hero's Income-history viz has a REAL series
+       to draw (§I: a sparkline with no series never ships). Demo-only figures. */
+    if(!Array.isArray(STATE.notes)) STATE.notes=[];
+    if(!STATE.notes.length){
+      STATE.notes.push({ id:uid(), title:t('Groceries for the week'), body:t('Chicken, rice, oats, eggs, frozen berries, coffee. Stay under 600.'), ts:new Date().toISOString() });
+      STATE.notes.push({ id:uid(), title:t('Renewal reminder'), body:t('Gym membership renews on the 12th — check the student rate still applies.'), ts:new Date().toISOString() });
+    }
+    if(!Array.isArray(MODEL.incomeLog)) MODEL.incomeLog=[];
+    if(!MODEL.incomeLog.length){
+      var _amts=[3600,3800,3400,4300,3800,3900], _now=new Date();
+      _amts.forEach(function(a,i){
+        var d=new Date(_now.getFullYear(), _now.getMonth()-(_amts.length-1-i), 1);
+        MODEL.incomeLog.push({ ym: d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2), amt:a, ts:Date.now()-(_amts.length-i), est:false });
+      });
+      try{ if(typeof recomputeIncome==='function') recomputeIncome(); }catch(_){ }
+    }
+    /* …and the health half (the Home cards read these): same "Alex" sample numbers
+       the shot generator uses. Only ever fills EMPTY state — never a real user's. */
+    if(!STATE.body || typeof STATE.body!=='object') STATE.body={};
+    if(!Number(STATE.body.weight)){ STATE.body.age=29; STATE.body.height=178; STATE.body.weight=74; }
+    if(!Array.isArray(STATE.workouts)) STATE.workouts=[];
+    if(!STATE.workouts.length){
+      [[t('Monday'),t('Push — chest, shoulders, triceps')],[t('Wednesday'),t('Pull — back and biceps')],[t('Friday'),t('Legs and core')]]
+        .forEach(function(wd){ STATE.workouts.push({ id:uid(), day:wd[0], title:wd[1], body:'' }); });
+    }
+    if(!Array.isArray(STATE.foodLog)) STATE.foodLog=[];
+    if(!STATE.foodLog.length && typeof todayKey==='function'){
+      STATE.foodLog.unshift({ id:uid(), date:todayKey(), ts:new Date().toISOString(), text:t('Chicken, rice and broccoli'), items:[], total:{kcal:640,p:52,c:68,f:14}, photo:'', hasPhoto:false });
+      STATE.foodLog.unshift({ id:uid(), date:todayKey(), ts:new Date().toISOString(), text:t('Oats with berries and skyr'), items:[], total:{kcal:420,p:24,c:58,f:9}, photo:'', hasPhoto:false });
+    }
     applyCleanModeClass(); refreshEverything(); autosave();
     logChange('demo', 'Loaded sample data');
   }
@@ -8655,6 +8782,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         if(bar){ bar.style.width='0%'; }
         if(note) note.innerHTML = t.kcal? tf('Logged <b>{k} kcal</b> today. Add your body stats in the Gym tab to compare against a daily target.',{k:t.kcal.toLocaleString('en-GB')}) : tf('Add a meal above to start today\'s log.',{});
       }
+      if(typeof renderHomeCards==='function') try{ renderHomeCards(); }catch(_){ }   // Stage 5: the Home Calories/Macros cards mirror today's log
     }
     function dayLabel(d){ if(d===todayKey()) return 'Today'; try{ return new Date(d).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'}); }catch(_){ return d; } }
     function renderHistory(){
