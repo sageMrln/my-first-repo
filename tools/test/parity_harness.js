@@ -253,6 +253,23 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
     if (r7.noCell) bad('#7 gear reach', 'gear cell missing at stage ' + STAGE);
     else check(!r7.noSettings && r7.settingsPanel && r7.texts.length >= 3,
       '#7 gear reaches Settings panel (+' + (r7.texts.length - 1) + ' entries: ' + r7.texts.slice(1).join(', ') + ')');
+    /* tour-i18n RENDER check — the gate's blind spot both Stage-4 seats hit:
+       sync.js counts the pool, nothing rendered. Assert the REAL tour's first
+       step in hu is not English and keeps its <b>. */
+    const rt = await page.evaluate(async () => {
+      const sel = document.querySelector('#gearPanel #langSel') || document.getElementById('langSel');
+      if (sel) { sel.value = 'hu'; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+      await new Promise(res => setTimeout(res, 400));
+      if (typeof startTour === 'function') startTour(); else document.getElementById('tourBtn')?.click();
+      await new Promise(res => setTimeout(res, 400));
+      const tt = document.getElementById('ttTxt');
+      if (!tt) return { noTour: true };
+      const r = { english: /Four groups hold everything/.test(tt.textContent), bold: !!tt.querySelector('b') };
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      return r;
+    });
+    if (rt.noTour) bad('#tour-i18n render (hu)', 'tour tip not found');
+    else check(!rt.english && rt.bold, '#tour-i18n renders translated in hu with <b> intact' + (rt.english ? ' — STILL ENGLISH' : '') + (!rt.bold ? ' — <b> LOST' : ''));
     await page.context().close();
     await b4.close();
   } else {
