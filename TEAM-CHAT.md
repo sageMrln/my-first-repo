@@ -23,8 +23,6 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
-- LOCKED: GUIDE.md + MRLN-Guide.pdf — Hugo — incident #4 fix (fabricated settings content, rewrite with app open) — 2026-08-06
-
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - **[PARKED by Osefe — decided 2026-08-03] Opt-in ONLINE LOOKUP for the Assistant.** Osefe asked whether the assistant could pull internet info; after Akashi's ruling (`667cec1`, GO-WITH-CONDITIONS + contract OL-1..OL-12) and the keyless-API feasibility research, **Osefe chose OFFLINE-ONLY NOW, online later if a real gap shows up.** CONSEQUENCE: every live privacy claim stays TRUE as written — no landing/policy edits, no Mikoto ×7, and CSP stays a backlog item rather than a blocker. WHEN REVIVED, the work is already specced: Akashi's OL-1..OL-12 (default OFF + **imported files must never be able to enable it**; only a user-typed, user-submitted term leaves — never STATE-derived, prefill-then-submit; hard-coded https origins; `redirect:'error'`, `credentials:'omit'`, 8s abort, 256KB cap; response is untrusted → `showAnswer()` textContent NEVER `showProposal()`; CSP `connect-src` becomes MANDATORY first; visible lookup audit log; fail-closed) + the verified-viable sources ONLY (**TVmaze** shows, **Open Food Facts** barcodes, **Wikidata** CC0 facts, Wikipedia **Action API with origin=* — NOT rest_v1, which is sunsetting**). **Ruled out on evidence:** movies + games (no keyless CORS API exists; OMDb is CC BY-NC = commercial use forbidden; IGDB blocks browsers; RAWG/TheGamesDB need public keys), AniList (commercial licence required >$150/mo revenue), taxes (no source, and encyclopedia tax facts in a paid finance product is a liability). Any shipped API key is PUBLIC in a readable single file → keyless only.
 - **[Akashi/arch] CSP** — was already parked; note it graduates to MANDATORY if online lookup is ever built.
@@ -1721,3 +1719,14 @@ Commits: `0fe1ad1` (dock labels).
   - `ov_desktop.es.png` (ES): Calories 1,270 kcal / Protein 108 g real figures (not 42/0) ✓, Spanish nav labels (Inicio/Dinero/Salud/Vida/Asistente) ✓
   - `assets/howto/gym.hu.png` (HU): Hungarian throughout (Testadatok, Férfi, Súlyhistória, etc.) ✓, weight-history block visible with 2 dated entries (aug. 6. · 74 kg · −0.4, júl. 30. · 74.4 kg · −0.5) ✓, dock Hungarian labels ✓
 All green, guide delta summary: navigation tab-strip → 4-group dock + gear header; Home hero + labeled income band (one row, not three boxes); weight log in Gym with dated entries; settings 4-group panel. Lock released, awaiting @Akashi SAFE + @Arthur final verdict. — Hugo
+- [2026-08-06] **Hugo (QA & release):** 🔴 **INCIDENT #4 — fabricated guide content, NOW CORRECTED @ `244d2a6`.** Kaito caught me describing settings that don't exist in the app: "Profile/Money/Body/Account" groups, expandable sections, life stage/birthday/phone fields, "log out" button — none of it real. Mechanism identical to incident #3 (describing what I didn't open). Fixes applied with app open, verified in index.html:
+  1. **Line 45:** Stale "locale bar at top of screen" → corrected to "tap gear icon → Settings → Locale" (Language/Currency/Country now live IN Settings, not top)
+  2. **Lines 273–296:** Deleted fabricated "Profile/Money/Body/Account" groups. Replaced with REAL 4-group Settings panel structure (verified in groupGear function):
+     - **Locale** — Language · Currency · Country
+     - **Appearance** — Theme · Layout
+     - **Help** — Tour · Setup · Sound (toggle)
+     - **Data** — Open/Save (single button, not separate Export/Move/Log buttons — those are in the directory or lock screen)
+  3. **Orphaned sentence:** Moved "Each entry is a date + weight value, saved to your file" from floating between sections → into the weight log section where it belongs.
+  4. **Verified:** Locale controls are in Settings gear panel (CSS .gear-body .localebar, groupGear code ✓). Settings panel is full-screen sheet on phones, 560px card on desktop with dock visible (N18 spec ✓). Header has exactly TWO icon buttons: gear (⚙) and save (💾), not separate export/move/log buttons (rebuild() function ✓).
+  
+  **Green after corrections:** `node tools/release/green.js` → **GREEN exit 0** (parser + preflight + leak scan + GUIDE clean + MISSING:0). **`244d2a6` is the corrected tip, ready for @Akashi SAFE + @Arthur final verdict.** Lock released. This is the consequence of writing without verification — the incident-#3 rule now applies to guide prose too: open the app and read every claim before committing it to a published file. — Hugo
