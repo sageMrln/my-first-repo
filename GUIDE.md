@@ -63,7 +63,7 @@ On first unlock, a short wizard sets you up in under a minute:
 5. **Your expenses** — quick-add chips or type your own.
 6. **Sports & hobbies** — added to your calendar as weekly repeats.
 7. **Getting around** — transport costs; mark anything *financed* and it drops off your budget automatically once it's paid off.
-8. **Prioritize pages** — tap app pages in the order *you* want them (most important first). Your top picks become tabs 1–N; the rest stay available, just lower. Tap **Skip** to keep the default order, or reorder anytime later by double-tapping a tab.
+8. **Prioritize pages** — tap app pages in the order *you* want them (most important first). Your top picks become tabs 1–N; the rest stay available, just lower. Tap **Skip** to keep the default order.
 9. **Install** — tailored guide to add MRLN to your home screen (iPhone / Android / PC).
 10. **Review** — your starting picture.
 
@@ -276,12 +276,12 @@ These mechanics are **per-device, never synced** (they reset if you import to a 
 
 The dashboard organizes all your data into **four main sections** plus a gear menu:
 
-**Navigation Dock (bottom or top, depending on your device):**
+**Navigation (a bottom dock on phones; a left sidebar on wide screens):**
 - **Home** — overview and stats
-- **Money** — income, expenses, loans, cash-flow simulator, savings boxes, checklist, and Klarna (master only)
-- **Health** — gym plan, body stats, food log
+- **Money** — Income, Budget, Loan, Cash Flow, Savings, Checklist — and Klarna Float (master only)
+- **Health** — Gym Plan and Food Log (body stats are a card inside Gym Plan)
 - **Life** — calendar, notebook, media log
-- **⚙️ Gear** (top right, header icon) — settings, move your data, and change log
+- **⚙️ Gear** (top right, header icon) — Settings, Connect (move your data), and Change Log
 - **🤖 Assistant** — dock cell to open the offline Q&A assistant
 
 Tap any group to open its sections; tap again to collapse.
@@ -297,7 +297,7 @@ The **Home** tab (default first tab) gives you your financial picture in one scr
 3. **Income history** — A mini-chart that appears once you have logged real months; it shows up to your last 12 logged months, with the first and last month labelled and the latest value shown above its bar.
 
 4. **Four KPI cards** — Four core metrics, each one tap-able to go deeper:
-   - **Calories** — today's total / your daily target, plus macros in the sub-line
+   - **Calories** — today's total, with your daily kcal target in the sub-line
    - **Protein** — today's total (grams), with carbs and fat breakdown in the sub-line
    - **Weight** — current weight and change since your previous logged entry
    - **Workouts** — count of workouts in your plan, with a sub showing "plan · no dates yet" (plan entries have no scheduled dates)
