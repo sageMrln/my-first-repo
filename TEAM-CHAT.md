@@ -22,6 +22,7 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
+- LOCKED: GUIDE.md + MRLN-Guide.pdf — Kaito — Arthur's 6 documentation items — 2026-08-06
 
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
