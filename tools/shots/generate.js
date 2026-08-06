@@ -329,8 +329,18 @@ if (has('check')) {
             /* clamp to reachable scroll: a short page (notebook) cannot put its panel
                at the top — comparing against the UNCLAMPED target reported phantom
                drift (-351px) while the shot was actually correct. */
-            const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-            const target = Math.min(max, Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 8));
+            /* Arthur (round-3): a short page clamps the scroll and leaves the panel
+               mid-frame — pad the page bottom so the panel top can ALWAYS reach y=8,
+               then remove the spacer after the shot (next evaluate). */
+            const want = panel.getBoundingClientRect().top + window.scrollY - 8;
+            let max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+            if (want > max) {
+              const sp = document.createElement('div'); sp.id = '__shotspacer';
+              sp.style.height = Math.ceil(want - max + 8) + 'px';
+              document.querySelector('.wrap').appendChild(sp);
+              max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+            }
+            const target = Math.min(max, Math.max(0, want));
             window.scrollTo(0, target);
             await new Promise(r => setTimeout(r, 250));
             return { target: Math.round(target), y: Math.round(window.scrollY), doc: document.documentElement.scrollHeight };
@@ -345,6 +355,7 @@ if (has('check')) {
           });
           const out = howtoPath(t.shot, L);
           await page.screenshot({ path: out, clip: { x: 0, y: navY, width: 390, height: 800 } });
+          await page.evaluate(() => { document.getElementById('__shotspacer')?.remove(); });
           if (!(await notSplash(page, out))) { failed++; } else { wrote++; }
         }
       }

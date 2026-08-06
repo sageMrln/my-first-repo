@@ -167,7 +167,7 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
         const cells = [...dock.querySelectorAll('button,a')].filter(c => c.offsetParent !== null);
         const badCells = cells.filter(c => { const b = c.getBoundingClientRect(); return b.width < 48 || b.height < 56; })
           .map(c => (c.textContent || '').trim().slice(0, 14));
-        const shorties = [...document.querySelectorAll('.btn,.field input,.field select')]
+        const shorties = [...document.querySelectorAll('.btn,.field input,.field select,.hdrbtn')]
           .filter(el => el.offsetParent !== null && el.getBoundingClientRect().height > 0 && el.getBoundingClientRect().height < 44)
           .map(el => (el.id || el.textContent || '').trim().slice(0, 18));
         return { cells: cells.length, badCells: badCells, shorties: shorties.slice(0, 8), shortCount: shorties.length };
@@ -235,7 +235,7 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
       else check(r.open && r.items >= 2, '#6 ' + g + ' opens a visible directory (' + r.items + ' modules)');
     }
     const r7 = await page.evaluate(async () => {
-      const cell = document.querySelector('nav.dock button[data-sect="Settings"]');
+      const cell = document.getElementById('hdrGear');   /* Stage-4 structural: gear lives in the header (mock-faithful) */
       if (!cell) return { noCell: true };
       cell.click();
       await new Promise(res => setTimeout(res, 200));

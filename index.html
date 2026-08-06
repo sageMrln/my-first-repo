@@ -286,7 +286,7 @@
   nav.dock button{ flex:0 0 auto; min-width:48px; min-height:56px; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:2px; background:none; border:0; border-radius:var(--r-c);
     color:var(--txt-dim); font-family:var(--font-body); font-size:11px; font-weight:600; letter-spacing:.01em;
-    padding:4px 10px; cursor:pointer; white-space:nowrap; }
+    padding:4px 8px; cursor:pointer; white-space:nowrap; }
   nav.dock button.on{ color:var(--accent-text); background:rgba(var(--accent-rgb),.10); font-weight:700; }
   /* A2 (Arthur): active state carries a SHAPE channel, never colour alone */
   nav.dock button{ position:relative; }
@@ -324,7 +324,9 @@
   .gear-body .localebar{ position:static; display:flex; flex-direction:column; gap:var(--s3); padding:0; margin:0; border:0; }
   .gear-body .localebar .lc{ display:flex; flex-direction:column; gap:4px; width:100%; }
   .gear-body .localebar label{ font-size:12px; font-weight:600; color:var(--txt-dim); }
-  .gear-body .localebar select, .gear-body .localebar input{ width:100%; max-width:none; min-height:44px; font-size:15px; font-family:var(--font-body); }
+  .gear-body .localebar select, .gear-body .localebar input{ width:100%; max-width:none; min-height:44px; max-height:44px; flex:0 0 auto; font-size:15px; font-family:var(--font-body); }
+  .gear-body .localebar{ align-items:stretch; }
+  .gear-body .localebar .lc{ flex:0 0 auto; align-items:stretch; }
   .gear-body .localebar button, .gear-body .localebar .iconbtn{ min-height:44px; }
   html[data-nav=sections] .wrap{ padding-bottom:calc(100px + env(safe-area-inset-bottom)); /* dock-only clearance — the fab column folded into the dock (Arthur's reclaim) */ }
   html[data-nav=sections] .savebar{ bottom:calc(76px + env(safe-area-inset-bottom)); }
@@ -334,7 +336,20 @@
   html[data-nav=sections] .savebar.open .savefab, html[data-nav=sections] .savebar.open .botfab{ display:none; }
   .dock-utils{ display:flex; gap:2px; flex:0 0 auto; align-items:stretch;
     border-left:1px solid var(--line); padding-left:4px; margin-left:2px; }
-  .dockutil{ min-width:48px; font-size:20px; }
+  .dockutil{ min-width:48px; }
+  .dock-ic{ width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.75;
+    stroke-linecap:round; stroke-linejoin:round; }
+  .dockbtn.on .dock-ic{ stroke-width:2; fill:currentColor; fill-opacity:.16; }
+  .dock-lbl{ font-size:11px; line-height:1.1; }
+  header.hud{ position:relative; }
+  .hdr-utils{ position:absolute; top:12px; right:12px; display:flex; gap:8px; z-index:5; }
+  .hdrbtn{ width:44px; height:44px; display:flex; align-items:center; justify-content:center;
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--r-c);
+    color:var(--txt-dim); cursor:pointer; position:relative; }
+  .hdrbtn:hover{ color:var(--txt); border-color:var(--cyan-dim); }
+  .hdrbtn.warn{ color:var(--red); border-color:var(--red); }
+  .hdrbtn.warn::after{ content:''; position:absolute; top:5px; right:5px; width:8px; height:8px;
+    border-radius:50%; background:var(--red); }
   /* Arthur P1: sheets join the motion system (state, not decoration) */
   @media (prefers-reduced-motion: no-preference){
     .dock-dir{ transition:transform .14s cubic-bezier(.2,0,0,1), opacity .14s ease; transform-origin:bottom center; }
@@ -343,8 +358,8 @@
     .gear-panel{ transition:opacity .14s ease; }
   }
   /* Arthur P1: the Home cell hints its directory on re-tap (stats lives there) */
-  nav.dock button.on[data-sect="Home"]::after{ content:'\2026'; position:absolute; right:6px; bottom:4px;
-    font-size:9px; line-height:1; color:var(--txt-dim); }
+  nav.dock button.on[data-sect="Home"]::after{ content:'\2026'; position:absolute; right:5px; bottom:3px;
+    font-size:11px; line-height:1; color:var(--txt-dim); }
   .dockutil.warn{ color:var(--red); }
   .dockutil.warn::after{ content:''; position:absolute; top:6px; right:8px; width:8px; height:8px;
     border-radius:50%; background:var(--red); }
@@ -2993,6 +3008,24 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   (function(){
     document.documentElement.setAttribute('data-nav','sections'); // in-branch default; publishes only with Stage 5
     var tabsNav=document.getElementById('tabs'); if(!tabsNav) return;
+    /* Arthur's icon spec (Stage-4 structural ruling): 24px inline SVG, stroke 1.75,
+       currentColor — text-only cells made width a function of the language. */
+    var ICONS={
+      Home:'<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>',
+      Money:'<rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="12" cy="13" r="3"/>',
+      Health:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
+      Life:'<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 11h16"/>',
+      Settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.7h4l.4-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.06-.4.1-.8.1-1.2z"/>',
+      save:'<path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/>',
+      bot:'<rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V4M8 4h8"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/>'
+    };
+    function icon(name){
+      var s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('class','dock-ic');
+      s.setAttribute('aria-hidden','true');
+      s.innerHTML=ICONS[name]||'';
+      return s;
+    }
     var SECTIONS=[
       {key:'Home',   tabs:['overview','stats']},
       {key:'Money',  tabs:['income','expenses','loan','flow','rule','checklist','klarna']},
@@ -3004,6 +3037,35 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var dir=document.createElement('div'); dir.className='dock-dir'; dir.id='dockDir'; dir.setAttribute('role','dialog');
     var dirBack=document.createElement('div'); dirBack.className='dock-dirback'; dirBack.id='dockDirBack';
     var gearPanel=null;
+    var headerUtils=null;
+    function ensureHeaderUtils(){
+      if(headerUtils && document.contains(headerUtils)){ syncHeaderLabels(); return; }
+      var hud=document.querySelector('header.hud'); if(!hud) return;
+      headerUtils=document.createElement('div'); headerUtils.className='hdr-utils';
+      var gearSec=null; SECTIONS.forEach(function(s){ if(s.gear) gearSec=s; });
+      var g=document.createElement('button'); g.type='button'; g.className='hdrbtn'; g.id='hdrGear';
+      g.appendChild(icon('Settings'));
+      g.setAttribute('aria-label', T('Settings'));
+      g.addEventListener('click', function(){
+        if(dir.classList.contains('open') && gearSec && dir.getAttribute('aria-label')===T(gearSec.key)){ closeDir(); return; }
+        if(gearSec) openDir(gearSec, g);
+      });
+      headerUtils.appendChild(g);
+      var sv=document.createElement('button'); sv.type='button'; sv.className='hdrbtn'; sv.id='hdrSave';
+      sv.appendChild(icon('save'));
+      sv.setAttribute('aria-label', T('Save'));
+      sv.setAttribute('data-util','save');
+      sv.addEventListener('click', function(){ var el=document.getElementById('saveFab'); if(el){ closeDir(); el.click(); } });
+      headerUtils.appendChild(sv);
+      hud.appendChild(headerUtils);
+      var bar=document.querySelector('.savebar');
+      if(bar && bar.classList.contains('haswarn')) sv.classList.add('warn');
+    }
+    function syncHeaderLabels(){
+      if(!headerUtils) return;
+      var g=headerUtils.querySelector('#hdrGear'); if(g) g.setAttribute('aria-label', T('Settings'));
+      var sv=headerUtils.querySelector('#hdrSave'); if(sv) sv.setAttribute('aria-label', T('Save'));
+    }
     function ensureGearPanel(){
       if(gearPanel) return;
       gearPanel=document.createElement('div'); gearPanel.className='gear-panel'; gearPanel.id='gearPanel';
@@ -3040,6 +3102,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var ttl=gearPanel.querySelector('.gear-head span'); if(ttl) ttl.textContent=T('Settings');
       var bk=gearPanel.querySelector('.gear-close'); if(bk) bk.textContent=T('Back');
       gearPanel.classList.add('open');
+      try{ gearPanel.querySelector('.gear-close').focus(); }catch(_){ }
     }
     function openDir(sec, cell){
       dir.innerHTML='';
@@ -3080,8 +3143,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var ut=document.createElement('div'); ut.className='dock-utils'; dock.appendChild(ut);   // P0-2 (Arthur): pinned, never scrolled away
       var act=activeSection();
       SECTIONS.forEach(function(sec){
+        if(sec.gear) return;                       // Arthur structural ruling: the gear lives in the HEADER (as the mock drew it)
         var b=document.createElement('button'); b.type='button';
-        b.textContent=(sec.gear?'⚙ ':'')+T(sec.key);
+        b.appendChild(icon(sec.key));
+        var lb=document.createElement('span'); lb.className='dock-lbl'; lb.textContent=T(sec.key); b.appendChild(lb);
         var isOn=(act && act.key===sec.key);
         b.className='dockbtn'+(isOn?' on':'');
         if(isOn) b.setAttribute('aria-current','page');
@@ -3100,19 +3165,24 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
          the DOM with every contract: expansion sheet, haswarn fail-loud, mint,
          exportBlank serialization). Reclaims the fab column + ~120px of wrap
          padding on every screen and ends the occlusion class outright. */
-      [{icon:'\uD83D\uDCBE', label:'Save', target:'saveFab', cls:'save'},
-       {icon:'\uD83E\uDD16', label:'Assistant MRLN', target:'botFab', cls:'bot'}].forEach(function(u){
-        var el=document.getElementById(u.target); if(!el) return;
+      /* Assistant stays in the dock (marquee feature); gear + save are HEADER
+         icon buttons now — Arthur's 320 census: 8 text destinations cannot fit,
+         4 groups + assistant can. Deviation from ruling a213555 §B's dock-gear
+         RECORDED: the owner's mock itself drew the gear in the header. */
+      (function(){
+        var el=document.getElementById('botFab'); if(!el) return;
         var b=document.createElement('button'); b.type='button';
-        b.className='dockbtn dockutil dockutil-'+u.cls;
-        b.textContent=u.icon;
-        b.setAttribute('aria-label', (u.target==='botFab'? u.label : T(u.label)));
-        b.setAttribute('data-util', u.cls);
+        b.className='dockbtn dockutil dockutil-bot';
+        b.appendChild(icon('bot'));
+        var lb=document.createElement('span'); lb.className='dock-lbl'; lb.textContent='MRLN'; b.appendChild(lb);
+        b.setAttribute('aria-label','Assistant MRLN');
+        b.setAttribute('data-util','bot');
         b.addEventListener('click', function(){ closeDir(); el.click(); });
         ut.appendChild(b);
-      });
+      })();
+      ensureHeaderUtils();
       var bar=document.querySelector('.savebar');
-      if(bar && bar.classList.contains('haswarn')){ var sv=dock.querySelector('[data-util="save"]'); if(sv) sv.classList.add('warn'); }
+      if(bar && bar.classList.contains('haswarn')){ var sv=document.querySelector('#hdrSave'); if(sv) sv.classList.add('warn'); }
       var on=dock.querySelector('.on');
       if(on) sc.scrollLeft=Math.max(0,Math.min(sc.scrollWidth-sc.clientWidth,on.offsetLeft-(sc.clientWidth-on.offsetWidth)/2));
       if(hadFocus){ var f=dock.querySelector('[data-sect="'+hadFocus+'"]'); if(f) f.focus(); }
@@ -3125,7 +3195,17 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     ensureGearPanel();   // relocate the settings strip NOW — not lazily on first open
     document.body.appendChild(dirBack); document.body.appendChild(dir); document.body.appendChild(dock);
     dirBack.addEventListener('click', closeDir);
-    document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeDir(); if(gearPanel) gearPanel.classList.remove('open'); } });
+    document.addEventListener('keydown', function(e){
+      if(e.key==='Escape'){ closeDir(); if(gearPanel) gearPanel.classList.remove('open'); return; }
+      /* focus trap while the settings dialog is open (Arthur) */
+      if(e.key==='Tab' && gearPanel && gearPanel.classList.contains('open')){
+        var f=gearPanel.querySelectorAll('button,select,input,[tabindex]:not([tabindex="-1"])');
+        if(f.length){ var first=f[0], last=f[f.length-1];
+          if(e.shiftKey && document.activeElement===first){ last.focus(); e.preventDefault(); }
+          else if(!e.shiftKey && document.activeElement===last){ first.focus(); e.preventDefault(); }
+        }
+      }
+    });
     try{ new MutationObserver(function(){ rebuild(); }).observe(tabsNav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style','class']}); }catch(_){ }
     /* Akashi (Stage-4 ruling): the sheet the dock's 💾 opens must itself carry the
        ↗ Open/Save affordance — a delegate button so the contract is 2 taps, not 3. */
@@ -3141,7 +3221,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
        the collapsed fab (Akashi constraint) — mirror .haswarn onto the save cell */
     try{ var _sbar=document.querySelector('.savebar');
       if(_sbar) new MutationObserver(function(){
-        var sv=dock.querySelector('[data-util="save"]');
+        var sv=document.querySelector('#hdrSave');
         if(sv) sv.classList.toggle('warn', _sbar.classList.contains('haswarn'));
       }).observe(_sbar,{attributes:true,attributeFilter:['class']});
     }catch(_){ }
@@ -3151,8 +3231,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var lk=document.getElementById('lockScreen');
     function syncInert(){
       var locked = lk && !lk.classList.contains('unlocked');
-      ['.wrap'].forEach(function(s){ var el=document.querySelector(s); if(el){ try{ el.inert=locked; }catch(_){ } } });
+      ['.wrap','.savebar','#dockDir','#dockDirBack','#gearPanel'].forEach(function(s){ var el=document.querySelector(s); if(el){ try{ el.inert=locked; }catch(_){ } } });
       try{ dock.inert=locked; }catch(_){ }
+      try{ if(headerUtils) headerUtils.inert=locked; }catch(_){ }
     }
     if(lk){ syncInert(); try{ new MutationObserver(syncInert).observe(lk,{attributes:true,attributeFilter:['class']}); }catch(_){ } }
   })();
@@ -9274,7 +9355,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       {sel:'#dock button[data-sect="Money"]', text:'<b>Money.</b> Income, budget, loan, cash flow, savings and your checklist — every number updates together.'},
       {sel:'#dock button[data-sect="Health"]', text:'<b>Health.</b> Gym plan, body stats and targets, plus the food log that estimates calories &amp; macros as you type.'},
       {sel:'#dock button[data-sect="Life"]', text:'<b>Life.</b> Calendar, notebook and your media log — reminders and notes included.'},
-      {sel:'#dock button[data-sect="Settings"]', text:'<b>Settings.</b> Language, currency, themes, moving your data — and this tour, any time.'},
+      {sel:'#hdrGear', text:'<b>Settings.</b> Language, currency, themes, moving your data — and this tour, any time.'},
       {sel:'#dock button[data-util="bot"]', text:'<b>Assistant MRLN.</b> Type a change in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions” — or ask a question about any feature.'},
       {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'}
     ];
@@ -9312,6 +9393,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
          document) so the ring points at a visible cell. */
       try{ var _dk=el.closest && el.closest('.dock-scroll');
         if(_dk) _dk.scrollLeft=Math.max(0,Math.min(_dk.scrollWidth-_dk.clientWidth, el.offsetLeft-(_dk.clientWidth-el.offsetWidth)/2));
+      }catch(_){ }
+      /* Stage-4 polish3 (Arthur): clamp the ring inside the viewport — the full-width
+         dock ring clipped 8px on both edges and collided with the tip at 1440 */
+      try{ var _rr=ring.getBoundingClientRect();
+        if(_rr.left<4) ring.style.left=(parseFloat(ring.style.left||0)+(4-_rr.left))+'px';
+        if(_rr.right>innerWidth-4) ring.style.width=Math.max(40,(innerWidth-8-_rr.left))+'px';
+        if(_rr.bottom>innerHeight-4) ring.style.height=Math.max(40,(innerHeight-8-_rr.top))+'px';
       }catch(_){ }
       ring.style.display='block'; tip.style.display='block';
       var _tt=(typeof t==='function'? t(s.text) : s.text);
