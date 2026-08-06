@@ -336,12 +336,23 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
       try { __sys.arm(); } catch (_) { }   // money renders refuse on an unarmed copy — arm like the generator does
       if (typeof loadDemoData === 'function') loadDemoData();
       await new Promise(r => setTimeout(r, 700));
-      const focal = [];
+      /* P17 (Arthur r6): the ≥30px scan passed green while the band out-weighed the
+         hero 5.5:1 — wrong axis. §D's real invariants: the hero is ≥2× any other
+         money figure, and the hero block out-heights the band. */
+      let heroFs = 0, maxOtherMoneyFs = 0, maxOtherEl = '';
+      const sym = (typeof curInfo === 'function') ? (curInfo().sym || '$') : '$';
       [...document.querySelectorAll('header.hud *, #overview *')].forEach(el => {
         if (!el.offsetParent || el.children.length) return;
+        const txt = (el.textContent || '').trim();
+        if (!/\d/.test(txt)) return;
         const fs = parseFloat(getComputedStyle(el).fontSize);
-        if (fs >= 30 && /\d/.test(el.textContent)) focal.push(el.id || el.className);
+        if (el.id === 'heroLeftVal') { heroFs = fs; return; }
+        const money = txt.includes(sym) || el.closest('.status') || el.closest('.hero-num') || el.closest('.bignum');
+        if (money && fs > maxOtherMoneyFs) { maxOtherMoneyFs = fs; maxOtherEl = el.id || el.className || el.tagName; }
       });
+      const heroBlockH = document.querySelector('#homeHero .hero')?.getBoundingClientRect().height || 0;
+      const bandH = document.querySelector('#homeHero .status')?.getBoundingClientRect().height || 0;
+      const focal = { heroFs, maxOtherMoneyFs, maxOtherEl, heroBlockH: Math.round(heroBlockH), bandH: Math.round(bandH) };
       const hv = document.getElementById('heroLeftVal');
       const instant = !!hv && !hv._cuAnimating;
       const before = hv ? hv.textContent : '';
@@ -352,8 +363,10 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
       const scopes = [...document.querySelectorAll('#homeCards .kc-scope')].map(s => s.textContent.trim()).filter(Boolean).length;
       return { focal, instant, stable, dirTrans, scopes };
     });
-    check(r5.focal.length === 1 && r5.focal[0] === 'heroLeftVal',
-      '#5 exactly one focal number on Home (' + (r5.focal.join(',') || 'none') + ')');
+    check(r5.focal.heroFs > 0 && r5.focal.heroFs >= 2 * r5.focal.maxOtherMoneyFs,
+      '#5 hero ≥2× any other money figure (hero ' + r5.focal.heroFs + 'px vs ' + r5.focal.maxOtherMoneyFs + 'px [' + r5.focal.maxOtherEl + '])');
+    check(r5.focal.heroBlockH > 0 && r5.focal.heroBlockH >= r5.focal.bandH,
+      '#5c hero block out-heights the band (' + r5.focal.heroBlockH + ' vs ' + r5.focal.bandH + 'px)');
     check(r5.scopes === 4, '#5b every Home card carries a time-scope label (' + r5.scopes + '/4)');
     check(r5.instant && r5.stable, '#10 reduced-motion honored; hero settles instantly and does not re-animate per render');
     check(parseFloat(r5.dirTrans) === 0, '#10b directory sheet motion disabled under reduced motion (' + r5.dirTrans + ')');

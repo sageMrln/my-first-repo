@@ -92,7 +92,7 @@
     --shadow-1:0 1px 2px rgba(0,0,0,.40); --shadow-2:0 2px 8px rgba(0,0,0,.45); --shadow-3:0 4px 16px rgba(0,0,0,.50),0 0 12px rgba(var(--accent-rgb),calc(.10*var(--glow-strength))); --shadow-4:0 8px 28px rgba(0,0,0,.55),0 0 18px rgba(var(--accent-rgb),calc(.12*var(--glow-strength))); --shadow-5:0 16px 48px rgba(0,0,0,.60);
   }
   [data-theme="landing"]{ /* Daylight — LIGHT (explicit) */
-    --bg:#FBF8F3; --panel:#FFFDFA; --panel2:#FFFFFF; --line:#ECE4D8;
+    --bg:#FBF8F3; --panel:#FFFDFA; --panel2:#FFFFFF; --line:#DCD0BE; /* P15: cards need a visible edge on the cream page (was #ECE4D8, border-vs-card 1.26) */
     --cyan:#255BBE; --cyan-dim:#3466C9; --lime:#0A6E43; --amber:#985400; --red:#C8243B;
     --txt:#3A4A63; --txt-dim:#566579; --bright:#0E1C33; --field-bg:#FFFFFF;
     --accent-rgb:37,91,190; --pos-rgb:10,110,67; --line-rgb:236,228,216;
@@ -323,7 +323,9 @@
   /* Stage 4: gear panel — the relocated settings (localebar node MOVES here) */
   .gear-panel{ display:none; position:fixed; inset:0; z-index:70; background:var(--bg); overflow-y:auto; padding:var(--s4); }
   .gear-panel.open{ display:block; }
-  .gear-head{ display:flex; align-items:center; justify-content:space-between; min-height:44px; margin-bottom:var(--s4);
+  /* P16: Back sits top-LEFT at every width (iOS/M3; a control must not change side
+     across breakpoints) — row-reverse puts the DOM-last Back first visually. */
+  .gear-head{ display:flex; flex-direction:row-reverse; align-items:center; justify-content:space-between; min-height:44px; margin-bottom:var(--s4);
     font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--bright); }
   /* Arthur REWORK: the settings panel is a FORM, not a strip — labeled rows,
      full-width 44px controls, one column (max 520px), no dead 71%. */
@@ -406,9 +408,8 @@
   @media (min-width:860px){
     /* N18 desktop: a centred 560px card over a scrim, the rail stays visible,
        Back sits at the card's top-left. */
-    html[data-nav=sections] .gear-panel{ left:216px; padding:40px; background:rgba(0,0,0,.45)/* THEME-EXEMPT: pure-black scrim — same dimming-veil class as the directory backdrop */; }
+    html[data-nav=sections] .gear-panel{ left:216px; padding:24px 40px; background:rgba(0,0,0,.45)/* THEME-EXEMPT: pure-black scrim — same dimming-veil class as the directory backdrop */; }
     html[data-nav=sections] .gear-panel .gear-card{ max-width:560px; margin:0 auto; background:var(--bg); border:1px solid var(--line); border-radius:var(--r-l); padding:20px 22px; box-shadow:var(--shadow-4); }
-    html[data-nav=sections] .gear-panel .gear-head{ flex-direction:row-reverse; }
   }
   /* Arthur P1: the Home cell hints its directory on re-tap (stats lives there) */
   nav.dock button.on[data-sect="Home"]::after{ content:'\2026'; position:absolute; right:5px; bottom:3px;
@@ -638,21 +639,38 @@
   .home-hero{ padding:2px 0 0; }
   .home-hero .hero{ margin-top:6px; }
   .hh-why{ font-size:12px; color:var(--txt-dim); margin-top:4px; max-width:560px; line-height:1.45; }
+  /* A4: the hero suffix flips to a prefix for symbol-first currencies */
+  .hero-num{ display:inline-flex; align-items:baseline; }
+  html[data-ccy-before] .hero-num .ccySuffix{ order:-1; }
+  /* A1 (Arthur's spec verbatim): the Low/Typical/High trio collapses to ONE row */
+  .hh-band-cap{ font-size:12px; font-weight:600; color:var(--txt-dim); margin-top:12px; }
+  #homeHero .status{ display:flex; gap:0; margin-top:8px; border:1px solid var(--line); border-radius:var(--r-l); background:var(--panel2); padding:10px 12px; }
+  #homeHero .status .stat{ flex:1 1 0; border:0; background:none; padding:0; text-align:left; }
+  #homeHero .status .stat+.stat{ border-left:1px solid var(--line); padding-left:12px; margin-left:12px; }
+  #homeHero .status .lbl{ font-size:10px; letter-spacing:.14em; }
+  #homeHero .status .val{ font-size:15px; font-weight:600; margin-top:2px; }
   .hh-viz{ margin-top:14px; }
   .hh-viz-lbl{ font-size:12px; font-weight:600; color:var(--txt-dim); margin-bottom:4px; }
   .hh-viz svg{ max-width:100%; height:auto; display:block; }
+  @media (min-width:860px){ .hh-viz svg{ width:100%; max-width:520px; } }  /* P13: not a 200px orphan in a 1068px column */
   .home-cards{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0 16px; }
   .kcard{ min-height:88px; text-align:left; background:var(--panel2); border:1px solid var(--line);
     border-radius:var(--r-l); padding:12px 14px; display:flex; flex-direction:column; gap:4px;
     justify-content:flex-start; cursor:pointer; color:var(--txt); font-family:var(--font-body); }
   .kcard:hover{ border-color:var(--cyan-dim); }
   .kcard:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; }
-  .kc-lbl{ font-size:12px; font-weight:600; }
+  /* P6: reserve two label lines so all four values sit on ONE baseline */
+  .kc-lbl{ font-size:12px; font-weight:600; min-height:30px; display:flex; flex-wrap:wrap; gap:0 4px; align-items:flex-start; align-content:flex-start; }
   .kc-scope{ color:var(--txt-dim); font-weight:500; text-transform:lowercase; }
   .kc-val{ font-size:28px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--bright); line-height:1.15; }
-  .kc-val--s{ font-size:18px; padding-top:5px; }
   .kc-sub{ font-size:12px; color:var(--txt-dim); }
   @media (min-width:860px){ .home-cards{ grid-template-columns:repeat(4,1fr); } }
+  /* P8 (Arthur): the kg column must ALIGN — grid, right-anchored value, 44px ✕ */
+  .wl-row{ display:grid; grid-template-columns:1fr auto 44px; align-items:center; gap:10px; min-height:44px; }
+  .wl-date{ color:var(--txt-dim); font-size:12px; }
+  .wl-val{ text-align:right; font-variant-numeric:tabular-nums; }
+  .wl-dl{ color:var(--txt-dim); font-size:11px; }
+  .wl-del{ min-width:44px; min-height:44px; padding:4px 10px; font-size:11px; }
   .hero-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;color:var(--txt-dim);text-transform:uppercase}
   .hero-num{font-family:var(--font-display);font-weight:900;font-size:clamp(38px,9vw,60px);line-height:1.02;margin-top:5px;color:var(--lime);text-shadow:0 0 24px rgba(var(--pos-rgb),.32)}
   .hero-num.warn{color:var(--amber);text-shadow:0 0 24px rgba(var(--warn-rgb),.30)}
@@ -1966,6 +1984,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <div class="hero-num" id="heroLeft"><span id="heroLeftVal">—</span><span class="ccySuffix hero-ccy"> kr</span></div>
         <div class="hh-why" data-i18n="What's left after every bill and any debt payment, in a typical month — before you move money to savings.">What's left after every bill and any debt payment, in a typical month — before you move money to savings.</div>
       </div>
+      <!-- A1 (Arthur, Stage-5): the trio is the hero's SECONDARY LINE (§D) — one
+           labelled ~56px row, named as the income scale it is. -->
+      <div class="hh-band-cap" data-i18n="If your income is…">If your income is…</div>
       <div class="status">
         <div class="stat low"><div class="lbl">Low Month</div><div class="val" id="stLow">—</div></div>
         <div class="stat avg"><div class="lbl">Typical</div><div class="val" id="stAvg">—</div></div>
@@ -1982,10 +2003,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <div class="kc-val" id="kcCal">—</div>
         <div class="kc-sub" id="kcCalSub"></div>
       </button>
+      <!-- P5 (Arthur): protein-led — one 28px value like its siblings; carbs/fat in
+           the sub. Also kills P12 (untranslatable P/C/F initials). -->
       <button type="button" class="kcard" data-goto="food">
-        <div class="kc-lbl"><span data-i18n="Macros">Macros</span> <span class="kc-scope" data-i18n="Today">Today</span></div>
-        <div class="kc-val kc-val--s" id="kcMac">—</div>
-        <div class="kc-sub" data-i18n="protein · carbs · fat">protein · carbs · fat</div>
+        <div class="kc-lbl"><span data-i18n="Protein">Protein</span> <span class="kc-scope" data-i18n="Today">Today</span></div>
+        <div class="kc-val" id="kcMac">—</div>
+        <div class="kc-sub" id="kcMacSub"></div>
       </button>
       <button type="button" class="kcard" data-goto="gym">
         <div class="kc-lbl"><span data-i18n="Weight">Weight</span> <span class="kc-scope" data-i18n="Current">Current</span></div>
@@ -1993,7 +2016,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         <div class="kc-sub" id="kcWtSub"></div>
       </button>
       <button type="button" class="kcard" data-goto="gym">
-        <div class="kc-lbl"><span data-i18n="Workouts">Workouts</span> <span class="kc-scope" data-i18n="In your plan">In your plan</span></div>
+        <div class="kc-lbl"><span data-i18n="Workouts">Workouts</span> <span class="kc-scope" data-i18n="In plan">In plan</span></div>
         <div class="kc-val" id="kcWo">—</div>
         <div class="kc-sub" id="kcWoSub"></div>
       </button>
@@ -3021,8 +3044,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // Push the active currency symbol into the few static labels that show it (so a
   // switch to USD never leaves a stray "kr" behind).
   function updateCcyLabels(){
-    var sym = curInfo().sym;
-    document.querySelectorAll('.ccySuffix').forEach(function(el){ el.textContent = ' ' + sym; });
+    var c = curInfo(), sym = c.sym;
+    /* A4 (Arthur, Stage-5): the hero must honour the symbol POSITION — "$2,022",
+       never "2,022 $" above "$3,400". The html attribute flips the hero's suffix
+       span to a prefix via CSS order; text drops its leading space when prefixed. */
+    try{ if(c.before) document.documentElement.setAttribute('data-ccy-before',''); else document.documentElement.removeAttribute('data-ccy-before'); }catch(_){ }
+    document.querySelectorAll('.ccySuffix').forEach(function(el){
+      el.textContent = (c.before && el.classList.contains('hero-ccy')) ? sym : (' ' + sym);
+    });
     document.querySelectorAll('.ccyLbl').forEach(function(el){ el.textContent = sym; });
   }
   function pad2(n){ return (n<10?'0':'') + n; }
@@ -3910,6 +3939,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var start = parseInt(String(el.textContent).replace(/[^0-9-]/g,''),10); if(isNaN(start)) start=0;
       if(reduce || start===to || Math.abs(to-start)/Math.max(Math.abs(to),1) < 0.02){ el.textContent=fmtN(to); el._cuVal=to; return; }
       if(el._cuRAF) cancelAnimationFrame(el._cuRAF);
+      /* P7 (Arthur, Stage-5): Orbitron has no tabular figures — no CSS declaration
+         can stop the count-up reflowing the hero (measured 118.8px of swing).
+         Measure the FINAL string once, pin minWidth, clear on the last frame. */
+      try{ var _pt=el.textContent; el.textContent=fmtN(to); el.style.minWidth=el.offsetWidth+'px'; el.textContent=_pt; }catch(_){ }
       var dur=420, t0=(window.performance&&performance.now)?performance.now():0;
       el._cuAnimating=true;
       function ease(p){ p=1-p; return 1-p*p*p; }                       // expo-out (matches --ease-out feel)
@@ -3917,7 +3950,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         var p=Math.min(1,(now-t0)/dur), cur=Math.round(start+(to-start)*ease(p));
         el.textContent=fmtN(cur);
         if(p<1){ el._cuRAF=requestAnimationFrame(step); }
-        else { el.textContent=fmtN(to); el._cuVal=to; el._cuRAF=0; el._cuAnimating=false; }
+        else { el.textContent=fmtN(to); el._cuVal=to; el._cuRAF=0; el._cuAnimating=false; try{ el.style.minWidth=''; }catch(_){ } }
       }
       el._cuRAF=requestAnimationFrame(step);
     }catch(_){ if(el) try{ el.textContent=fmtN(to); }catch(e){} }
@@ -3964,10 +3997,11 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       (STATE.foodLog||[]).forEach(function(e){ if(e && e.date===d && e.total){
         tot.kcal+=Number(e.total.kcal)||0; tot.p+=Number(e.total.p)||0; tot.c+=Number(e.total.c)||0; tot.f+=Number(e.total.f)||0; } });
     }catch(_){ }
-    set('kcCal', tot.kcal.toLocaleString('en-GB'));
+    set('kcCal', fmtN(tot.kcal));   // A3: ONE grouping convention on screen — fmtN, same as the hero
     var T=null; try{ T=(typeof nutritionTargets==='function')?nutritionTargets():null; }catch(_){ }
-    set('kcCalSub', (T&&T.kcal>0) ? tf('of {n} kcal target',{n:T.kcal.toLocaleString('en-GB')}) : t('kcal'));
-    set('kcMac', tot.p+'P · '+tot.c+'C · '+tot.f+'F');
+    set('kcCalSub', (T&&T.kcal>0) ? tf('of {n} kcal target',{n:fmtN(T.kcal)}) : t('kcal'));
+    set('kcMac', tot.p+' g');       // P5: protein-led, full 28px like its siblings
+    set('kcMacSub', tf('carbs {c} g · fat {f} g',{c:tot.c,f:tot.f}));
     /* Weight: latest DATED entry when the log exists (§J.1 unlocked the honest
        delta); falls back to the plain body-stat value; never an invented series. */
     var wl=(typeof weightEntries==='function')?weightEntries():[];
@@ -3976,10 +4010,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var wSub='';
     if(wl.length>=2){
       var dl=Math.round((wl[wl.length-1].kg - wl[wl.length-2].kg)*10)/10;
-      wSub=(dl>0?'+':'')+dl+' kg · '+tf('since {d}',{d:_wtDateLbl(wl[wl.length-2].d)});
+      /* P10: a literal "0 kg" beside the word Weight reads as you-weigh-zero */
+      wSub=(Math.abs(dl)<0.05 ? t('no change') : ((dl>0?'+':'')+dl+' kg'))+' · '+tf('since {d}',{d:_wtDateLbl(wl[wl.length-2].d)});
     } else if(!(w>0)) wSub=t('Add body stats in Gym');
     set('kcWtSub', wSub);
     set('kcWo', String((STATE.workouts||[]).length));
+    set('kcWoSub', t('plan · no dates yet'));   // P14: honest about V1 — plan entries carry no dates
   }
   function renderHomeViz(){
     var host=document.getElementById('hhChart'), wrap=document.getElementById('hhViz');
@@ -5002,7 +5038,17 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var totalW=Math.max(x-gap+pad, pad*2+bw);
     var medY=(H-pad-(med/max)*(H-2*pad)).toFixed(1);
     var line='<line x1="'+pad+'" y1="'+medY+'" x2="'+(totalW-pad)+'" y2="'+medY+'" stroke="var(--lime)" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"></line>';
-    return '<svg viewBox="0 0 '+totalW+' '+H+'" width="'+totalW+'" height="'+H+'" role="img" aria-label="'+esc(t('Monthly income'))+'">'+line+bars+'</svg>';
+    /* P13 (Arthur, Stage-5): a labelled mini-viz needs a READING — first/last month
+       anchors + the latest value. 10px, dim, esc()'d like every label here. */
+    var lbls='';
+    if(e.length){
+      var lastX=pad+(e.length-1)*(bw+gap), lastV=Math.max(0,Number(e[e.length-1].amt)||0);
+      var lastH=Math.max(2,(lastV/max)*(H-2*pad)), lastY=H-pad-lastH;
+      lbls+='<text x="'+pad+'" y="'+(H+11)+'" font-size="10" fill="var(--txt-dim)">'+esc(ymLabel(e[0].ym))+'</text>';
+      if(e.length>1) lbls+='<text x="'+(lastX+bw)+'" y="'+(H+11)+'" font-size="10" fill="var(--txt-dim)" text-anchor="end">'+esc(ymLabel(e[e.length-1].ym))+'</text>';
+      lbls+='<text x="'+(lastX+bw/2)+'" y="'+Math.max(9,(lastY-3)).toFixed(1)+'" font-size="10" fill="var(--txt-dim)" text-anchor="middle">'+esc(fmt(__sys.token()*lastV))+'</text>';
+    }
+    return '<svg viewBox="0 0 '+totalW+' '+(H+14)+'" width="'+totalW+'" height="'+(H+14)+'" role="img" aria-label="'+esc(t('Monthly income'))+'">'+line+bars+lbls+'</svg>';
   }
   function renderIncomeHistory(){
     var strip=document.getElementById('incHistStrip'); if(!strip) return;   // panel present?
@@ -5470,7 +5516,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     return (STATE.body && Array.isArray(STATE.body.weightLog)) ?
       STATE.body.weightLog.filter(function(e){ return e && /^\d{4}-\d{2}-\d{2}$/.test(String(e.d)) && Number(e.kg)>0; }) : [];
   }
-  function _wtDateLbl(d){ try{ return new Date(d+'T12:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short'}); }catch(_){ return d; } }
+  function _wtDateLbl(d){ try{ return new Date(d+'T12:00:00').toLocaleDateString(langLocale(),{day:'numeric',month:'short'}); }catch(_){ return d; } }   // P11: APP language, never the browser's
   function renderWeightLog(){
     var block=document.getElementById('wtHistBlock'), host=document.getElementById('wtHistList');
     if(!block||!host) return;
@@ -5482,11 +5528,14 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     host.innerHTML=recent.map(function(r,ix){
       var prev=e[e.length-1-ix-1];
       var dl=prev? (Math.round((r.kg-prev.kg)*10)/10) : null;
-      var dTxt=dl==null? '' : ('<span style="color:'+(dl>0?'var(--amber)':'var(--lime)')+';font-size:11px"> '+(dl>0?'+':'')+dl+'</span>');
-      return '<div class="sub-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:36px">'+
-        '<span style="color:var(--txt-dim);font-size:12px">'+esc(_wtDateLbl(r.d))+'</span>'+
-        '<span style="font-variant-numeric:tabular-nums"><b>'+esc(String(r.kg))+'</b> kg'+dTxt+'</span>'+
-        '<button type="button" class="btn ghost" data-wtdel="'+esc(r.d)+'" style="padding:4px 10px;font-size:11px;min-height:32px">✕</button></div>';
+      /* P9 (Arthur ruling): NO direction colouring — the app has no weight goal, so
+         up-is-bad is a value judgment it has no data for, and amber is the warning
+         channel. Sign only, dim. */
+      var dTxt=dl==null? '' : ('<span class="wl-dl"> '+(dl>0?'+':'')+dl+'</span>');
+      return '<div class="sub-item wl-row">'+
+        '<span class="wl-date">'+esc(_wtDateLbl(r.d))+'</span>'+
+        '<span class="wl-val"><b>'+esc(String(r.kg))+'</b> kg'+dTxt+'</span>'+
+        '<button type="button" class="btn ghost wl-del" data-wtdel="'+esc(r.d)+'">✕</button></div>';
     }).join('');
     host.querySelectorAll('[data-wtdel]').forEach(function(b){
       b.addEventListener('click', function(){
