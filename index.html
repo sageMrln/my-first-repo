@@ -298,6 +298,27 @@
   .dock-head{ display:none; }
   /* A8 (Arthur): lifted savebar must never push its top button above a short viewport */
   html[data-nav=sections] .savebar.open{ max-height:calc(100dvh - 96px); overflow-y:auto; overscroll-behavior:contain; }
+  /* Stage 4: section DIRECTORY — the group's landing (addendum-1: visible module
+     list, never a hamburger). Sheet above the dock on phones; panel by the rail. */
+  .dock-dirback{ display:none; position:fixed; inset:0; z-index:61; background:rgba(0,0,0,.45)/* THEME-EXEMPT: pure-black scrim — a dimming veil is theme-independent by design (same class as the modal scrim) */; }
+  .dock-dirback.open{ display:block; }
+  .dock-dir{ display:none; position:fixed; left:8px; right:8px; bottom:calc(74px + env(safe-area-inset-bottom)); z-index:62;
+    background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-l); box-shadow:var(--shadow-4);
+    padding:var(--s2); max-height:60dvh; overflow-y:auto; }
+  .dock-dir.open{ display:block; }
+  .dock-dirlist{ display:flex; flex-direction:column; gap:2px; }
+  .dockdir-item{ display:flex; align-items:center; min-height:48px; padding:var(--s2) var(--s3);
+    background:none; border:0; border-radius:var(--r-c); color:var(--txt); font-family:var(--font-body);
+    font-size:15px; font-weight:600; cursor:pointer; text-align:left; }
+  .dockdir-item.on{ color:var(--accent-text); background:rgba(var(--accent-rgb),.10); }
+  .dockdir-item:hover{ background:rgba(var(--accent-rgb),.06); }
+  .dockdir-item:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; }
+  /* Stage 4: gear panel — the relocated settings (localebar node MOVES here) */
+  .gear-panel{ display:none; position:fixed; inset:0; z-index:70; background:var(--bg); overflow-y:auto; padding:var(--s4); }
+  .gear-panel.open{ display:block; }
+  .gear-head{ display:flex; align-items:center; justify-content:space-between; min-height:44px; margin-bottom:var(--s4);
+    font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--bright); }
+  .gear-body .localebar{ position:static; display:flex; flex-wrap:wrap; gap:var(--s3); padding:0; margin:0; border:0; }
   html[data-nav=sections] .wrap{ padding-bottom:calc(220px + env(safe-area-inset-bottom)); }
   html[data-nav=sections] .savebar{ bottom:calc(76px + env(safe-area-inset-bottom)); }
   @media (min-width:860px){
@@ -313,6 +334,7 @@
     html[data-nav=sections] nav.dock button.on::before{ left:0; top:8px; bottom:8px; width:3px; height:auto;
       right:auto; border-radius:0 3px 3px 0; }
     html[data-nav=sections] nav.dock button:hover{ background:rgba(var(--accent-rgb),.06); }
+    .dock-dir{ left:224px; right:auto; top:70px; bottom:auto; width:300px; max-height:70vh; }
     /* rail top anchor (Arthur ruling 5.iii): identity header, then the list */
     html[data-nav=sections] .dock-head{ display:flex; align-items:center; gap:8px; min-height:56px;
       padding:0 12px; font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--bright);
@@ -1780,7 +1802,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   <!-- HEADER -->
   <header class="hud">
     <div class="eyebrow">// Personal Finance Command Center</div>
-    <h1>FINANCE HUD</h1>
+    <h1 data-i18n-skip>MRLN</h1>
     <div class="sub" id="hdrSub">Operator · Status: ACTIVE</div>
     <div class="pillbar">
       <span class="pill">AGE <b id="hdrAge">—</b></span>
@@ -2925,60 +2947,136 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // was stale and reset every new theme/layout back to cyber/pro on reload).
   applyAppearance();
 
-  /* ===== STAGE 3 (reskin a213555 §C): sections dock — delegates to the untouched
-     #tabs. The 16 tab buttons, their once-captured click NodeList, visTabs()'s
-     inline-display contract and the klarna reveal all keep working because the
-     dock never replaces them — it mirrors them and calls the real button's
-     .click(). Labels mirror tab text (minus the .ix numeral), so i18n and
-     tabOrder flow through for free; a MutationObserver keeps the mirror in sync
-     with language switches, reorders and the klarna reveal. tabColors/tabHold
-     stay INERT under sections by ruling (state preserved, not mirrored). */
+  /* ===== STAGE 4 (reskin a213555 §B): the 4-groups+gear dock — still a pure
+     DELEGATE over the untouched #tabs (all Stage-3 contracts hold: once-captured
+     NodeList, visTabs() inline-display, klarna reveal, tabOrder/i18n via the
+     MutationObserver). What changed: the mirror now groups the 15 destinations
+     into HOME / MONEY / HEALTH / LIFE + a gear slot; every non-Home group opens
+     on a visible module DIRECTORY (addendum-1: never a hamburger, never a
+     dumping ground); the gear directory reaches Settings (the relocated
+     localebar), Move-my-data (#connect) and the Change Log (#log).
+     POISON NOTE (Akashi, on the record): the mirror copies tab text VERBATIM —
+     if a figure ever lands in a tab label (count/badge), it MUST be multiplied
+     by __sys.token() at its source; the dock will not poison it for you. */
   (function(){
     document.documentElement.setAttribute('data-nav','sections'); // in-branch default; publishes only with Stage 5
     var tabsNav=document.getElementById('tabs'); if(!tabsNav) return;
+    var SECTIONS=[
+      {key:'Home',   tabs:['overview','stats']},
+      {key:'Money',  tabs:['income','expenses','loan','flow','rule','checklist','klarna']},
+      {key:'Health', tabs:['gym','food']},
+      {key:'Life',   tabs:['calendar','notebook','media']},
+      {key:'Settings', tabs:['connect','log'], gear:true}
+    ];
     var dock=document.createElement('nav'); dock.className='dock'; dock.id='dock';
-    dock.setAttribute('aria-label','Sections');
-    function tabLabel(t){
-      var s=''; t.childNodes.forEach(function(n){
+    var dir=document.createElement('div'); dir.className='dock-dir'; dir.id='dockDir'; dir.setAttribute('role','dialog');
+    var dirBack=document.createElement('div'); dirBack.className='dock-dirback'; dirBack.id='dockDirBack';
+    var gearPanel=null;
+    function T(k){ return (typeof t==='function'? t(k) : k); }
+    function tabLabel(tb){
+      var s=''; tb.childNodes.forEach(function(n){
         if(n.nodeType===3) s+=n.textContent;
         else if(n.nodeType===1 && !n.classList.contains('ix')) s+=n.textContent;
       });
       return s.trim();
     }
+    function tabBtn(p){ return tabsNav.querySelector('.tab[data-p="'+p+'"]'); }
+    function visibleTabs(sec){ return sec.tabs.map(tabBtn).filter(function(tb){ return tb && tb.style.display!=='none'; }); }
+    function activeSection(){
+      var act=tabsNav.querySelector('.tab.active'); if(!act) return null;
+      var p=act.getAttribute('data-p');
+      for(var i=0;i<SECTIONS.length;i++) if(SECTIONS[i].tabs.indexOf(p)>=0) return SECTIONS[i];
+      return null;
+    }
+    function closeDir(){ dir.classList.remove('open'); dirBack.classList.remove('open'); dir.innerHTML=''; }
+    function openGearSettings(){
+      if(!gearPanel){
+        gearPanel=document.createElement('div'); gearPanel.className='gear-panel'; gearPanel.id='gearPanel';
+        gearPanel.setAttribute('role','dialog');
+        var gh=document.createElement('div'); gh.className='gear-head';
+        var gt=document.createElement('span'); gt.textContent=T('Settings'); gh.appendChild(gt);
+        var gx=document.createElement('button'); gx.type='button'; gx.className='btn ghost gear-close';
+        gx.textContent=T('Back'); gx.addEventListener('click', function(){ gearPanel.classList.remove('open'); });
+        gh.appendChild(gx); gearPanel.appendChild(gh);
+        var body=document.createElement('div'); body.className='gear-body'; gearPanel.appendChild(body);
+        var lb=document.querySelector('.localebar');
+        if(lb) body.appendChild(lb);            // MOVE the node — every listener survives
+        document.body.appendChild(gearPanel);
+      }else{
+        var ttl=gearPanel.querySelector('.gear-head span'); if(ttl) ttl.textContent=T('Settings');
+        var bk=gearPanel.querySelector('.gear-close'); if(bk) bk.textContent=T('Back');
+      }
+      gearPanel.classList.add('open');
+    }
+    function openDir(sec){
+      dir.innerHTML='';
+      dir.setAttribute('aria-label', T(sec.key));
+      var list=document.createElement('div'); list.className='dock-dirlist';
+      if(sec.gear){
+        var sBtn=document.createElement('button'); sBtn.type='button'; sBtn.className='dockdir-item';
+        sBtn.textContent='⚙ '+T('Settings');
+        sBtn.addEventListener('click', function(){ closeDir(); openGearSettings(); });
+        list.appendChild(sBtn);
+      }
+      visibleTabs(sec).forEach(function(tb){
+        var m=document.createElement('button'); m.type='button'; m.className='dockdir-item';
+        m.textContent=tabLabel(tb);
+        if(tb.classList.contains('active')) m.classList.add('on');
+        m.addEventListener('click', function(){ closeDir(); tb.click(); });
+        list.appendChild(m);
+      });
+      dir.appendChild(list);
+      dir.classList.add('open'); dirBack.classList.add('open');
+      var first=dir.querySelector('button'); if(first) first.focus();
+    }
     function rebuild(){
-      /* A5 (Arthur): innerHTML wipe destroys keyboard focus — capture and restore */
       var hadFocus = document.activeElement && document.activeElement.getAttribute &&
-                     document.activeElement.getAttribute('data-dock');
+                     document.activeElement.getAttribute('data-sect');
       dock.innerHTML='';
-      dock.setAttribute('aria-label', (typeof t==='function'? t('Sections') : 'Sections'));
+      dock.setAttribute('aria-label', T('Sections'));
       var head=document.createElement('div'); head.className='dock-head'; head.setAttribute('aria-hidden','true');
-      head.textContent='MRLN'; dock.appendChild(head);   // rail top anchor (≥860 only via CSS)
-      var sc=document.createElement('div'); sc.className='dock-scroll'; dock.appendChild(sc);   // P1: mask+scroll live here
-      tabsNav.querySelectorAll('.tab').forEach(function(tb){
-        if(tb.style.display==='none') return;              // klarna stays hidden until revealed
+      head.textContent='MRLN'; dock.appendChild(head);
+      var sc=document.createElement('div'); sc.className='dock-scroll'; dock.appendChild(sc);
+      var act=activeSection();
+      SECTIONS.forEach(function(sec){
         var b=document.createElement('button'); b.type='button';
-        b.textContent=tabLabel(tb);
-        var active=tb.classList.contains('active');
-        b.className='dockbtn'+(active?' on':'');           // A6: joins the shipped interaction system
-        if(active) b.setAttribute('aria-current','page');  // A2: assistive "you are here"
-        b.setAttribute('data-dock', tb.getAttribute('data-p')||'');
-        b.addEventListener('click', function(){ tb.click(); });
+        b.textContent=(sec.gear?'⚙ ':'')+T(sec.key);
+        var isOn=(act && act.key===sec.key);
+        b.className='dockbtn'+(isOn?' on':'');
+        if(isOn) b.setAttribute('aria-current','page');
+        b.setAttribute('data-sect', sec.key);
+        b.addEventListener('click', function(){
+          if(sec.key==='Home' && (!act || act.key!=='Home' || !tabsNav.querySelector('.tab.active[data-p="overview"]'))){
+            var ov=tabBtn('overview'); if(ov){ closeDir(); ov.click(); return; }
+          }
+          if(dir.classList.contains('open') && dir.getAttribute('aria-label')===T(sec.key)){ closeDir(); return; }
+          openDir(sec);
+        });
         sc.appendChild(b);
       });
-      /* A4 (Arthur): after programmatic nav the .on cell can sit past the edge —
-         centre it WITHIN the dock only (never scrollIntoView: it can move the document) */
       var on=dock.querySelector('.on');
       if(on) sc.scrollLeft=Math.max(0,Math.min(sc.scrollWidth-sc.clientWidth,on.offsetLeft-(sc.clientWidth-on.offsetWidth)/2));
-      if(hadFocus){ var f=dock.querySelector('[data-dock="'+hadFocus+'"]'); if(f) f.focus(); }
+      if(hadFocus){ var f=dock.querySelector('[data-sect="'+hadFocus+'"]'); if(f) f.focus(); }
+      act=activeSection(); // re-read after possible route
     }
-    /* A7 (Arthur): the off-canvas strip leaves the a11y tree + tab order — BOTH
-       halves (aria-hidden alone over focusable children is itself a violation).
-       tabindex=-1 (not inert): .click() delegation must keep firing. */
+    /* A7 heritage: strip stays out of a11y tree + tab order; delegation intact */
     tabsNav.setAttribute('aria-hidden','true');
     tabsNav.querySelectorAll('.tab').forEach(function(tb){ tb.setAttribute('tabindex','-1'); });
     rebuild();
-    document.body.appendChild(dock);
-    try{ new MutationObserver(rebuild).observe(tabsNav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style','class']}); }catch(_){ }
+    document.body.appendChild(dirBack); document.body.appendChild(dir); document.body.appendChild(dock);
+    dirBack.addEventListener('click', closeDir);
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeDir(); if(gearPanel) gearPanel.classList.remove('open'); } });
+    try{ new MutationObserver(function(){ rebuild(); }).observe(tabsNav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style','class']}); }catch(_){ }
+    /* Akashi (Stage-3 audit): keyboard could Tab behind the lock — the app shell
+       is inert while the gate is up. Cleared the moment #lockScreen gains
+       .unlocked (covers unlock() AND the tools' direct class-add bypass). */
+    var lk=document.getElementById('lockScreen');
+    function syncInert(){
+      var locked = lk && !lk.classList.contains('unlocked');
+      ['.wrap'].forEach(function(s){ var el=document.querySelector(s); if(el){ try{ el.inert=locked; }catch(_){ } } });
+      try{ dock.inert=locked; }catch(_){ }
+    }
+    if(lk){ syncInert(); try{ new MutationObserver(syncInert).observe(lk,{attributes:true,attributeFilter:['class']}); }catch(_){ } }
   })();
   var _quotaWarned=false;
   function _hudWarn(){ try{ var b=document.querySelector('.savebar'); if(b) b.classList.add('haswarn'); }catch(_){ } }  // a live warning must pierce the collapsed HUD
@@ -9094,17 +9192,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   /* ===================== GUIDED TOUR (plays once; replayable) ===================== */
   var TOUR = (function(){
     var STEPS=[
-      {sel:'#dock', text:'<b>Your sections.</b> Everything lives here — money, gym &amp; food, calendar, stats and notes. Swipe the bar to see them all. The main ones:'},
-      {sel:'#dock button[data-dock="expenses"]', text:'<b>Budget</b> is your money map — every recurring cost in one place. Add or edit any of them and every number updates instantly.'},
-      {sel:'#dock button[data-dock="gym"]', text:'<b>Gym Plan.</b> Body stats, calorie &amp; macro targets, a shape model — and <b>meal ideas matched to your goal &amp; physique</b>.'},
-      {sel:'#dock button[data-dock="food"]', text:'<b>Food Log.</b> Snap or type what you ate and get an instant calorie &amp; macro estimate against today’s target.'},
-      {sel:'#dock button[data-dock="stats"]', text:'<b>Stats &amp; Grades.</b> Your overall S–E grade explained — money, body and income class, with how to climb.'},
-      {sel:'#dock button[data-dock="notebook"]', text:'<b>Notebook.</b> A free-writing space like your phone’s Notes — anything you don’t want to lose.'},
-      {sel:'#dock button[data-dock="calendar"]', text:'<b>Calendar.</b> Birthdays, your weekly sports &amp; hobbies, and reminders — alarms included.'},
+      {sel:'#dock', text:'<b>Your sections.</b> Four groups hold everything — Money, Health and Life — with Home as your overview. Tap a group to see its pages.'},
+      {sel:'#dock button[data-sect="Money"]', text:'<b>Money.</b> Income, budget, loan, cash flow, savings and your checklist — every number updates together.'},
+      {sel:'#dock button[data-sect="Health"]', text:'<b>Health.</b> Gym plan, body stats and targets, plus the food log that estimates calories &amp; macros as you type.'},
+      {sel:'#dock button[data-sect="Life"]', text:'<b>Life.</b> Calendar, notebook and your media log — reminders and notes included.'},
+      {sel:'#dock button[data-sect="Settings"]', text:'<b>Settings.</b> Language, currency, themes, moving your data — and this tour, any time.'},
       {sel:'#botFab', text:'<b>Assistant MRLN.</b> Type a change in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions” — or ask a question about any feature.'},
-      {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'},
-      {sel:'#langSel', text:'<b>Language & currency.</b> Switch these to whatever suits you. Your data always stays on your device.'},
-      {sel:'#tourBtn', text:'<b>All done.</b> Tap here any time to replay this tour.'}
+      {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'}
     ];
     var i=0, active=false, ring=document.getElementById('tourRing'), tip=document.getElementById('tourTip');
     // reposition ONLY — moves the ring/tip to follow the element. Never scrolls,
@@ -9142,7 +9236,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         if(_dk) _dk.scrollLeft=Math.max(0,Math.min(_dk.scrollWidth-_dk.clientWidth, el.offsetLeft-(_dk.clientWidth-el.offsetWidth)/2));
       }catch(_){ }
       ring.style.display='block'; tip.style.display='block';
-      document.getElementById('ttTxt').innerHTML=s.text;
+      document.getElementById('ttTxt').innerHTML=(typeof t==='function'? t(s.text) : s.text);   /* Stage 4: full-string keys incl. tags (Mikoto's fragment mechanism) */
       document.getElementById('ttStep').textContent='Step '+(i+1)+' of '+STEPS.length;
       document.getElementById('ttBack').style.visibility = i===0?'hidden':'visible';
       document.getElementById('ttNext').textContent = i===STEPS.length-1?t('Done'):t('Next');
