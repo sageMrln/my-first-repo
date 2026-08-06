@@ -2371,6 +2371,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       </div>
       <button class="btn ghost" id="bScale" style="font-size:12px;padding:7px 12px">📶 Connect a Bluetooth scale</button>
       <div id="bScaleMsg" class="note" style="display:none;margin-top:6px"></div>
+      <!-- Stage 5 §J.1 (ordered by Osefe): the DATED weight log. Every weight change
+           upserts today's entry; the history feeds the Home card's honest delta. -->
+      <div id="wtHistBlock" style="display:none;margin-top:12px">
+        <div class="kc-lbl"><span data-i18n="Weight history">Weight history</span> <span class="kc-scope" data-i18n="One entry per day">One entry per day</span></div>
+        <div id="wtHistList" data-i18n-skip style="margin-top:6px"></div>
+      </div>
       <div class="form-row">
         <div class="field"><label>Body fat % <span style="color:var(--txt-dim)">(optional)</span></label><input id="bFat" type="number" min="3" max="60" step="0.1" placeholder="%"></div>
         <div class="field"><label>Muscle % <span style="color:var(--txt-dim)">(optional)</span></label><input id="bMuscle" type="number" min="10" max="60" step="0.1" placeholder="%"></div>
@@ -3919,9 +3925,17 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var T=null; try{ T=(typeof nutritionTargets==='function')?nutritionTargets():null; }catch(_){ }
     set('kcCalSub', (T&&T.kcal>0) ? tf('of {n} kcal target',{n:T.kcal.toLocaleString('en-GB')}) : t('kcal'));
     set('kcMac', tot.p+'P · '+tot.c+'C · '+tot.f+'F');
-    var w=Number((STATE.body||{}).weight)||0;
+    /* Weight: latest DATED entry when the log exists (§J.1 unlocked the honest
+       delta); falls back to the plain body-stat value; never an invented series. */
+    var wl=(typeof weightEntries==='function')?weightEntries():[];
+    var w=wl.length? Number(wl[wl.length-1].kg) : (Number((STATE.body||{}).weight)||0);
     set('kcWt', w>0 ? (w+' kg') : '—');
-    set('kcWtSub', w>0 ? '' : t('Add body stats in Gym'));
+    var wSub='';
+    if(wl.length>=2){
+      var dl=Math.round((wl[wl.length-1].kg - wl[wl.length-2].kg)*10)/10;
+      wSub=(dl>0?'+':'')+dl+' kg · '+tf('since {d}',{d:_wtDateLbl(wl[wl.length-2].d)});
+    } else if(!(w>0)) wSub=t('Add body stats in Gym');
+    set('kcWtSub', wSub);
     set('kcWo', String((STATE.workouts||[]).length));
   }
   function renderHomeViz(){
@@ -3940,6 +3954,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     });
     var ov=document.querySelector('#tabs .tab[data-p="overview"]');
     if(ov) ov.addEventListener('click', function(){ setTimeout(function(){ try{ renderHomeCards(); renderHomeViz(); }catch(_){ } },0); });
+    var gy=document.querySelector('#tabs .tab[data-p="gym"]');
+    if(gy) gy.addEventListener('click', function(){ setTimeout(function(){ if(typeof renderWeightLog==='function') try{ renderWeightLog(); }catch(_){ } },0); });
   })();
 
   /* ---------- CASH FLOW SIMULATOR ---------- */
@@ -5195,6 +5211,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     calSim();
     if(typeof renderBodyGrade==='function') renderBodyGrade();
     if(typeof renderMissions==='function') renderMissions();   // body feeds the overall life tier
+    if(typeof renderWeightLog==='function') try{ renderWeightLog(); }catch(_){ }   // §J.1: dated history under the stats
+    if(typeof renderHomeCards==='function') try{ renderHomeCards(); }catch(_){ }   // Home Weight card mirrors it
   }
   function calSim(){
     var c=computeBody(); var sl=document.getElementById('calSlider');
@@ -5389,6 +5407,52 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function setGoalBtns(g){
     document.querySelectorAll('#goalBtns .scen-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-goal')===g); });
   }
+  /* ---- Stage 5 §J.1 — dated weight log (ordered) ---------------------------------
+     One entry per day, upserted, sorted, bounded. Lives INSIDE STATE.body so it
+     travels with every existing export/import/backup path unchanged. Health data:
+     raw numbers (money-only poison), but rendering refuses on a poisoned copy. */
+  function logWeight(kg, dOpt){
+    kg=Number(kg); if(!(kg>0)) return;
+    if(!STATE.body || typeof STATE.body!=='object') STATE.body={};
+    if(!Array.isArray(STATE.body.weightLog)) STATE.body.weightLog=[];
+    var d=(typeof dOpt==='string' && /^\d{4}-\d{2}-\d{2}$/.test(dOpt)) ? dOpt : todayKey();
+    var L=STATE.body.weightLog, i=-1;
+    L.forEach(function(e,ix){ if(e && e.d===d) i=ix; });
+    var rec={ d:d, kg:Math.round(kg*10)/10 };
+    if(i>=0) L[i]=rec; else L.push(rec);
+    L.sort(function(a,b){ return a.d<b.d?-1:1; });
+    if(L.length>400) L.splice(0, L.length-400);
+  }
+  function weightEntries(){
+    return (STATE.body && Array.isArray(STATE.body.weightLog)) ?
+      STATE.body.weightLog.filter(function(e){ return e && /^\d{4}-\d{2}-\d{2}$/.test(String(e.d)) && Number(e.kg)>0; }) : [];
+  }
+  function _wtDateLbl(d){ try{ return new Date(d+'T12:00:00').toLocaleDateString(undefined,{day:'numeric',month:'short'}); }catch(_){ return d; } }
+  function renderWeightLog(){
+    var block=document.getElementById('wtHistBlock'), host=document.getElementById('wtHistList');
+    if(!block||!host) return;
+    try{ if(isNaN(__sys.token())){ block.style.display='none'; return; } }catch(_){ return; }
+    var e=weightEntries();
+    if(!e.length){ block.style.display='none'; host.innerHTML=''; return; }
+    block.style.display='';
+    var recent=e.slice(-10).reverse();
+    host.innerHTML=recent.map(function(r,ix){
+      var prev=e[e.length-1-ix-1];
+      var dl=prev? (Math.round((r.kg-prev.kg)*10)/10) : null;
+      var dTxt=dl==null? '' : ('<span style="color:'+(dl>0?'var(--amber)':'var(--lime)')+';font-size:11px"> '+(dl>0?'+':'')+dl+'</span>');
+      return '<div class="sub-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:36px">'+
+        '<span style="color:var(--txt-dim);font-size:12px">'+esc(_wtDateLbl(r.d))+'</span>'+
+        '<span style="font-variant-numeric:tabular-nums"><b>'+esc(String(r.kg))+'</b> kg'+dTxt+'</span>'+
+        '<button type="button" class="btn ghost" data-wtdel="'+esc(r.d)+'" style="padding:4px 10px;font-size:11px;min-height:32px">✕</button></div>';
+    }).join('');
+    host.querySelectorAll('[data-wtdel]').forEach(function(b){
+      b.addEventListener('click', function(){
+        STATE.body.weightLog=weightEntries().filter(function(x){ return x.d!==b.getAttribute('data-wtdel'); });
+        autosave(); renderWeightLog();
+        if(typeof renderHomeCards==='function') try{ renderHomeCards(); }catch(_){ }
+      });
+    });
+  }
   (function initHealth(){
     var ids=[['bSex','sex'],['bAge','age'],['bHeight','height'],['bWeight','weight'],['bFat','fat'],['bMuscle','muscle'],['bAct','act']];
     ids.forEach(function(pair){
@@ -5396,7 +5460,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       // seed from saved
       if(STATE.body[pair[1]]!=null && STATE.body[pair[1]]!=='') el.value=STATE.body[pair[1]];
       var evt = (el.tagName==='SELECT') ? 'change' : 'input';
-      el.addEventListener(evt, function(){ STATE.body[pair[1]] = el.value; autosave(); renderBody();
+      el.addEventListener(evt, function(){ STATE.body[pair[1]] = el.value;
+        if(pair[1]==='weight') logWeight(el.value);   // §J.1: every weight change is a dated entry (same-day upsert)
+        autosave(); renderBody();
         if(typeof updateMealTargets==='function') updateMealTargets();
         var mo=document.getElementById('mealOut'); if(mo && mo.innerHTML.trim() && typeof renderMeals==='function') renderMeals(false);
       });
@@ -5411,7 +5477,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         .then(function(server){ return server.getPrimaryService('weight_scale'); })
         .then(function(svc){ return svc.getCharacteristic('weight_measurement'); })
         .then(function(ch){ return ch.startNotifications(); })
-        .then(function(ch){ say('Connected — step on the scale…',true); ch.addEventListener('characteristicvaluechanged', function(ev){ var w=parseBLEWeight(ev.target.value); if(w&&w>0){ STATE.body=STATE.body||{}; STATE.body.weight=w; var be=document.getElementById('bWeight'); if(be) be.value=w; logChange('scale',w+' kg'); autosave(); if(typeof renderBody==='function') renderBody(); say('✓ Read <b>'+w+' kg</b> from your scale.',true); } }); })
+        .then(function(ch){ say('Connected — step on the scale…',true); ch.addEventListener('characteristicvaluechanged', function(ev){ var w=parseBLEWeight(ev.target.value); if(w&&w>0){ STATE.body=STATE.body||{}; STATE.body.weight=w; logWeight(w); var be=document.getElementById('bWeight'); if(be) be.value=w; logChange('scale',w+' kg'); autosave(); if(typeof renderBody==='function') renderBody(); say('✓ Read <b>'+w+' kg</b> from your scale.',true); } }); })
         .catch(function(e){ say('Couldn\'t connect: '+esc(e.message||'cancelled')+'. Some scales use a vendor app instead of the standard Bluetooth profile.',false); });
     });
     var sl=document.getElementById('calSlider');
@@ -7729,6 +7795,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
        the shot generator uses. Only ever fills EMPTY state — never a real user's. */
     if(!STATE.body || typeof STATE.body!=='object') STATE.body={};
     if(!Number(STATE.body.weight)){ STATE.body.age=29; STATE.body.height=178; STATE.body.weight=74; }
+    if(!Array.isArray(STATE.body.weightLog) || !STATE.body.weightLog.length){
+      var _wts=[75.8,75.2,74.9,74.4,74.0], _wnow=new Date();
+      STATE.body.weightLog=_wts.map(function(kg,i){
+        var d=new Date(_wnow); d.setDate(d.getDate()-(_wts.length-1-i)*7);
+        return { d: d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2), kg:kg };
+      });
+    }
     if(!Array.isArray(STATE.workouts)) STATE.workouts=[];
     if(!STATE.workouts.length){
       [[t('Monday'),t('Push — chest, shoulders, triceps')],[t('Wednesday'),t('Pull — back and biceps')],[t('Friday'),t('Legs and core')]]
@@ -8021,7 +8094,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var ii=document.getElementById('impIcs');
     if(ii) ii.addEventListener('change', function(){ readFile(ii, function(txt){ var ev=importICS(txt); if(!ev.length){ impMsg(tf('No calendar events found in that file.'),false); return; } uiConfirm({title:tf('Import {n} event(s)?',{n:ev.length}),message:tf('Adds these calendar events to your existing calendar.'),confirmText:tf('Import'),danger:false},function(){ var n=applyICS(ev); impMsg(tf('✓ Added <b>{n}</b> event(s) to your calendar.',{n:n}),true); }); }); });
     var iw=document.getElementById('impWeight');
-    if(iw) iw.addEventListener('change', function(){ readFile(iw, function(txt){ var w=importWeightCSV(txt); if(!w){ impMsg(tf('Couldn\'t find a weight column in that file.'),false); return; } STATE.body=STATE.body||{}; STATE.body.weight=w.weight; logChange('import-weight',w.weight+' kg'); autosave(); if(typeof renderBody==='function') renderBody(); var be=document.getElementById('bWeight'); if(be) be.value=w.weight; impMsg(tf('✓ Set your weight to <b>{w} kg</b>',{w:w.weight})+(w.date?(' '+tf('(from {d})',{d:esc(w.date)})):'')+'.',true); }); });
+    if(iw) iw.addEventListener('change', function(){ readFile(iw, function(txt){ var w=importWeightCSV(txt); if(!w){ impMsg(tf('Couldn\'t find a weight column in that file.'),false); return; } STATE.body=STATE.body||{}; STATE.body.weight=w.weight; if(typeof logWeight==='function') logWeight(w.weight, w.date); logChange('import-weight',w.weight+' kg'); autosave(); if(typeof renderBody==='function') renderBody(); var be=document.getElementById('bWeight'); if(be) be.value=w.weight; impMsg(tf('✓ Set your weight to <b>{w} kg</b>',{w:w.weight})+(w.date?(' '+tf('(from {d})',{d:esc(w.date)})):'')+'.',true); }); });
     var ifd=document.getElementById('impFood');
     if(ifd) ifd.addEventListener('change', function(){ readFile(ifd, function(txt){ var meals=importMFPFood(txt); if(!meals.length){ impMsg(tf('No food rows with calories found in that file.'),false); return; } uiConfirm({title:tf('Import {n} meal(s)?',{n:meals.length}),message:tf('Adds these to your Food Log.'),confirmText:tf('Import'),danger:false},function(){ STATE.foodLog=STATE.foodLog||[]; meals.forEach(function(m){ STATE.foodLog.unshift(m); }); logChange('import-food',meals.length+' meal(s)'); autosave(); if(typeof renderFoodLog==='function') renderFoodLog(); impMsg(tf('✓ Added <b>{n}</b> meal(s) to your Food Log.',{n:meals.length}),true); }); }); });
 
