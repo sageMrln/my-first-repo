@@ -318,14 +318,33 @@
   .gear-panel.open{ display:block; }
   .gear-head{ display:flex; align-items:center; justify-content:space-between; min-height:44px; margin-bottom:var(--s4);
     font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--bright); }
-  .gear-body .localebar{ position:static; display:flex; flex-wrap:wrap; gap:var(--s3); padding:0; margin:0; border:0; }
+  /* Arthur REWORK: the settings panel is a FORM, not a strip — labeled rows,
+     full-width 44px controls, one column (max 520px), no dead 71%. */
+  .gear-body{ max-width:520px; }
+  .gear-body .localebar{ position:static; display:flex; flex-direction:column; gap:var(--s3); padding:0; margin:0; border:0; }
+  .gear-body .localebar .lc{ display:flex; flex-direction:column; gap:4px; width:100%; }
+  .gear-body .localebar label{ font-size:12px; font-weight:600; color:var(--txt-dim); }
+  .gear-body .localebar select, .gear-body .localebar input{ width:100%; max-width:none; min-height:44px; font-size:15px; font-family:var(--font-body); }
+  .gear-body .localebar button, .gear-body .localebar .iconbtn{ min-height:44px; }
   html[data-nav=sections] .wrap{ padding-bottom:calc(100px + env(safe-area-inset-bottom)); /* dock-only clearance — the fab column folded into the dock (Arthur's reclaim) */ }
   html[data-nav=sections] .savebar{ bottom:calc(76px + env(safe-area-inset-bottom)); }
   /* Stage 4: floating fabs fold into the dock — the REAL buttons stay (contracts
      live there); only their floating faces hide. The expanded sheet still opens. */
   html[data-nav=sections] .savebar .savefab, html[data-nav=sections] .savebar .botfab{ display:none; }
   html[data-nav=sections] .savebar.open .savefab, html[data-nav=sections] .savebar.open .botfab{ display:none; }
+  .dock-utils{ display:flex; gap:2px; flex:0 0 auto; align-items:stretch;
+    border-left:1px solid var(--line); padding-left:4px; margin-left:2px; }
   .dockutil{ min-width:48px; font-size:20px; }
+  /* Arthur P1: sheets join the motion system (state, not decoration) */
+  @media (prefers-reduced-motion: no-preference){
+    .dock-dir{ transition:transform .14s cubic-bezier(.2,0,0,1), opacity .14s ease; transform-origin:bottom center; }
+    .dock-dir:not(.open){ transform:translateY(6px); opacity:0; pointer-events:none; display:block; visibility:hidden; }
+    .dock-dir.open{ visibility:visible; }
+    .gear-panel{ transition:opacity .14s ease; }
+  }
+  /* Arthur P1: the Home cell hints its directory on re-tap (stats lives there) */
+  nav.dock button.on[data-sect="Home"]::after{ content:'\2026'; position:absolute; right:6px; bottom:4px;
+    font-size:9px; line-height:1; color:var(--txt-dim); }
   .dockutil.warn{ color:var(--red); }
   .dockutil.warn::after{ content:''; position:absolute; top:6px; right:8px; width:8px; height:8px;
     border-radius:50%; background:var(--red); }
@@ -345,6 +364,9 @@
       right:auto; border-radius:0 3px 3px 0; }
     html[data-nav=sections] nav.dock button:hover{ background:rgba(var(--accent-rgb),.06); }
     .dock-dir{ left:224px; right:auto; top:70px; bottom:auto; width:300px; max-height:70vh; }
+    html[data-nav=sections] .dock-utils{ flex-direction:row; border-left:0; border-top:1px solid var(--line);
+      padding:8px 0 0; margin:8px 0 0; }
+    html[data-nav=sections] .dock-utils .dockutil{ flex:1; }
     /* rail top anchor (Arthur ruling 5.iii): identity header, then the list */
     html[data-nav=sections] .dock-head{ display:flex; align-items:center; gap:8px; min-height:56px;
       padding:0 12px; font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--bright);
@@ -3019,9 +3041,16 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var bk=gearPanel.querySelector('.gear-close'); if(bk) bk.textContent=T('Back');
       gearPanel.classList.add('open');
     }
-    function openDir(sec){
+    function openDir(sec, cell){
       dir.innerHTML='';
       dir.setAttribute('aria-label', T(sec.key));
+      /* Arthur P1: desktop flyout anchors to its trigger row, clamped to viewport */
+      try{
+        if(window.matchMedia('(min-width:860px)').matches && cell){
+          var cr=cell.getBoundingClientRect();
+          dir.style.top=Math.max(12, Math.min(cr.top, innerHeight-320))+'px';
+        } else dir.style.top='';
+      }catch(_){ }
       var list=document.createElement('div'); list.className='dock-dirlist';
       if(sec.gear){
         var sBtn=document.createElement('button'); sBtn.type='button'; sBtn.className='dockdir-item';
@@ -3048,6 +3077,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var head=document.createElement('div'); head.className='dock-head'; head.setAttribute('aria-hidden','true');
       head.textContent='MRLN'; dock.appendChild(head);
       var sc=document.createElement('div'); sc.className='dock-scroll'; dock.appendChild(sc);
+      var ut=document.createElement('div'); ut.className='dock-utils'; dock.appendChild(ut);   // P0-2 (Arthur): pinned, never scrolled away
       var act=activeSection();
       SECTIONS.forEach(function(sec){
         var b=document.createElement('button'); b.type='button';
@@ -3061,7 +3091,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
             var ov=tabBtn('overview'); if(ov){ closeDir(); ov.click(); return; }
           }
           if(dir.classList.contains('open') && dir.getAttribute('aria-label')===T(sec.key)){ closeDir(); return; }
-          openDir(sec);
+          openDir(sec, b);
         });
         sc.appendChild(b);
       });
@@ -3079,7 +3109,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         b.setAttribute('aria-label', (u.target==='botFab'? u.label : T(u.label)));
         b.setAttribute('data-util', u.cls);
         b.addEventListener('click', function(){ closeDir(); el.click(); });
-        sc.appendChild(b);
+        ut.appendChild(b);
       });
       var bar=document.querySelector('.savebar');
       if(bar && bar.classList.contains('haswarn')){ var sv=dock.querySelector('[data-util="save"]'); if(sv) sv.classList.add('warn'); }
@@ -3097,6 +3127,16 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     dirBack.addEventListener('click', closeDir);
     document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeDir(); if(gearPanel) gearPanel.classList.remove('open'); } });
     try{ new MutationObserver(function(){ rebuild(); }).observe(tabsNav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style','class']}); }catch(_){ }
+    /* Akashi (Stage-4 ruling): the sheet the dock's 💾 opens must itself carry the
+       ↗ Open/Save affordance — a delegate button so the contract is 2 taps, not 3. */
+    try{ var _sb=document.querySelector('.savebar'), _osb=document.getElementById('openSaveBtn');
+      if(_sb && _osb && !_sb.querySelector('.os-delegate')){
+        var _d=document.createElement('button'); _d.type='button'; _d.className='savebtn os-delegate';
+        _d.textContent=_osb.textContent||'\u2197 Open / Save';
+        _d.addEventListener('click', function(){ _osb.click(); });
+        _sb.insertBefore(_d, _sb.firstChild);
+      }
+    }catch(_){ }
     /* the fail-loud durability warning must pierce the dock exactly as it pierced
        the collapsed fab (Akashi constraint) — mirror .haswarn onto the save cell */
     try{ var _sbar=document.querySelector('.savebar');

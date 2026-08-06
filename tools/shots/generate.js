@@ -326,7 +326,11 @@ if (has('check')) {
             const panel = [...document.querySelectorAll('section.panel')]
               .find(s => getComputedStyle(s).display !== 'none');
             if (!panel) return { noPanel: true };
-            const target = Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 8);
+            /* clamp to reachable scroll: a short page (notebook) cannot put its panel
+               at the top — comparing against the UNCLAMPED target reported phantom
+               drift (-351px) while the shot was actually correct. */
+            const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+            const target = Math.min(max, Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 8));
             window.scrollTo(0, target);
             await new Promise(r => setTimeout(r, 250));
             return { target: Math.round(target), y: Math.round(window.scrollY), doc: document.documentElement.scrollHeight };
