@@ -2067,3 +2067,60 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 **Open:**
 - Awaiting Akashi's SAFE @ f1716e1 (POLISH-round confirmation)
 - Awaiting Osefe's "ship it"
+
+## 2026-08-06 — RESKIN STAGE 3 gate sign-off
+
+**Asked:** Kaito froze RESKIN STAGE 3 candidate at `6187b6f` (sections shell: bottom dock/desktop rail, 56 regenerated shots, parity marker→3) and requested GREEN sign-off on frozen tip.
+
+**Did:**
+- `git checkout 6187b6f` (frozen candidate)
+- `node tools/release/green.js` on frozen tip → **GREEN exit 0** (all 32 sections, 43 suites)
+  - Parity harness stage-3 assertions RAN and PASSED:
+    - ✓ #4 dock cells ≥48×56 (15 cells)
+    - ✓ #4 tappables ≥44px (.btn/inputs/selects)
+    - ✓ #2 dock labels fit @320 DE (no clip/ellipsis)
+    - ✓ #2 dock labels fit @320 HU (no clip/ellipsis)
+  - Parser 92/92, currency 68/68, preflight CLEAR ×3, PII 17/17 ✓
+  - Version match: APP_VER v41 === sw.js v41 ✓
+  - THEME-EXEMPT stable (16 markers) ✓
+- `node tools/test/parity_harness.js` standalone (6 widths: 320/360/390/768/1024/1440) → **all active + stage-3 assertions passed, zero flake** ✓
+  - Boot zero-errors at all widths ✓
+  - No h-overflow on all 15 tabs ✓
+  - FABs don't occlude text ✓
+  - All 15 destinations reachable ✓
+- Screenshot inventory:
+  - 48 assets/howto/*.png (EN + 7 langs each)
+  - 8 ov_desktop.*.png (EN + 7 langs)
+  - Total 56 files (as spec'd)
+  - All non-zero size (100KB–250KB range)
+  - All 780×1600 dimensions ✓
+  - Spot-checked calendar.png (EN) + calendar.hu.png (HU) — intentionally show no nav (composition flagged to Arthur per ruling)
+- Version & byte-freeze checks:
+  - APP_VER v41 === sw.js v41 ✓
+  - `git diff --stat f1716e1 6187b6f -- GUIDE.md MRLN-Guide.pdf landing.html sw.js` → **EMPTY** ✓
+- Guide check:
+  - No dock/rail/navigation wording in GUIDE.md (correctly deferred to Stage 4 after final IA lands) ✓
+  - No contradiction vs shipped guide today ✓
+- Updated TEAM-CHAT.md with full GREEN detail
+- Committing now
+
+**Found:**
+- All gates GREEN on frozen tip 6187b6f
+- Parity harness stage-3 assertions correctly ACTIVE (marker 3) and PASSED
+- No browser parity flake this run
+- 56 shots regenerated with expected dimensions; composition (no nav shown) intentional per Arthur's ruling
+- File freeze correct (GUIDE/PDF/landing/sw byte-unchanged)
+
+**Decided:**
+- Stage 3 is gate-ready
+- All sign-offs present: Akashi SAFE (Stages 0/1) + Mikoto MISSING:0 @ 6187b6f + **Hugo GREEN @ 6187b6f**
+- Sleep-mode: sign only, no publish (Osefe's explicit "ship it" required)
+
+**SHAs:**
+- Tested on: 6187b6f (frozen candidate)
+- Chat signed: (committing now)
+
+**Open:**
+- Awaiting Akashi's SAFE @ 6187b6f (Stage 3 specific)
+- Awaiting Arthur's live review (structural stage: dock/rail geometry, delegation UX, shot composition)
+- Awaiting Osefe's "ship it"
