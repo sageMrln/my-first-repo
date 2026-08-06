@@ -356,6 +356,11 @@ if (has('check')) {
                settle, then ASSERT on the real geometry. */
             let pt = panel.getBoundingClientRect().top;
             if (Math.abs(pt - 8) > 2) {
+              if (pt > 10) {   // short page out of scroll room — grow the spacer by the deficit first
+                let sp2 = document.getElementById('__shotspacer');
+                if (!sp2) { sp2 = document.createElement('div'); sp2.id = '__shotspacer'; document.querySelector('.wrap').appendChild(sp2); }
+                sp2.style.height = ((parseFloat(sp2.style.height) || 0) + (pt - 8) + 8) + 'px';
+              }
               window.scrollBy(0, pt - 8);
               await new Promise(r => setTimeout(r, 120));
               pt = panel.getBoundingClientRect().top;
