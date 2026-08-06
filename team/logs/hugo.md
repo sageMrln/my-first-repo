@@ -2124,3 +2124,57 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Awaiting Akashi's SAFE @ 6187b6f (Stage 3 specific)
 - Awaiting Arthur's live review (structural stage: dock/rail geometry, delegation UX, shot composition)
 - Awaiting Osefe's "ship it"
+
+## 2026-08-06 ~23:45 — RESKIN STAGE 3 RE-FROZEN re-GREEN sign-off
+
+**Asked:** Kaito re-froze Stage 3 candidate at ba0e5cf (Arthur's A1-A8 polish + Akashi's sw cache-poison guard + deploy.js live-ref hook, post-Mikoto MISSING:0). Requested re-GREEN sign-off on new frozen tip.
+
+**Did:**
+- `git checkout ba0e5cf` (re-frozen candidate)
+- `node tools/release/green.js` on frozen tip → **GREEN exit 0** (all 32 sections, 43 suites)
+  - html_parse_test: 3/3 ✓
+  - parse_test: 92/92 ✓
+  - currency_parity_test: 68/68 ✓
+  - theme_contrast_test: 61/61 ✓
+  - All transfer/tax/media suites: all pass ✓
+  - Preflight CLEAR ×3 (index/landing/legal) ✓
+  - PII guard 17/17 ✓
+  - i18n coverage: **MISSING: 0 (796 keys)** ✓
+  - THEME-EXEMPT: 16 markers, stable ✓
+- `node tools/test/parity_harness.js` standalone (6 widths: 320/360/390/768/1024/1440) → **all active stage-3 assertions passed, zero flake** ✓
+  - Boot zero-errors all widths ✓
+  - No h-overflow on all 15 tabs ✓
+  - FABs don't occlude text ✓
+  - All 15 destinations reachable ✓
+  - Stage-3 dock/label assertions PASSED ✓
+- Version & freeze checks:
+  - APP_VER v41 === sw.js v41 ✓
+  - `git diff 6187b6f..ba0e5cf -- GUIDE.md MRLN-Guide.pdf landing.html` → **EMPTY** (only app files + logs + docs moved) ✓
+- Diff sanity review:
+  - index.html: 88 ±, Arthur's A1-A8 dock/rail polish (A2 active state shape channel, A3 edge fades, A5 focus restore, A8 savebar viewport guard, A6 dock button classes, A7 a11y fixes, rail redlines) ✓
+  - sw.js: 6 ±, Akashi's cache-poison guard (never cache 404/503; check resp.ok + resp.type before c.put) ✓
+  - deploy.js: 2 ±, live-ref hook (MRLN_LIVE_REF env override for gh-pages target) ✓
+  - i18n block: +2 strings translated to all 7 langs (dock "Sections" + tour step-1) ✓
+  - team logs/chat: notes and sign-offs (expected) ✓
+  - team/security/split-repo-design.md: Akashi's ruling doc (read-only, no impact on gate) ✓
+- Updated TEAM-CHAT.md with full re-sign detail
+- Staging commit now
+
+**Found:**
+- All gates GREEN on re-frozen tip ba0e5cf
+- Stage-3 parity assertions correctly ACTIVE (marker 3) and PASSED
+- No browser parity flake this run
+- Cache-poison guard now active (404/503 safe, no permanent offline bricking)
+- deploy.js retargetable for split-repo work (pre-Stage 5 bump)
+
+**Decided:**
+- Stage 3 re-frozen is gate-ready
+- All sign-offs re-confirmed on ba0e5cf: Mikoto MISSING:0 @ 6783eee (→ ba0e5cf parity), Akashi SAFE (embedded in commit + code review), **Hugo GREEN @ ba0e5cf**
+- Sleep-mode: sign, don't publish (Osefe's explicit "ship it" required)
+
+**SHAs:**
+- Tested on: ba0e5cf (re-frozen candidate)
+- Chat signed: (committing now)
+
+**Open:**
+- Awaiting Osefe's "ship it" (sleep-mode: no auto-publish)
