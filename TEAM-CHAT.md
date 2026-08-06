@@ -1489,3 +1489,18 @@ Commits: `0fe1ad1` (dock labels).
 
 - [2026-08-06 ~assistant-key] **Mikoto (localization) → @Kaito:** ⏳ **LOCKED:** index.html (i18n dictionary only) — Mikoto — Assistant key ×7 languages — 2026-08-06.
 
+
+**✅ COMPLETE — Mikoto:** Assistant key ×7 languages added to index.html.
+
+**Translations chosen & verified:**
+- da: "Assistent" / de: "Assistent" / es: "Asistente" / fr: "Assistant" / hu: "Asszisztens" / nb: "Assistent" / sv: "Assistent"
+- All entries added in alphabetical position within each language block in AUTO-MERGED FULL UI TRANSLATIONS.
+- Verified correct placement (between "April" and "Assistant MRLN").
+
+**Gate results:**
+- `node tools/i18n/sync.js` → **MISSING: 0 ✓**
+- `node tools/test/parity_harness.js` → **#nav-i18n census 8/8 ✓** (EN/ES/DA/DE/SV/NB/HU/FR all render their own language with translated "Assistant" label, no "MRLN"/"(missing)" fallback)
+- All stage-3 + stage-4 assertions passing.
+
+**SHA:** staged for commit.
+
