@@ -305,8 +305,10 @@
   html[data-nav=sections] .savebar.open{ max-height:calc(100dvh - 96px); overflow-y:auto; overscroll-behavior:contain; }
   /* Stage 4: section DIRECTORY — the group's landing (addendum-1: visible module
      list, never a hamburger). Sheet above the dock on phones; panel by the rail. */
-  .dock-dirback{ display:none; position:fixed; inset:0; z-index:61; background:rgba(0,0,0,.45)/* THEME-EXEMPT: pure-black scrim — a dimming veil is theme-independent by design (same class as the modal scrim) */; }
-  .dock-dirback.open{ display:block; }
+  /* P2-N20 (Arthur): the scrim is STATE — opacity 0 at rest, faded with the sheet,
+     never a display snap. pointer-events gates interactivity. */
+  .dock-dirback{ display:block; opacity:0; pointer-events:none; position:fixed; inset:0; z-index:61; background:rgba(0,0,0,.45)/* THEME-EXEMPT: pure-black scrim — a dimming veil is theme-independent by design (same class as the modal scrim) */; }
+  .dock-dirback.open{ opacity:1; pointer-events:auto; }
   .dock-dir{ display:none; position:fixed; left:8px; right:8px; bottom:calc(74px + env(safe-area-inset-bottom)); z-index:62;
     background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-l); box-shadow:var(--shadow-4);
     padding:var(--s2); max-height:60dvh; overflow-y:auto; }
@@ -388,7 +390,25 @@
     .dock-dir{ transition:transform .14s cubic-bezier(.2,0,0,1), opacity .14s ease; transform-origin:bottom center; }
     .dock-dir:not(.open){ transform:translateY(6px); opacity:0; pointer-events:none; display:block; visibility:hidden; }
     .dock-dir.open{ visibility:visible; }
+    .dock-dirback{ transition:opacity .14s ease; }
+    /* N20: the old .gear-panel transition was DEAD (display toggle) — visibility
+       pattern like .dock-dir, so the fade actually runs. */
     .gear-panel{ transition:opacity .14s ease; }
+    .gear-panel:not(.open){ display:block; visibility:hidden; opacity:0; pointer-events:none; }
+    .gear-panel.open{ visibility:visible; opacity:1; }
+  }
+  /* P2-N18 (Arthur REWORK): the settings form reads as FOUR labelled groups —
+     LOCALE / APPEARANCE / HELP / DATA — header 11px/.14em/uppercase, rhythm 4/16. */
+  .gear-group{ display:flex; flex-direction:column; gap:4px; }
+  .gear-group-h{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--txt-dim); font-weight:600; margin:24px 0 8px; }
+  .gear-group:first-child .gear-group-h{ margin-top:4px; }
+  .gear-body .localebar .iconbtn{ width:100%; display:flex; align-items:center; gap:8px; justify-content:flex-start; text-align:left; }
+  @media (min-width:860px){
+    /* N18 desktop: a centred 560px card over a scrim, the rail stays visible,
+       Back sits at the card's top-left. */
+    html[data-nav=sections] .gear-panel{ left:216px; padding:40px; background:rgba(0,0,0,.45)/* THEME-EXEMPT: pure-black scrim — same dimming-veil class as the directory backdrop */; }
+    html[data-nav=sections] .gear-panel .gear-card{ max-width:560px; margin:0 auto; background:var(--bg); border:1px solid var(--line); border-radius:var(--r-l); padding:20px 22px; box-shadow:var(--shadow-4); }
+    html[data-nav=sections] .gear-panel .gear-head{ flex-direction:row-reverse; }
   }
   /* Arthur P1: the Home cell hints its directory on re-tap (stats lives there) */
   nav.dock button.on[data-sect="Home"]::after{ content:'\2026'; position:absolute; right:5px; bottom:3px;
@@ -3175,11 +3195,34 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       var gt=document.createElement('span'); gt.textContent=T('Settings'); gh.appendChild(gt);
       var gx=document.createElement('button'); gx.type='button'; gx.className='btn ghost gear-close';
       gx.textContent=T('Back'); gx.addEventListener('click', function(){ closeGearSettings(); });
-      gh.appendChild(gx); gearPanel.appendChild(gh);
-      var body=document.createElement('div'); body.className='gear-body'; gearPanel.appendChild(body);
+      gh.appendChild(gx);
+      /* N18: head+body ride in a .gear-card so desktop can centre a 560px card
+         over the scrim while the phone keeps the full-screen sheet. */
+      var card=document.createElement('div'); card.className='gear-card'; gearPanel.appendChild(card);
+      card.appendChild(gh);
+      var body=document.createElement('div'); body.className='gear-body'; card.appendChild(body);
       var lb=document.querySelector('.localebar');
-      if(lb) body.appendChild(lb);            // MOVE the node AT INIT — the header sheds the settings strip immediately
+      if(lb){ body.appendChild(lb); groupGear(lb); }  // MOVE the node AT INIT — the header sheds the settings strip immediately
       document.body.appendChild(gearPanel);
+    }
+    /* N18 (Arthur REWORK): regroup the flat control strip into four labelled groups.
+       NODE MOVES ONLY — every select/input/button keeps its listeners. */
+    function groupGear(lb){
+      if(lb.querySelector('.gear-group')) return;
+      var globe=lb.querySelector('.globe'); if(globe) globe.style.display='none';
+      function lc(id){ var el=lb.querySelector('#'+id); return el ? (el.closest('.lc')||el) : null; }
+      [['Locale',     [lc('langSel'), lc('curSel'), lc('countryInp')]],
+       ['Appearance', [lc('themeSel'), lc('layoutSel')]],
+       ['Help',       [lb.querySelector('#tourBtn'), lb.querySelector('#setupBtn'), lb.querySelector('#soundBtn')]],
+       ['Data',       [lb.querySelector('#openSaveBtn')]]
+      ].forEach(function(g){
+        var wrap=document.createElement('div'); wrap.className='gear-group';
+        var h=document.createElement('div'); h.className='gear-group-h';
+        h.setAttribute('data-i18n', g[0]); h.textContent=T(g[0]);
+        wrap.appendChild(h);
+        g[1].forEach(function(n){ if(n) wrap.appendChild(n); });
+        lb.appendChild(wrap);
+      });
     }
     function T(k){ return (typeof t==='function'? t(k) : k); }
     function tabLabel(tb){
@@ -10177,8 +10220,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       }
       MRLN_SFX.setOn(STATE.prefs.sound!==false);
       var sb=document.getElementById('soundBtn');
-      function paint(){ if(sb) sb.textContent = MRLN_SFX.isOn() ? '🔊' : '🔇'; }
+      /* N18 (Arthur): a 358px button whose whole content is 🔊 says nothing — carry
+         the state as WORDS (keys → Mikoto). Repainted on language change below. */
+      function paint(){ if(sb) sb.textContent = MRLN_SFX.isOn() ? ('🔊 '+t('Sound: on')) : ('🔇 '+t('Sound: off')); }
       paint();
+      var _ls=document.getElementById('langSel');
+      if(_ls) _ls.addEventListener('change', function(){ setTimeout(paint,0); });
       if(sb) sb.addEventListener('click', function(){
         var nv=!MRLN_SFX.isOn(); MRLN_SFX.setOn(nv); STATE.prefs.sound=nv; autosave(); paint();
         if(nv) MRLN_SFX.tick();                                    // confirm with a blip when turning on

@@ -309,7 +309,7 @@ try {
 //     (which should use CSS variables instead) and ensures every exemption is intentional.
 //     To re-pin: node -e "const fs=require('fs');const c=(fs.readFileSync('index.html','utf8').match(/\/\* THEME-EXEMPT:/g)||[]).length;console.log(c)" && sed -i 's/const THEME_EXEMPT_PIN = [0-9]*/const THEME_EXEMPT_PIN = N/' tools/release/green.js
 section('THEME-EXEMPT marker count — index.html overrides must be intentional');
-const THEME_EXEMPT_PIN = 17;   // Stage 4: +1 — the dock-directory scrim (pure-black veil, documented exempt class)
+const THEME_EXEMPT_PIN = 18;   // Stage 5: +1 — the desktop gear-card scrim (same documented dimming-veil class as the directory backdrop)
 try {
   const idx = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const matches = idx.match(/\/\* THEME-EXEMPT:/g);
