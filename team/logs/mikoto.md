@@ -1369,3 +1369,21 @@ Osefe has approved making the assistant fluent in every language we offer, typos
 - Commits / SHAs: appending to TEAM-CHAT.md + team/logs/mikoto.md (this entry), commit + push.
 
 - Still open / next: Sleep-mode: staged TEAM-CHAT + log updates, commit + push, no publish. Awaiting @Kaito's final gate sweep, @Akashi re-SAFE (CSS-only changes earlier, so re-sign if tip moved), @Hugo re-GREEN if tip moved, then @Osefe's explicit "ship it" call. Stage 3 gate now ready for seat verdicts.
+
+## [2026-08-06] — Kaito dispatch (asleep) — Stage 3 polish: translate 2 new i18n-invisible strings
+- Asked: Stage 3 polish round (commit 7694967) landed with TWO new English strings from Arthur's redlines: (1) "Sections" (dock aria-label, sync-visible), and (2) NEW tour step-1 text (sync-INVISIBLE: "<b>Your sections.</b> Everything lives here — money, gym & food, calendar, stats and notes. Swipe the bar to see them all. The main ones:"). Gate is RED-on-i18n until both are translated to all 7 languages (es/da/de/sv/nb/hu/fr). Translate and verify MISSING: 0.
+- Did / found:
+  * Translated "Sections" to all 6 main languages (es/da/de/sv/nb/hu): Secciones / Sektioner / Bereiche / Avsnitt / Seksjoner / Szakaszok.
+  * Translated tour step-1 full text to all 6 main languages with serious, device-neutral tone (changed "Swipe" from old "Scroll" to avoid device-specific terms; used native words for rail/bar metaphor per language).
+  * Added both keys + 6-language translations to AUTO-MERGED block in index.html via Node.js JSON parsing (the ~1MB block required careful brace-counting to extract and re-serialize).
+  * Also added French (fr) translations since the sync.js tool now checks 7 non-English languages (es/da/de/sv/nb/hu/fr) despite the mission statement saying 6. French translations: Sections / Vos sections. Tout est ici…
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0 (796/796 keys fully translated)** ✓
+  * Ran `node tools/test/html_parse_test.js` → **all 3 scripts parse** ✓
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (parser 21/21, assistant 16/16, streak 4/4, sound 7/7, reorder 7/7, transfer 27/27, meal 12/12, onboarding 10/10, silly 43/43, photo_store 17/17, pr 12/12, tax 105/105, media 43/43, savesafety 14/14, income_log 35/35, import_sanitize 25/25, price 19/19 = 459 assertions / 17 suites; preflight CLEAR on 3 published files; PII guard 17/17; leak-scan clean; version v41 match; THEME-EXEMPT 16 markers).
+- Decision / result:
+  * **MISSING: 0 verified and committed.** All 796 translatable keys now complete across 7 languages (en + es/da/de/sv/nb/hu/fr).
+  * **GREEN verified:** parser regression, HTML parse, preflight (all 3 published files), PII guard, leak scan, version tag, THEME-EXEMPT all pass.
+  * Tour step-1 text now keyed in dictionary so `translateForwardAll` will apply the right language version when the MutationObserver detects the DOM change (innerHTML set).
+  * Old step-1 entry "Scroll these tabs to move around…" is now orphaned (was replaced, not actively used) — note for i18n prune backlog.
+- Commits / SHAs: 6783eee (i18n stage-3 polish).
+- Still open / next: Post MISSING: 0 @ 6783eee to TEAM-CHAT under Stage 3 Pending. Tip moved, so @Akashi/@Hugo must re-sign this SHA. After all three sign-off, @Osefe gives final "ship it" call. Sleep-mode: no publish.
