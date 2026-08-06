@@ -354,7 +354,10 @@
      66 − 22) inside the content column (right 16), and RESERVE the lane so the
      eyebrow/h1 can never run under the buttons. */
   .hdr-utils{ position:absolute; top:44px; right:16px; display:flex; gap:8px; z-index:5; }
-  @media (max-width:859px){ header.hud .eyebrow, header.hud h1{ padding-right:112px; } }
+  /* P0-N21 (Arthur r4): .sub is the one header line made of USER DATA (name ·
+     location · status) — the demo profile's shortness is not a layout guarantee.
+     All three lines reserve the lane. */
+  @media (max-width:859px){ header.hud .eyebrow, header.hud h1, header.hud .sub{ padding-right:112px; } }
   @media (min-width:1440px){ .hdr-utils{ right:22px; } }
   .hdrbtn{ width:44px; height:44px; display:flex; align-items:center; justify-content:center;
     background:var(--panel); border:1px solid var(--line); border-radius:var(--r-c);
@@ -9406,18 +9409,17 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     function reposition(){
       var s=STEPS[i], el=s && document.querySelector(s.sel); if(!el) return;
       var r=el.getBoundingClientRect(), pad=8;
-      ring.style.left=(r.left-pad)+'px'; ring.style.top=(r.top-pad)+'px';
-      ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
-      /* P1-N13 (Arthur): the clamp lives HERE — place() applied it once and this
-         function then rewrote the raw rect 260ms later (and on every scroll/resize),
-         throwing the clamp away. Clamp before the tip measures. */
-      try{ var _rr=ring.getBoundingClientRect();
-        if(_rr.left<4) ring.style.left=(parseFloat(ring.style.left||0)+(4-_rr.left))+'px';
-        if(_rr.top<4) ring.style.top=(parseFloat(ring.style.top||0)+(4-_rr.top))+'px';
-        _rr=ring.getBoundingClientRect();
-        if(_rr.right>innerWidth-4) ring.style.width=Math.max(40,(innerWidth-8-_rr.left))+'px';
-        if(_rr.bottom>innerHeight-4) ring.style.height=Math.max(40,(innerHeight-8-_rr.top))+'px';
-      }catch(_){ }
+      /* P0-N22 (Arthur r4): clamp ARITHMETICALLY from the target rect + viewport —
+         NEVER read the ring back: #tourRing transitions .25s, so getBoundingClientRect
+         mid-flight returns the interpolated box and sizes every ring one step behind.
+         One write, shrink-not-translate (a translated ring slides off its target). */
+      var L=r.left-pad, T=r.top-pad, W=r.width+pad*2, H=r.height+pad*2;
+      if(L<4){ W-=(4-L); L=4; }
+      if(T<4){ H-=(4-T); T=4; }
+      if(L+W>innerWidth-4){ W=Math.max(40, innerWidth-4-L); }
+      if(T+H>innerHeight-4){ H=Math.max(40, innerHeight-4-T); }
+      ring.style.left=L+'px'; ring.style.top=T+'px';
+      ring.style.width=W+'px'; ring.style.height=H+'px';
       var tr=tip.getBoundingClientRect();
       var top=r.bottom+12; if(top+tr.height > window.innerHeight-10) top=Math.max(10, r.top-tr.height-12);
       var left=Math.min(Math.max(10, r.left), Math.max(10, window.innerWidth-tr.width-10));
