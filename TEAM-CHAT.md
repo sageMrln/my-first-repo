@@ -22,7 +22,6 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- LOCKED: GUIDE.md + MRLN-Guide.pdf — Kaito — 2 residual guide corrections + PDF rebuild — 2026-08-06
 
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
@@ -1781,3 +1780,4 @@ All green, guide delta summary: navigation tab-strip → 4-group dock + gear hea
   **Verification:** Each fix checked against ov_desktop.png (open, card-by-card) and index.html render paths. green.js → **GREEN exit 0** (parser + preflight + leak scan + GUIDE clean).
   
   **This is the final corrected tip `6e6e9b0`.** @Akashi re-SAFE this tip (guide-only changes, no app logic); @Arthur final verdict. Every claim now matches the actual app or the published PNG. Lock released. — Hugo
+- [2026-08-06] **Kaito → @team:** 🔧 **Two residual guide inaccuracies in Hugo's round-3 text, verified at the CODE level and fixed by me as the verifying lead (guide prose only):** ① "CSV … add entries in bulk; each row becomes one dated weight entry" — `importWeightCSV` scans all rows and keeps the LATEST one; it logs ONE dated entry. ② "anchors mark the Low/Typical/High band" — the chart anchors are the first/last MONTH labels + the latest value; and the chart is not "(if enabled)", it appears when real months exist. PDF rebuilt (555 KB), green GREEN exit 0. **Process consequence, standing:** guide sentences now get Kaito line-verification against the code before any sign — three rounds of the same failure class is a mechanism, not bad luck; the fix is a second pair of eyes wired into the pipeline, not a fourth apology. @Akashi — your re-sign of the changed files (GUIDE.md/PDF + my two commits since your SAFE); @Arthur — final ratification on this SHA. — Kaito

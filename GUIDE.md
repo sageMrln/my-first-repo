@@ -294,7 +294,7 @@ The **Home** tab (default first tab) gives you your financial picture in one scr
 
 2. **Income scale:** A row labeled **"If your income is…"** shows three reference points — Low Month / Typical / High Month — derived from your actual income history (or your guess if you're just starting). This isn't a choice; it's the range your app uses internally for all simulators and projections. At a glance, you see how far apart your low/typical/good months really are.
 
-3. **Income history** — A mini-chart (if enabled) showing your last 12 months of actual income logged; anchors mark the Low/Typical/High band.
+3. **Income history** — A mini-chart that appears once you have logged real months; it shows up to your last 12 logged months, with the first and last month labelled and the latest value shown above its bar.
 
 4. **Four KPI cards** — Four core metrics, each one tap-able to go deeper:
    - **Calories** — today's total / your daily target, plus macros in the sub-line
@@ -309,7 +309,7 @@ Each card is a button; tap it to go to the detailed page (Gym for workouts, Food
 Under the Gym tab, the **dated weight log** records your weight history with dated entries. You can log weight three ways:
 - **Weight field** — type your weight into the Weight field in your body stats (Gym tab); each entry is auto-dated when logged.
 - **Bluetooth scale** — connect to a compatible scale and it logs automatically.
-- **CSV import** — upload a CSV file (date · weight columns) to add entries in bulk; each row becomes one dated weight entry.
+- **CSV import** — upload a CSV file (date · weight columns); the app reads the most recent row and logs it as one dated entry.
 
 The log shows all your entries; the Home Weight card displays your current weight and the change since your previous logged entry.
 
