@@ -2178,3 +2178,62 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 **Open:**
 - Awaiting Osefe's "ship it" (sleep-mode: no auto-publish)
+
+## 2026-08-06 ~late — STAGE 3 RE-FROZEN RE-GREEN SIGN-OFF @ 09eee23
+
+**Asked:** Kaito re-froze Stage 3 candidate at `09eee23` (Arthur's P1-P3 dock scroll-wrapper + transition + rail-label polish, CSS+DOM-only changes). Requested re-GREEN sign-off on frozen tip.
+
+**Did:**
+- `git pull` (already up to date)
+- Read memory log (last sign-off was ba0e5cf)
+- Verified current branch `claude/vibrant-pasteur-ie24ab`, tip `09eee23` (per TEAM-CHAT / git log)
+- `node tools/release/green.js` on frozen tip → **GREEN exit 0** (all 32 sections, 43 suites)
+  - html_parse_test: 3/3 ✓
+  - parse_test: 92/92 ✓
+  - currency_parity_test: 68/68 ✓
+  - theme_contrast_test: 61/61 ✓
+  - All transfer/tax/media suites: all pass ✓
+  - Preflight CLEAR ×3 (index/landing/legal) ✓
+  - PII guard 17/17 ✓
+  - i18n coverage: **MISSING: 0 (796 keys)** ✓
+  - THEME-EXEMPT: 16 markers, stable ✓
+- `node tools/test/parity_harness.js` standalone (6 widths: 320/360/390/768/1024/1440) → **all active stage-3 assertions passed, zero flake** ✓
+  - Boot zero-errors all widths ✓
+  - No h-overflow on all 15 tabs ✓
+  - FABs don't occlude text ✓
+  - All 15 destinations reachable ✓
+  - Stage-3 dock/label assertions (P1 scroll-wrapper queries, P3 label wrap fit) PASSED ✓
+- Version & freeze checks:
+  - APP_VER v41 === sw.js v41 ✓
+  - `git diff ba0e5cf..09eee23 -- GUIDE.md MRLN-Guide.pdf landing.html sw.js` → **EMPTY** ✓
+  - Confirmation: GUIDE/PDF/landing/sw.js all byte-frozen; only index.html (CSS+DOM) changed
+- Diff sanity review:
+  - index.html: 37 ± (Arthur's P1-P3 polish: dock-scroll wrapper move, `.dockbtn` transition gates, rail label wrap white-space:normal) ✓
+  - P1 proof: `.dock-scroll` mask on wrapper only, fade cue intact, dock queries live
+  - P2 proof: `.dockbtn` now in shared transition list (0.18s), press gated on reduced-motion
+  - P3 proof: HU "Statisztikák és besorolások" now wraps, no longer clipped (44→51px row)
+- Updated TEAM-CHAT.md with full re-sign detail
+- Staging now
+
+**Found:**
+- All gates GREEN on frozen tip 09eee23
+- Stage-3 parity assertions correctly ACTIVE (marker 3) and PASSED
+- No browser parity flake this run
+- Dock scroll-wrapper correctly isolates mask to inner scroller (P1 resolved transparency bleed)
+- `.dockbtn` transitions now unified with app controls (P2 resolved snap issue)
+- Rail label wrapping proven (P3 resolved HU clip; row grows 44→51px; worst case in payload)
+- Mikoto's MISSING:0 holds on `09eee23` (CSS/DOM only, no new strings)
+
+**Decided:**
+- Stage 3 re-frozen is gate-ready
+- All sign-offs present on 09eee23: Mikoto MISSING:0 @ 09eee23 ✓, **Hugo GREEN @ 09eee23** ✓
+- Awaiting: Akashi SAFE @ 09eee23, Osefe "ship it" command
+- Sleep-mode: sign, don't publish (no gh-pages push)
+
+**SHAs:**
+- Tested on: 09eee23 (frozen candidate, P1-P3 folded)
+- Chat signed: (committing now)
+
+**Open:**
+- Awaiting Akashi's SAFE @ 09eee23 (P1 adds `.dock-scroll` DOM node; his call on a11y impact)
+- Awaiting Osefe's explicit "ship it" (sleep-mode, no auto-publish)
