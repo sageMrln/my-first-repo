@@ -60,7 +60,7 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
     const errs = [];
     page.on('pageerror', e => errs.push(e.message));
     await page.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
-    await page.waitForTimeout(1200);
+    await page.waitForTimeout(1600);
     await page.evaluate(() => {
       const el = document.getElementById('lockScreen'); if (el) el.classList.add('unlocked');
       document.documentElement.classList.remove('lk-noscroll');
@@ -85,11 +85,9 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
         const btn = document.querySelector('#tabs .tab[data-p="' + tp + '"]');
         if (!btn) return { reach: false };
         btn.click();
-        await new Promise(r => setTimeout(r, 120));
+        await new Promise(r => setTimeout(r, 160));
         const panel = document.getElementById(tp);
         const vis = panel && getComputedStyle(panel).display !== 'none';
-        /* #1 horizontal overflow — page must never scroll sideways */
-        const over = document.documentElement.scrollWidth > window.innerWidth + 1;
         /* #8 fab occlusion at max scroll: after scrolling to the bottom, no
            text-bearing element's box may still intersect a fab's box (mid-
            scroll float-over is inherent to fabs; PERMANENT occlusion is not).
@@ -103,6 +101,10 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
           if (document.documentElement.scrollHeight === h &&
               window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) break;
         }
+        /* #1 horizontal overflow — measured AFTER the settle loop: panels
+           re-render async post-click and a mid-relayout read reports phantom
+           overflow (the expenses flake, seen 3x before this move) */
+        const over = document.documentElement.scrollWidth > window.innerWidth + 1;
         let occ = null;
         const fabs = [...document.querySelectorAll('.savefab,.botfab')].filter(f => f.offsetParent !== null || getComputedStyle(f).position === 'fixed');
         for (const f of fabs) {
@@ -138,9 +140,68 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
   await browser.close();
 
   console.log('=== armed (future-stage) assertions ===');
-  if (STAGE >= 3) { /* implemented in the Stage-3 diff */ } else {
-    armed(3, '#4 tappables ≥44px / nav cells ≥48×56');
-    armed(3, '#2 nav labels fit at 320px in DE + HU, no ellipsis');
+  if (STAGE >= 3) {
+    /* #4 + #2 — IMPLEMENTED (Akashi's rot-trap catch: these must be real code
+       BEFORE the marker bumps to 3, so activation adds checks, never silence).
+       They assume the Stage-3 dock exists; a missing dock is a loud FAIL. */
+    const boot = async (page) => {
+      await page.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
+      await page.waitForTimeout(1600);
+      await page.evaluate(() => {
+        document.getElementById('lockScreen')?.classList.add('unlocked');
+        document.documentElement.classList.remove('lk-noscroll');
+        document.getElementById('boot')?.remove();
+        if (typeof loadDemoData === 'function') loadDemoData();
+        document.querySelectorAll('.mrln-toast').forEach(t => t.remove());
+      });
+      await page.waitForTimeout(300);
+    };
+    console.log('=== stage-3 assertions (390 / 320) ===');
+    const browser3 = await chromium.launch({ executablePath: exe });
+    {
+      const page = await (await browser3.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+      await boot(page);
+      const r = await page.evaluate(() => {
+        const dock = document.querySelector('nav.dock');
+        if (!dock) return { noDock: true };
+        const cells = [...dock.querySelectorAll('button,a')].filter(c => c.offsetParent !== null);
+        const badCells = cells.filter(c => { const b = c.getBoundingClientRect(); return b.width < 48 || b.height < 56; })
+          .map(c => (c.textContent || '').trim().slice(0, 14));
+        const shorties = [...document.querySelectorAll('.btn,.field input,.field select')]
+          .filter(el => el.offsetParent !== null && el.getBoundingClientRect().height > 0 && el.getBoundingClientRect().height < 44)
+          .map(el => (el.id || el.textContent || '').trim().slice(0, 18));
+        return { cells: cells.length, badCells: badCells, shorties: shorties.slice(0, 8), shortCount: shorties.length };
+      });
+      if (r.noDock) bad('#4 nav cells ≥48×56', 'nav.dock MISSING at stage ' + STAGE + ' — the Stage-3 shell is not in the DOM');
+      else {
+        check(r.badCells.length === 0, '#4 dock cells ≥48×56 (' + r.cells + ' cells)' + (r.badCells.length ? ' — FAIL: ' + r.badCells.join(', ') : ''));
+        check(r.shortCount === 0, '#4 tappables ≥44px (.btn/inputs/selects)' + (r.shortCount ? ' — ' + r.shortCount + ' under: ' + r.shorties.join(', ') : ''));
+      }
+      await page.context().close();
+    }
+    for (const lang of ['de', 'hu']) {
+      const page = await (await browser3.newContext({ viewport: { width: 320, height: 844 } })).newPage();
+      await boot(page);
+      const r = await page.evaluate(async (lg) => {
+        const sel = document.getElementById('langSel');
+        if (sel) { sel.value = lg; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+        await new Promise(res => setTimeout(res, 300));
+        const dock = document.querySelector('nav.dock');
+        if (!dock) return { noDock: true };
+        const clipped = [...dock.querySelectorAll('button,a')]
+          .filter(c => c.offsetParent !== null)
+          .map(c => { const lbl = c.querySelector('.dock-lbl') || c; return { t: (lbl.textContent || '').trim(), clip: lbl.scrollWidth > lbl.clientWidth + 1 }; })
+          .filter(x => x.clip).map(x => x.t.slice(0, 16));
+        return { clipped: clipped };
+      }, lang);
+      if (r.noDock) bad('#2 dock labels @320 ' + lang.toUpperCase(), 'nav.dock MISSING at stage ' + STAGE);
+      else check(r.clipped.length === 0, '#2 dock labels fit @320 ' + lang.toUpperCase() + ' (no clip/ellipsis)' + (r.clipped.length ? ' — FAIL: ' + r.clipped.join(', ') : ''));
+      await page.context().close();
+    }
+    await browser3.close();
+  } else {
+    armed(3, '#4 tappables ≥44px / nav cells ≥48×56   (implemented, dormant until marker=3)');
+    armed(3, '#2 nav labels fit at 320px in DE + HU, no ellipsis   (implemented, dormant until marker=3)');
   }
   if (STAGE < 4) {
     armed(4, '#6 every section opens on a visible module directory');
