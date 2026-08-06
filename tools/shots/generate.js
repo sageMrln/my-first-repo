@@ -314,8 +314,12 @@ if (has('check')) {
           const navY = await page.evaluate(() => {
             /* Stage 3 (a213555): under data-nav=sections the tab strip is
                off-canvas and the nav is a fixed bottom dock — clip from the
-               ACTIVE PANEL's top instead (the dock rides inside the 800px
-               window naturally). Legacy tabs mode keeps the old origin. */
+               ACTIVE PANEL's top instead. NOTE (Arthur, Stage-3 review): the
+               dock is fixed-bottom in this 1700px-tall shot viewport, i.e.
+               ~835px BELOW an 800px clip — it is DELIBERATELY out of frame at
+               Stage 3 (scaffolding nav). Stage-4 spec: viewport 390x800 +
+               clip from y:0 so the final 4+gear dock lands at the frame
+               bottom. Legacy tabs mode keeps the old origin. */
             if (document.documentElement.getAttribute('data-nav') === 'sections') {
               const panel = [...document.querySelectorAll('section.panel')]
                 .find(s => getComputedStyle(s).display !== 'none');

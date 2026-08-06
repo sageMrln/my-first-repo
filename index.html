@@ -285,8 +285,17 @@
     align-items:center; justify-content:center; gap:2px; background:none; border:0; border-radius:var(--r-c);
     color:var(--txt-dim); font-family:var(--font-body); font-size:11px; font-weight:600; letter-spacing:.01em;
     padding:4px 10px; cursor:pointer; white-space:nowrap; }
-  nav.dock button.on{ color:var(--accent-text); background:rgba(var(--accent-rgb),.10); }
-  nav.dock button:focus-visible{ outline:2px solid var(--accent-2); outline-offset:-2px; }
+  nav.dock button.on{ color:var(--accent-text); background:rgba(var(--accent-rgb),.10); font-weight:700; }
+  /* A2 (Arthur): active state carries a SHAPE channel, never colour alone */
+  nav.dock button{ position:relative; }
+  nav.dock button.on::before{ content:''; position:absolute; left:8px; right:8px; top:0; height:3px;
+    border-radius:0 0 3px 3px; background:var(--accent-text); }
+  /* A3 (Arthur): edge fades say "continues both ways" — the hidden scrollbar left no cue (HU@390 peek was 0.0px) */
+  html[data-nav=sections] nav.dock{ -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 32px),transparent 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 20px,#000 calc(100% - 32px),transparent 100%); }
+  .dock-head{ display:none; }
+  /* A8 (Arthur): lifted savebar must never push its top button above a short viewport */
+  html[data-nav=sections] .savebar.open{ max-height:calc(100dvh - 96px); overflow-y:auto; overscroll-behavior:contain; }
   html[data-nav=sections] .wrap{ padding-bottom:calc(220px + env(safe-area-inset-bottom)); }
   html[data-nav=sections] .savebar{ bottom:calc(76px + env(safe-area-inset-bottom)); }
   @media (min-width:860px){
@@ -294,7 +303,18 @@
       flex-direction:column; overflow-x:hidden; overflow-y:auto; justify-content:flex-start;
       border-top:0; border-right:1px solid var(--line); box-shadow:none; padding:18px 10px; gap:4px; }
     html[data-nav=sections] nav.dock button{ width:100%; flex-direction:row; justify-content:flex-start;
-      gap:10px; font-size:13px; min-height:44px; padding:8px 12px; }
+      gap:10px; font-size:14px; min-height:44px; padding:8px 12px; }
+    html[data-nav=sections] nav.dock{ mask-image:none; -webkit-mask-image:none;
+      scrollbar-width:thin; scrollbar-color:var(--line) transparent; }
+    html[data-nav=sections] nav.dock::-webkit-scrollbar{ display:block; width:6px; }
+    html[data-nav=sections] nav.dock button.on::before{ left:0; top:8px; bottom:8px; width:3px; height:auto;
+      right:auto; border-radius:0 3px 3px 0; }
+    html[data-nav=sections] nav.dock button:hover{ background:rgba(var(--accent-rgb),.06); }
+    /* rail top anchor (Arthur ruling 5.iii): identity header, then the list */
+    html[data-nav=sections] .dock-head{ display:flex; align-items:center; gap:8px; min-height:56px;
+      padding:0 12px; font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--bright);
+      border-bottom:1px solid var(--line); margin-bottom:10px; }
+    html[data-nav=sections] .dock-head::before{ content:'◆'; color:var(--accent-text); font-size:11px; }
     html[data-nav=sections] body{ padding-left:216px; }
     html[data-nav=sections] .wrap{ padding-bottom:150px; }
     html[data-nav=sections] .savebar{ bottom:18px; }
@@ -508,10 +528,12 @@
   }
   .tab .ix{font-family:var(--font-mono);font-size:10px;color:var(--cyan-dim);margin-right:7px}
   .tab:hover{color:var(--txt);border-color:var(--cyan-dim);transform:translateY(-2px)}
+  .dockbtn:hover{color:var(--txt)}
   .tab.active{color:var(--on-accent);background:linear-gradient(180deg,var(--cyan),var(--accent-2));border-color:var(--cyan);box-shadow:var(--glow)}
   .tab.active .ix{color:var(--on-accent)}
-  .tab:focus-visible,.btn:focus-visible,.scen-btn:focus-visible{outline:2px solid var(--lime);outline-offset:2px;box-shadow:0 0 0 4px rgba(var(--pos-rgb),.12)}  /* Arthur F — focus glow */
+  .tab:focus-visible,.btn:focus-visible,.scen-btn:focus-visible,.dockbtn:focus-visible{outline:2px solid var(--lime);outline-offset:2px;box-shadow:0 0 0 4px rgba(var(--pos-rgb),.12)}  /* Arthur F — focus glow */
   .tab:active{transform:translateY(0) scale(.97)}   /* Arthur D — press squeeze */
+  .dockbtn:active{transform:scale(.95)}   /* Arthur D — press squeeze (dock) */
 
   /* ===== INTERACTION LAYER — Tier 1 (Arthur): every tappable senses touch + cursor. Press feedback
      on ALL controls (touch + mouse, <100ms), desktop-gated hover, focus-visible rings. Transform/
@@ -2922,17 +2944,35 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       return s.trim();
     }
     function rebuild(){
+      /* A5 (Arthur): innerHTML wipe destroys keyboard focus — capture and restore */
+      var hadFocus = document.activeElement && document.activeElement.getAttribute &&
+                     document.activeElement.getAttribute('data-dock');
       dock.innerHTML='';
-      tabsNav.querySelectorAll('.tab').forEach(function(t){
-        if(t.style.display==='none') return;               // klarna stays hidden until revealed
+      dock.setAttribute('aria-label', (typeof t==='function'? t('Sections') : 'Sections'));
+      var head=document.createElement('div'); head.className='dock-head'; head.setAttribute('aria-hidden','true');
+      head.textContent='MRLN'; dock.appendChild(head);   // rail top anchor (≥860 only via CSS)
+      tabsNav.querySelectorAll('.tab').forEach(function(tb){
+        if(tb.style.display==='none') return;              // klarna stays hidden until revealed
         var b=document.createElement('button'); b.type='button';
-        b.textContent=tabLabel(t);
-        if(t.classList.contains('active')) b.className='on';
-        b.setAttribute('data-dock', t.getAttribute('data-p')||'');
-        b.addEventListener('click', function(){ t.click(); });
+        b.textContent=tabLabel(tb);
+        var active=tb.classList.contains('active');
+        b.className='dockbtn'+(active?' on':'');           // A6: joins the shipped interaction system
+        if(active) b.setAttribute('aria-current','page');  // A2: assistive "you are here"
+        b.setAttribute('data-dock', tb.getAttribute('data-p')||'');
+        b.addEventListener('click', function(){ tb.click(); });
         dock.appendChild(b);
       });
+      /* A4 (Arthur): after programmatic nav the .on cell can sit past the edge —
+         centre it WITHIN the dock only (never scrollIntoView: it can move the document) */
+      var on=dock.querySelector('.on');
+      if(on) dock.scrollLeft=Math.max(0,Math.min(dock.scrollWidth-dock.clientWidth,on.offsetLeft-(dock.clientWidth-on.offsetWidth)/2));
+      if(hadFocus){ var f=dock.querySelector('[data-dock="'+hadFocus+'"]'); if(f) f.focus(); }
     }
+    /* A7 (Arthur): the off-canvas strip leaves the a11y tree + tab order — BOTH
+       halves (aria-hidden alone over focusable children is itself a violation).
+       tabindex=-1 (not inert): .click() delegation must keep firing. */
+    tabsNav.setAttribute('aria-hidden','true');
+    tabsNav.querySelectorAll('.tab').forEach(function(tb){ tb.setAttribute('tabindex','-1'); });
     rebuild();
     document.body.appendChild(dock);
     try{ new MutationObserver(rebuild).observe(tabsNav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style','class']}); }catch(_){ }
@@ -9051,13 +9091,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   /* ===================== GUIDED TOUR (plays once; replayable) ===================== */
   var TOUR = (function(){
     var STEPS=[
-      {sel:'#tabs', text:'<b>Your sections.</b> Scroll these tabs to move around — money, gym &amp; food, calendar, stats and notes. Here are the main ones:'},
-      {sel:'#tabs .tab[data-p="expenses"]', text:'<b>Budget</b> is your money map — every recurring cost in one place. Add or edit any of them and every number updates instantly.'},
-      {sel:'#tabs .tab[data-p="gym"]', text:'<b>Gym Plan.</b> Body stats, calorie &amp; macro targets, a shape model — and <b>meal ideas matched to your goal &amp; physique</b>.'},
-      {sel:'#tabs .tab[data-p="food"]', text:'<b>Food Log.</b> Snap or type what you ate and get an instant calorie &amp; macro estimate against today’s target.'},
-      {sel:'#tabs .tab[data-p="stats"]', text:'<b>Stats &amp; Grades.</b> Your overall S–E grade explained — money, body and income class, with how to climb.'},
-      {sel:'#tabs .tab[data-p="notebook"]', text:'<b>Notebook.</b> A free-writing space like your phone’s Notes — anything you don’t want to lose.'},
-      {sel:'#tabs .tab[data-p="calendar"]', text:'<b>Calendar.</b> Birthdays, your weekly sports &amp; hobbies, and reminders — alarms included.'},
+      {sel:'#dock', text:'<b>Your sections.</b> Everything lives here — money, gym &amp; food, calendar, stats and notes. Swipe the bar to see them all. The main ones:'},
+      {sel:'#dock button[data-dock="expenses"]', text:'<b>Budget</b> is your money map — every recurring cost in one place. Add or edit any of them and every number updates instantly.'},
+      {sel:'#dock button[data-dock="gym"]', text:'<b>Gym Plan.</b> Body stats, calorie &amp; macro targets, a shape model — and <b>meal ideas matched to your goal &amp; physique</b>.'},
+      {sel:'#dock button[data-dock="food"]', text:'<b>Food Log.</b> Snap or type what you ate and get an instant calorie &amp; macro estimate against today’s target.'},
+      {sel:'#dock button[data-dock="stats"]', text:'<b>Stats &amp; Grades.</b> Your overall S–E grade explained — money, body and income class, with how to climb.'},
+      {sel:'#dock button[data-dock="notebook"]', text:'<b>Notebook.</b> A free-writing space like your phone’s Notes — anything you don’t want to lose.'},
+      {sel:'#dock button[data-dock="calendar"]', text:'<b>Calendar.</b> Birthdays, your weekly sports &amp; hobbies, and reminders — alarms included.'},
       {sel:'#botFab', text:'<b>Assistant MRLN.</b> Type a change in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions” — or ask a question about any feature.'},
       {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'},
       {sel:'#langSel', text:'<b>Language & currency.</b> Switch these to whatever suits you. Your data always stays on your device.'},
@@ -9092,6 +9132,12 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       }catch(_){ }
       if(!el){ if(i<STEPS.length-1){ i++; place(); return; } end(); return; }
       try{ el.scrollIntoView({block:'center', inline:'nearest'}); }catch(_){ }   // vertical only — no left/right slide
+      /* Stage-3 polish (Arthur A1 residue): a dock cell can sit past the strip's
+         right edge — centre it WITHIN the dock (its own scroller; never moves the
+         document) so the ring points at a visible cell. */
+      try{ var _dk=el.closest && el.closest('nav.dock');
+        if(_dk && el!==_dk) _dk.scrollLeft=Math.max(0,Math.min(_dk.scrollWidth-_dk.clientWidth, el.offsetLeft-(_dk.clientWidth-el.offsetWidth)/2));
+      }catch(_){ }
       ring.style.display='block'; tip.style.display='block';
       document.getElementById('ttTxt').innerHTML=s.text;
       document.getElementById('ttStep').textContent='Step '+(i+1)+' of '+STEPS.length;
@@ -9724,8 +9770,8 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   (function tapFeedback(){
     try{
       var motionOk = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-      var RIP='.btn,.tab,.scen-btn,.item-row,.exp-head,.cal-cell,.chattoggle,.medSeedChip,[data-ripple]';
-      var HAP='.btn,.tab,.scen-btn,.savebtn,.chattoggle';
+      var RIP='.btn,.tab,.dockbtn,.scen-btn,.item-row,.exp-head,.cal-cell,.chattoggle,.medSeedChip,[data-ripple]';
+      var HAP='.btn,.tab,.dockbtn,.scen-btn,.savebtn,.chattoggle';
       window.addEventListener('pointerdown', function(e){
         if(e.button!=null && e.button!==0) return;                     // primary press only
         var t=e.target && e.target.closest ? e.target.closest(RIP) : null;
