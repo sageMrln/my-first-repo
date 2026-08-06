@@ -376,11 +376,6 @@
       "role": "static"
     },
     {
-      "source": "ov_mobile.png",
-      "published": "ov_mobile.png",
-      "role": "static"
-    },
-    {
       "source": "sw.js",
       "published": "sw.js",
       "role": "static"

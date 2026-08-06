@@ -1506,7 +1506,7 @@ if(location.hostname==='mrln.online'&&location.protocol==='http:'){location.repl
    from when this runs. Pure decoration: reads no app state, only a DOM node + the clock. */
 /* Single source of truth for the app build. MUST equal sw.js VERSION — green.js fails the gate
    if they drift. Shown on the lock screen (below) + Settings so a stale-cache device is diagnosable. */
-window.APP_VER='v41';
+window.APP_VER='v42';
 window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   function nowMs(){return (window.performance&&performance.now)?performance.now():0;}
   function kill(){var el=document.getElementById('boot');if(!el)return;el.classList.add('boot-out');
