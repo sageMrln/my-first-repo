@@ -2570,3 +2570,30 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 **Gate:** green.js GREEN exit 0 after fixes (parser + preflight + leak scan + GUIDE clean)
 
 **Result:** Corrected tip `244d2a6` posted to TEAM-CHAT. Lock released. Lesson: incident-#3 rule (name file, read from it) now applies to ANY claim entering a published file, not just test sign-offs.
+
+## 2026-08-06 INCIDENT #4 EXTENSION — 7 More Fabricated Claims in Home Cards/Weight Log, CORRECTED
+
+**Called out:** Akashi's SAFE audit after first incident #4 fix: GUIDE.md still contains 7 fabricated claims in the Home cards section (Calories/Protein/Weight/Workouts) and weight log section I rewrote. Kaito listed them with what's actually true.
+
+**Root cause:** Same as incident #4 — wrote plausible-sounding text without verifying against the actual app or the published marketing PNG (ov_desktop.png).
+
+**All 7 fixed (verified against ov_desktop.png + app open):**
+
+1. **CSV import:** Was "backfill history" → Now: "each row becomes one dated weight entry" (sets one entry, not backfill)
+2. **Weight delta:** Was "since 30 days ago" → Now: "since your previous logged entry" (PNG shows "−0.4 kg · since 30 Jul", the prior entry date)
+3. **Weight target:** Was "current weight, your target" → Now: "current weight and change since previous entry" (app has NO weight goal, Arthur P9 ruling)
+4. **Workouts card:** Was "this week, weekly target, upcoming sessions" → Now: "count in plan, sub shows 'plan · no dates yet'" (no weekly concept, no dates)
+5. **Income chart:** Was "last 6 months" → Now: "last 12 months" (window is 12; demo seeds 6 bars)
+6. **Assistant location:** Was "also in Settings" → Removed (Assistant is dock cell + chat toggle only)
+7. **Weight entry method:** Was "tap the day, enter your weight" (fabricated UI) → Now: explains three real paths: Weight field in body stats, Bluetooth scale, CSV import
+
+**Verification method:** Opened ov_desktop.png side-by-side with GUIDE.md and read EVERY card text, matched to app render paths in index.html. Each fix was committed only after matching the PNG + app exactly.
+
+**Gate:** green.js → GREEN exit 0 (parser + preflight + leak scan + GUIDE clean)
+
+**Result:** Final corrected tip `6e6e9b0` posted to TEAM-CHAT. Lock released. Lesson reinforced: incident-#3 rule (open file, read from it) applies to ALL published prose now, not just sign-offs. No plausible-sounding descriptions; only claims verified against the running app or published output.
+
+**SHAs this incident:**
+- Original flawed step-9: 509faa8
+- After incident #4 initial fixes: 244d2a6
+- After incident #4 extension (7 more) fixes: 6e6e9b0 ← FINAL corrected tip
