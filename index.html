@@ -4087,16 +4087,24 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     scenarios.high.income = MODEL.income.high;
     // reflect income everywhere it's shown (header cards, income tab, scenario buttons)
     function setTxt(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; }
+    /* Akashi (Stage-5 step 4) — POISON SPREAD. §D promoted the Low/Typical/High trio
+       to the hero's secondary line, i.e. the product's face. These twelve renders were
+       the last DISPLAYED money figures in the app echoing MODEL.income raw: on a
+       stripped copy the hero went NaN, the cards refused and the viz hid itself, while
+       the band still read the real income. DISPLAY copies now carry the multiplier;
+       scenarios.* above and the slider range below keep the raw model, because that is
+       computation (already poisoned downstream by leftOver/comfort), not display. */
+    var _iT=__sys.token(), _iLo=_iT*MODEL.income.low, _iAv=_iT*MODEL.income.avg, _iHi=_iT*MODEL.income.high;
     /* R2 (Arthur r6): band values are NUMBER-ONLY — the hero states the currency
        30px above; the symbol made "3.800 kr" wrap its 74px lane at 320. The full
        formatted figure rides aria-label for AT. */
     (function(){ ['stLow','stAvg','stHigh'].forEach(function(id,ix){
-      var v=[MODEL.income.low,MODEL.income.avg,MODEL.income.high][ix], el=document.getElementById(id);
+      var v=[_iLo,_iAv,_iHi][ix], el=document.getElementById(id);
       if(el){ el.textContent=fmtN(v); el.setAttribute('aria-label', fmt(v)); }
     }); })();
-    setTxt('incLow', fmt(MODEL.income.low)); setTxt('incAvg', fmt(MODEL.income.avg)); setTxt('incHigh', fmt(MODEL.income.high));
-    setTxt('btnLow',tf('Low ({n})',{n:fmtN(MODEL.income.low)})); setTxt('btnAvg',tf('Typical ({n})',{n:fmtN(MODEL.income.avg)})); setTxt('btnHigh',tf('Good ({n})',{n:fmtN(MODEL.income.high)}));
-    setTxt('klBtnLow',tf('Low ({n})',{n:fmtN(MODEL.income.low)})); setTxt('klBtnAvg',tf('Typical ({n})',{n:fmtN(MODEL.income.avg)})); setTxt('klBtnHigh',tf('Good ({n})',{n:fmtN(MODEL.income.high)}));
+    setTxt('incLow', fmt(_iLo)); setTxt('incAvg', fmt(_iAv)); setTxt('incHigh', fmt(_iHi));
+    setTxt('btnLow',tf('Low ({n})',{n:fmtN(_iLo)})); setTxt('btnAvg',tf('Typical ({n})',{n:fmtN(_iAv)})); setTxt('btnHigh',tf('Good ({n})',{n:fmtN(_iHi)}));
+    setTxt('klBtnLow',tf('Low ({n})',{n:fmtN(_iLo)})); setTxt('klBtnAvg',tf('Typical ({n})',{n:fmtN(_iAv)})); setTxt('klBtnHigh',tf('Good ({n})',{n:fmtN(_iHi)}));
     if(typeof klRefresh==='function') klRefresh();
     // adapt the cash-flow slider range to the user's actual income
     var sl=document.getElementById('incSlider');
@@ -5041,7 +5049,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var max=Math.max.apply(null, vals)||1, med=_median(vals);
     var x=pad, bars='';
     e.forEach(function(en){ var v=Math.max(0,Number(en.amt)||0), h=Math.max(2,(v/max)*(H-2*pad)), y=H-pad-h;
-      bars+='<rect class="ih-bar" data-ihbar="'+esc(en.ym)+'" tabindex="0" role="button" x="'+x+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'" rx="3" fill="var(--cyan)" opacity="'+(en.est?0.42:0.85)+'"><title>'+esc(ymLabel(en.ym)+': '+fmt(v))+'</title></rect>';
+      bars+='<rect class="ih-bar" data-ihbar="'+esc(en.ym)+'" tabindex="0" role="button" x="'+x+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'" rx="3" fill="var(--cyan)" opacity="'+(en.est?0.42:0.85)+'"><title>'+esc(ymLabel(en.ym)+': '+fmt(__sys.token()*v))+'</title></rect>';   // Akashi (Stage-5 step 4): the tooltip/AT name is a DISPLAYED money figure — it must carry the multiplier like every sibling here. Proven: with the one-line guard above deleted, the six titles still read the real series while every other figure went NaN.
       x+=bw+gap; });
     var totalW=Math.max(x-gap+pad, pad*2+bw);
     var medY=(H-pad-(med/max)*(H-2*pad)).toFixed(1);
@@ -7969,6 +7977,19 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     if(MODEL && Array.isArray(MODEL.incomeLog)) MODEL.incomeLog=MODEL.incomeLog.filter(function(e){ return e && typeof e==='object'; }).map(function(e){
       return { ym:String(e.ym==null?'':e.ym).replace(/[^\d-]/g,'').slice(0,7), amt:_inum(e.amt), ts:_inum(e.ts), est:!!e.est }; })
       .filter(function(e){ return /^\d{4}-\d{2}$/.test(e.ym); });
+    /* Stage-5 §J.1 weight log (Akashi, step 4): a NEW imported shape. `d` is
+       interpolated into markup AND into a data-attr; `kg` renders inside innerHTML.
+       weightEntries() + esc() already stop the injection at the render (verified: 7
+       hostile rows -> 0 injected nodes), but this file's contract is to neutralise at
+       the DOOR so a future render site cannot inherit a live payload from a saved
+       file. Lossless for anything logWeight() itself wrote; caps at logWeight's own
+       400-entry bound so an import cannot exceed what the app will ever produce. */
+    if(STATE.body && typeof STATE.body==='object' && Array.isArray(STATE.body.weightLog)){
+      STATE.body.weightLog = STATE.body.weightLog.filter(function(e){ return e && typeof e==='object'; })
+        .map(function(e){ return { d:String(e.d==null?'':e.d).replace(/[^\d-]/g,'').slice(0,10), kg:_inum(e.kg) }; })
+        .filter(function(e){ return /^\d{4}-\d{2}-\d{2}$/.test(e.d) && e.kg>0; });
+      if(STATE.body.weightLog.length>400) STATE.body.weightLog=STATE.body.weightLog.slice(-400);
+    }
     if(MODEL && MODEL.incomeGuess && typeof MODEL.incomeGuess==='object'){ ['low','avg','high'].forEach(function(k){ MODEL.incomeGuess[k]=_inum(MODEL.incomeGuess[k]); }); }
     if(MODEL) MODEL.incomeGuessTs=_inum(MODEL.incomeGuessTs);
     if(STATE.calendar && typeof STATE.calendar==='object'){ Object.keys(STATE.calendar).forEach(function(k){
