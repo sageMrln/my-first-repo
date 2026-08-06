@@ -312,6 +312,15 @@ if (has('check')) {
              tab strip to the top edge so every language composes identically. */
           await dismissToasts(page);
           const navY = await page.evaluate(() => {
+            /* Stage 3 (a213555): under data-nav=sections the tab strip is
+               off-canvas and the nav is a fixed bottom dock — clip from the
+               ACTIVE PANEL's top instead (the dock rides inside the 800px
+               window naturally). Legacy tabs mode keeps the old origin. */
+            if (document.documentElement.getAttribute('data-nav') === 'sections') {
+              const panel = [...document.querySelectorAll('section.panel')]
+                .find(s => getComputedStyle(s).display !== 'none');
+              return panel ? Math.max(0, Math.round(panel.getBoundingClientRect().top) - 8) : 0;
+            }
             const nav = document.querySelector('nav.tabs');
             return nav ? Math.max(0, Math.round(nav.getBoundingClientRect().top)) : 0;
           });

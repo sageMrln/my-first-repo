@@ -267,6 +267,39 @@
   html[data-layout=focus] .pillbar{ display:none; }
   html[data-layout=focus] .item-row{ border:0; padding:16px 0; }
 
+  /* ===== STAGE 3 (reskin a213555 §C): the data-nav axis — sections shell.
+     nav.tabs stays in the DOM with its inline styles UNTOUCHED (the visTabs()/
+     klarna-reveal contracts live on inline display); under data-nav=sections it
+     is moved off-canvas, never display:none'd, and the dock delegates to the
+     real buttons via .click(). Mobile ≤859: fixed bottom dock (48×56 cells,
+     labels always visible, horizontal scroll while 15 destinations remain —
+     Stage 4 collapses to 4+gear). Desktop ≥860: fixed left rail. */
+  html[data-nav=sections] nav.tabs{ position:absolute; left:-9999px; top:0; width:1px; height:1px; overflow:hidden; }
+  nav.dock{ display:none; }
+  html[data-nav=sections] nav.dock{ display:flex; position:fixed; left:0; right:0; bottom:0; z-index:60;
+    background:var(--panel); border-top:1px solid var(--line); box-shadow:var(--shadow-2);
+    gap:2px; overflow-x:auto; overflow-y:hidden; scrollbar-width:none;
+    padding:4px 6px calc(4px + env(safe-area-inset-bottom)); }
+  html[data-nav=sections] nav.dock::-webkit-scrollbar{ display:none; }
+  nav.dock button{ flex:0 0 auto; min-width:48px; min-height:56px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:2px; background:none; border:0; border-radius:var(--r-c);
+    color:var(--txt-dim); font-family:var(--font-body); font-size:11px; font-weight:600; letter-spacing:.01em;
+    padding:4px 10px; cursor:pointer; white-space:nowrap; }
+  nav.dock button.on{ color:var(--accent-text); background:rgba(var(--accent-rgb),.10); }
+  nav.dock button:focus-visible{ outline:2px solid var(--accent-2); outline-offset:-2px; }
+  html[data-nav=sections] .wrap{ padding-bottom:calc(220px + env(safe-area-inset-bottom)); }
+  html[data-nav=sections] .savebar{ bottom:calc(76px + env(safe-area-inset-bottom)); }
+  @media (min-width:860px){
+    html[data-nav=sections] nav.dock{ left:0; right:auto; top:0; bottom:0; width:216px;
+      flex-direction:column; overflow-x:hidden; overflow-y:auto; justify-content:flex-start;
+      border-top:0; border-right:1px solid var(--line); box-shadow:none; padding:18px 10px; gap:4px; }
+    html[data-nav=sections] nav.dock button{ width:100%; flex-direction:row; justify-content:flex-start;
+      gap:10px; font-size:13px; min-height:44px; padding:8px 12px; }
+    html[data-nav=sections] body{ padding-left:216px; }
+    html[data-nav=sections] .wrap{ padding-bottom:150px; }
+    html[data-nav=sections] .savebar{ bottom:18px; }
+  }
+
   /* fix: seal the page background (no white overscroll void) + tame rubber-band scroll.
      overflow-x:hidden stays on <body> ONLY (see the body{} rule) — it has clipped horizontal
      overflow here since June via root→viewport propagation, with vertical scroll intact.
@@ -2867,6 +2900,43 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
   // applyAppearance() below (single source of truth — the old inline whitelist here
   // was stale and reset every new theme/layout back to cyber/pro on reload).
   applyAppearance();
+
+  /* ===== STAGE 3 (reskin a213555 §C): sections dock — delegates to the untouched
+     #tabs. The 16 tab buttons, their once-captured click NodeList, visTabs()'s
+     inline-display contract and the klarna reveal all keep working because the
+     dock never replaces them — it mirrors them and calls the real button's
+     .click(). Labels mirror tab text (minus the .ix numeral), so i18n and
+     tabOrder flow through for free; a MutationObserver keeps the mirror in sync
+     with language switches, reorders and the klarna reveal. tabColors/tabHold
+     stay INERT under sections by ruling (state preserved, not mirrored). */
+  (function(){
+    document.documentElement.setAttribute('data-nav','sections'); // in-branch default; publishes only with Stage 5
+    var tabsNav=document.getElementById('tabs'); if(!tabsNav) return;
+    var dock=document.createElement('nav'); dock.className='dock'; dock.id='dock';
+    dock.setAttribute('aria-label','Sections');
+    function tabLabel(t){
+      var s=''; t.childNodes.forEach(function(n){
+        if(n.nodeType===3) s+=n.textContent;
+        else if(n.nodeType===1 && !n.classList.contains('ix')) s+=n.textContent;
+      });
+      return s.trim();
+    }
+    function rebuild(){
+      dock.innerHTML='';
+      tabsNav.querySelectorAll('.tab').forEach(function(t){
+        if(t.style.display==='none') return;               // klarna stays hidden until revealed
+        var b=document.createElement('button'); b.type='button';
+        b.textContent=tabLabel(t);
+        if(t.classList.contains('active')) b.className='on';
+        b.setAttribute('data-dock', t.getAttribute('data-p')||'');
+        b.addEventListener('click', function(){ t.click(); });
+        dock.appendChild(b);
+      });
+    }
+    rebuild();
+    document.body.appendChild(dock);
+    try{ new MutationObserver(rebuild).observe(tabsNav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style','class']}); }catch(_){ }
+  })();
   var _quotaWarned=false;
   function _hudWarn(){ try{ var b=document.querySelector('.savebar'); if(b) b.classList.add('haswarn'); }catch(_){ } }  // a live warning must pierce the collapsed HUD
   function _warnStorageFull(){            // fail loud, never silent (Akashi constraint #3)
