@@ -59,5 +59,14 @@ jsRefs.forEach(rp =>
 );
 check(jsRefs.size > 0, 'JS deep-link scan found references (' + jsRefs.size + ')');
 
+/* Akashi (Stage-3 audit): the stage marker must never LAG the artifact — a lagging
+   marker leaves newer parity assertions dormant while the gate reads green. */
+const stage = JSON.parse(fs.readFileSync(path.join(root, 'tools/test/reskin_stage.json'), 'utf8')).stage;
+if (html.includes("className='dockbtn'") && stage < 3)
+  bad('stage marker lags the artifact: dock shell present but marker=' + stage + ' (<3)');
+else if (html.includes('data-sect') && stage < 3)
+  bad('stage marker lags the artifact: grouped dock present but marker=' + stage);
+else ok('stage marker (' + stage + ') consistent with the shipped shell');
+
 if (failed) { console.log('NAV TEST: ' + failed + ' FAILED'); process.exit(1); }
 console.log('NAV TEST: all passed (' + (tabs.length * 2 + jsRefs.size + 6) + ' checks)');

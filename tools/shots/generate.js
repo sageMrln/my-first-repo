@@ -131,7 +131,10 @@ if (has('check')) {
            Render the phone shots in a TALL viewport so the whole panel paints, then CLIP a
            390x800 window starting at the tab strip — which is how the existing six
            localized sets are framed. Clipping is the only way to compose these. */
-        viewport: desktop ? { width: 1440, height: 900 } : { width: 390, height: 1700 },
+        viewport: desktop ? { width: 1440, height: 900 }
+             /* Stage 4 (Arthur's composition ruling): real phone frame — the 4+gear dock
+                rides at the clip bottom. (Was 390x1700 tall-paint + content-only clip.) */
+             : { width: 390, height: 800 },
         deviceScaleFactor: 2,
       });
       const page = await ctx.newPage();
@@ -151,6 +154,10 @@ if (has('check')) {
 
       await page.evaluate(() => {
         document.getElementById('lockScreen').classList.add('unlocked');
+        /* lk-noscroll clamps <html> to the viewport while the gate is up — without
+           removing it the page cannot scroll AT ALL (scrollHeight == viewport), which
+           silently broke the Stage-4 panel-top framing: shots captured y=0 forever. */
+        document.documentElement.classList.remove('lk-noscroll');
         __sys.arm();
         if (typeof loadDemoData === 'function') loadDemoData();
         /* marketing profile — the same "Alex" in every language (sample data, never the
@@ -311,20 +318,24 @@ if (has('check')) {
              should show, and visibly different from the other six languages. Scroll the
              tab strip to the top edge so every language composes identically. */
           await dismissToasts(page);
+          /* Stage 4: scroll the active panel's top to the viewport top, then capture
+             the FULL 390x800 frame — content from the panel top, dock at the bottom
+             (Arthur's Stage-4 framing spec). Legacy tabs mode keeps the old origin. */
+          const scrollInfo = await page.evaluate(async () => {
+            if (document.documentElement.getAttribute('data-nav') !== 'sections') return null;
+            const panel = [...document.querySelectorAll('section.panel')]
+              .find(s => getComputedStyle(s).display !== 'none');
+            if (!panel) return { noPanel: true };
+            const target = Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 8);
+            window.scrollTo(0, target);
+            await new Promise(r => setTimeout(r, 250));
+            return { target: Math.round(target), y: Math.round(window.scrollY), doc: document.documentElement.scrollHeight };
+          });
+          if (scrollInfo && Math.abs((scrollInfo.y || 0) - (scrollInfo.target || 0)) > 4)
+            console.log('  ! scroll drift on ' + t.shot + ': ' + JSON.stringify(scrollInfo));
+          await page.waitForTimeout(150);
           const navY = await page.evaluate(() => {
-            /* Stage 3 (a213555): under data-nav=sections the tab strip is
-               off-canvas and the nav is a fixed bottom dock — clip from the
-               ACTIVE PANEL's top instead. NOTE (Arthur, Stage-3 review): the
-               dock is fixed-bottom in this 1700px-tall shot viewport, i.e.
-               ~835px BELOW an 800px clip — it is DELIBERATELY out of frame at
-               Stage 3 (scaffolding nav). Stage-4 spec: viewport 390x800 +
-               clip from y:0 so the final 4+gear dock lands at the frame
-               bottom. Legacy tabs mode keeps the old origin. */
-            if (document.documentElement.getAttribute('data-nav') === 'sections') {
-              const panel = [...document.querySelectorAll('section.panel')]
-                .find(s => getComputedStyle(s).display !== 'none');
-              return panel ? Math.max(0, Math.round(panel.getBoundingClientRect().top) - 8) : 0;
-            }
+            if (document.documentElement.getAttribute('data-nav') === 'sections') return 0;
             const nav = document.querySelector('nav.tabs');
             return nav ? Math.max(0, Math.round(nav.getBoundingClientRect().top)) : 0;
           });

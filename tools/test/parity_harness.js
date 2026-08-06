@@ -203,9 +203,61 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
     armed(3, '#4 tappables ≥44px / nav cells ≥48×56   (implemented, dormant until marker=3)');
     armed(3, '#2 nav labels fit at 320px in DE + HU, no ellipsis   (implemented, dormant until marker=3)');
   }
-  if (STAGE < 4) {
-    armed(4, '#6 every section opens on a visible module directory');
-    armed(4, '#7 gear destination reaches Settings + Connect + Change Log');
+  if (STAGE >= 4) {
+    /* #6 + #7 — IMPLEMENTED before the marker bumps (same rot-trap rule as #4/#2) */
+    const b4 = await chromium.launch({ executablePath: exe });
+    const page = await (await b4.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+    await page.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
+    await page.waitForTimeout(1600);
+    await page.evaluate(() => {
+      document.getElementById('lockScreen')?.classList.add('unlocked');
+      document.documentElement.classList.remove('lk-noscroll');
+      document.getElementById('boot')?.remove();
+      if (typeof loadDemoData === 'function') loadDemoData();
+      document.querySelectorAll('.mrln-toast').forEach(t => t.remove());
+    });
+    await page.waitForTimeout(300);
+    console.log('=== stage-4 assertions (390) ===');
+    for (const g of ['Money', 'Health', 'Life']) {
+      const r = await page.evaluate(async (grp) => {
+        const cell = document.querySelector('nav.dock button[data-sect="' + grp + '"]');
+        if (!cell) return { noCell: true };
+        cell.click();
+        await new Promise(res => setTimeout(res, 200));
+        const dir = document.getElementById('dockDir');
+        const open = dir && dir.classList.contains('open');
+        const items = open ? dir.querySelectorAll('.dockdir-item').length : 0;
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+        await new Promise(res => setTimeout(res, 100));
+        return { open: open, items: items };
+      }, g);
+      if (r.noCell) bad('#6 section directory [' + g + ']', 'group cell missing at stage ' + STAGE);
+      else check(r.open && r.items >= 2, '#6 ' + g + ' opens a visible directory (' + r.items + ' modules)');
+    }
+    const r7 = await page.evaluate(async () => {
+      const cell = document.querySelector('nav.dock button[data-sect="Settings"]');
+      if (!cell) return { noCell: true };
+      cell.click();
+      await new Promise(res => setTimeout(res, 200));
+      const dir = document.getElementById('dockDir');
+      const texts = [...dir.querySelectorAll('.dockdir-item')].map(x => x.textContent);
+      const st = [...dir.querySelectorAll('.dockdir-item')].find(x => /Settings/.test(x.textContent));
+      if (!st) return { texts: texts, noSettings: true };
+      st.click();
+      await new Promise(res => setTimeout(res, 250));
+      const gp = document.getElementById('gearPanel');
+      const ok = gp && gp.classList.contains('open') && !!gp.querySelector('#langSel');
+      if (gp) gp.classList.remove('open');
+      return { texts: texts, settingsPanel: ok };
+    });
+    if (r7.noCell) bad('#7 gear reach', 'gear cell missing at stage ' + STAGE);
+    else check(!r7.noSettings && r7.settingsPanel && r7.texts.length >= 3,
+      '#7 gear reaches Settings panel (+' + (r7.texts.length - 1) + ' entries: ' + r7.texts.slice(1).join(', ') + ')');
+    await page.context().close();
+    await b4.close();
+  } else {
+    armed(4, '#6 every section opens on a visible module directory   (implemented, dormant until marker=4)');
+    armed(4, '#7 gear destination reaches Settings + Connect + Change Log   (implemented, dormant until marker=4)');
   }
   if (STAGE < 5) {
     armed(5, '#5 exactly one focal number on Home');

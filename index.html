@@ -281,7 +281,7 @@
     padding:4px 6px calc(4px + env(safe-area-inset-bottom)); }
   /* P1 (Arthur): the scroller+mask live on an INNER wrapper so the fade never
      eats the dock's own background/border; the head stays a pinned sibling. */
-  .dock-scroll{ display:flex; gap:2px; flex:1; min-width:0; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; }
+  .dock-scroll{ display:flex; gap:2px; flex:1; min-width:0; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; position:relative; /* Arthur: offsetLeft now resolves against the scroller — kills the 6px centring drift */ }
   .dock-scroll::-webkit-scrollbar{ display:none; }
   nav.dock button{ flex:0 0 auto; min-width:48px; min-height:56px; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:2px; background:none; border:0; border-radius:var(--r-c);
@@ -319,8 +319,16 @@
   .gear-head{ display:flex; align-items:center; justify-content:space-between; min-height:44px; margin-bottom:var(--s4);
     font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--bright); }
   .gear-body .localebar{ position:static; display:flex; flex-wrap:wrap; gap:var(--s3); padding:0; margin:0; border:0; }
-  html[data-nav=sections] .wrap{ padding-bottom:calc(220px + env(safe-area-inset-bottom)); }
+  html[data-nav=sections] .wrap{ padding-bottom:calc(100px + env(safe-area-inset-bottom)); /* dock-only clearance — the fab column folded into the dock (Arthur's reclaim) */ }
   html[data-nav=sections] .savebar{ bottom:calc(76px + env(safe-area-inset-bottom)); }
+  /* Stage 4: floating fabs fold into the dock — the REAL buttons stay (contracts
+     live there); only their floating faces hide. The expanded sheet still opens. */
+  html[data-nav=sections] .savebar .savefab, html[data-nav=sections] .savebar .botfab{ display:none; }
+  html[data-nav=sections] .savebar.open .savefab, html[data-nav=sections] .savebar.open .botfab{ display:none; }
+  .dockutil{ min-width:48px; font-size:20px; }
+  .dockutil.warn{ color:var(--red); }
+  .dockutil.warn::after{ content:''; position:absolute; top:6px; right:8px; width:8px; height:8px;
+    border-radius:50%; background:var(--red); }
   @media (min-width:860px){
     html[data-nav=sections] nav.dock{ left:0; right:auto; top:0; bottom:0; width:216px;
       flex-direction:column; justify-content:flex-start;
@@ -330,7 +338,9 @@
     html[data-nav=sections] .dock-scroll::-webkit-scrollbar{ display:block; width:6px; }
     html[data-nav=sections] nav.dock button{ width:100%; flex-direction:row; justify-content:flex-start;
       gap:10px; font-size:14px; min-height:44px; padding:8px 12px; white-space:normal; line-height:1.25; text-align:left; }
-    html[data-nav=sections] .dock-scroll{ mask-image:none; -webkit-mask-image:none; }
+    html[data-nav=sections] .dock-scroll{ /* rail: horizontal fade off, VERTICAL fade on (Arthur assessment — the 22px slice cue) */
+      -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14px,#000 calc(100% - 24px),transparent 100%);
+      mask-image:linear-gradient(180deg,transparent 0,#000 14px,#000 calc(100% - 24px),transparent 100%); }
     html[data-nav=sections] nav.dock button.on::before{ left:0; top:8px; bottom:8px; width:3px; height:auto;
       right:auto; border-radius:0 3px 3px 0; }
     html[data-nav=sections] nav.dock button:hover{ background:rgba(var(--accent-rgb),.06); }
@@ -341,7 +351,7 @@
       border-bottom:1px solid var(--line); margin-bottom:10px; }
     html[data-nav=sections] .dock-head::before{ content:'◆'; color:var(--accent-text); font-size:11px; }
     html[data-nav=sections] body{ padding-left:216px; }
-    html[data-nav=sections] .wrap{ padding-bottom:150px; }
+    html[data-nav=sections] .wrap{ padding-bottom:60px; }
     html[data-nav=sections] .savebar{ bottom:18px; }
   }
 
@@ -2972,6 +2982,20 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     var dir=document.createElement('div'); dir.className='dock-dir'; dir.id='dockDir'; dir.setAttribute('role','dialog');
     var dirBack=document.createElement('div'); dirBack.className='dock-dirback'; dirBack.id='dockDirBack';
     var gearPanel=null;
+    function ensureGearPanel(){
+      if(gearPanel) return;
+      gearPanel=document.createElement('div'); gearPanel.className='gear-panel'; gearPanel.id='gearPanel';
+      gearPanel.setAttribute('role','dialog');
+      var gh=document.createElement('div'); gh.className='gear-head';
+      var gt=document.createElement('span'); gt.textContent='Settings'; gh.appendChild(gt);
+      var gx=document.createElement('button'); gx.type='button'; gx.className='btn ghost gear-close';
+      gx.textContent='Back'; gx.addEventListener('click', function(){ gearPanel.classList.remove('open'); });
+      gh.appendChild(gx); gearPanel.appendChild(gh);
+      var body=document.createElement('div'); body.className='gear-body'; gearPanel.appendChild(body);
+      var lb=document.querySelector('.localebar');
+      if(lb) body.appendChild(lb);            // MOVE the node AT INIT — the header sheds the settings strip immediately
+      document.body.appendChild(gearPanel);
+    }
     function T(k){ return (typeof t==='function'? t(k) : k); }
     function tabLabel(tb){
       var s=''; tb.childNodes.forEach(function(n){
@@ -2990,22 +3014,9 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     }
     function closeDir(){ dir.classList.remove('open'); dirBack.classList.remove('open'); dir.innerHTML=''; }
     function openGearSettings(){
-      if(!gearPanel){
-        gearPanel=document.createElement('div'); gearPanel.className='gear-panel'; gearPanel.id='gearPanel';
-        gearPanel.setAttribute('role','dialog');
-        var gh=document.createElement('div'); gh.className='gear-head';
-        var gt=document.createElement('span'); gt.textContent=T('Settings'); gh.appendChild(gt);
-        var gx=document.createElement('button'); gx.type='button'; gx.className='btn ghost gear-close';
-        gx.textContent=T('Back'); gx.addEventListener('click', function(){ gearPanel.classList.remove('open'); });
-        gh.appendChild(gx); gearPanel.appendChild(gh);
-        var body=document.createElement('div'); body.className='gear-body'; gearPanel.appendChild(body);
-        var lb=document.querySelector('.localebar');
-        if(lb) body.appendChild(lb);            // MOVE the node — every listener survives
-        document.body.appendChild(gearPanel);
-      }else{
-        var ttl=gearPanel.querySelector('.gear-head span'); if(ttl) ttl.textContent=T('Settings');
-        var bk=gearPanel.querySelector('.gear-close'); if(bk) bk.textContent=T('Back');
-      }
+      ensureGearPanel();
+      var ttl=gearPanel.querySelector('.gear-head span'); if(ttl) ttl.textContent=T('Settings');
+      var bk=gearPanel.querySelector('.gear-close'); if(bk) bk.textContent=T('Back');
       gearPanel.classList.add('open');
     }
     function openDir(sec){
@@ -3054,6 +3065,24 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         });
         sc.appendChild(b);
       });
+      /* Stage 4 (Arthur's fab ruling): the two floating fabs fold into the dock
+         as icon cells — pure delegation again (the real #saveFab/#botFab stay in
+         the DOM with every contract: expansion sheet, haswarn fail-loud, mint,
+         exportBlank serialization). Reclaims the fab column + ~120px of wrap
+         padding on every screen and ends the occlusion class outright. */
+      [{icon:'\uD83D\uDCBE', label:'Save', target:'saveFab', cls:'save'},
+       {icon:'\uD83E\uDD16', label:'Assistant MRLN', target:'botFab', cls:'bot'}].forEach(function(u){
+        var el=document.getElementById(u.target); if(!el) return;
+        var b=document.createElement('button'); b.type='button';
+        b.className='dockbtn dockutil dockutil-'+u.cls;
+        b.textContent=u.icon;
+        b.setAttribute('aria-label', (u.target==='botFab'? u.label : T(u.label)));
+        b.setAttribute('data-util', u.cls);
+        b.addEventListener('click', function(){ closeDir(); el.click(); });
+        sc.appendChild(b);
+      });
+      var bar=document.querySelector('.savebar');
+      if(bar && bar.classList.contains('haswarn')){ var sv=dock.querySelector('[data-util="save"]'); if(sv) sv.classList.add('warn'); }
       var on=dock.querySelector('.on');
       if(on) sc.scrollLeft=Math.max(0,Math.min(sc.scrollWidth-sc.clientWidth,on.offsetLeft-(sc.clientWidth-on.offsetWidth)/2));
       if(hadFocus){ var f=dock.querySelector('[data-sect="'+hadFocus+'"]'); if(f) f.focus(); }
@@ -3063,10 +3092,19 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     tabsNav.setAttribute('aria-hidden','true');
     tabsNav.querySelectorAll('.tab').forEach(function(tb){ tb.setAttribute('tabindex','-1'); });
     rebuild();
+    ensureGearPanel();   // relocate the settings strip NOW — not lazily on first open
     document.body.appendChild(dirBack); document.body.appendChild(dir); document.body.appendChild(dock);
     dirBack.addEventListener('click', closeDir);
     document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeDir(); if(gearPanel) gearPanel.classList.remove('open'); } });
     try{ new MutationObserver(function(){ rebuild(); }).observe(tabsNav,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['style','class']}); }catch(_){ }
+    /* the fail-loud durability warning must pierce the dock exactly as it pierced
+       the collapsed fab (Akashi constraint) — mirror .haswarn onto the save cell */
+    try{ var _sbar=document.querySelector('.savebar');
+      if(_sbar) new MutationObserver(function(){
+        var sv=dock.querySelector('[data-util="save"]');
+        if(sv) sv.classList.toggle('warn', _sbar.classList.contains('haswarn'));
+      }).observe(_sbar,{attributes:true,attributeFilter:['class']});
+    }catch(_){ }
     /* Akashi (Stage-3 audit): keyboard could Tab behind the lock — the app shell
        is inert while the gate is up. Cleared the moment #lockScreen gains
        .unlocked (covers unlock() AND the tools' direct class-add bypass). */
@@ -9197,7 +9235,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       {sel:'#dock button[data-sect="Health"]', text:'<b>Health.</b> Gym plan, body stats and targets, plus the food log that estimates calories &amp; macros as you type.'},
       {sel:'#dock button[data-sect="Life"]', text:'<b>Life.</b> Calendar, notebook and your media log — reminders and notes included.'},
       {sel:'#dock button[data-sect="Settings"]', text:'<b>Settings.</b> Language, currency, themes, moving your data — and this tour, any time.'},
-      {sel:'#botFab', text:'<b>Assistant MRLN.</b> Type a change in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions” — or ask a question about any feature.'},
+      {sel:'#dock button[data-util="bot"]', text:'<b>Assistant MRLN.</b> Type a change in plain words — “salary is now 2600”, “add Spotify 99 to Subscriptions” — or ask a question about any feature.'},
       {sel:'#saveBtn', text:'<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it’s your backup.'}
     ];
     var i=0, active=false, ring=document.getElementById('tourRing'), tip=document.getElementById('tourTip');
