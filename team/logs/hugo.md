@@ -2436,3 +2436,61 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Tested on: current HEAD (3f10d04 + chat marker)
 
 **Commit + push:** TEAM-CHAT.md + team/logs/hugo.md only, no app changes
+
+## 2026-08-06 sleep-mode RE-VERIFY — Stage-4 Round-5 Candidate `5bafada` (tip move re-sign)
+
+**Asked:** Re-run full gate on Stage-4 round-5 candidate `5bafada` per Kaito's round-5 report. Tip moved (two hunks index.html + 56 regenerated PNGs) from frozen candidate `3f10d04`, so per freeze rule re-sign the new tip with full suite.
+
+**Did:**
+1. Verified published files match candidate `5bafada` — no drift (chat marker after is noise)
+2. `node tools/release/green.js` on current HEAD
+   - Exit code 0 GREEN
+   - Parser suite + all sections + assertions passed
+   - 783 total checks across all suites
+   - i18n MISSING: 0
+   - Preflight CLEAR (index.html / landing.html / legal.html)
+   - Version: APP_VER v41 === sw.js v41
+   - THEME-EXEMPT: 17 markers stable
+   - PII guard: 17/17
+   - All published files leak-free
+
+3. `node tools/test/parity_harness.js` on all 6 widths (320/360/390/768/1024/1440)
+   - All widths: zero boot errors, zero h-overflow, FABs don't occlude, all 15 destinations reachable
+   - **#nav-i18n census: 8/8 green** (all 8 languages render dock labels correctly)
+   - All active stage-3 + stage-4 assertions passed
+   - Zero flake
+
+4. `node tools/test/nav_test.js`
+   - 44/44 checks passed
+   - Stage marker 4 consistent with shipped shell
+
+5. `node tools/test/parse_test.js`
+   - 125/125 passed, 0 failed
+
+6. **Spot-check with files open (incident #3 rule):**
+   - `assets/howto/expenses.de.png` — read dock labels: "Start" (home) · "Finanzen" (active, money) · "Gesundheit" (health) · "Leben" (life) · "Assistent" (assistant) ✓
+   - `assets/howto/expenses.nb.png` — read dock labels: "Hjem" (home) · "Økonomi" (active, money) · "Helse" (health) · "Liv" (life) · "Assistent" (assistant) ✓
+   - `assets/howto/notebook.png` — Panel heading "Notebook", "+ NEW NOTE" button, search bar, "No notes yet" message; no Terms/Privacy legal strip visible; dock at bottom with English labels; panel content flush at top ✓
+
+7. Verified published files still match candidate SHA `5bafada` (post-candidate chat commits don't drift published state)
+
+**Found:**
+- All gates GREEN on frozen tip `5bafada`
+- #nav-i18n census: 8/8 languages render correctly, dock labels verified in 2 multi-language screenshot files
+- All platform widths (320–1440px) zero errors, zero overflow
+- Parser suite 125/125, nav test 44/44, parity all active assertions PASSED
+- 56 shots regenerated this round from candidate bytes; framing gate hard-fails on |top−8|>2 (good mechanism, caught real defects in round-4 first run)
+- Notebook screenshot: correctly framed, no legal/Terms strip, empty state clean, dock labels all English (as expected on EN locale)
+
+**Decided:**
+- `5bafada` is gate-ready, all checks GREEN
+- **Hugo GREEN signature posted to TEAM-CHAT.md @ `5bafada`** ✓
+- Incident #3 mechanism confirmed: spot-checks named exact files + concrete details read FROM them (with files open); all screenshots opened, text was read, all matched expectations
+- Sleep-mode: sign only, no auto-publish; awaiting Akashi SAFE (tip-move re-sign) + Osefe "ship it"
+
+**SHAs:**
+- Candidate frozen: `5bafada` (round 5 two-hunk fix for N21+N22)
+- Current HEAD: `12b940c` (chat marker after candidate; published-file drift = EMPTY)
+- Tested on: current HEAD (5bafada candidate + chat marker)
+
+**Commit + push:** TEAM-CHAT.md + team/logs/hugo.md only, no app changes
