@@ -2624,3 +2624,15 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 **Result:** `9395cfd` is gate-ready. Three-person signature chain complete: Hugo GREEN (gate + guide accuracy) → Akashi re-SAFE (published files) → Arthur final verdict (design closure). Ready to move to Pending for Osefe "ship it".
 
 **Commits:** TEAM-CHAT + this log entry only (no app/guide changes, re-verification only).
+
+## 2026-08-06 FINAL RE-SIGN — Hugo GREEN @ 692dee8 (Council F1-F5)
+
+GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee8 ready for ship.
+- green.js GREEN exit 0 (125/125)
+- parity_harness 44/44, nav 45/45, parse 125/125
+- deploy.js --check exit 0 with sanctioned removal
+- F1 verified: refreshFinance → rebuildScenarios, 12 money displays repaint (0 on fresh, 15.000/20.000/25.000 after income set)
+- F3 verified: step 8 no longer promises tab reordering
+- F5 complete: Mikoto ×7 languages
+- Screenshots NOT regenerated (56 unchanged)
+- Result: Full ship candidate ready.
