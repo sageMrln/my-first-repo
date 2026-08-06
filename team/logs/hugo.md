@@ -2272,3 +2272,59 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 
 **Commit:** Staging now; no publish (sleep-mode: sign, don't publish per protocol).
 
+
+## 2026-08-06 ~late — STAGE 4 RE-FROZEN FINAL GREEN @ `ad6941d` (fix rounds closed)
+
+**Asked:** Verify `ad6941d` (frozen candidate post-fix-rounds) against 6 specific gates before publish. Fix rounds: tour-i18n P0 + sanitizer + guard hole @ 42e2f9c, Arthur UX batch @ fe58c7f, 56 shots @ ad6941d.
+
+**Did:**
+1. `node tools/release/green.js` on frozen tip `ad6941d` → **GREEN exit 0** (all 32 sections, 43 suites)
+   - html_parse_test: 3/3 ✓
+   - parse_test: 92/92 ✓
+   - currency_parity_test: 68/68 ✓
+   - theme_contrast_test: 61/61 ✓
+   - All transfer/tax/media suites: all pass ✓
+   - Preflight CLEAR ×3 (index/landing/legal) ✓
+   - PII guard 17/17 ✓
+   - i18n coverage: **MISSING: 0** ✓
+   - THEME-EXEMPT: 17 markers, stable ✓
+   - **#tour-i18n render assertion RAN and PASSED:** ✓ #tour-i18n renders translated in hu with <b> intact
+   - This closes the P0 blind spot (tour was falling back to EN in all langs); now permanent gate line ✓
+2. `node tools/test/parity_harness.js` standalone (6 widths: 320/360/390/768/1024/1440) → **all active assertions PASSED, zero flake** ✓
+   - Boot zero-errors all widths ✓
+   - No h-overflow on all 15 tabs ✓
+   - FABs don't occlude text ✓
+   - All 15 destinations reachable ✓
+   - Stage-3 dock/label assertions PASSED ✓
+   - Stage-4 assertions (#6 Money/Health/Life, #7 gear, #tour-i18n) all PASSED ✓
+3. `node tools/test/nav_test.js` → **44 checks PASSED** ✓
+   - Marker (4) consistent with shipped shell ✓
+   - Marker-lag guard armed and working ✓
+4. 56 shots spot-checked:
+   - EN expenses.png: dock grouped (Home/Money/Health/Life/Settings) in frame, pinned utils at right, no sliced-cell defect ✓
+   - HU expenses.hu.png: dock grouped, labels fit, no clip/ellipsis ✓
+   - notebook.png: clamp-framed correctly, not phantom-drifted, dock at bottom visible ✓
+5. Version freeze: APP_VER v41 === sw.js v41 ✓
+6. GUIDE drift flag re-verified: **GUIDE.md line 273 STILL has old tab-strip reordering text** ("Double-tap any navigation tab…reorder the tabs in your navigation bar") — WRONG for Stage-5 dock grouping. **FLAGGED for Stage-5 docket: guide must be fully rewritten + PDF rebuilt BEFORE Stage-5 publish.** Cannot be forgotten.
+
+**Found:**
+- All gates GREEN on frozen tip `ad6941d`
+- #tour-i18n assertion correctly ACTIVE (marker 4) and PASSED (P0 blind spot closed)
+- Parity harness: zero flake, all 6 widths active assertions PASSED
+- nav_test: all 44 checks, marker-lag guard armed
+- 56 shots: pinned utils IN FRAME, sliced-cell defect GONE, notebook clamp-framed
+- Freeze: APP_VER v41 === sw.js v41
+- GUIDE drift FLAGGED, STANDS for Stage 5
+
+**Decided:**
+- `ad6941d` is gate-ready; all 6 checks GREEN
+- All sign-offs present: Akashi SAFE (b92cc48, routes D1/D2 fixed here), Mikoto MISSING:0 (no new strings in fix rounds), **Hugo GREEN @ ad6941d** ✓
+- Sleep-mode: sign, don't publish (no gh-pages push; awaiting Osefe's explicit "ship it")
+
+**SHAs:**
+- Tested on: ad6941d (frozen candidate, fix rounds applied)
+- Chat signed: (committing now)
+
+**Open:**
+- Awaiting Osefe's "ship it" (sleep-mode, no auto-publish)
+
