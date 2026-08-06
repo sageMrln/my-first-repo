@@ -2597,3 +2597,30 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 - Original flawed step-9: 509faa8
 - After incident #4 initial fixes: 244d2a6
 - After incident #4 extension (7 more) fixes: 6e6e9b0 ← FINAL corrected tip
+
+## 2026-08-06 Final Re-sign — Hugo GREEN @ `9395cfd` on Kaito's guide corrections
+
+**Asked:** Kaito: re-sign GREEN on final candidate `9395cfd`, which has his 6 guide corrections (code-verified) + Arthur's design verdicts (R1-R6 closed on guide prose). Run full gate, spot-verify Kaito's edits against app + PNG (two-pairs-of-eyes closure), post GREEN.
+
+**Did:**
+1. Pulled to `9395cfd`
+2. Full gate on frozen tip:
+   - `green.js` → GREEN exit 0 (parser 125/125, preflight CLEAR, leak scan clean, MISSING:0, v42 tag, THEME-EXEMPT 18)
+   - `parity_harness.js` → all active assertions passed (6 widths, 44 checks, nav-i18n 8/8)
+   - `nav_test.js` → 45/45 passed
+   - `parse_test.js` → 125/125 passed
+3. Spot-verified Kaito's 6 corrections against ov_desktop.png + app:
+   - Navigation description (dock/sidebar layout) ✓
+   - Home cards (Calories/Protein/Weight/Workouts wording) ✓
+   - Income history viz description ✓
+   - Weight entry methods (CSV reads most recent row) ✓
+   - CSV import wording refinement ✓
+   - Setup wizard reorder removal ✓
+   All code-verified and accurate.
+4. Posted GREEN @ `9395cfd` with full numbers + spot-check summary
+
+**Found:** All of Kaito's corrections are accurate. Arthur's 6 design verdicts (R1-R6) properly applied to guide prose only; code path (3d780c6) is byte-identical to Arthur's SHIP measurement.
+
+**Result:** `9395cfd` is gate-ready. Three-person signature chain complete: Hugo GREEN (gate + guide accuracy) → Akashi re-SAFE (published files) → Arthur final verdict (design closure). Ready to move to Pending for Osefe "ship it".
+
+**Commits:** TEAM-CHAT + this log entry only (no app/guide changes, re-verification only).
