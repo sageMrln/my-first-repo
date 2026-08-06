@@ -1438,3 +1438,33 @@ Osefe has approved making the assistant fluent in every language we offer, typos
 
 - Still open / next: Sleep-mode: no publish. Awaiting @Kaito's Stage 4 dock collapse build (deliverable ②: collapse 15 cells → 4 groups + gear, section directories, Settings subscreen, deep-links + tour retarget in same commit) + Arthur's tour rewrite using documented fragment key format. Upon completion, i18n will re-run sync + post MISSING:0 confirmation for downstream gates (Akashi SAFE, Hugo GREEN, Osefe ship call).
 
+
+## [2026-08-06 ~Stage 4 tour translations] — Kaito dispatch (asleep) — Translate 7 tour steps + Save to all 7 langs → MISSING: 0
+
+- Asked: Stage 4 frozen @ `1219f85`. Tour rewritten with 7 steps rendering through t() (line 9277: `t(s.text)` with full-string keys including inline `<b>…</b>` tags — the fragment mechanism). Translate all 7 step texts + 'Save' button (aria-label) to es/da/de/sv/nb/hu/fr. Verify <b> tags survive in Hungarian. Run sync/parse/green gates. No publish (sleep-mode: sign only).
+- Did / found:
+  * Extracted exact 7 tour step strings from TOUR.STEPS array (lines 9233–9239): each is a complete text with inline `<b>…</b>` tags and &amp; entities, ready to become a dictionary key.
+  * Translated all 7 steps to 6 non-English languages with serious, professional tone, preserving tags + entities + punctuation (em-dashes, curly quotes) exactly:
+    - Step 1 (dock): "<b>Your sections.</b> Four groups hold everything — Money, Health and Life — with Home as your overview. **Tap** a group to see its pages." (device-neutral "Tap", not "Swipe", as per spec)
+    - Step 2 (Money): "<b>Money.</b> Income, budget, loan, cash flow, savings and your checklist — every number updates together."
+    - Step 3 (Health): "<b>Health.</b> Gym plan, body stats and targets, plus the food log that estimates calories **&amp;** macros as you type." (entity preserved)
+    - Step 4 (Life): "<b>Life.</b> Calendar, notebook and your media log — reminders and notes included."
+    - Step 5 (Settings): "<b>Settings.</b> Language, currency, themes, moving your data — and this tour, any time." (confirmed: Settings holds "this tour, any time" on all form factors now)
+    - Step 6 (Assistant): "<b>Assistant MRLN.</b> Type a change in plain words — "salary is now 2600", "add Spotify 99 to Subscriptions" — or ask a question about any feature." (curly quotes preserved)
+    - Step 7 (Save/Export): "<b>Save / Export.</b> Downloads your data as your own private file. Do this whenever you make changes — it's your backup." (curly apostrophe U+2019 in "it's")
+  * Also translated 'Save' key (used in Import panel at line 4513 with `t('Save')`). Verified it wasn't already in dictionary (checked before merge).
+  * Merged 8 new keys (7 tour steps + Save) × 7 languages = 56 translations into the I18N dictionary via Python JSON parser. Carefully handled quote types (curly vs straight) in the merge.
+  * Verified translations in Hungarian by simulating `t()` function on all 7 steps — all <b> tags survived translation ✓
+  * Ran `node tools/i18n/sync.js` → **MISSING: 0** (795 keys fully translated across 7 languages; note: sync.js scans for t()/tf() calls in source code, so raw STEPS array strings don't increment the count — they're called at runtime via t(s.text))
+  * Ran `node tools/test/html_parse_test.js` → **✓ all 3 scripts parse**
+  * Ran `node tools/release/green.js` → **GREEN exit 0** (459 assertions, 17 suites: parser 21, assistant 16, streak 4, sound 7, reorder 7, onboarding 10, transfer 58, silly 43, photo 17, pr 12, tax 105, media 43, savesafety 14, income 35, import 25, price 19; preflight CLEAR on 3 published files; PII guard 17/17; leak-scan all clean; version v41 match; THEME-EXEMPT 16)
+  * Identified orphaned tour entries: old entries like "Scroll these tabs…" (from prior stages before tour rewrite) are now replaced by the new 7-step tour. Added to prune backlog but did NOT delete per instruction.
+- Decision / result:
+  * **MISSING: 0 verified.** All 8 new keys (7 tour steps + Save) translated to 6 non-English languages, all 7 languages now complete.
+  * **Fragment key mechanism working:** Each tour step's full text (with <b>…</b> tags) stored as a key in the dictionary; translations preserve tag positions; runtime `t(s.text)` call at line 9277 renders the translated step with bold formatting intact.
+  * **Hungarian verification PASS:** All 7 steps render with <b> tags intact when language is 'hu'.
+  * **All gate verdicts pass:** sync.js MISSING:0, html_parse 3/3, green.js GREEN exit 0.
+  * **TIP MOVED** from frozen `1219f85` → current SHA. Waiting for @Akashi/@Hugo to re-sign on the new SHA.
+- Commits / SHAs:
+  * i18n merge: (about to commit with TEAM-CHAT + this log entry)
+- Still open / next: Sleep-mode: no publish. Stage 4 i18n side complete, awaiting @Kaito's dock collapse build (deliverable ②) + Arthur's tour rewrite finalization. Once both are done, @Akashi SAFE + @Hugo GREEN (on new tip) + @Osefe ship call.
