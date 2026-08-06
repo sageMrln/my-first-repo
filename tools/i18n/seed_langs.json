@@ -711,9 +711,27 @@
    }
   ],
   "food": [
-   "Chicken, rice and broccoli",
-   "Oats with berries and skyr",
-   "Protein shake after the gym"
+   {
+    "text": "Chicken, rice and broccoli",
+    "kcal": 640,
+    "p": 52,
+    "c": 68,
+    "f": 14
+   },
+   {
+    "text": "Oats with berries and skyr",
+    "kcal": 420,
+    "p": 24,
+    "c": 58,
+    "f": 9
+   },
+   {
+    "text": "Protein shake after the gym",
+    "kcal": 210,
+    "p": 32,
+    "c": 8,
+    "f": 4
+   }
   ]
  }
 }

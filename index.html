@@ -325,8 +325,8 @@
   .gear-panel.open{ display:block; }
   /* P16: Back sits top-LEFT at every width (iOS/M3; a control must not change side
      across breakpoints) — row-reverse puts the DOM-last Back first visually. */
-  .gear-head{ display:flex; flex-direction:row-reverse; align-items:center; justify-content:space-between; min-height:44px; margin-bottom:var(--s4);
-    font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--bright); }
+  .gear-head{ display:flex; flex-direction:row-reverse; align-items:center; justify-content:flex-end; gap:12px; min-height:44px; margin-bottom:var(--s4);
+    font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--bright); }  /* R6: Back AND title cluster left — one edge, like the form below */
   /* Arthur REWORK: the settings panel is a FORM, not a strip — labeled rows,
      full-width 44px controls, one column (max 520px), no dead 71%. */
   .gear-body{ max-width:520px; }
@@ -648,7 +648,7 @@
   #homeHero .status .stat{ flex:1 1 0; border:0; background:none; padding:0; text-align:left; }
   #homeHero .status .stat+.stat{ border-left:1px solid var(--line); padding-left:12px; margin-left:12px; }
   #homeHero .status .lbl{ font-size:10px; letter-spacing:.14em; }
-  #homeHero .status .val{ font-size:15px; font-weight:600; margin-top:2px; }
+  #homeHero .status .val{ font-size:15px; font-weight:600; margin-top:2px; color:var(--bright); }  /* R4: values neutral — amber is the warning channel, lime is the hero's own colour */
   .hh-viz{ margin-top:14px; }
   .hh-viz-lbl{ font-size:12px; font-weight:600; color:var(--txt-dim); margin-bottom:4px; }
   .hh-viz svg{ max-width:100%; height:auto; display:block; }
@@ -665,10 +665,10 @@
   .kc-sub{ font-size:12px; color:var(--txt-dim); }
   @media (min-width:860px){ .home-cards{ grid-template-columns:repeat(4,1fr); } }
   /* P8 (Arthur): the kg column must ALIGN — grid, right-anchored value, 44px ✕ */
-  .wl-row{ display:grid; grid-template-columns:1fr auto 44px; align-items:center; gap:10px; min-height:44px; }
+  .wl-row{ display:grid; grid-template-columns:1fr auto 48px 44px; align-items:center; gap:10px; min-height:44px; }
   .wl-date{ color:var(--txt-dim); font-size:12px; }
   .wl-val{ text-align:right; font-variant-numeric:tabular-nums; }
-  .wl-dl{ color:var(--txt-dim); font-size:11px; }
+  .wl-dl{ color:var(--txt-dim); font-size:11px; text-align:right; }   /* R5: delta is its OWN column so the kg edge never rags */
   .wl-del{ min-width:44px; min-height:44px; padding:4px 10px; font-size:11px; }
   .hero-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;color:var(--txt-dim);text-transform:uppercase}
   .hero-num{font-family:var(--font-display);font-weight:900;font-size:clamp(38px,9vw,60px);line-height:1.02;margin-top:5px;color:var(--lime);text-shadow:0 0 24px rgba(var(--pos-rgb),.32)}
@@ -3941,7 +3941,7 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       /* P7 (Arthur, Stage-5): Orbitron has no tabular figures — no CSS declaration
          can stop the count-up reflowing the hero (measured 118.8px of swing).
          Measure the FINAL string once, pin minWidth, clear on the last frame. */
-      try{ var _pt=el.textContent; el.textContent=fmtN(to); el.style.minWidth=el.offsetWidth+'px'; el.textContent=_pt; }catch(_){ }
+      try{ var _pt=el.textContent; el.style.minWidth=''; el.textContent=fmtN(to); el.style.minWidth=el.offsetWidth+'px'; el.textContent=_pt; }catch(_){ }   // R3: clear the stale pin BEFORE measuring
       var dur=420, t0=(window.performance&&performance.now)?performance.now():0;
       el._cuAnimating=true;
       function ease(p){ p=1-p; return 1-p*p*p; }                       // expo-out (matches --ease-out feel)
@@ -4087,7 +4087,13 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
     scenarios.high.income = MODEL.income.high;
     // reflect income everywhere it's shown (header cards, income tab, scenario buttons)
     function setTxt(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; }
-    setTxt('stLow', fmt(MODEL.income.low)); setTxt('stAvg', fmt(MODEL.income.avg)); setTxt('stHigh', fmt(MODEL.income.high));
+    /* R2 (Arthur r6): band values are NUMBER-ONLY — the hero states the currency
+       30px above; the symbol made "3.800 kr" wrap its 74px lane at 320. The full
+       formatted figure rides aria-label for AT. */
+    (function(){ ['stLow','stAvg','stHigh'].forEach(function(id,ix){
+      var v=[MODEL.income.low,MODEL.income.avg,MODEL.income.high][ix], el=document.getElementById(id);
+      if(el){ el.textContent=fmtN(v); el.setAttribute('aria-label', fmt(v)); }
+    }); })();
     setTxt('incLow', fmt(MODEL.income.low)); setTxt('incAvg', fmt(MODEL.income.avg)); setTxt('incHigh', fmt(MODEL.income.high));
     setTxt('btnLow',tf('Low ({n})',{n:fmtN(MODEL.income.low)})); setTxt('btnAvg',tf('Typical ({n})',{n:fmtN(MODEL.income.avg)})); setTxt('btnHigh',tf('Good ({n})',{n:fmtN(MODEL.income.high)}));
     setTxt('klBtnLow',tf('Low ({n})',{n:fmtN(MODEL.income.low)})); setTxt('klBtnAvg',tf('Typical ({n})',{n:fmtN(MODEL.income.avg)})); setTxt('klBtnHigh',tf('Good ({n})',{n:fmtN(MODEL.income.high)}));
@@ -5533,10 +5539,10 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
       /* P9 (Arthur ruling): NO direction colouring — the app has no weight goal, so
          up-is-bad is a value judgment it has no data for, and amber is the warning
          channel. Sign only, dim. */
-      var dTxt=dl==null? '' : ('<span class="wl-dl"> '+(dl>0?'+':'')+dl+'</span>');
       return '<div class="sub-item wl-row">'+
         '<span class="wl-date">'+esc(_wtDateLbl(r.d))+'</span>'+
-        '<span class="wl-val"><b>'+esc(String(r.kg))+'</b> kg'+dTxt+'</span>'+
+        '<span class="wl-val"><b>'+esc(String(r.kg))+'</b> kg</span>'+
+        '<span class="wl-dl">'+(dl==null? '' : ((dl>0?'+':'')+dl))+'</span>'+
         '<button type="button" class="btn ghost wl-del" data-wtdel="'+esc(r.d)+'">✕</button></div>';
     }).join('');
     host.querySelectorAll('[data-wtdel]').forEach(function(b){

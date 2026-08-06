@@ -299,16 +299,25 @@ if (has('check')) {
          language's seed lines parse identically here; the income-pin assertions
          above stay untouched before the switch. */
       if (seed) {
-        await page.evaluate(() => { STATE.foodLog.length = 0; });   // the language's own meals replace the demo fallbacks
-        for (const f of (seed.food || [])) {
-          const txt = typeof f === 'string' ? f : (f.text || f.name || '');
-          if (!txt) continue;
-          await page.evaluate(t => {
-            const ta = document.getElementById('foodText'); if (ta) ta.value = t;
-            const add = document.getElementById('foodAdd'); if (add) add.click();
-          }, txt);
-          await page.waitForTimeout(120);
-        }
+        /* R1 (Arthur r6): typing LOCALIZED meal text through the English-keyed parser
+           produced 34 kcal / 0 g heroes in 5 of 8 languages — "the parser is
+           language-agnostic" was refuted by its own output. The seed file carries
+           exact kcal/p/c/f per meal; seed the RECORDS with those numbers (the same
+           exact-shape pattern workouts/calendar use). */
+        await page.evaluate(items => {
+          STATE.foodLog.length = 0;
+          (items || []).forEach(f => {
+            if (typeof f === 'string' || !(Number(f.kcal) > 0)) return;   // number-less entries are a seed-file defect — skip loudly below
+            STATE.foodLog.unshift({ id: uid(), date: todayKey(), ts: new Date().toISOString(),
+              text: f.text || '', items: [],
+              total: { kcal: Number(f.kcal) || 0, p: Number(f.p) || 0, c: Number(f.c) || 0, f: Number(f.f) || 0 },
+              photo: '', hasPhoto: false });
+          });
+          if (typeof renderFoodLog === 'function') renderFoodLog();
+          if (typeof renderHomeCards === 'function') try { renderHomeCards(); } catch (_) { }
+        }, seed.food || []);
+        const badSeeds = (seed.food || []).filter(f => typeof f === 'string' || !(Number(f.kcal) > 0)).length;
+        if (badSeeds) { console.log('  ✗ ' + L + ' — ' + badSeeds + ' food seed(s) without kcal numbers (seed_langs.json defect)'); failed++; }
         await page.waitForTimeout(250);
       }
 
