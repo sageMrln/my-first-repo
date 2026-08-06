@@ -2237,3 +2237,38 @@ Read this EVERY run, applies to everything I say to Osefe or the team:
 **Open:**
 - Awaiting Akashi's SAFE @ 09eee23 (P1 adds `.dock-scroll` DOM node; his call on a11y impact)
 - Awaiting Osefe's explicit "ship it" (sleep-mode, no auto-publish)
+
+**[2026-08-06 ~23:52] Hugo STAGE 4 gate check (b92cc48 → cccbb78)**
+
+**Asked:** Verify STAGE 4 candidate at b92cc48 (i18n complete) against 6 specific gates before publish.
+
+**Did:**
+1. `node tools/release/green.js` on frozen tip
+2. `node tools/test/parity_harness.js` standalone (flake watch)
+3. `node tools/test/nav_test.js` (marker-lag guard)
+4. Spot-checked EN + HU howto shots at Stage-4 framing
+5. Freeze: APP_VER v41 === sw.js v41; git diff 09eee23..b92cc48 scope
+6. GUIDE.md drift check (tab-strip still documented; wrong for Stage-5)
+
+**Found:** All GREEN ✓
+- green.js: exit 0, 32 sections, all assertions (#4 dock 7 cells, #2 DE/HU labels, #6 Money/Health/Life, #7 gear) PASSED, MISSING: 0, THEME-EXEMPT 17 ✓
+- parity_harness standalone: 6 widths (320/360/390/768/1024/1440), all active assertions PASSED, zero flake ✓
+- nav_test: 44 checks PASSED (16 tabs/panels, marker 4 consistent, marker-lag guard armed) ✓
+- 56 shots: EN expenses + HU expenses both show Stage-4 dock framing (GROUPED labels: Home/Money/Health/Life/Settings at bottom, NOT old 15-pill strip) ✓
+- Freeze: APP_VER v41, sw.js v41, diff scope 67 files (index.html +234, 56 PNGs, i18n, logs, tools/test/nav_test, tools/shots, tools/release, reskin_stage.json) — CLEAN ✓
+- GUIDE drift: GUIDE.md line 273 documents OLD tab reordering ("Double-tap any navigation tab...reorder the tabs in your navigation bar") — WRONG for Stage-5 dock grouping. **FLAGGED on Stage-5 docket; cannot be forgotten.** Guide must be rewritten + PDF rebuilt before Stage-5 publish.
+
+**Decided:**
+- b92cc48 is gate-ready; all 6 gates GREEN
+- Stage-4 candidate approved for sign-off
+- GUIDE rewrite is Stage-5 pre-publish blocker; flagged loudly
+
+**Result:** ✅ **GREEN @ b92cc48** (all gates, all assertions, all platforms, i18n complete)
+
+**SHAs:** 
+- Gate verified on: b92cc48 (+ cccbb78/15c34c7 chat-only commits after it are noise)
+- Frozen candidate: 1219f85 (core reskin)
+- Mikoto MISSING:0: cccbb78 notes "final SHA" for Mikoto's sign
+
+**Commit:** Staging now; no publish (sleep-mode: sign, don't publish per protocol).
+
