@@ -176,8 +176,13 @@ if (has('check')) {
          OWN add flows (the same handlers a real user's taps hit), so if a flow breaks the
          seeding breaks loudly instead of producing hollow marketing images. */
       const seed = SEED[L] || null;
-      if (seed && mode === 'howto') {
+      /* Stage 5: the hero (overview) shows the four cards, so BOTH modes seed.
+         loadDemoData now pre-fills English fallbacks — the per-language seed is
+         authoritative for shots, so its collections are cleared first (otherwise
+         the 6 seeded languages ship MIXED-language duplicates). */
+      if (seed) {
         await page.evaluate(sd => {
+          STATE.workouts.length = 0; STATE.notes.length = 0;
           /* workouts + calendar: exact record shapes copied from the app's own save
              handlers (STATE.workouts.push({id,day,title,body}); calendar[date].push
              ({id,text,repeat})). */
@@ -245,7 +250,17 @@ if (has('check')) {
             if (window.__preSwitchSave != null) MODEL.savingsMatch = window.__preSwitchSave;
             if (window.__preSwitchLoan != null) MODEL.loanPayment = window.__preSwitchLoan;
           }
-          MODEL.incomeLog = [];
+          /* Stage 5: the Home hero draws the incomeLog mini-viz, so the pin now
+             RE-SEEDS the series (post-currency, so convertAllMoney never touches
+             it) instead of emptying it. These six months derive min/median/max =
+             EXACTLY 3400/3800/4300, so derived === pinned by construction. */
+          (function () {
+            const amts = [3600, 3800, 3400, 4300, 3800, 3900]; const now = new Date();
+            MODEL.incomeLog = amts.map((a, i) => {
+              const d = new Date(now.getFullYear(), now.getMonth() - (amts.length - 1 - i), 1);
+              return { ym: d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2), amt: a, ts: Date.now() - (amts.length - i), est: false };
+            });
+          })();
           MODEL.income = { low: 3400, avg: 3800, high: 4300 };
           MODEL.incomeGuess = { low: 3400, avg: 3800, high: 4300 };
           /* country: set through the visible field like a user, not by poking prefs */
@@ -283,7 +298,8 @@ if (has('check')) {
          every localized food shot. The parser is language-agnostic, so the target
          language's seed lines parse identically here; the income-pin assertions
          above stay untouched before the switch. */
-      if (seed && mode === 'howto') {
+      if (seed) {
+        await page.evaluate(() => { STATE.foodLog.length = 0; });   // the language's own meals replace the demo fallbacks
         for (const f of (seed.food || [])) {
           const txt = typeof f === 'string' ? f : (f.text || f.name || '');
           if (!txt) continue;
@@ -355,7 +371,9 @@ if (has('check')) {
                fired. What matters is where the PANEL landed: correct once after the
                settle, then ASSERT on the real geometry. */
             let pt = panel.getBoundingClientRect().top;
-            if (Math.abs(pt - 8) > 2) {
+            /* iterate: late content (seeded notes, async renders) can shift layout
+               after a single correction — converge, don't hope. */
+            for (let k = 0; k < 3 && Math.abs(pt - 8) > 2; k++) {
               if (pt > 10) {   // short page out of scroll room — grow the spacer by the deficit first
                 let sp2 = document.getElementById('__shotspacer');
                 if (!sp2) { sp2 = document.createElement('div'); sp2.id = '__shotspacer'; document.querySelector('.wrap').appendChild(sp2); }

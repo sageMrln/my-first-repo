@@ -320,10 +320,76 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
     armed(4, '#6 every section opens on a visible module directory   (implemented, dormant until marker=4)');
     armed(4, '#7 gear destination reaches Settings + Connect + Change Log   (implemented, dormant until marker=4)');
   }
-  if (STAGE < 5) {
-    armed(5, '#5 exactly one focal number on Home');
-    armed(5, '#9 bottom nav + fabs + keyboard-open stack');
-    armed(5, '#10 reduced-motion honored; vizzes do not re-animate per render');
+  if (STAGE >= 5) {
+    /* Stage-5 assertions — §D's hierarchy + the two remaining Arthur originals. */
+    console.log('=== stage-5 assertions ===');
+    const b5 = await chromium.launch({ executablePath: exe });
+    /* #5 + #10 — one page, reduced-motion emulated (so the countUp settles the
+       instant it is honest to do so, which IS the assertion). */
+    const page5 = await (await b5.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' })).newPage();
+    await page5.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
+    await page5.waitForTimeout(1600);
+    const r5 = await page5.evaluate(async () => {
+      document.getElementById('lockScreen')?.classList.add('unlocked');
+      document.documentElement.classList.remove('lk-noscroll');
+      document.getElementById('boot')?.remove();
+      try { __sys.arm(); } catch (_) { }   // money renders refuse on an unarmed copy — arm like the generator does
+      if (typeof loadDemoData === 'function') loadDemoData();
+      await new Promise(r => setTimeout(r, 700));
+      const focal = [];
+      [...document.querySelectorAll('header.hud *, #overview *')].forEach(el => {
+        if (!el.offsetParent || el.children.length) return;
+        const fs = parseFloat(getComputedStyle(el).fontSize);
+        if (fs >= 30 && /\d/.test(el.textContent)) focal.push(el.id || el.className);
+      });
+      const hv = document.getElementById('heroLeftVal');
+      const instant = !!hv && !hv._cuAnimating;
+      const before = hv ? hv.textContent : '';
+      if (typeof renderDerived === 'function') renderDerived();
+      await new Promise(r => setTimeout(r, 120));
+      const stable = !!hv && hv.textContent === before && !hv._cuAnimating;
+      const dirTrans = getComputedStyle(document.getElementById('dockDir')).transitionDuration;
+      const scopes = [...document.querySelectorAll('#homeCards .kc-scope')].map(s => s.textContent.trim()).filter(Boolean).length;
+      return { focal, instant, stable, dirTrans, scopes };
+    });
+    check(r5.focal.length === 1 && r5.focal[0] === 'heroLeftVal',
+      '#5 exactly one focal number on Home (' + (r5.focal.join(',') || 'none') + ')');
+    check(r5.scopes === 4, '#5b every Home card carries a time-scope label (' + r5.scopes + '/4)');
+    check(r5.instant && r5.stable, '#10 reduced-motion honored; hero settles instantly and does not re-animate per render');
+    check(parseFloat(r5.dirTrans) === 0, '#10b directory sheet motion disabled under reduced motion (' + r5.dirTrans + ')');
+    await page5.context().close();
+    /* #9 — keyboard-open stack: at keyboard height (390×460) a focused entry field
+       must clear the dock and hit-test SELF. */
+    const page9 = await (await b5.newContext({ viewport: { width: 390, height: 460 } })).newPage();
+    await page9.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
+    await page9.waitForTimeout(1600);
+    const r9 = await page9.evaluate(async () => {
+      document.getElementById('lockScreen')?.classList.add('unlocked');
+      document.documentElement.classList.remove('lk-noscroll');
+      document.getElementById('boot')?.remove();
+      try { __sys.arm(); } catch (_) { }
+      if (typeof loadDemoData === 'function') loadDemoData();
+      await new Promise(r => setTimeout(r, 500));
+      document.querySelector('#tabs .tab[data-p="income"]')?.click();
+      await new Promise(r => setTimeout(r, 300));
+      const inp = [...document.querySelectorAll('#income input:not([type=hidden])')].find(i => i.offsetParent);
+      if (!inp) return { noInput: true };
+      inp.focus(); inp.scrollIntoView({ block: 'center' });
+      await new Promise(r => setTimeout(r, 300));
+      const ir = inp.getBoundingClientRect();
+      const dr = document.getElementById('dock').getBoundingClientRect();
+      const mid = document.elementFromPoint(Math.min(innerWidth - 8, ir.left + ir.width / 2), ir.top + ir.height / 2);
+      return { clear: ir.bottom <= dr.top + 1, self: mid === inp || inp.contains(mid),
+               dockTop: Math.round(dr.top), inpBottom: Math.round(ir.bottom) };
+    });
+    if (r9.noInput) bad('#9 keyboard-open stack', 'no visible income input at 390×460');
+    else check(r9.clear && r9.self, '#9 focused field clears the dock at keyboard height (input bottom '
+      + r9.inpBottom + ' vs dock top ' + r9.dockTop + ', hit-test ' + (r9.self ? 'SELF' : 'OCCLUDED') + ')');
+    await b5.close();
+  } else {
+    armed(5, '#5 exactly one focal number on Home   (implemented, dormant until marker=5)');
+    armed(5, '#9 bottom nav + fabs + keyboard-open stack   (implemented, dormant until marker=5)');
+    armed(5, '#10 reduced-motion honored; vizzes do not re-animate per render   (implemented, dormant until marker=5)');
   }
 
   if (failed) { console.log('PARITY: ' + failed + ' FAILED'); process.exit(1); }

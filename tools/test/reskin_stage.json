@@ -1,4 +1,4 @@
 {
- "stage": 4,
- "note": "Reskin ruling a213555 \u00a7G stage marker. Bump ONLY in the commit that completes a stage; parity_harness.js arms per-stage assertions from this value."
+ "stage": 5,
+ "note": "Reskin ruling a213555 §G stage marker. Bump ONLY in the commit that completes a stage; parity_harness.js arms per-stage assertions from this value."
 }
