@@ -9305,10 +9305,16 @@ window.__bootFX=(function(){var done=false,MIN=3000,FADE=260;
         tw.innerHTML=twHtml;
       }
       var rk=document.getElementById('medRanked');
-      if(rk){ var full=ranked(), rkList=full.filter(function(m){ return matchQ(m) && matchType(m); });
+      /* Osefe: a type filter is its OWN ranking, top to bottom — the #1 film must read
+         "1", not its overall placement among films+shows+games. Ranks are therefore
+         numbered within the TYPE scope; only "All" combines them. Search deliberately
+         does NOT renumber: while searching you want to see where a title actually sits
+         in its ranking, not "1 of 1". */
+      if(rk){ var full=ranked(), scope=full.filter(function(m){ return matchType(m); });
+        var rkList=scope.filter(function(m){ return matchQ(m); });
         if(!rkList.length){ rk.innerHTML='<div class="empty">'+(q?t('Nothing here matches.'):(filterType!=='all'?t('Nothing of this kind rated yet.'):t('What’s the last thing you finished? Add it above, then tap Rate it.')))+'</div>'; }
         else rk.innerHTML=rkList.map(function(m){
-          var rankNo=full.indexOf(m)+1;
+          var rankNo=scope.indexOf(m)+1;   // position within the active type scope (see note above)
           var cm=m.comment?('<div data-cm="'+m.id+'" style="display:none;color:var(--txt-dim);font-size:12px;margin-top:4px;white-space:pre-wrap">'+esc(m.comment)+' <span style="opacity:.6">· '+esc(whenY(m.rated))+'</span></div>'):'';
           var cmBtn=m.comment?('<button class="btn ghost" data-togcm="'+m.id+'" style="min-height:36px;display:inline-flex;align-items:center;padding:3px 8px;font-size:11px;flex:0 0 auto">'+t('note')+'</button>'):'';
           return '<div class="item-row" style="align-items:center;flex-wrap:wrap;gap:8px"><span style="font-family:var(--font-mono);color:var(--txt-dim);width:26px;flex:0 0 auto">'+rankNo+'</span>'+
