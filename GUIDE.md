@@ -128,11 +128,6 @@ It saves with the rest of your data, on your device only, and it comes with you 
 
 *Coming from an older version?* MRLN used to print its own action plan on this tab. That plan has been removed, and the tab tells you so: *"The built-in plan has been replaced by your own checklist."* None of your money numbers changed — only the built-in list is gone, and the space is yours now.
 
-### Klarna Float *(master-only tab)*
-A clear, honest breakdown of interest-free pay-in-2 as a **zero-cost liquidity bridge** — with a safe-size rule, a cash-flow simulator sized to your surplus, and an honest verdict (GOOD / OK / TIGHT / BAD). Shown only on the owner's master (or after importing it).
-
----
-
 ## 6. The Health side
 
 ### Gym Plan
@@ -208,7 +203,6 @@ which to do first.
   numbers get across — your phone may ask permission to paste; that's normal, just allow it.)*
   Can't paste? Open **"Can't paste? Do it by hand"** to paste the text or pick a saved file —
   or load a whole saved **master / exported `.html`** in one tap (income, expenses, notes,
-  calendar, food log + Klarna tab; your private key is **never** imported).
 - **📤 Copy my data off this device** — tap **"Copy my data"**, then open MRLN on the other
   device and tap *"Bring in my data."* Need another route? **"Other ways to send"** shows your
   data **code** to copy, or lets you **download it as a file**.
@@ -278,7 +272,7 @@ The dashboard organizes all your data into **four main sections** plus a gear me
 
 **Navigation (a bottom dock on phones; a left sidebar on wide screens):**
 - **Home** — overview and stats
-- **Money** — Income, Budget, Loan, Cash Flow, Savings, Checklist — and Klarna Float (master only)
+- **Money** — Income, Budget, Loan, Cash Flow, Savings, Checklist
 - **Health** — Gym Plan and Food Log (body stats are a card inside Gym Plan)
 - **Life** — calendar, notebook, media log
 - **⚙️ Gear** (top right, header icon) — Settings, Connect (move your data), and Change Log
@@ -351,7 +345,6 @@ These tools appear only on **your master file** (where the private key lives):
 
 - **🔑 New / renew key** — mint a key for anyone: pick a name and duration (minutes → years). Optionally bind it to a specific File ID, or leave it universal.
 - **📤 New file + key** — birth a fresh, blank customer file **and** the single key that unlocks it, together. (Never share your master — only the file+key it creates.)
-- **Klarna Float** tab is visible here (and on any copy that imported your master).
 
 **Releasing updates:** edit `index.html`, then bump **both** `APP_VER` and the `VERSION` in `sw.js` **every time a published file changes** — that version is what makes an already-installed copy throw away its cached page and fetch the new one. Skipping it is why installed apps used to sit on an old build. Run `node tools/release/green.js` (it fails the release if anything is red) and `node tools/publish/deploy.js --check` before pushing to `gh-pages`; everyone on the hosted link or installed app picks it up on their next online open.
 
