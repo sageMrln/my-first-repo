@@ -99,7 +99,6 @@ const harness = `
   // Stubs for functions called by the transfer code
   function ensureIds(m) { }
   function applyCleanModeClass() { }
-  function revealKlarnaIfEnabled() { }
   function refreshEverything() { }
   function renderAll() { }
   function refreshFinance() { }

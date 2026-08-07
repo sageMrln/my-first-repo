@@ -22,7 +22,6 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- LOCKED: index.html + GUIDE.md + tools/publish — Kaito — council fix list F1-F4 — 2026-08-06
 
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
