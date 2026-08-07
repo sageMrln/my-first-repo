@@ -203,6 +203,7 @@ which to do first.
   numbers get across — your phone may ask permission to paste; that's normal, just allow it.)*
   Can't paste? Open **"Can't paste? Do it by hand"** to paste the text or pick a saved file —
   or load a whole saved **master / exported `.html`** in one tap (income, expenses, notes,
+  calendar and food log; your private key is **never** imported).
 - **📤 Copy my data off this device** — tap **"Copy my data"**, then open MRLN on the other
   device and tap *"Bring in my data."* Need another route? **"Other ways to send"** shows your
   data **code** to copy, or lets you **download it as a file**.
