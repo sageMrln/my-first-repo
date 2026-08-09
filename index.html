@@ -835,7 +835,16 @@
   .ir-e,.ir-x{ width:36px; height:36px; border-radius:10px; background:transparent; cursor:pointer; font-size:14px; display:inline-flex; align-items:center; justify-content:center; transition:background .15s; }
   .ir-e{ border:1px solid var(--cyan-dim); color:var(--cyan); } .ir-e:hover{ background:rgba(var(--accent-rgb),.10); }
   .ir-x{ border:1px solid var(--red); color:var(--red); } .ir-x:hover{ background:rgba(var(--bad-rgb),.10); }
-  .ir-editfields{ display:flex; gap:8px; margin-top:9px; }
+  .ir-editfields{ display:flex; gap:8px; margin-top:9px; min-width:0; flex-wrap:wrap; }
+  /* Osefe (phone screenshot): SAVE sat ON TOP of the period select. The editing row
+     was a NON-wrapping flex whose tools are flex:0 0 auto while the fields could not
+     shrink (input max-width, select at min-content), so the fields overflowed their
+     own box and collided with the buttons. Let the row wrap and the fields shrink. */
+  .editing-row{ flex-wrap:wrap; align-items:flex-start; row-gap:10px; }
+  .editing-row .ir-main{ flex:1 1 230px; }
+  .editing-row .ir-tools{ margin-left:auto; flex:0 0 auto; }
+  .ir-editfields input{ flex:1 1 100px; min-width:0; }
+  .ir-editfields select{ flex:1 1 130px; min-width:0; max-width:100%; }
   .ir-editfields input{ max-width:130px; background:var(--field-bg); border:1px solid var(--cyan); border-radius:9px; color:var(--txt); padding:9px 11px; font-family:var(--font-body); font-size:16px; }
   .ir-editfields select{ background:var(--field-bg); border:1px solid var(--line); border-radius:9px; color:var(--txt); padding:9px; }
   /* EDIT MODE reveals the tools + category-delete + the add surfaces; DISPLAY hides them all */
