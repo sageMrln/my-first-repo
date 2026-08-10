@@ -23,8 +23,29 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
-- LOCKED: landing.html — Kaito — immersive story engine (Osefe's Lusion-standard brief) + council gate — 2026-08-10
 
+
+## 🚦 PENDING — LANDING v2 IMMERSIVE (candidate `2b7b237`) — SIGNED, AWAITING PUBLISH
+Council ruling `cc886b2` (NO-SHIP @ e82673f, 15-agent run) — all P0.1–P0.4 + P1.5–P1.7 landed:
+`e82673f` engine v2 → `4a26c4d` P0.2-4/P1.5-7 → `7268c7e` hero (Arthur redline) → `2b7b237` cursor/rail+hardening.
+- Hugo: **GREEN @ 2b7b237** (green.js exit 0, parser 125/125, deploy --check exit 0) — log e8a9046
+- Akashi: **SAFE @ 2b7b237 — CLEAR TO PUBLISH** (leak 0, phone-home 0 measured, 31 controls hit-tested, poison correctly n/a) — log 324ffca
+- Mikoto: landing keys **verified @ e82673f** (56/56; dictionaries byte-unchanged since) — log 8819602.
+  **Kaito overruled both HU flags with reasons** (step 8): "Egy helyen." stays — the EN "One place." is elliptical
+  "[everything in] one place", which Hungarian renders locative ("Minden egy helyen" pattern); nominative "Egy hely."
+  would read as a bare noun. "Nem öt app." stays — Hungarian REQUIRES singular after numerals; the "looser than peers"
+  note was backwards. @Mikoto: contest either with evidence if you disagree.
+- Kaito: implemented everything; re-ran every number myself. Credit: **Arthur's redline found 3 root causes beyond the
+  ruling** (sticky header dead via :466 AND the older overflow-x:hidden killer; cream fog in the fold; hero media 3D
+  never ran). **Akashi caught the invisible-cursor blocker my class-based probe missed** — geometry beats assertions.
+- **PUBLISH BLOCKED BY SESSION PERMISSIONS:** this session's runner denies gh-pages writes (worktree + push both
+  refused by the permission layer). Live stays at `a01eea6` (= rollback SHA). Candidate is frozen and fully signed —
+  next session with gh-pages rights (or Osefe): `git fetch origin gh-pages` → `deploy.js --check` (exit 0, landing
+  content delta only) → materialize `--out` onto gh-pages → push → `--check` again. No other file changes.
+- Stage-6 items from Akashi's review (routed, non-gating): H0 fix wins on source order not specificity (pin it or add
+  a regression test that engine-appended body children stay `fixed`); `.mx-prog` should be pointer-events:none;
+  counter guard should refuse currency/decimal values generally, not just #pricing scope; double-pageshow idempotency
+  (cancelAnimationFrame before re-arm); bfcache real-restore untestable headless — verify on a real device once.
 
 ## 📋 BACKLOG — deferred-but-real (don't let these evaporate in scroll)
 - **[PARKED by Osefe — decided 2026-08-03] Opt-in ONLINE LOOKUP for the Assistant.** Osefe asked whether the assistant could pull internet info; after Akashi's ruling (`667cec1`, GO-WITH-CONDITIONS + contract OL-1..OL-12) and the keyless-API feasibility research, **Osefe chose OFFLINE-ONLY NOW, online later if a real gap shows up.** CONSEQUENCE: every live privacy claim stays TRUE as written — no landing/policy edits, no Mikoto ×7, and CSP stays a backlog item rather than a blocker. WHEN REVIVED, the work is already specced: Akashi's OL-1..OL-12 (default OFF + **imported files must never be able to enable it**; only a user-typed, user-submitted term leaves — never STATE-derived, prefill-then-submit; hard-coded https origins; `redirect:'error'`, `credentials:'omit'`, 8s abort, 256KB cap; response is untrusted → `showAnswer()` textContent NEVER `showProposal()`; CSP `connect-src` becomes MANDATORY first; visible lookup audit log; fail-closed) + the verified-viable sources ONLY (**TVmaze** shows, **Open Food Facts** barcodes, **Wikidata** CC0 facts, Wikipedia **Action API with origin=* — NOT rest_v1, which is sunsetting**). **Ruled out on evidence:** movies + games (no keyless CORS API exists; OMDb is CC BY-NC = commercial use forbidden; IGDB blocks browsers; RAWG/TheGamesDB need public keys), AniList (commercial licence required >$150/mo revenue), taxes (no source, and encyclopedia tax facts in a paid finance product is a liability). Any shipped API key is PUBLIC in a readable single file → keyless only.
