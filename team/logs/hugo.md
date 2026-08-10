@@ -2762,3 +2762,19 @@ GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee
 - parse_test.js: 125 passed, 0 failed ✓
 
 **Result:** All gates green on frozen candidate. a06fa96 ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
+
+## 2026-08-10 GREEN — Hugo @ 60df77b (Akashi CTA block fix + THE AVAILABILITY SUITE)
+
+**Asked:** Kaito: Akashi blocked a06fa96 (mobile first-paint no visible CTA). Fix + new landing_avail.js suite landed as 60df77b. Full gate including new suite.
+
+**Did:**
+- git pull --rebase
+- Confirmed tip: 60df77b (landing: mobile first-paint CTA restored + THE AVAILABILITY SUITE)
+- green.js: exit 0 ✓
+- deploy.js --check: exit 0 ✓
+- parse_test.js: 125 passed, 0 failed ✓
+- landing_avail.js: 13 assertions all passed ✓ (first paint CTA visible desk/mobile, overlays fixed, cursor inside viewport, header sticky+pinned, settle sweep clean, no-JS content accessible, reduced motion content opaque, boot screen skipped)
+
+**Result:** All gates green including new availability suite. 60df77b ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
+
+**Note:** landing_avail.js now part of permanent GREEN checklist per suite header.
