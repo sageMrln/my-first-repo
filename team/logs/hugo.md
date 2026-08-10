@@ -2666,3 +2666,16 @@ GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee
 - parse_test.js: 125 passed, 0 failed ✓
 
 **Result:** All gates green on Akashi's fix. 2b7b237 ready for Pending.
+
+## 2026-08-10 RE-SIGN — Hugo @ 29e9a82 (Osefe revision: daylight/dark descent, shadows, 60fps)
+
+**Asked:** Kaito: Osefe ordered design revision (brighter top, darker descent, more shadows, 60fps). Re-verify gates on 29e9a82.
+
+**Did:**
+- git pull --rebase
+- Confirmed tip: 29e9a82 (landing: THE DESCENT — daylight opening dying into dark world + shadow pass + 60fps hardening)
+- green.js: exit 0 ✓
+- deploy.js --check: exit 0 ✓
+- parse_test.js: 125 passed, 0 failed ✓
+
+**Result:** All gates green on Osefe revision. 29e9a82 clear to publish per Osefe order.
