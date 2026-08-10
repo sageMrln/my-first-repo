@@ -1797,3 +1797,43 @@ Osefe has approved making the assistant fluent in every language we offer, typos
 
 - Still open / next: Frozen candidate remains frozen. Awaits Kaito's decision on SV correction. Once ruling made, will fix and re-verify sync.js/green.js if changes applied.
 
+
+## [2026-08-10 ~Landing emoji strip verification] — Kaito dispatch (asleep, verification-only) — Verify Kaito's 6-key emoji strip @ 8f694af
+
+- Asked: Verify Kaito's mechanical strip of emoji prefixes from 6 landing keys (Budget/Training/Meals/Calendar/Notes/"Films & shows") across 7 languages in landing.html's __L10N dictionary. Frozen candidate 8f694af. Verify: (1) all 6 keys in all 7 dicts; (2) no value loss beyond emoji prefix (spot-check ≥3 langs/key); (3) no emoji remains in t-keys/t-values (orphaned emoji-only entries harmless); (4) dict uniformity (key count/lang). Report landing MISSING count.
+
+- Did / found:
+  * **Extracted landing.html __L10N dictionary @ 8f694af** — Located `window.__L10N = {...}` JSON object with 7 language blocks (da/de/es/fr/hu/nb/sv), 203 keys each.
+  * **CHECK 1: KEY COVERAGE** ✓ VERIFIED
+    - Budget: 7/7 ✓ | Training: 7/7 ✓ | Meals: 7/7 ✓ | Calendar: 7/7 ✓ | Notes: 7/7 ✓ | "Films & shows": 7/7 ✓
+    - All 6 target keys fully present across all 7 languages (42/42 expected entries found)
+  * **CHECK 2: VALUE INTEGRITY** ✓ VERIFIED
+    - Budget: da "Budget" / de "Budget" / es "Budget" / fr "Budget" / hu "Budget" / nb "Budget" / sv "Budget" — no emoji prefix, all consistent ✓
+    - Training: da "Træning" / de "Training" / es "Entrenamiento" / fr "Entraînement" / hu "Edzés" / nb "Trening" / sv "Träning" — all natural, no emoji loss ✓
+    - Meals: da "Måltider" / de "Mahlzeiten" / es "Comidas" / fr "Repas" / hu "Étkezések" / nb "Måltider" / sv "Måltider" — all intact ✓
+    - Calendar: da "Kalender" / de "Kalender" / es "Calendario" / fr "Calendrier" / hu "Naptár" / nb "Kalender" / sv "Kalender" — all intact ✓
+    - Notes: da "Noter" / de "Notizen" / es "Notas" / fr "Notes" / hu "Jegyzetek" / nb "Notater" / sv "Anteckningar" — all intact ✓
+    - "Films & shows": da "Film & serier" / de "Filme & Serien" / es "Pelis y series" / fr "Films et séries" / hu "Filmek és sorozatok" / nb "Filmer og serier" / sv "Filmer och serier" — all intact, ampersand unescaped correctly in JSON ✓
+  * **CHECK 3: EMOJI SWEEP** ✓ VERIFIED
+    - Target 6 keys: ZERO emoji in any key or value ✓
+    - Orphaned emoji-only entries remain (56 total: 8 × 7 langs, e.g., "💰":"💰", "🏃":"🏃", "📅":"📅", "📝":"📝", "🤖":"🤖", "🌐":"🌐", "📤 → 📥":"📤 → 📥", "📱":"📱") — harmless glyph references per spec; Arthur's hygiene deletion suggestion noted but not blocking ✓
+  * **CHECK 4: DICTIONARY UNIFORMITY** ✓ VERIFIED
+    - All 7 languages: 203 keys each — perfect parity ✓
+  * **sync.js verification:**
+    - `node tools/i18n/sync.js` → **MISSING: 0** (826/826 keys, all 8 language blocks — index.html + landing.html combined) ✓
+  * **green.js verification:**
+    - `node tools/release/green.js` → **GREEN exit 0** (parser suites pass, preflight CLEAR ×3, PII guard 17/17, leak scan clean, version v42 match, THEME-EXEMPT 18 stable) ✓
+
+- Decision / result:
+  * **STRIPS: VERIFIED @ 8f694af** — All 4 verification checks pass.
+  * **Coverage:** 6/6 keys × 7/7 languages = 42/42 entries ✓
+  * **Integrity:** Zero emoji prefixes on any target key; all translation values intact and natural; no meaning loss ✓
+  * **Hygiene:** Orphaned emoji-only keys (56 total) remain but are harmless; Arthur's deletion suggestion logged for future cleanup pass.
+  * **Uniformity:** All 7 dicts carry 203 keys each — parity perfect ✓
+  * **Landing i18n complete:** MISSING: 0 (index.html + landing.html combined at 826/826 keys, all 8 languages).
+
+- Commits / SHAs:
+  * This log entry only (verification-only, no code edits).
+
+- Still open / next: Frozen candidate 8f694af verified clean for emoji stripping. No issues found. Awaits @Kaito confirmation that strip verification is complete, then available for downstream gates (@Akashi SAFE, @Hugo GREEN, @Osefe ship call if applicable).
+
