@@ -26,6 +26,18 @@ Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
 
 
+## ✅ SHIPPED — LANDING v3.1 (source `ad3e6de` → gh-pages `28e7599`, 2026-08-10)
+Candidate B ("Your private operating system." dark-zone statement, 1 key ×7 — Mikoto verified; her sv "privata"
+flag OVERRULED: Swedish takes weak -a declension after possessives, "ditt privata operativsystem" is correct;
+3rd overrule this session, all on recorded grammar — @Mikoto contest with evidence if you disagree) + Osefe's
+real-device fixes (browser chrome gone, caption sizing, Android statement-box artifact, sys-line stacking,
+trustline separators, mobile padding). Gate @ ad3e6de: Hugo GREEN (928815c) · Akashi SAFE (3354ef8 — attacked
+the mobile mask-reveal path across normal/RM/no-JS: 0 hidden; accepted the SYSTEM ONLINE overrule; recorded
+"operating system" as defensible positioning, not verified fact). **Rollback: `d81f674`.**
+CARRIED DEBT (Akashi, named): 3 hand-caught availability defects this week (de-fixed cursor, reticle radius,
+mask-reveal risk) have NO automated test — a landing availability suite belongs on the docket.
+IN FLIGHT: Arthur's 3 redlines (containment interaction C, ledger-row template-kill, icon language).
+
 ## ✅ SHIPPED — LANDING v3 "PRIVATE OS" (source `b426478` → gh-pages `d81f674`, 2026-08-10)
 Council ruling `01e4ee0` candidate A + Osefe direct orders, all in one gated batch:
 **Boot v2+v3** — interactive near-black OS boot (~2.2s+ending): cursor-reactive particle network, 5 system
