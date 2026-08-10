@@ -785,7 +785,9 @@ body{
   </style>
   <canvas></canvas>
   <div class="ld-c"><div class="ld-wm">MRLN</div></div>
-  <div class="ld-sub">Syncing personal space</div>
+  <!-- dictionary-covered 7/7; "syncing" was Akashi-blocked — this page promises
+       "nothing syncs behind your back", and the boot must not say otherwise -->
+  <div class="ld-sub">Private · Offline · One app</div>
   <script>
   (function(){
     var rt=document.documentElement, L=document.getElementById('mrln-loader');
@@ -810,7 +812,8 @@ body{
         ctx.setTransform(DPR,0,0,DPR,0,0); CX=W/2; CY=H/2; BASE=Math.min(W,H); }
       size(); addEventListener('resize',size,{passive:true});
       var tx=CX,ty=CY,mx=CX,my=CY,vx=0,vy=0,touched=false,trail=[];
-      addEventListener('pointermove',function(e){ tx=e.clientX; ty=e.clientY; touched=true; },{passive:true});
+      function onPm(e){ tx=e.clientX; ty=e.clientY; touched=true; }
+      addEventListener('pointermove',onPm,{passive:true});
       var NP=W<760?70:130, P=[],i;
       for(i=0;i<NP;i++) P.push({hx:Math.random()*W, hy:Math.random()*H,
         x:0,y:0, ph:Math.random()*6.283, s:.6+Math.random()*1.3});
@@ -925,8 +928,9 @@ body{
         ctx.fillText('v42', CX, CY-R3-16); ctx.fillText('OFFLINE', CX, CY+R3+22);
         /* the wordmark leans with the cursor */
         wm.style.transform='translate('+((mx-CX)*0.022).toFixed(1)+'px,'+((my-CY)*0.022).toFixed(1)+'px)';
-        if(prog>0.85 && sub.__f!==1){ sub.__f=1; sub.textContent='Private space — ready'; }
-        if(prog>=1){ done=true; clearTimeout(fallback); finish(); }
+        if(prog>=1){ done=true; clearTimeout(fallback);
+          removeEventListener('pointermove',onPm); removeEventListener('resize',size);
+          finish(); }
       })(t0);
     }catch(_){ /* static wordmark + fallback timer + CSS animation still enter */ }
   })();
