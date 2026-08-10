@@ -774,6 +774,30 @@ body{
 .mx-cur{ background:#E8ECF5; mix-blend-mode:difference; }
 .mx-curR{ border-color:rgba(232,236,245,.9); mix-blend-mode:difference; }
 .mx-curR.hot{ background:rgba(232,236,245,.16); border-color:#E8ECF5; }
+
+/* ---- fixes from Osefe's real-device screenshots (Danish phone, 2026-08-10) ---- */
+/* the macOS cosplay chrome (three dots + url pill) — the most template-tell
+   artifact on the page; gone everywhere (interim until Arthur's frame redline) */
+.browser-bar{ display:none; }
+/* the caption had display-scale mono letterspacing — it's a sentence, not a label */
+.shot-note{ font-size:11px; letter-spacing:.08em; line-height:1.7; max-width:36em; margin-inline:auto; }
+/* pale rectangular artifacts behind statement text on Android: large-blur
+   text-shadow + promoted transform layers — both cut in daylight, and the
+   drift transform (with its layer promotion) is desktop-only now */
+.z-bright .st-line{ text-shadow:none; }
+.mx-state .st-line{ will-change:auto; }
+@media (max-width:700px){
+  .mx-state{ padding:9vh 0; }
+  .mx-state .st-line, .mx-state .st-i2, .mx-state .st-i3{ transform:none !important; }
+  .mx-sys{ flex-direction:column; gap:10px; padding:14px 0; }
+  .mx-sys .sep{ display:none; }
+  .hero-grid{ row-gap:26px; }
+}
+@media (max-width:560px){
+  /* wrapped trust rows led with orphaned separator squares */
+  .trustline li+li::before{ display:none; }
+  .trustline{ gap:8px 18px; }
+}
 </style>
 
 </head>
