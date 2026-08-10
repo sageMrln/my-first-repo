@@ -37,6 +37,24 @@ function run(args, label) {
   }
 }
 
+// 0a) landing availability suite — the five hand-caught defect classes (Akashi).
+//     Exit 2 = no browser available: SKIP with a warning, never a silent pass and
+//     never a false red in browserless environments (this is why run() can't host it).
+section('landing availability — tools/test/landing_avail.js');
+try {
+  console.log(execFileSync('node', ['tools/test/landing_avail.js'], { cwd: root, encoding: 'utf8' }).trimEnd());
+} catch (e) {
+  if (e.status === 2) {
+    console.log('  ⚠ SKIPPED — no browser in this environment. This is NOT a pass:');
+    console.log('    run tools/test/landing_avail.js where Chromium exists before signing GREEN.');
+  } else {
+    console.log((e.stdout || '').trimEnd());
+    if (e.stderr) console.log(e.stderr.trimEnd());
+    console.log('✗ landing availability FAILED (exit ' + (e.status != null ? e.status : '?') + ')');
+    failed = true;
+  }
+}
+
 // 0) HTML script-parse guard — every <script> in index.html must be valid JS (browser-load parity).
 //    Catches the class of bug where a minified/i18n merge leaves a stray brace and the WHOLE app
 //    script dies on load — invisible to function-extraction suites and to brace-BALANCE preflight.
