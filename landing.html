@@ -494,6 +494,27 @@ body > *:not(.mx-bg){ position:relative; z-index:1; }
   background:radial-gradient(320px 320px at var(--mx,50%) var(--my,50%), rgba(110,168,255,.10), transparent 70%); }
 body.mx-pointer .mx-spot{ opacity:1; }
 
+/* ===== PROGRESSIVE REVELATION — Osefe brief 2026-08-10 =====================
+   "Never show the complete interface immediately. space → object → structure
+   → detail → meaning." Staged elements CONSTRUCT from scroll position —
+   reversible, user-paced — and each section deconstructs as it leaves.
+   Enter progress (--erp) is measured from the element's OWN geometry every
+   frame, so unlike an observer it can never miss and strand content hidden.
+   Exit (--rp) comes from the section. No-JS: vars default to fully visible.
+   Reduced motion: static via the kill switch below. */
+.stg{
+  --e: clamp(0, calc(var(--erp, 1) - var(--d, 0)), 1);
+  --x: clamp(0, var(--xp, 0), 1);   /* exit set from the section BOTTOM in JS — section-progress
+                                       exit dimmed tall sections' content while still readable */
+  opacity: calc(var(--e) * (1 - var(--x) * 0.5));
+  transform: translate3d(0, calc((1 - var(--e)) * var(--dy, 28px) - var(--x) * 12px), 0);
+  will-change: auto;
+}
+[data-st="1"]{ --dy:14px; }   /* the label/heading — space gains a name   */
+[data-st="2"]{ --dy:24px; }   /* the object — lead, wrappers              */
+[data-st="3"]{ --dy:38px; }   /* the structure/detail — cards, shots     */
+[data-st="4"]{ --dy:18px; }   /* the meaning — closing statements        */
+
 /* ---- reveal-on-enter: the base motion every block gets ---- */
 [data-rv]{ opacity:0;
   transform:translate3d(0,var(--rv-y,42px),0) rotateX(var(--rv-rx,8deg)) scale(var(--rv-s,.97));
@@ -608,6 +629,7 @@ body.mx-cursor-on .mx-cur, body.mx-cursor-on .mx-curR{ opacity:1; }
   [data-step].dim{ opacity:1 !important; transform:none !important; }
   .mx-state .st-line, .mx-state .st-mask{ transform:none !important; transition:none !important; }
   .mx-cur, .mx-curR{ display:none !important; }
+  .stg{ opacity:1 !important; transform:none !important; }
 }
 
 /* ---- mobile header: the nav "Get access" clipped 80% off a 390px screen; the
@@ -1889,22 +1911,38 @@ window.__L10N = {"da":{"t":{"Your private operating system.":"Dit private operat
 
   /* ---------- 3. decorate the existing markup — no hand-editing 300KB ---------- */
   var SECTIONS = [].slice.call(document.querySelectorAll('section, .site-footer'));
+  /* Progressive-revelation groups: per section, its staged elements (Osefe brief:
+     construct on scroll, deconstruct on leave). Hero and statements keep their own
+     choreography. The old one-shot [data-rv] fade survives only where staging
+     doesn't apply. Collapsible/hidden subtrees excluded as before — the 14 FAQ
+     .answer nodes must never inherit a hidden state. */
+  var STGS=[];
   SECTIONS.forEach(function(sec){
     sec.setAttribute('data-rv-3d','');
-    /* Decorate only TOP-LEVEL blocks and the known card grids. An earlier version
-       also took grandchildren, which swept up the 14 collapsed FAQ .answer nodes —
-       they inherited the hidden state and would have opened INVISIBLE. Anything
-       inside a collapsible, hidden or aria-hidden subtree is excluded by rule. */
+    if(sec.classList.contains('hero') || sec.classList.contains('mx-state')) return;
     var kids = [].slice.call(sec.querySelectorAll(':scope > .wrap > *'));
     if(!kids.length) kids = [].slice.call(sec.children);
-    kids = kids.concat([].slice.call(sec.querySelectorAll('.howto-card, .area-card, .privacy-tile, .price-card')));
-    kids.forEach(function(k,i){
+    kids = kids.concat([].slice.call(sec.querySelectorAll('.howto-card, .area-card, .privacy-tile, .price-card, .faq-item, .howto-shot')));
+    var els=[], d3=0;
+    kids.forEach(function(k){
       if(k.tagName==='SCRIPT'||k.tagName==='STYLE') return;
-      if(k.hasAttribute('data-rv')) return;
+      if(k.hasAttribute('data-st')) return;
       if(k.closest('.answer, details, [hidden], [aria-hidden="true"]')) return;
-      k.setAttribute('data-rv','');
-      k.style.setProperty('--rv-d', Math.min(i*70, 420)+'ms');
+      var st = (k.tagName==='H2'||k.matches('.section-head, .eyebrow')) ? 1
+             : k.matches('.lead') ? 2
+             : k.matches('.howto-card, .area-card, .privacy-tile, .price-card, .faq-item, .howto-shot, figure') ? 3
+             : k.matches('.privacy-quiet, figcaption, .quiet, .note') ? 4
+             : 2;
+      k.classList.remove('pre-reveal','is-in');   /* one system owns an element — the legacy
+        .js .pre-reveal{opacity:0} outranks .stg and held the price card at 0 */
+      k.classList.add('stg');
+      k.setAttribute('data-st', String(st));
+      if(st===3){ k.style.setProperty('--d', Math.min(d3*0.06, 0.26).toFixed(2)); d3++; }
+      else if(st===4){ k.style.setProperty('--d', '0.18'); }
+      else if(st===2){ k.style.setProperty('--d', '0.06'); }
+      els.push(k);
     });
+    if(els.length) STGS.push({sec:sec, els:els});
     var head = sec.querySelector('h2');
     if(head){ head.setAttribute('data-sweep',''); }
   });
@@ -2013,6 +2051,32 @@ window.__L10N = {"da":{"t":{"Your private operating system.":"Dit private operat
         if(sr.bottom<-80 || sr.top>innerHeight+80) continue;
         var sp=(innerHeight-sr.top)/(innerHeight+sr.height);
         STATES[si].style.setProperty('--sp', Math.max(0,Math.min(1,sp)).toFixed(4));
+      }
+    }
+    /* progressive revelation: per staged element, enter progress from its OWN
+       geometry (0 at viewport bottom → 1 at 78% height, so everything at rest
+       above the entering strip is complete); exit from the section (reads
+       batched before writes — no layout thrash) */
+    if(STGS.length && !RM){
+      var vh2=innerHeight, work=[];
+      for(var gi=0; gi<STGS.length; gi++){
+        var g=STGS[gi], gr=g.sec.getBoundingClientRect();
+        if(gr.bottom<-120 || gr.top>vh2+120) continue;
+        var rp2=(vh2-gr.top)/(vh2+gr.height);
+        var ers=[];
+        for(var ei2=0; ei2<g.els.length; ei2++) ers.push(g.els[ei2].getBoundingClientRect().top);
+        work.push({g:g, rp:rp2, bot:gr.bottom, ers:ers});
+      }
+      for(var wi=0; wi<work.length; wi++){
+        var w=work[wi];
+        w.g.sec.style.setProperty('--rp', Math.max(0,Math.min(1,w.rp)).toFixed(4));
+        /* deconstruct only when the section's BOTTOM is truly leaving (top 28%) */
+        var xp=(vh2*0.28 - w.bot)/(vh2*0.22);
+        w.g.sec.style.setProperty('--xp', Math.max(0,Math.min(1,xp)).toFixed(3));
+        for(var ei3=0; ei3<w.g.els.length; ei3++){
+          var ep=(vh2*0.98 - w.ers[ei3])/(vh2*0.20);
+          w.g.els[ei3].style.setProperty('--erp', Math.max(0,Math.min(2.5,ep)).toFixed(3));
+        }
       }
     }
   }
