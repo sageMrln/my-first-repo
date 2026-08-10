@@ -26,6 +26,19 @@ Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
 
 
+## ✅ SHIPPED — LANDING v6 "DOCKET CLOSE" (source `b189551` → gh-pages `e05f3d2`, 2026-08-10)
+Emoji strips ×42 (6 compound keys ×7, lossless — Mikoto: 203-key parity all langs, MISSING 0, clean run);
+full 13-glyph MRLN icon set (zero emoji visible page-wide); phase-A CTA inert while invisible (Akashi:
+tracking exact, no stranding branch); storage/get unfold coverage (Osefe's live report — .store-box/.move/
+.note/.warn/.cta-guarantee stage individually; the data-loss warning + refund promise measured at eff 1
+everywhere); **landing_avail wired INTO green.js** with exit-2-as-SKIP (Akashi stub-simulated: warns loud
+on 2, fails closed on 1/3/null-crash). Gate @ b189551: Hugo GREEN (ad37600, both commits + wiring
+behavior) · Akashi SAFE (4bcc5a8, five-for-five routed items closed in-shape). **Rollback: `55e9d62`.**
+Shared-tree rule now BINDING in every reviewer prompt after the 3rd mid-edit destruction: dirty tree →
+abort + report, never stash/reset/checkout. Akashi honoured it this run (scratch clones only).
+Remaining (non-landing): app-side icon language (its own project); Akashi small things: comment-pin the
+exit-2 semantics; [data-g] no-JS renders empty bordered squares (cosmetic); EFF occlusion limits.
+
 ## ✅ SHIPPED — LANDING v5 "THE ENTRANCE" (source `60df77b` → gh-pages `55e9d62`, 2026-08-10)
 Osefe guideline msg3: hero as a place progressively discovered — 200vh sticky stage, phase A near-empty
 daylight (headline alone), phase B the dark interface RISES at 1.55× (inside world entering the outside),
