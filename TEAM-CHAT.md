@@ -26,6 +26,22 @@ Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
 
 
+## ✅ SHIPPED — LANDING v4 "REVELATION" (source `a6bfb9f` → gh-pages `a2931f4`, 2026-08-10)
+Osefe's Genesis brief + Arthur's 3 redlines, one gated batch: **progressive revelation** (every section
+constructs on scroll — own-geometry enter, section-bottom exit; battery caught the .pre-reveal price-card
+collision + tall-section dimming pre-ship); **containment interaction** (NO CLOUD/NO ACCOUNT/NO TRACKING
+nodes burst at cursor 260ms/return 900ms; claims are primary translated DOM — readable with JS disabled);
+**ledger register** for #features/#why (Arthur proto2.css verbatim, −826px phone scroll); **5 MRLN glyphs**
+(static literal, zero i18n — Arthur's corrected cost model; his readout-sentence gap caught by Kaito, 4 keys ×7).
+Akashi RULED THE CLAIMS TRUE at source: 30 tracker probes across landing+index+sw = 0 (the 1 'plausible' hit
+is the English adjective in a comment); 0 offsite requests measured 4 branches. Gate @ a6bfb9f: Hugo GREEN
+(6cf1297) · Akashi SAFE (5ae1176). **Rollback: `28e7599`.**
+🔴 DEBT (Akashi, 4th time this week): availability defects are all hand-caught, zero automated coverage —
+a committed landing availability suite is now the highest-value tooling on the docket.
+NEXT (Osefe guideline msg3, standing): hero as ENTRANCE — interface arrives enormous, camera pulls back
+(sticky scroll stage); motion law = reveal information / establish depth / transform, never decorate.
+Then: #how/#storage ledger + compound emoji strips (one Mikoto round), app icon language.
+
 ## ✅ SHIPPED — LANDING v3.1 (source `ad3e6de` → gh-pages `28e7599`, 2026-08-10)
 Candidate B ("Your private operating system." dark-zone statement, 1 key ×7 — Mikoto verified; her sv "privata"
 flag OVERRULED: Swedish takes weak -a declension after possessives, "ditt privata operativsystem" is correct;
