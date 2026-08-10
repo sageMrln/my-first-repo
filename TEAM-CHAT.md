@@ -26,6 +26,27 @@ Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
 
 
+## ✅ SHIPPED — LANDING v3 "PRIVATE OS" (source `b426478` → gh-pages `d81f674`, 2026-08-10)
+Council ruling `01e4ee0` candidate A + Osefe direct orders, all in one gated batch:
+**Boot v2+v3** — interactive near-black OS boot (~2.2s+ending): cursor-reactive particle network, 5 system
+nodes (MONEY/HEALTH/PLANS/NOTES/DATA) w/ factual readouts, center rings/arcs/progress, PRIVATE SPACE/READY,
+~110ms true black → **MRLN // SYSTEM ONLINE** (the app's own boot line — identity handshake) → daylight hero.
+Session-skip, RM-skip, triple failure-safety (Akashi: enters even with JS fully disabled, 20× CPU throttled).
+**Akashi blocker fixed**: boot said "Syncing personal space" — contradicts "nothing syncs behind your back";
+now the translated "Private · Offline · One app". BINDING precedent: every readout must be a TRUE product fact.
+**Marquee → static mono system line** (ruling: template-tell #4). **Tactical palette** (violet cut everywhere).
+**Zero rounded corners** (universal kill, cursor reticle exempt). **Cabin humanist body sans** bundled ×6 faces
+latin+latin-ext (hu ő/ű verified in-family) **+ Cabin-OFL.txt published** (Akashi compliance; set 73→74, routing
+pin moved deliberately). Gate @ `357194e`: Hugo **GREEN** (707f6e4) · Akashi **SAFE — CLEAR TO PUBLISH** (1afa432,
+fonts decoded wOF2 w/ empty priv blocks, fallback-timer attack survived). +license fix `b426478` (reviewer-requested).
+Post-push `deploy.js --check` byte-identical ×74, exit 0. **Rollback: `e016ead`.**
+Process incidents owned by Kaito: (1) edited landing.html uncommitted while Akashi's review ran (his catch);
+(2) a reviewer's pull --rebase later discarded my uncommitted corners edit from the shared cwd — recovered;
+reviewers now run only against committed frozen tips, ideally pinned clones (Akashi's standing practice).
+Routed next: `// SYSTEM ONLINE` → consider `// SYSTEM READY` (Akashi rec, zero-ambiguity); ruling candidate B
+(the OS name statement in the dark zone, ~2 keys ×7 Mikoto) + C (dissolving NO CLOUD/NO ACCOUNT/NO TRACKING
+containment interaction, Arthur redlines first) + template-kill wave + custom icon language (see ruling 01e4ee0).
+
 ## ✅ SHIPPED — LANDING v2 "THE DESCENT" (source `29e9a82` → gh-pages `e016ead`, 2026-08-10)
 Osefe's revision on top of the signed immersive build: daylight cream opening (hero→why, dark ink,
 ink-particle field, warm layered shadows) dying into the dark world across "Your data stays yours."
