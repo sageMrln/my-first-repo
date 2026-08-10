@@ -26,6 +26,21 @@ Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
 
 
+## ✅ SHIPPED — LANDING v5 "THE ENTRANCE" (source `60df77b` → gh-pages `55e9d62`, 2026-08-10)
+Osefe guideline msg3: hero as a place progressively discovered — 200vh sticky stage, phase A near-empty
+daylight (headline alone), phase B the dark interface RISES at 1.55× (inside world entering the outside),
+phase C camera pulls back, CTA/trustline emerge last. Zero markup change; RM/no-JS get the complete static
+hero. **Akashi BLOCKED the first candidate** (a06fa96): the entrance invalidated P0.3's premise — on a phone
+at first paint there was NO visible buy affordance (he measured effective opacity up the ancestor chain;
+child read 1, ancestor held 0 — his own probe's 8th instrument fault, self-caught). Fix: header Get-access
+restored ≤560, ghost yields. **THE AVAILABILITY SUITE EXISTS**: tools/test/landing_avail.js — 13 assertions,
+all five hand-caught defect classes; exit 2=SKIP (a missing browser can never masquerade as a pass); Akashi
+MUTATION-TESTED it: 3 planted past-blockers → 3/3 fail-closed. Now in Hugo's GREEN checklist.
+Gate @ 60df77b: Hugo GREEN incl. 13/13 (29964e6) · Akashi SAFE (71aca27). **Rollback: `a2931f4`.**
+Routed (non-gating): wire landing_avail into green.js with exit-2-as-SKIP (~5 lines, Hugo's runner);
+phase-A hero CTA is invisible-but-hittable — add inert while --hcta=0 (a11y); EFF doesn't model occlusion.
+QUEUE: #how/#storage ledger + 6 compound emoji strips (one Mikoto round) → app icon language.
+
 ## ✅ SHIPPED — LANDING v4 "REVELATION" (source `a6bfb9f` → gh-pages `a2931f4`, 2026-08-10)
 Osefe's Genesis brief + Arthur's 3 redlines, one gated batch: **progressive revelation** (every section
 constructs on scroll — own-geometry enter, section-bottom exit; battery caught the .pre-reveal price-card
