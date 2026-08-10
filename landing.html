@@ -286,7 +286,10 @@
     .hero-seq>*:nth-child(5){ animation-delay:440ms; }
     @keyframes heroRise{ from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:none} }
     .hero-media{ opacity:0; animation:heroMediaIn var(--dur-slow) var(--ease-expo) 220ms forwards; }
-    @keyframes heroMediaIn{ from{opacity:0; transform:translateY(24px) scale(.97); filter:blur(6px)} to{opacity:1; transform:none; filter:blur(0)} }
+    /* transform removed from these keyframes: the forwards fill froze transform:none
+       on .hero-media forever, killing the scroll/pointer 3D (Arthur H5). The entry
+       rise now lives on .browser-frame, whose transform nothing else drives. */
+    @keyframes heroMediaIn{ from{opacity:0; filter:blur(6px)} to{opacity:1; filter:blur(0)} }
     
     .hero-media figure{ animation:floatA 6s var(--ease-inout) 1s infinite; will-change:transform; }
     .showcase-media figure{ animation:floatB 6.4s var(--ease-inout) 1.4s infinite; will-change:transform; }
@@ -593,6 +596,94 @@ body.mx-cursor-on .mx-cur, body.mx-cursor-on .mx-curR{ opacity:1; }
 @media (max-width:560px){
   .site-header .btn-primary{ display:none; }
 }
+
+/* ===== P0.1 HERO RECOMPOSITION — Arthur redline @ cc886b2 ===== */
+
+/* H0 — ROOT CAUSE. `body > *:not(.mx-bg){position:relative;z-index:1}` above is
+   specificity (0,1,1) and outranks .site-header/.grain/.skip (0,1,0). It killed
+   sticky, killed the grain, and put the skip link in flow. Re-assert, later. */
+body > .site-header{ position:sticky; top:0; z-index:50; }
+body > .grain     { position:fixed;  z-index:9999; }
+body > .skip      { position:absolute; }
+/* second, older sticky-killer: overflow-x:hidden on body makes body a scroll
+   container whose scrollport never moves, so sticky children can never stick —
+   the header has never actually stuck. clip clips WITHOUT creating a scroll
+   container; browsers without clip keep the old behavior (no worse). */
+html, body{ overflow-x:clip; }
+
+/* H1 — one display token. Statements render byte-identical (verified 136.8/77.9/41.6). */
+:root{
+  --fs-display:   clamp(3rem, 9vw, 8.25rem);      /* hero:       1440→129.6, cap 132 */
+  --fs-display-xl:clamp(2.6rem, 9.5vw, 8.75rem);  /* statements: unchanged           */
+}
+.mx-state .st-line{ font-size:var(--fs-display-xl); }
+
+/* H2 — dark-native hero ground (replaces 3 cream-era literals incl. #F3ECE0). */
+.hero::before{ background:
+  radial-gradient(58% 44% at 78%  -8%, rgba(110,168,255,.17) 0%, transparent 62%),
+  radial-gradient(46% 38% at 16%   4%, rgba(167,139,250,.11) 0%, transparent 58%),
+  radial-gradient(96% 46% at 50% 106%, rgba(233,184,114,.11) 0%, transparent 64%); }
+
+/* H3 — one centred column; the product panel is row 2. NO MARKUP CHANGE. */
+.hero-grid{
+  grid-template-columns:minmax(0,1fr); column-gap:0;
+  row-gap:clamp(40px,6vh,64px);
+  align-items:start; text-align:center;
+  padding-top:clamp(32px,6vh,56px); padding-bottom:clamp(40px,6vh,56px); }
+.hero-copy { grid-column:1/-1; }
+.hero-media{ grid-column:1/-1; width:min(100%,920px); margin-inline:auto; }
+
+.hero .eyebrow{ font-size:.875rem; letter-spacing:.16em; }
+.hero-h1  { font-size:var(--fs-display); line-height:.98; letter-spacing:-.02em; margin-top:24px; }
+.hero-lead{ margin-inline:auto; max-width:640px; margin-top:32px; }
+.hero-cta { justify-content:center; margin-top:32px; }
+.trustline{ justify-content:center; margin-top:24px; margin-bottom:0; }
+.shot-note{ margin-top:16px; }
+
+/* H4 — emphasis is a TRUE ITALIC. DO NOT RENAME .warm-underline: the class lives
+   inside all 8 translated innerHTML values. Only change what it does. */
+.warm-underline{ background:none !important; text-shadow:none !important;
+  text-decoration:none !important; font-style:italic; }
+
+/* H5 — the old .hero figure transform NEVER applied (floatA on the inner figure
+   overrides it). The scroll/pointer 3D lives on .hero-media; the float stays on
+   the figure. */
+.hero .hero-media{
+  transform:translate3d(0, calc(var(--hp,0) * -18px), calc(var(--hp,0) * 70px))
+            rotateY(calc(var(--mxr,0) * 2.5deg)) rotateX(calc(var(--myr,0) * -2deg));
+  transform-style:preserve-3d; will-change:transform; transition:transform .25s ease-out; }
+
+/* H6 — phone / small tablet */
+@media (max-width:900px){
+  .hero-grid { text-align:left; row-gap:40px; padding-top:clamp(24px,4vh,40px); }
+  .hero-h1   { font-size:clamp(2.625rem, 12.4vw, 5rem); margin-top:16px; }
+  .hero-lead { margin-inline:0; max-width:34em; margin-top:20px; }
+  .hero-cta  { justify-content:flex-start; margin-top:28px; }
+  .trustline { justify-content:flex-start; }
+  .hero-media{ width:100%; }
+}
+
+/* H7 — choreography */
+@media (prefers-reduced-motion:no-preference){
+  .hero-seq>*:nth-child(1){ animation-delay:0ms; }                             /* eyebrow */
+  .hero-seq>*:nth-child(2){ animation-delay:90ms; animation-duration:900ms; }  /* H1      */
+  .hero-seq>*:nth-child(3){ animation-delay:420ms; }                           /* lead    */
+  .hero-seq>*:nth-child(4){ animation-delay:540ms; }                           /* CTAs    */
+  .hero-seq>*:nth-child(5){ animation-delay:660ms; }                           /* trust   */
+  .hero-media          { animation-delay:900ms; animation-duration:900ms; }    /* panel   */
+  .browser-frame::after{ animation-delay:1500ms; }                             /* sheen   */
+  .hero-media figure   { animation-delay:2s; }                                 /* float   */
+  /* entry rise relocated from the heroMediaIn keyframes (see H5 note there) */
+  .hero .browser-frame { animation:mxRise 900ms var(--ease-expo) 900ms both; }
+}
+@keyframes mxRise{ from{ transform:translateY(24px) scale(.97); } to{ transform:none; } }
+@media (prefers-reduced-motion:reduce){ .hero .hero-media{ transform:none !important; } }
+
+/* Arthur's optional trustline polish — no dangling separator dots on wrap */
+.trustline{ gap:6px 14px; }
+.trustline .tl-dot{ display:none; }
+.trustline li+li::before{ content:""; width:5px; height:5px; border-radius:50%;
+  background:var(--blue-300); flex:0 0 auto; margin-right:14px; }
 </style>
 
 </head>
