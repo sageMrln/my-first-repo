@@ -2778,3 +2778,33 @@ GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee
 **Result:** All gates green including new availability suite. 60df77b ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
 
 **Note:** landing_avail.js now part of permanent GREEN checklist per suite header.
+
+## 2026-08-10 GREEN — Hugo @ 8f694af (emoji strips + glyphs + gate wiring update + phase-A inert)
+
+**Asked:** Kaito: GREEN on frozen candidate 8f694af (emoji strips ×42, 8 more glyphs, green.js gate wiring updated for landing_avail exit-2-as-SKIP). Verify wiring behaves.
+
+**Did:**
+- git pull --rebase (tree clean)
+- Confirmed tip: 8f694af (landing: emoji strip x42 + full glyph set + gate wiring + phase-A inert)
+- green.js: exit 0 ✓ (includes landing_avail, wiring verified)
+- deploy.js --check: exit 0 ✓
+- parse_test.js: 125 passed, 0 failed ✓
+- landing_avail.js: 13/13 assertions passed ✓ (browser env normal case)
+
+**Wiring note:** green.js updated to run landing_avail.js with exit-2-as-SKIP logic (exit 2 treated as skip, not failure). Normal run (13/13 pass) → exit 0 → gate continues.
+
+**Result:** All gates green on 8f694af.
+
+## 2026-08-10 RE-SIGN — Hugo @ b189551 (Osefe storage texts fix on top of 8f694af)
+
+**Asked:** Kaito: Tip moved. Osefe reported stagnant storage texts; fix landed as b189551 (staging selectors extended: .store-box/.store-move/.store-note/.store-warn/.cta-guarantee). Re-verify gates on b189551.
+
+**Did:**
+- git status (tree clean per shared-tree safety rule)
+- git pull --rebase
+- Confirmed tip: b189551 (landing: unfold coverage — storage/get inner blocks join the construction)
+- green.js: exit 0 ✓
+- deploy.js --check: exit 0 ✓
+- parse_test.js: 125 passed, 0 failed ✓
+
+**Result:** All gates green on b189551. Ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
