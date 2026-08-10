@@ -23,11 +23,24 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
-- LOCKED: landing.html — Kaito — Osefe revision: bright→dark scroll descent + shadows + 60fps, then ship — 2026-08-10
 
 
 
-## 🚦 PENDING — LANDING v2 IMMERSIVE (candidate `2b7b237`) — SIGNED, AWAITING PUBLISH
+## ✅ SHIPPED — LANDING v2 "THE DESCENT" (source `29e9a82` → gh-pages `e016ead`, 2026-08-10)
+Osefe's revision on top of the signed immersive build: daylight cream opening (hero→why, dark ink,
+ink-particle field, warm layered shadows) dying into the dark world across "Your data stays yours."
+(#privacy onward unchanged dark). Normal-blend WebGL + u_ink daylight dimming, depth-gated orbs/grid/vig,
+difference-blend cursor, shed thresholds 22/26ms (60fps bias; JS cadence measured p50 16.7ms engine-isolated).
+Gate on ship tip `29e9a82`: Hugo **GREEN** (log 467ec0c) · Akashi **SAFE — CLEAR TO PUBLISH** (log 5226803)
+· Mikoto dictionaries byte-identical (7bca1c6f…, MISSING:0 carries). Osefe: **"ship it"** in-thread.
+Ship mechanics: git plumbing (mktree/commit-tree — only landing.html differed), post-push `deploy.js --check`
+= byte-identical, exit 0. **Rollback: `a01eea6`** (`git push origin a01eea6:gh-pages -f`).
+Routed follow-ups (Akashi, non-gating): the "Osefe revision" comment at :694 regressed the name scrub (fix
+next batch); --ink-muted + the → arrow miss AA in daylight (4.01–4.20 vs 4.5); shed is one-way per session;
+no try/catch around the 4 decoration blocks; normal-blend dims dark-zone acts vs the additive build — Arthur
+to judge; H0 fixes win on source order (add regression test that engine-appended body children stay fixed).
+
+## 🚦 PENDING (prior, superseded by the ship above) — LANDING v2 IMMERSIVE (candidate `2b7b237`)
 Council ruling `cc886b2` (NO-SHIP @ e82673f, 15-agent run) — all P0.1–P0.4 + P1.5–P1.7 landed:
 `e82673f` engine v2 → `4a26c4d` P0.2-4/P1.5-7 → `7268c7e` hero (Arthur redline) → `2b7b237` cursor/rail+hardening.
 - Hugo: **GREEN @ 2b7b237** (green.js exit 0, parser 125/125, deploy --check exit 0) — log e8a9046
