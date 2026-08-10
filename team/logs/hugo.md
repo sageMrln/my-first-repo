@@ -2749,3 +2749,16 @@ GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee
 - parse_test.js: 125 passed, 0 failed ✓
 
 **Result:** All gates green on frozen candidate. a6bfb9f ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
+
+## 2026-08-10 GREEN — Hugo @ a06fa96 (THE ENTRANCE — hero 200vh sticky scroll stage)
+
+**Asked:** Kaito: GREEN on frozen candidate a06fa96 (hero entrance: 200vh sticky scroll stage, interface rises enormous then settles, CTA emerges last). One commit since a6bfb9f sign.
+
+**Did:**
+- git pull --rebase
+- Confirmed tip: a06fa96 (landing: THE ENTRANCE — hero as a place progressively discovered)
+- green.js: exit 0 ✓
+- deploy.js --check: exit 0 ✓
+- parse_test.js: 125 passed, 0 failed ✓
+
+**Result:** All gates green on frozen candidate. a06fa96 ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
