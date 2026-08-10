@@ -759,6 +759,44 @@ body{
 
 </head>
 <body>
+<!-- ===== LOADING SCREEN — 3s, the dark world before the light (Osefe 2026-08-10).
+     Self-clearing by CSS animation (works even if every script fails); JS only
+     pauses the hero/birth choreography so the entrance plays AFTER the reveal.
+     Hidden entirely under reduced motion: those visitors get instant content. -->
+<div id="mrln-loader" aria-hidden="true">
+  <style>
+    #mrln-loader{position:fixed;inset:0;z-index:200;background:#070910;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:18px;animation:mrlnLdOut .65s ease 3s forwards}
+    #mrln-loader .ld-di{width:22px;height:22px;background:#6EA8FF;transform:rotate(45deg);
+      box-shadow:0 0 34px rgba(110,168,255,.55);animation:mrlnLdPulse 1.4s ease-in-out infinite}
+    #mrln-loader .ld-wm{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      font-weight:700;font-size:1.25rem;letter-spacing:.34em;color:#EEF3FF;margin-left:.34em}
+    #mrln-loader .ld-bar{width:180px;height:2px;background:rgba(110,168,255,.18);border-radius:2px;overflow:hidden}
+    #mrln-loader .ld-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#6EA8FF,#A78BFA);
+      transform:scaleX(0);transform-origin:0 50%;animation:mrlnLdFill 3s cubic-bezier(.22,.61,.36,1) forwards}
+    #mrln-loader .ld-sub{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:#8493AC}
+    @keyframes mrlnLdFill{to{transform:scaleX(1)}}
+    @keyframes mrlnLdPulse{0%,100%{transform:rotate(45deg) scale(1)}50%{transform:rotate(45deg) scale(1.18)}}
+    @keyframes mrlnLdOut{to{opacity:0;visibility:hidden;pointer-events:none}}
+    html.mx-loading .hero-seq>*, html.mx-loading .hero-media,
+    html.mx-loading .hero .browser-frame{animation-play-state:paused}
+    @media (prefers-reduced-motion: reduce){ #mrln-loader{display:none} }
+  </style>
+  <div class="ld-di"></div>
+  <div class="ld-wm">MRLN</div>
+  <div class="ld-bar"><i></i></div>
+  <div class="ld-sub">Private · Offline · One app</div>
+  <script>
+    document.documentElement.classList.add('mx-loading');
+    (function(){ var rm=false; try{ rm=matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(_){}
+      setTimeout(function(){
+        document.documentElement.classList.remove('mx-loading');
+        var l=document.getElementById('mrln-loader');
+        if(l) setTimeout(function(){ try{ l.remove(); }catch(_){} }, 750);
+      }, rm?0:3000);
+    })();
+  </script>
+</div>
 <div class="grain" aria-hidden="true"></div>
 
 <a class="skip" href="#main">Skip to content</a>
@@ -1583,6 +1621,9 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     var loop=function(now){
       raf=requestAnimationFrame(loop);
       if(!vis) return;
+      /* hold the birth while the loading screen covers the page — the world
+         assembles at the reveal, not invisibly behind the loader */
+      if(doc.classList.contains('mx-loading')) t0=now;
       var t=(now-t0)/1000;
       var dtms=now-prev; prev=now;
       if(dtms>0 && dtms<200){
