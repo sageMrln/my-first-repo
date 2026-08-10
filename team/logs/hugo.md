@@ -2707,3 +2707,18 @@ GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee
 **Result:** All gates green on final candidate. a137523 ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
 
 **Note:** Tip is frozen — no published file changes until both signs land (per freeze rules).
+
+## 2026-08-10 RE-SIGN — Hugo @ 357194e (Osefe final orders: zero corners + Cabin humanist + mono labels)
+
+**Asked:** Kaito: Osefe issued final two orders post-a137523 (zero rounded corners + Cabin humanist body font + mono eyebrows). Re-verify gates on 357194e (clean committed tree).
+
+**Did:**
+- git pull --rebase
+- Confirmed tip: 357194e (landing: zero rounded corners + Cabin humanist body sans + mono labels)
+- green.js: exit 0 ✓
+- deploy.js --check: exit 0 ✓
+- parse_test.js: 125 passed, 0 failed ✓
+
+**Note:** Kaito recovered uncommitted landing edit from shared worktree (discarded during my previous pull --rebase). Tree is now clean and committed.
+
+**Result:** All gates green on Osefe final orders. 357194e ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
