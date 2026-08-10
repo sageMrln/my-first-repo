@@ -2736,3 +2736,16 @@ GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee
 - Tree clean and committed
 
 **Result:** All gates green on frozen candidate. ad3e6de ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
+
+## 2026-08-10 GREEN — Hugo @ a6bfb9f (progressive revelation + Arthur redlines + 5 SVG glyphs + 4 new t-keys ×7)
+
+**Asked:** Kaito: GREEN on frozen candidate a6bfb9f (progressive revelation + Arthur redlines + MRLN glyphs + 4 new t-keys). Two commits since ad3e6de sign: c541b2d (progressive revelation), a6bfb9f (Arthur redlines).
+
+**Did:**
+- git pull --rebase
+- Confirmed tip: a6bfb9f (landing: Arthur redlines R1+R2+R3 — containment interaction, ledger register, MRLN glyphs)
+- green.js: exit 0 ✓
+- deploy.js --check: exit 0 ✓
+- parse_test.js: 125 passed, 0 failed ✓
+
+**Result:** All gates green on frozen candidate. a6bfb9f ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
