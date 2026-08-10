@@ -1734,3 +1734,36 @@ Osefe has approved making the assistant fluent in every language we offer, typos
   * Staged: index.html + TEAM-CHAT.md + team/logs/mikoto.md
 
 - Still open / next: Sleep-mode: ready to commit + push. Awaiting @Kaito verification (audit ruling accepted), then @Akashi SAFE and @Hugo GREEN if tip moved, then @Osefe final "ship it". Council F5 complete including final audit: MISSING: 0, budget-tight final pass done, every language reads fluent and mistake-free.
+
+
+## [2026-08-10 ~Landing keys verification] — Kaito dispatch (asleep, verification-only) — Council gate: Verify 8 landing statement/marquee keys ×7 languages @ e82673f
+
+- Asked: Verify 8 new landing keys (Your money. / Your health. / One place. / Your data stays yours. / Not five apps. / One. / Your device only / One app for all of you) for meaning, register, grammar against each language's existing voice. Frozen candidate e82673f. Report findings; do NOT edit.
+
+- Did / found:
+  * **Extracted all 8 keys ×7 languages from landing.html __L10N dictionary block.**
+  * **Coverage verified:** All 8 keys present in all 7 language dictionaries (56/56 keys, full count).
+  * **Per-language analysis:**
+    - **DA (Danish):** ✓ OK — informal register, grammar correct, consistent with hero phrasing
+    - **DE (German):** ✓ OK — informal "dein/deine" consistent; "Deine Daten bleiben bei dir." locality focus (device-only context) = Kaito-approved choice ✓
+    - **ES (Spanish):** ✓ OK — informal "tu/tus" consistent; "Una sola." feminine agrees with "Una app" ✓
+    - **FR (French):** ✓ OK — formal "Votre/Vos" used consistently across all 8 keys, matches landing page hero h1 formal register; "Une seule." feminine agrees with "Une app" ✓
+    - **HU (Hungarian):** ⚠ ISSUE FOUND — Key 3 "One place." uses locative case "Egy helyen." (WHERE: in one place) but headline statement requires nominative "Egy hely." (WHAT: one place). Also key 5 "Nem öt app." (singular) vs EN plural — stylistic parallelism with key 6 "Egy." but grammatically loose vs other langs (plural appar/apper).
+    - **NB (Norwegian Bokmål):** ✓ OK — informal register, plural forms correct throughout
+    - **SV (Swedish):** ✓ OK — informal register, number agreement correct ("Dina data förblir dina." plural throughout)
+  * **Special flags checked:**
+    - (a) de locality vs ownership: "bei dir." choice correct for device-only privacy context per Kaito ✓
+    - (b) es/fr feminine agreement: "Una sola." + "Une seule." both feminine, correct ✓
+    - (c) hu case agreement: ISSUE — "Egy helyen." is locative, should be nominative "Egy hely." for headline
+    - (d) sv number agreement: ✓ "Dina data förblir dina." plural correct
+
+- Decision / result:
+  * **Verification complete @ e82673f:** Coverage 56/56 ✓. Four languages fully pass (DA, DE, ES, NB, SV). French formal register is intentional + correct. HU has 1 critical case error (key 3) + 1 minor note (key 5 singular).
+  * **HU Critical Fix:** Key 3 "Egy helyen." → "Egy hely." (nominative for statement).
+  * **HU Minor Flag:** Key 5 "Nem öt app." (singular) — likely stylistic, but worth Kaito's review for grammatical rigor vs other languages.
+  * **Overall landing i18n MISSING count: 1** (hu key 3 case error).
+
+- Commits / SHAs:
+  * This log append documenting verification findings @ e82673f
+
+- Still open / next: Frozen candidate remains frozen. Gate awaits Kaito's decision on HU case correction (critical) + whether key 5 singular is intentional style or needs plural. Once ruling made, will fix and re-verify sync.js / green.js if changes applied.
