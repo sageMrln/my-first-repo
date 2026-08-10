@@ -1767,3 +1767,33 @@ Osefe has approved making the assistant fluent in every language we offer, typos
   * This log append documenting verification findings @ e82673f
 
 - Still open / next: Frozen candidate remains frozen. Gate awaits Kaito's decision on HU case correction (critical) + whether key 5 singular is intentional style or needs plural. Once ruling made, will fix and re-verify sync.js / green.js if changes applied.
+
+
+## [2026-08-10 ~OS-statement key verification] — Kaito dispatch (asleep, verification-only) — Council gate: Verify OS key ×7 languages @ ee7aaa7
+
+- Asked: Verify new OS-statement key "Your private operating system." in all 7 languages for: (1) coverage; (2) meaning + register vs existing voice; (3) grammar (de dein ✓?, sv/nb neuter agreement, hu possessive construction); (4) metaphor doesn't break. Frozen candidate ee7aaa7, verification-only, no edits.
+
+- Did / found:
+  * **Coverage verified:** Key present in HTML (line 1130) + 7 language entries in __L10N dictionary (8 total occurrences as expected).
+  * **Per-language analysis:**
+    - **DA:** "Dit private operativsystem." ✓ — Informal "dit" ✓ | compound noun correct
+    - **DE:** "Dein privates Betriebssystem." ✓ — Informal "Dein" ✓ | "privates" agrees neuter ✓ | Kaito's previous approval of "dein" register confirmed
+    - **ES:** "Tu sistema operativo privado." ✓ — Informal "Tu" ✓ | "privado" agrees masculine ✓
+    - **FR:** "Votre système d'exploitation privé." ✓ — Formal register (intentional, matches other FR headlines) | "privé" agrees masculine ✓
+    - **NB:** "Ditt private operativsystem." ✓ — Informal "Ditt" ✓ | neuter agreement "private" ✓
+    - **SV:** "Ditt privata operativsystem." ✗ **GRAMMAR ERROR** — "privata" is plural form but "operativsystem" is singular neuter; should be "Ditt privat operativsystem."
+    - **HU:** "A privát operációs rendszered." ✓ — Article + possessive construction natural ✓ | "rendszered" (your system) correct
+  * **Metaphor check:** All languages use appropriate local terms (operativsystem/Betriebssystem/sistema operativo/système d'exploitation/operációs rendszer). No confusion with literal computer software; headline context clear ✓
+  * **Register consistency:** All informal except FR (intentional per previous ruling). DA/DE/ES/NB/SV/HU all use second-person informal possessives ✓
+
+- Decision / result:
+  * **SV GRAMMAR ISSUE FOUND:** "privata" (plural adjective) paired with singular neuter noun "operativsystem". Correct form: "Ditt privat operativsystem." (singular neuter agreement).
+  * **All other languages pass:** DA/DE/ES/FR/NB/HU verified correct for meaning, register, and grammar.
+  * **Metaphor confirmed sound** across all 7 languages.
+  * **MISSING COUNT: 1** (SV grammar error).
+
+- Commits / SHAs:
+  * This log entry only (no code edits, verification-only mode).
+
+- Still open / next: Frozen candidate remains frozen. Awaits Kaito's decision on SV correction. Once ruling made, will fix and re-verify sync.js/green.js if changes applied.
+
