@@ -443,6 +443,15 @@ body{ background:var(--bg); color:var(--ink-body); }
 .faq-item, .price-card, .howto-card, .area-card, .privacy-tile{
   background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)) !important;
   border:1px solid var(--line) !important; }
+/* the price card is the buy moment — near-opaque so the particle stream reads
+   BEHIND it, not through it (council P0.2) */
+.price-card{ background:linear-gradient(180deg, rgba(19,25,40,.95), rgba(12,16,27,.93)) !important; }
+/* the light theme's cream radial on .privacy survived the token flip (line 249,
+   #F0E3CE at luminance ~209 on a ~13 page) — the seam the council traced (P1.5).
+   Both edges ramp to transparent so the panel never cuts a hard line into the
+   page background (same feathering rule as .section.tint, P1.7). */
+.privacy{ background:linear-gradient(180deg, rgba(17,23,38,0) 0, var(--bg-tint-2) 260px,
+  var(--bg-tint-2) calc(100% - 260px), rgba(17,23,38,0) 100%) !important; }
 .section-head .lead, .lead{ color:var(--ink-body); }
 hr, .sep{ border-color:var(--line) !important; background:var(--line) !important; }
 
@@ -530,11 +539,13 @@ body.mx-pointer .btn.mag{ transform:translate3d(calc(var(--bx,0)*7px), calc(var(
 
 /* ---- dark-mode legibility repairs for elements that assumed a light page ---- */
 .card, .panel, .faq-item, .price-card, .feature, .step{ background:var(--surface); border-color:var(--line); }
-.section.tint{ background:linear-gradient(180deg, var(--bg-tint), transparent 70%); }
+/* feathered: the old hard top edge (8.35 → 15.87 luminance in one pixel) read as
+   a seam between "scenes" — the tint now ramps in over 240px (council P1.7) */
+.section.tint{ background:linear-gradient(180deg, transparent 0, var(--bg-tint) 240px, transparent 78%); }
 img, .shot, picture{ filter:saturate(1.02); }
 
 /* ---- oversized story statements — the typographic beat between acts ---- */
-.mx-state{ position:relative; padding:24vh 0; overflow:hidden; }
+.mx-state{ position:relative; padding:16vh 0; overflow:hidden; }
 .mx-state .st-line{ margin:0; font-family:var(--serif); font-weight:500; color:var(--ink);
   font-size:clamp(2.6rem, 9.5vw, 8.75rem); line-height:1.04; letter-spacing:-.028em; text-wrap:balance;
   transform:translate3d(calc((var(--sp,.5) - .5) * -7vw), 0, 0); will-change:transform; }
@@ -575,6 +586,12 @@ body.mx-cursor-on .mx-cur, body.mx-cursor-on .mx-curR{ opacity:1; }
   [data-step].dim{ opacity:1 !important; transform:none !important; }
   .mx-state .st-line, .mx-state .st-mask{ transform:none !important; transition:none !important; }
   .mx-cur, .mx-curR{ display:none !important; }
+}
+
+/* ---- mobile header: the nav "Get access" clipped 80% off a 390px screen; the
+   hero repeats the same #pricing CTA, so the duplicate hides (council P0.3) ---- */
+@media (max-width:560px){
+  .site-header .btn-primary{ display:none; }
 }
 </style>
 
@@ -1249,7 +1266,9 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     'uniform vec3 u_cam, u_mouse;',
     'uniform mat4 u_vp;',
     'varying float v_d, v_life, v_shim, v_b;',
-    'float h1(float n){ return fract(sin(n*127.1)*43758.5453); }',
+    /* Hoskins hash — no sin(), fp32-safe at any index. The old fract(sin(n*127.1)*43758)
+       collapsed to ~410 distinct values at i≤34000 on weak fp32 (council P0.4). */
+    'float h1(float n){ n=fract(n*0.1031); n*=n+33.33; n*=n+n; return fract(n); }',
     'vec3 h3(float n){ return vec3(h1(n), h1(n+7.13), h1(n+19.7)); }',
     /* --- shapes ------------------------------------------------------------ */
     'vec3 s_cloud(float i){ vec3 r=h3(i)*2.0-1.0; return r*vec3(15.0,7.5,11.0); }',
@@ -1263,8 +1282,12 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     ' return vec3((R+tube*cos(b))*cos(a), tube*sin(b)*1.15, (R+tube*cos(b))*sin(a)); }',
     'vec3 s_dome(float i,float n){ float k=i/n; float y=sqrt(max(0.0,k)); float rr=sqrt(max(0.0,1.0-y*y));',
     ' float th=2.399963*i; return vec3(cos(th)*rr*5.4, y*4.2-1.6, sin(th)*rr*5.4); }',
-    'vec3 s_stream(float i,float n){ float k=i/n; float a=k*6.28318*7.0; float rr=0.5+k*3.4;',
-    ' return vec3(cos(a)*rr, -5.0+k*11.0, sin(a)*rr); }',
+    /* volumetric rising vortex — the old 7-turn single helix rendered as ~8 bare
+       "scribble" strands at the buy moment (council P0.2: geometry change, not a
+       hash fix). Every particle now gets its own angle + radius; +k*9 adds twist. */
+    'vec3 s_stream(float i,float n){ float k=i/n; float b=h1(i*2.7)*6.28318;',
+    ' float rr=(0.4+3.0*h1(i*5.3))*(0.35+0.65*k);',
+    ' return vec3(cos(b+k*9.0)*rr, -5.0+k*11.0, sin(b+k*9.0)*rr); }',
     'vec3 shapeAt(int k,float i,float n){',
     ' if(k==0) return s_cloud(i);',
     ' if(k==1) return s_sphere(i,n);',
@@ -1279,8 +1302,12 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     ' float m=clamp((u_mix-(lag-0.82)*0.9)/0.82,0.0,1.0);',
     ' m=m*m*(3.0-2.0*m);',
     ' vec3 p=mix(pa,pb,m);',
+    /* how much of the current frame is the ascend stream (act 5) — used to keep
+       the helix out of the pricing copy (council P0.2) */
+    ' float sw=(u_a==5?(1.0-m):0.0)+(u_b==5?m:0.0);',
     /* birth: the world assembles from nothing on first load, particle by particle */
     ' v_b=clamp((u_born-h1(i*9.31))*2.4,0.0,1.0);',
+    ' v_b*=1.0-0.2*sw;',
     ' p*=0.55+0.45*u_born;',
     /* breathing: the ring beats, everything drifts a little */
     ' float beat=(u_b==3||u_a==3)? (1.0+0.055*sin(u_t*3.4)) : 1.0;',
@@ -1289,6 +1316,9 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     /* slow world rotation */
     ' float ry=u_t*0.11; float cs=cos(ry), sn=sin(ry);',
     ' p=vec3(p.x*cs+p.z*sn, p.y, -p.x*sn+p.z*cs);',
+    /* stream offset AFTER rotation so the world turn can never carry the helix
+       back over the pricing copy (council P0.2: re-aim in post-rotation space) */
+    ' p.x+=sw*6.8; p.z-=sw*2.5;',
     /* cursor pushes particles away — real interaction, not a hover class */
     ' vec3 d=p-u_mouse; float dl=length(d.xy);',
     ' p+=normalize(vec3(d.xy,0.35))*(1.9/(1.0+dl*dl*0.55));',
@@ -1389,8 +1419,11 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
       var dtms=now-prev; prev=now;
       if(dtms>0 && dtms<200){
         ema=ema*0.94+dtms*0.06;
-        if(!degraded && t>5 && ema>30){ degraded=1; DRAW=Math.floor(N*0.55); }
-        else if(degraded===1 && t>10 && ema>34){ degraded=2; DRAW=Math.floor(N*0.32); if(DPR>1){ DPR=1; size(); } }
+        /* u_n must follow DRAW: shapes normalize by u_n (k=i/n), so truncating the
+           index range alone turns the sphere into a cap and deletes the stream's
+           rise on exactly the weak hardware this protects (council P1.6, reproduced) */
+        if(!degraded && t>5 && ema>30){ degraded=1; DRAW=Math.floor(N*0.55); gl.uniform1f(U.u_n,DRAW); }
+        else if(degraded===1 && t>10 && ema>34){ degraded=2; DRAW=Math.floor(N*0.32); gl.uniform1f(U.u_n,DRAW); if(DPR>1){ DPR=1; size(); } }
       }
       var born=Math.min(1,(now-t0)/2400); born=1-Math.pow(1-born,3);
       /* act + mix from the section schedule: hold each shape while its section
