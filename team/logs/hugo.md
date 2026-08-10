@@ -2653,3 +2653,16 @@ GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee
 **Result:** All gates green. 7268c7e ready for Pending → Akashi SAFE → Osefe ship.
 
 **Commits this session:** team/logs/hugo.md (this entry only).
+
+## 2026-08-10 RE-SIGN — Hugo @ 2b7b237 (Akashi security fix: cursor + progress rail specificity)
+
+**Asked:** Kaito: Gate reopens. Akashi fix landed (2b7b237) — cursor + progress rail de-fixed by specificity rule (also broken sticky header). Re-run gates on new tip and reply verdict.
+
+**Did:**
+- git pull --rebase
+- Confirmed tip: 2b7b237 (landing: restore fixed positioning for engine-appended body children + hardening)
+- green.js: exit 0 ✓
+- deploy.js --check: exit 0 ✓
+- parse_test.js: 125 passed, 0 failed ✓
+
+**Result:** All gates green on Akashi's fix. 2b7b237 ready for Pending.
