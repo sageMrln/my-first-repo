@@ -2636,3 +2636,20 @@ GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee
 - F5 complete: Mikoto ×7 languages
 - Screenshots NOT regenerated (56 unchanged)
 - Result: Full ship candidate ready.
+
+## 2026-08-10 GREEN sign-off — Hugo @ 7268c7e (landing.html immersive redesign, council P0/P1 fixes)
+
+**Asked:** Kaito: GREEN sign-off on tip 7268c7e (landing.html redesign), council ruling cc886b2 (P0.1-P0.4 + P1.5-P1.7 fixes). Five-gate verification.
+
+**Did:** Ran all verification checks on frozen tip 7268c7e:
+
+1. **Tip verification:** 7268c7e — landing P0.1 hero recomposition + root-cause fixes ✓
+2. **green.js (full gate):** exit 0 — parser 125/125, preflight CLEAR (index.html + landing.html + legal.html), leak scan clean, THEME-EXEMPT 18 ✓
+3. **deploy.js --check:** exit 0 — path set verified (73 published), landing content delta expected (358666 B source vs 313164 B live, pre-release state) ✓
+4. **parse_test.js:** 125 passed, 0 failed ✓
+5. **GUIDE.md/PDF:** verified no changes needed — landing.html is marketing page, guide documents app only. PDF last rebuilt at df0415b (council guide restore), unchanged since. ✓
+6. **Landing smoke test:** one <script id="mrln-motion-js"> ✓, one <style id="mrln-motion"> ✓, no TODO/XXX/console.log (only console.warn in WebGL shader/link bail paths — intentional per ruling) ✓
+
+**Result:** All gates green. 7268c7e ready for Pending → Akashi SAFE → Osefe ship.
+
+**Commits this session:** team/logs/hugo.md (this entry only).
