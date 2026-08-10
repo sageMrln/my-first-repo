@@ -2029,7 +2029,8 @@ window.__L10N = {"da":{"t":{"No tracking":"Ingen sporing","Nothing is uploaded, 
     if(sec.classList.contains('hero') || sec.classList.contains('mx-state')) return;
     var kids = [].slice.call(sec.querySelectorAll(':scope > .wrap > *'));
     if(!kids.length) kids = [].slice.call(sec.children);
-    kids = kids.concat([].slice.call(sec.querySelectorAll('.howto-card, .area-card, .privacy-tile, .price-card, .faq-item, .howto-shot')));
+    kids = kids.concat([].slice.call(sec.querySelectorAll(
+      '.howto-card, .area-card, .privacy-tile, .price-card, .faq-item, .howto-shot, .store-box, .store-move, .store-note, .store-warn, .cta-guarantee')));
     var els=[], d3=0;
     kids.forEach(function(k){
       if(k.tagName==='SCRIPT'||k.tagName==='STYLE') return;
@@ -2037,8 +2038,8 @@ window.__L10N = {"da":{"t":{"No tracking":"Ingen sporing","Nothing is uploaded, 
       if(k.closest('.answer, details, [hidden], [aria-hidden="true"]')) return;
       var st = (k.tagName==='H2'||k.matches('.section-head, .eyebrow')) ? 1
              : k.matches('.lead') ? 2
-             : k.matches('.howto-card, .area-card, .privacy-tile, .price-card, .faq-item, .howto-shot, figure') ? 3
-             : k.matches('.privacy-quiet, figcaption, .quiet, .note') ? 4
+             : k.matches('.howto-card, .area-card, .privacy-tile, .price-card, .faq-item, .howto-shot, figure, .store-box, .store-move') ? 3
+             : k.matches('.privacy-quiet, figcaption, .quiet, .note, .store-note, .store-warn, .cta-guarantee') ? 4
              : 2;
       k.classList.remove('pre-reveal','is-in');   /* one system owns an element — the legacy
         .js .pre-reveal{opacity:0} outranks .stg and held the price card at 0 */
