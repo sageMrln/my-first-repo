@@ -1,10 +1,10 @@
 {
   "_comment": [
-    "MRLN deploy map — the single source of truth for what gh-pages serves.",
+    "MRLN deploy map \u2014 the single source of truth for what gh-pages serves.",
     "SOURCE FILENAME != PUBLISHED FILENAME. Source keeps index.html for the app so that",
     "green.js (APP_VER) and preflight.js (security profile by basename) keep working",
     "untouched through the root migration; the rename happens ONLY here, at deploy time.",
-    "role: app | marketing | static | stub — preflight.js selects its profile from this,",
+    "role: app | marketing | static | stub \u2014 preflight.js selects its profile from this,",
     "and fails CLOSED to the full app profile when a file is not declared."
   ],
   "phase": 0,
@@ -12,7 +12,7 @@
     "0 = current live layout, app at the root. 1 = app also published at app.html.",
     "2 = sw.js/manifest repointed at app.html (root is STILL the app). 3 = the swap.",
     "tools/test/routing_test.js ARMS additional assertions as this number rises, and",
-    "prints which ones are armed — so a phase can never advance without its own guards."
+    "prints which ones are armed \u2014 so a phase can never advance without its own guards."
   ],
   "entries": [
     {
@@ -38,6 +38,11 @@
     {
       "source": "README.md",
       "published": "README.md",
+      "role": "static"
+    },
+    {
+      "source": "assets/fonts/Cabin-OFL.txt",
+      "published": "assets/fonts/Cabin-OFL.txt",
       "role": "static"
     },
     {
@@ -382,5 +387,5 @@
     }
   ],
   "unpublish": [],
-  "_unpublish_note": "Council ruling 2026-08-06 §C: paths deliberately REMOVED from live. deploy.js --check treats these as expected removals instead of undeclared extras. Entries must be live-only; a stale entry fails the check. LIFECYCLE: an entry is retired once the removal is live — the stale-entry check fails the gate until it is cleaned (this fired on 2026-08-06 immediately after the v42 push, as designed)."
+  "_unpublish_note": "Council ruling 2026-08-06 \u00a7C: paths deliberately REMOVED from live. deploy.js --check treats these as expected removals instead of undeclared extras. Entries must be live-only; a stale entry fails the check. LIFECYCLE: an entry is retired once the removal is live \u2014 the stale-entry check fails the gate until it is cleaned (this fired on 2026-08-06 immediately after the v42 push, as designed)."
 }

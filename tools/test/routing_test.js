@@ -55,7 +55,7 @@ check(pub.size === entries.length, 'published paths are unique');
 check(entries.every(e => ['app', 'marketing', 'static', 'stub'].indexOf(e.role) >= 0), 'every role is app|marketing|static|stub');
 /* pin the set size so a file cannot be added to or dropped from the publish set
    without a deliberate edit here — the "expected set" half of council test #1 */
-check(entries.length === 73, 'published set is 73 files (update this pin deliberately, never casually) — got ' + entries.length);
+check(entries.length === 74, 'published set is 74 files (update this pin deliberately, never casually) — got ' + entries.length);   // 74: +Cabin-OFL.txt (Akashi compliance, 2026-08-10)
 
 const APP_PUB = app ? app.published : 'index.html';
 const APP_REL = './' + APP_PUB;                       // what sw.js must reference
