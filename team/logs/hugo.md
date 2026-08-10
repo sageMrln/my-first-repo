@@ -2722,3 +2722,17 @@ GREEN: All gates passed, defect verified, guide accurate, tooling honest. 692dee
 **Note:** Kaito recovered uncommitted landing edit from shared worktree (discarded during my previous pull --rebase). Tree is now clean and committed.
 
 **Result:** All gates green on Osefe final orders. 357194e ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
+
+## 2026-08-10 GREEN — Hugo @ ad3e6de (council statement B + mobile real-device fixes)
+
+**Asked:** Kaito: GREEN on frozen candidate ad3e6de (council statement B + mobile real-device fixes). Two commits since last sign: ee7aaa7 (statement), ad3e6de (mobile fixes).
+
+**Did:**
+- git pull --rebase
+- Confirmed tip: ad3e6de (landing: real-device fixes from Osefe's Danish phone screenshots)
+- green.js: exit 0 ✓
+- deploy.js --check: exit 0 ✓
+- parse_test.js: 125 passed, 0 failed ✓
+- Tree clean and committed
+
+**Result:** All gates green on frozen candidate. ad3e6de ready for Pending. Awaiting Akashi SAFE on same SHA to close gate.
