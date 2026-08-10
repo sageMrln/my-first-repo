@@ -399,7 +399,7 @@
 </style>
 <style id="mrln-motion">
 /* ============================================================================
-   MRLN LANDING — DARK + MOTION LAYER  (Osefe: "darker, alive, 3D on scroll")
+   MRLN LANDING — DARK + MOTION LAYER  (owner brief: "darker, alive, 3D on scroll")
    Self-contained by design: no GSAP/Lenis/Three, no CDN, no external request —
    the publish gate forbids them and the product's promise is that this page
    phones home to nobody. Everything below is native CSS 3D + scroll-driven
@@ -610,6 +610,12 @@ body > .skip      { position:absolute; }
    the header has never actually stuck. clip clips WITHOUT creating a scroll
    container; browsers without clip keep the old behavior (no worse). */
 html, body{ overflow-x:clip; }
+/* the engine appends four more direct body children the (0,1,1) rule above also
+   de-fixed — the custom cursor was cursor:none with its replacement parked at
+   the bottom of the document (Akashi's find, availability blocker) */
+body > .mx-prog{ position:fixed; z-index:80; }
+body > .mx-spot{ position:fixed; z-index:2; }
+body > .mx-cur, body > .mx-curR{ position:fixed; z-index:130; }
 
 /* H1 — one display token. Statements render byte-identical (verified 136.8/77.9/41.6). */
 :root{
@@ -1298,7 +1304,7 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
 <script id="mrln-motion-js">
 /* ============================================================================
    MRLN LANDING — MOTION ENGINE
-   Direction: Osefe, "alive, darker, 3D on every scroll", referencing ilabsolutions.it
+   Direction: owner brief — "alive, darker, 3D on every scroll", referencing ilabsolutions.it
    and lusion.co. Both are WebGL/Three.js studio sites. We cannot ship a library:
    the publish gate forbids external requests and the product's whole claim is that
    this page phones home to nobody. So the depth is REAL WebGL — a hand-written
@@ -1503,7 +1509,7 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
        the page stays smooth on weak GPUs instead of impressive on paper */
     var DRAW=N, ema=16.6, prev=t0, degraded=0;
 
-    (function loop(now){
+    var loop=function(now){
       raf=requestAnimationFrame(loop);
       if(!vis) return;
       var t=(now-t0)/1000;
@@ -1543,10 +1549,16 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
       gl.uniform1f(U.u_born,born);
       gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
       gl.drawArrays(gl.POINTS,0,DRAW);
-    })(t0);
+    };
+    loop(t0);
 
-    addEventListener('pagehide', function(){ cancelAnimationFrame(raf);
+    /* bfcache: on a back-button restore the GL objects still exist — only dispose
+       on a real unload, and re-arm the loop on pageshow (Akashi: the field came
+       back dead after back navigation) */
+    addEventListener('pagehide', function(ev){ cancelAnimationFrame(raf);
+      if(ev.persisted) return;
       try{ gl.deleteBuffer(vb); gl.deleteProgram(pr); gl.deleteShader(vs); gl.deleteShader(fs); }catch(_){ } });
+    addEventListener('pageshow', function(ev){ if(ev.persisted){ prev=performance.now(); raf=requestAnimationFrame(loop); } });
     body.classList.add('mx-world');
   })();
 
@@ -1601,7 +1613,8 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
   /* ---------- 6. count-up on any figure that is a bare number ---------- */
   (function counters(){
     if(RM || !('IntersectionObserver' in window)) return;
-    var nums=[].slice.call(document.querySelectorAll('.stat-num, .big-num, .metric, [data-count]'));
+    var nums=[].slice.call(document.querySelectorAll('.stat-num, .big-num, .metric, [data-count]'))
+      .filter(function(n){ return !n.closest('#pricing'); });   /* a price must never animate through wrong values (Akashi) */
     if(!nums.length) return;
     var cio=new IntersectionObserver(function(es){
       es.forEach(function(e){
