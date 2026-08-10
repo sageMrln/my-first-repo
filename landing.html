@@ -632,10 +632,13 @@ body.mx-cursor-on .mx-cur, body.mx-cursor-on .mx-curR{ opacity:1; }
   .stg{ opacity:1 !important; transform:none !important; }
 }
 
-/* ---- mobile header: the nav "Get access" clipped 80% off a 390px screen; the
-   hero repeats the same #pricing CTA, so the duplicate hides (council P0.3) ---- */
+/* ---- mobile header (P0.3 revised after the entrance): the hero CTA is now
+   hidden during phase A, so the header MUST carry the purchase affordance at
+   all times (Akashi: at first paint on 390 there was NO visible way to buy).
+   The ghost "Open MRLN" yields the space instead — buying outranks re-entry
+   on a conversion page, and the footer still links the app. ---- */
 @media (max-width:560px){
-  .site-header .btn-primary{ display:none; }
+  .site-header .btn-ghost{ display:none; }
 }
 
 /* ===== P0.1 HERO RECOMPOSITION — Arthur redline @ cc886b2 ===== */
@@ -819,6 +822,35 @@ body{
   /* wrapped trust rows led with orphaned separator squares */
   .trustline li+li::before{ display:none; }
   .trustline{ gap:8px 18px; }
+}
+
+/* ===== THE ENTRANCE — Osefe guideline msg3 ("you've entered a place") =========
+   The hero is a 200vh scroll stage; its .wrap is the sticky frame (no markup
+   change — no i18n surface). Phase A: near-empty daylight, the headline alone.
+   Phase B: the dark interface RISES from below at absurd scale — the inside
+   world entering the outside one. Phase C: the camera pulls back, the panel
+   settles, CTA + trustline emerge last. All three phase values computed in JS
+   (--hrise/--hscale/--hcta/--hcopy); reduced-motion and no-JS get the complete
+   static composition. Motion law: reveal, depth, transform — never decorate. */
+.js .hero{ min-height:200vh; }
+.js .hero > .wrap{ position:sticky; top:0; display:flex; flex-direction:column;
+  justify-content:center; min-height:100vh; box-sizing:border-box; padding-top:64px; }
+.js .hero .hero-copy{ transform:none; opacity:var(--hcopy,1); }
+.js .hero .hero-media{
+  transform:translate3d(0, calc(var(--hrise,0) * 62vh), 0) scale(var(--hscale,1))
+            rotateY(calc(var(--mxr,0) * 2.5deg)) rotateX(calc(var(--myr,0) * -2deg));
+  transform-origin:50% 30%; z-index:2; will-change:transform; }
+.js .hero .hero-cta, .js .hero .trustline{
+  opacity:var(--hcta,1);
+  transform:translate3d(0, calc((1 - var(--hcta,1)) * 18px), 0);
+  animation:none; }   /* heroRise's forwards fill would hold opacity:1 over the var —
+                         the entrance owns these two; they emerge at phase C */
+@media (max-width:700px){ .js .hero{ min-height:170vh; } }
+@media (prefers-reduced-motion: reduce){
+  .js .hero{ min-height:0; }
+  .js .hero > .wrap{ position:static; min-height:0; display:block; padding-top:0; }
+  .js .hero .hero-media, .js .hero .hero-copy,
+  .js .hero .hero-cta, .js .hero .trustline{ transform:none !important; opacity:1 !important; }
 }
 
 /* ===== ARTHUR REDLINES R1+R2 (proto2.css verbatim, measured 5 viewports × 4 langs,
@@ -2201,6 +2233,17 @@ window.__L10N = {"da":{"t":{"No tracking":"Ingen sporing","Nothing is uploaded, 
     if(hero && !RM){
       var hp=Math.min(1, Math.max(0, y/Math.max(1, hero.offsetHeight*0.9)));
       hero.style.setProperty('--hp', hp.toFixed(3));
+      /* the entrance stage: rise → pull-back → completion (Osefe guideline msg3) */
+      var hh=hero.offsetHeight - innerHeight;
+      var hs=hh>0 ? Math.max(0, Math.min(1, y/hh)) : 1;
+      var pA=Math.min(1, hs/0.45);
+      var pB=Math.max(0, Math.min(1, (hs-0.45)/0.4)); pB=pB*pB*(3-2*pB);
+      var pC=Math.max(0, Math.min(1, (hs-0.78)/0.22));
+      var mobW=innerWidth<700;
+      hero.style.setProperty('--hrise', (1-pA).toFixed(4));
+      hero.style.setProperty('--hscale', ((mobW?1.25:1.55) - (mobW?0.25:0.55)*pB).toFixed(4));
+      hero.style.setProperty('--hcta', pC.toFixed(3));
+      hero.style.setProperty('--hcopy', (1 - 0.8*pA*(1-pB)).toFixed(3));
     }
     sweepVisible();
     if(STEPS.length && !RM){
