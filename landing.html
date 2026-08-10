@@ -632,10 +632,13 @@ body.mx-cursor-on .mx-cur, body.mx-cursor-on .mx-curR{ opacity:1; }
   .stg{ opacity:1 !important; transform:none !important; }
 }
 
-/* ---- mobile header: the nav "Get access" clipped 80% off a 390px screen; the
-   hero repeats the same #pricing CTA, so the duplicate hides (council P0.3) ---- */
+/* ---- mobile header (P0.3 revised after the entrance): the hero CTA is now
+   hidden during phase A, so the header MUST carry the purchase affordance at
+   all times (Akashi: at first paint on 390 there was NO visible way to buy).
+   The ghost "Open MRLN" yields the space instead — buying outranks re-entry
+   on a conversion page, and the footer still links the app. ---- */
 @media (max-width:560px){
-  .site-header .btn-primary{ display:none; }
+  .site-header .btn-ghost{ display:none; }
 }
 
 /* ===== P0.1 HERO RECOMPOSITION — Arthur redline @ cc886b2 ===== */
