@@ -759,42 +759,177 @@ body{
 
 </head>
 <body>
-<!-- ===== LOADING SCREEN — 3s, the dark world before the light (Osefe 2026-08-10).
-     Self-clearing by CSS animation (works even if every script fails); JS only
-     pauses the hero/birth choreography so the entrance plays AFTER the reveal.
-     Hidden entirely under reduced motion: those visitors get instant content. -->
+<!-- ===== BOOT SCREEN — the private OS initializing (Osefe brief 2026-08-10).
+     Canvas particle network + five system nodes + evolving center interface,
+     everything cursor-reactive. ~2.2s, skipped on repeat visits (sessionStorage)
+     and under reduced motion. Layered failure-safety: a pure-CSS animation
+     clears the overlay even if EVERY script on the page dies; a JS fallback
+     timer enters anyway if only the canvas engine throws. System micro-copy is
+     designed English (STREAK precedent); every readout is factually true. -->
 <div id="mrln-loader" aria-hidden="true">
   <style>
-    #mrln-loader{position:fixed;inset:0;z-index:200;background:#070910;display:flex;flex-direction:column;
-      align-items:center;justify-content:center;gap:18px;animation:mrlnLdOut .65s ease 3s forwards}
-    #mrln-loader .ld-di{width:22px;height:22px;background:#6EA8FF;transform:rotate(45deg);
-      box-shadow:0 0 34px rgba(110,168,255,.55);animation:mrlnLdPulse 1.4s ease-in-out infinite}
+    #mrln-loader{position:fixed;inset:0;z-index:200;background:#050505;overflow:hidden;
+      animation:mrlnLdOut .5s ease 3.4s forwards}
+    #mrln-loader canvas{position:absolute;inset:0;width:100%;height:100%}
+    #mrln-loader .ld-c{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
     #mrln-loader .ld-wm{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-      font-weight:700;font-size:1.25rem;letter-spacing:.34em;color:#EEF3FF;margin-left:.34em}
-    #mrln-loader .ld-bar{width:180px;height:2px;background:rgba(110,168,255,.18);border-radius:2px;overflow:hidden}
-    #mrln-loader .ld-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#6EA8FF,#A78BFA);
-      transform:scaleX(0);transform-origin:0 50%;animation:mrlnLdFill 3s cubic-bezier(.22,.61,.36,1) forwards}
-    #mrln-loader .ld-sub{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:#8493AC}
-    @keyframes mrlnLdFill{to{transform:scaleX(1)}}
-    @keyframes mrlnLdPulse{0%,100%{transform:rotate(45deg) scale(1)}50%{transform:rotate(45deg) scale(1.18)}}
+      font-weight:700;font-size:1.3rem;letter-spacing:.42em;color:#F2F4F6;margin-left:.42em;
+      text-shadow:0 0 26px rgba(255,255,255,.22);will-change:transform}
+    #mrln-loader .ld-sub{position:absolute;left:50%;bottom:11%;transform:translateX(-50%);
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.64rem;letter-spacing:.3em;
+      text-transform:uppercase;color:#8E949C;white-space:nowrap;pointer-events:none}
     @keyframes mrlnLdOut{to{opacity:0;visibility:hidden;pointer-events:none}}
     html.mx-loading .hero-seq>*, html.mx-loading .hero-media,
     html.mx-loading .hero .browser-frame{animation-play-state:paused}
     @media (prefers-reduced-motion: reduce){ #mrln-loader{display:none} }
   </style>
-  <div class="ld-di"></div>
-  <div class="ld-wm">MRLN</div>
-  <div class="ld-bar"><i></i></div>
-  <div class="ld-sub">Private · Offline · One app</div>
+  <canvas></canvas>
+  <div class="ld-c"><div class="ld-wm">MRLN</div></div>
+  <div class="ld-sub">Syncing personal space</div>
   <script>
-    document.documentElement.classList.add('mx-loading');
-    (function(){ var rm=false; try{ rm=matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(_){}
-      setTimeout(function(){
-        document.documentElement.classList.remove('mx-loading');
-        var l=document.getElementById('mrln-loader');
-        if(l) setTimeout(function(){ try{ l.remove(); }catch(_){} }, 750);
-      }, rm?0:3000);
-    })();
+  (function(){
+    var rt=document.documentElement, L=document.getElementById('mrln-loader');
+    var rm=false; try{ rm=matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(_){}
+    var seen=false; try{ seen=sessionStorage.getItem('mrlnBoot')==='1'; }catch(_){}
+    if(rm||seen){ try{ L.parentNode.removeChild(L); }catch(_){} return; }
+    try{ sessionStorage.setItem('mrlnBoot','1'); }catch(_){}
+    rt.classList.add('mx-loading');
+    var DUR=2200, TRANS=480, entered=false;
+    function finish(){
+      if(entered) return; entered=true;
+      rt.classList.remove('mx-loading');
+      L.style.transition='opacity .42s ease .1s'; L.style.opacity='0';
+      setTimeout(function(){ try{ L.parentNode.removeChild(L); }catch(_){} }, TRANS+220);
+    }
+    var fallback=setTimeout(finish, DUR+700);        /* engine dead? enter anyway */
+    try{
+      var cv=L.querySelector('canvas'), ctx=cv.getContext('2d'); if(!ctx) throw 0;
+      var wm=L.querySelector('.ld-wm'), sub=L.querySelector('.ld-sub');
+      var DPR=Math.min(devicePixelRatio||1,2), W,H,CX,CY,BASE;
+      function size(){ W=innerWidth; H=innerHeight; cv.width=Math.floor(W*DPR); cv.height=Math.floor(H*DPR);
+        ctx.setTransform(DPR,0,0,DPR,0,0); CX=W/2; CY=H/2; BASE=Math.min(W,H); }
+      size(); addEventListener('resize',size,{passive:true});
+      var tx=CX,ty=CY,mx=CX,my=CY,vx=0,vy=0,touched=false,trail=[];
+      addEventListener('pointermove',function(e){ tx=e.clientX; ty=e.clientY; touched=true; },{passive:true});
+      var NP=W<760?70:130, P=[],i;
+      for(i=0;i<NP;i++) P.push({hx:Math.random()*W, hy:Math.random()*H,
+        x:0,y:0, ph:Math.random()*6.283, s:.6+Math.random()*1.3});
+      P.forEach(function(p){ p.x=p.hx; p.y=p.hy; });
+      /* five system nodes — every readout is a true product fact */
+      var ND=[['MONEY','LOCAL'],['HEALTH','TRACKING'],['PLANS','LOCAL'],['NOTES','ON DEVICE'],['DATA','ON DEVICE']]
+        .map(function(d,k){ return { lb:d[0], sb:d[1], ang:-Math.PI/2+k*1.2566, x:0,y:0, g:0 }; });
+      function seg(x1,y1,x2,y2,px,py){ var dx=x2-x1,dy=y2-y1,l2=dx*dx+dy*dy||1;
+        var q=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/l2));
+        var qx=x1+q*dx-px, qy=y1+q*dy-py; return qx*qx+qy*qy; }
+      var t0=performance.now(), done=false;
+      (function frame(now){
+        if(done) return;
+        requestAnimationFrame(frame);
+        var el=now-t0, t=el/1000, prog=Math.min(1, el/DUR);
+        var pmx=mx,pmy=my; mx+=(tx-mx)*0.14; my+=(ty-my)*0.14; vx=mx-pmx; vy=my-pmy;
+        var speed=Math.min(40,Math.hypot(vx,vy));
+        trail.push({x:mx,y:my}); if(trail.length>13) trail.shift();
+        var fold=prog>0.94 ? (prog-0.94)/0.06 : 0;        /* the collapse */
+        ctx.clearRect(0,0,W,H);
+        /* grid, bending away from the cursor */
+        ctx.strokeStyle='rgba(255,255,255,0.032)'; ctx.lineWidth=1;
+        var gs=Math.max(70,Math.floor(W/16)), gx, yy;
+        for(gx=gs*0.5; gx<W; gx+=gs){ ctx.beginPath();
+          for(yy=0; yy<=H+24; yy+=28){ var ddx=gx-mx, ddy=yy-my, dd=ddx*ddx+ddy*ddy;
+            var off=ddx*22*Math.exp(-dd/30000)/Math.sqrt(dd+40);
+            if(yy===0) ctx.moveTo(gx+off,yy); else ctx.lineTo(gx+off,yy); }
+          ctx.stroke(); }
+        /* cursor light field + trail */
+        if(touched){
+          var lg=ctx.createRadialGradient(mx,my,0,mx,my,150);
+          lg.addColorStop(0,'rgba(240,244,248,'+(0.05+speed*0.003)+')'); lg.addColorStop(1,'rgba(240,244,248,0)');
+          ctx.fillStyle=lg; ctx.fillRect(mx-150,my-150,300,300);
+          ctx.lineWidth=1.2;
+          for(i=1;i<trail.length;i++){ ctx.strokeStyle='rgba(235,240,246,'+(i/trail.length*0.24)+')';
+            ctx.beginPath(); ctx.moveTo(trail[i-1].x,trail[i-1].y); ctx.lineTo(trail[i].x,trail[i].y); ctx.stroke(); }
+        }
+        /* particles: drift home, attract to cursor, stretch with its motion, fold at end */
+        for(i=0;i<NP;i++){ var p=P[i];
+          var hx=p.hx+Math.sin(t*0.5+p.ph)*10, hy=p.hy+Math.cos(t*0.42+p.ph)*10;
+          var dx=mx-p.x, dy=my-p.y, d2=dx*dx+dy*dy;
+          var pull=5200/(d2+2600), wake=Math.exp(-d2/24000);
+          p.x+=(hx-p.x)*0.022+dx*pull*0.012+vx*wake*0.55;
+          p.y+=(hy-p.y)*0.022+dy*pull*0.012+vy*wake*0.55;
+          if(fold){ p.x+=(CX-p.x)*fold*0.4; p.y+=(CY-p.y)*fold*0.4; }
+          var born=Math.min(1,Math.max(0,(el-i*5)/420));
+          ctx.fillStyle='rgba(226,232,240,'+(0.28*born*p.s*(1-fold*0.8))+')';
+          ctx.fillRect(p.x-p.s*0.5, p.y-p.s*0.5, p.s, p.s);
+        }
+        /* thin links between near particles; brighter when the cursor is on them */
+        ctx.lineWidth=1;
+        for(i=0;i<NP;i++){ for(var j=i+1;j<NP;j++){
+          var ax=P[i].x-P[j].x, ay=P[i].y-P[j].y, ad=ax*ax+ay*ay;
+          if(ad<8100){ var al=(1-ad/8100)*0.10;
+            if(touched && seg(P[i].x,P[i].y,P[j].x,P[j].y,mx,my)<260) al=Math.min(0.5,al*4.5);
+            ctx.strokeStyle='rgba(226,232,240,'+al+')';
+            ctx.beginPath(); ctx.moveTo(P[i].x,P[i].y); ctx.lineTo(P[j].x,P[j].y); ctx.stroke(); } } }
+        /* system nodes on a slow orbit; readout on approach; auto-pulse before first touch */
+        var NR=BASE*0.30, k, n, cGlow=0;
+        for(k=0;k<5;k++){ n=ND[k];
+          n.x=CX+Math.cos(n.ang+t*0.05)*NR*(1-fold);
+          n.y=CY+Math.sin(n.ang+t*0.05)*NR*0.72*(1-fold);
+          var nd=Math.hypot(mx-n.x,my-n.y);
+          var want=touched ? Math.max(0,1-nd/120) : Math.pow(Math.max(0,Math.sin(t*1.5-k*1.257)),3)*0.55;
+          n.g+=(want-n.g)*0.12; cGlow+=n.g*0.2;
+        }
+        ctx.lineWidth=1;
+        for(k=0;k<5;k++){ n=ND[k]; var m2=ND[(k+1)%5];
+          var la=0.05+n.g*0.3+m2.g*0.15;
+          if(touched && seg(n.x,n.y,m2.x,m2.y,mx,my)<200) la=Math.min(0.6,la+0.3);
+          ctx.strokeStyle='rgba(226,232,240,'+la*(1-fold)+')';
+          ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(m2.x,m2.y); ctx.stroke();
+          ctx.strokeStyle='rgba(226,232,240,'+(0.04+n.g*0.12)*(1-fold)+')';
+          ctx.beginPath(); ctx.moveTo(n.x,n.y); ctx.lineTo(CX,CY); ctx.stroke();
+        }
+        try{ ctx.letterSpacing='2px'; }catch(_){}
+        for(k=0;k<5;k++){ n=ND[k]; var g=n.g, nb=Math.min(1,Math.max(0,(el-500-k*90)/400));
+          if(nb<=0) continue;
+          ctx.fillStyle='rgba(238,242,246,'+(0.5+g*0.5)*nb*(1-fold)+')';
+          ctx.beginPath(); ctx.arc(n.x,n.y,2+g*2.4,0,6.283); ctx.fill();
+          if(g>0.08){ var ring=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,26+g*18);
+            ring.addColorStop(0,'rgba(238,242,246,'+g*0.12+')'); ring.addColorStop(1,'rgba(238,242,246,0)');
+            ctx.fillStyle=ring; ctx.fillRect(n.x-46,n.y-46,92,92); }
+          ctx.font='600 10px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+          ctx.fillStyle='rgba(238,242,246,'+(0.42+g*0.58)*nb*(1-fold)+')';
+          ctx.fillText(n.lb, n.x, n.y-12-g*5);
+          if(g>0.35){ ctx.font='500 8px ui-monospace,Menlo,monospace';
+            ctx.fillStyle='rgba(150,158,168,'+(g-0.35)/0.65*0.9*(1-fold)+')';
+            ctx.fillText(n.sb, n.x, n.y+20); ctx.fillText('READY', n.x, n.y+31); }
+        }
+        /* center interface: concentric rings, rotating arcs, scan line, dots, progress arc */
+        var cd=Math.hypot(mx-CX,my-CY);
+        var pulse=1+0.02*Math.sin(t*3)+0.05*Math.exp(-cd/300)+cGlow*0.04+fold*0.35;
+        var R1=BASE*0.075*pulse, R2=BASE*0.105*pulse, R3=BASE*0.135*pulse;
+        ctx.strokeStyle='rgba(226,232,240,'+0.10*(1-fold)+')'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.arc(CX,CY,R1,0,6.283); ctx.stroke();
+        ctx.strokeStyle='rgba(226,232,240,'+0.06*(1-fold)+')';
+        ctx.beginPath(); ctx.arc(CX,CY,R3,0,6.283); ctx.stroke();
+        ctx.strokeStyle='rgba(238,242,246,'+(0.28+cGlow*0.3)*(1-fold)+')'; ctx.lineWidth=1.4;
+        ctx.beginPath(); ctx.arc(CX,CY,R2, t*0.9, t*0.9+1.2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(CX,CY,R2, t*0.9+3.14, t*0.9+4.1); ctx.stroke();
+        ctx.lineWidth=1; ctx.strokeStyle='rgba(226,232,240,'+0.10*(1-fold)+')';
+        var sa=t*0.6; ctx.beginPath(); ctx.moveTo(CX,CY);
+        ctx.lineTo(CX+Math.cos(sa)*R3, CY+Math.sin(sa)*R3); ctx.stroke();
+        for(k=0;k<8;k++){ var da=k*0.7854+t*0.25;
+          ctx.fillStyle='rgba(226,232,240,'+0.3*(1-fold)+')';
+          ctx.fillRect(CX+Math.cos(da)*R1-1, CY+Math.sin(da)*R1-1, 2, 2); }
+        ctx.strokeStyle='rgba(240,244,248,'+0.55*(1-fold)+')'; ctx.lineWidth=1.6;
+        ctx.beginPath(); ctx.arc(CX,CY,R3+8,-1.5708,-1.5708+prog*6.283); ctx.stroke();
+        ctx.font='500 8px ui-monospace,Menlo,monospace';
+        ctx.fillStyle='rgba(150,158,168,'+0.7*(1-fold)+')'; ctx.textAlign='center';
+        ctx.fillText('v42', CX, CY-R3-16); ctx.fillText('OFFLINE', CX, CY+R3+22);
+        /* the wordmark leans with the cursor */
+        wm.style.transform='translate('+((mx-CX)*0.022).toFixed(1)+'px,'+((my-CY)*0.022).toFixed(1)+'px)';
+        if(prog>0.85 && sub.__f!==1){ sub.__f=1; sub.textContent='Private space — ready'; }
+        if(prog>=1){ done=true; clearTimeout(fallback); finish(); }
+      })(t0);
+    }catch(_){ /* static wordmark + fallback timer + CSS animation still enter */ }
+  })();
   </script>
 </div>
 <div class="grain" aria-hidden="true"></div>
