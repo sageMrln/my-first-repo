@@ -465,7 +465,7 @@ hr, .sep{ border-color:var(--line) !important; background:var(--line) !important
   will-change:transform; }
 .mx-orb.a{ width:56vw; height:56vw; left:-14vw; top:-12vw; background:radial-gradient(circle at 30% 30%, #24509E, transparent 68%);
   transform:translate3d(0, calc(var(--sy,0) * -0.06px), 0); }
-.mx-orb.b{ width:48vw; height:48vw; right:-12vw; top:32vh; background:radial-gradient(circle at 60% 40%, #7A3E8F, transparent 66%); opacity:.38;
+.mx-orb.b{ width:48vw; height:48vw; right:-12vw; top:32vh; background:radial-gradient(circle at 60% 40%, #23486E, transparent 66%); opacity:.38;
   transform:translate3d(0, calc(var(--sy,0) * 0.05px), 0); }
 .mx-orb.c{ width:40vw; height:40vw; left:22vw; bottom:-14vw; background:radial-gradient(circle at 50% 50%, #0F6E7A, transparent 68%); opacity:.34;
   transform:translate3d(0, calc(var(--sy,0) * -0.035px), 0); }
@@ -480,7 +480,7 @@ body > *:not(.mx-bg){ position:relative; z-index:1; }
 /* ---- scroll progress rail ---- */
 .mx-prog{ position:fixed; left:0; top:0; height:2px; z-index:80; width:100%;
   transform-origin:0 50%; transform:scaleX(var(--doc,0));
-  background:linear-gradient(90deg, var(--accent), #A78BFA 55%, var(--gold)); }
+  background:linear-gradient(90deg, var(--accent), var(--gold)); }   /* violet cut — tactical palette (Osefe) */
 
 /* ---- pointer spotlight (desktop only; follows the cursor) ---- */
 .mx-spot{ position:fixed; inset:0; z-index:2; pointer-events:none; opacity:0; transition:opacity .5s ease;
@@ -518,14 +518,12 @@ body.mx-pointer .mx-card.tilt{
 [data-sweep]{ clip-path:inset(0 100% 0 0); transition:clip-path 1.05s cubic-bezier(.16,.84,.44,1) var(--rv-d,0ms); }
 [data-sweep].in{ clip-path:inset(0 0 0 0); }
 
-/* ---- marquee band between sections ---- */
-.mx-marq{ position:relative; overflow:hidden; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-  background:linear-gradient(180deg, rgba(110,168,255,.05), transparent); padding:14px 0; }
-.mx-marq-in{ display:flex; gap:44px; width:max-content; animation:mxmarq 34s linear infinite;
-  font-family:var(--font-mono,ui-monospace,monospace); font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-muted); }
-.mx-marq-in span{ display:inline-flex; gap:44px; }
-.mx-marq b{ color:var(--accent-text); font-weight:600; }
-@keyframes mxmarq{ to{ transform:translate3d(-50%,0,0); } }
+/* ---- static system-status line between hero and statement A ---- */
+.mx-sys{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:13px 16px;
+  display:flex; justify-content:center; align-items:center; gap:26px; flex-wrap:wrap;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--ink-muted); }
+.mx-sys .sep{ color:var(--accent-text); font-size:8px; }
 
 /* ---- pinned steps: the "how" list advances as the section scrolls ---- */
 [data-step]{ transition:opacity .5s ease, transform .6s cubic-bezier(.16,.84,.44,1), border-color .5s ease; }
@@ -554,7 +552,7 @@ img, .shot, picture{ filter:saturate(1.02); }
   transform:translate3d(calc((var(--sp,.5) - .5) * -7vw), 0, 0); will-change:transform; }
 .mx-state .st-i2{ transform:translate3d(calc((var(--sp,.5) - .5) * 5vw), 0, 0); }
 .mx-state .st-i3{ transform:translate3d(calc((var(--sp,.5) - .5) * -3.5vw), 0, 0); }
-.mx-state .st-acc{ color:var(--accent-text); text-shadow:0 0 46px rgba(110,168,255,.4); }
+.mx-state .st-acc{ color:var(--accent-text); text-shadow:0 0 46px rgba(110,168,255,.22); }
 .mx-state .st-mask{ display:inline-block; }
 .js .mx-state .st-line{ overflow:hidden; }
 .js .mx-state .st-mask{ transform:translate3d(0,112%,0); transition:transform 1.05s cubic-bezier(.19,1,.22,1); }
@@ -584,7 +582,6 @@ body.mx-cursor-on .mx-cur, body.mx-cursor-on .mx-curR{ opacity:1; }
   [data-sweep]{ clip-path:none !important; transition:none !important; }
   .mx-orb, .mx-grid, .hero .hero-copy, .hero .hero-visual, .hero figure,
   .mx-card, .btn.mag{ transform:none !important; transition:none !important; }
-  .mx-marq-in{ animation:none !important; }
   .mx-spot, .mx-prog{ display:none !important; }
   [data-step].dim{ opacity:1 !important; transform:none !important; }
   .mx-state .st-line, .mx-state .st-mask{ transform:none !important; transition:none !important; }
@@ -824,7 +821,7 @@ body{
       function seg(x1,y1,x2,y2,px,py){ var dx=x2-x1,dy=y2-y1,l2=dx*dx+dy*dy||1;
         var q=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/l2));
         var qx=x1+q*dx-px, qy=y1+q*dy-py; return qx*qx+qy*qy; }
-      var t0=performance.now(), done=false;
+      var t0=performance.now(), done=false, endT=0;
       (function frame(now){
         if(done) return;
         requestAnimationFrame(frame);
@@ -928,9 +925,27 @@ body{
         ctx.fillText('v42', CX, CY-R3-16); ctx.fillText('OFFLINE', CX, CY+R3+22);
         /* the wordmark leans with the cursor */
         wm.style.transform='translate('+((mx-CX)*0.022).toFixed(1)+'px,'+((my-CY)*0.022).toFixed(1)+'px)';
-        if(prog>=1){ done=true; clearTimeout(fallback);
-          removeEventListener('pointermove',onPm); removeEventListener('resize',size);
-          finish(); }
+        /* closing readout — factual, in the boot's own grammar (ruling A.1) */
+        if(prog>0.96){ var pr=(prog-0.96)/0.04;
+          ctx.font='600 11px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+          ctx.fillStyle='rgba(238,242,246,'+(pr*0.9)+')';
+          ctx.fillText('PRIVATE SPACE', CX, CY+BASE*0.135+46);
+          ctx.fillText('READY', CX, CY+BASE*0.135+60); }
+        /* SYSTEM → INITIALIZED → ENTERING: fold-collapse, ~110ms of true black,
+           the app's own boot line, then the page (ruling A.1; mirrors index boot) */
+        if(prog>=1){
+          if(!endT){ endT=now; wm.style.opacity='0'; sub.style.opacity='0'; }
+          var e2=now-endT;
+          ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+          if(e2>110){ var fa=Math.min(1,(e2-110)/120);
+            ctx.font='700 15px ui-monospace,Menlo,monospace'; ctx.textAlign='center';
+            ctx.fillStyle='rgba(242,244,246,'+fa+')'; ctx.fillText('MRLN', CX, CY-4);
+            ctx.font='500 9px ui-monospace,Menlo,monospace';
+            ctx.fillStyle='rgba(150,158,168,'+fa*0.9+')'; ctx.fillText('// SYSTEM ONLINE', CX, CY+16); }
+          if(e2>430){ done=true; clearTimeout(fallback);
+            removeEventListener('pointermove',onPm); removeEventListener('resize',size);
+            finish(); }
+        }
       })(t0);
     }catch(_){ /* static wordmark + fallback timer + CSS animation still enter */ }
   })();
@@ -1724,12 +1739,14 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     /* per-act palette — the world changes colour as the story moves */
     /* acts 0-1 play over the DAYLIGHT zone — deep ink tones, visible on cream;
        acts 2-5 play over the dark world — luminous tones (the descent) */
-    var PAL=[[0.16,0.19,0.36, 0.34,0.23,0.50],   // scatter  indigo → violet ink
+    /* tactical palette (Osefe: industrial minimalism, no cyberpunk violet):
+       daylight acts in ink, dark acts in bone-white/steel with amber+gold heat */
+    var PAL=[[0.16,0.19,0.36, 0.24,0.28,0.40],   // scatter  indigo → slate ink
              [0.12,0.24,0.47, 0.08,0.34,0.42],   // converge navy → teal ink
              [0.30,0.90,0.62, 0.85,0.78,0.35],   // grow     green → gold
              [1.00,0.42,0.52, 0.95,0.62,0.35],   // pulse    red → amber
-             [0.45,0.70,1.00, 0.62,0.55,0.98],   // shield   blue → violet
-             [0.62,0.82,1.00, 0.95,0.92,0.78]];  // ascend   pale → white
+             [0.55,0.70,0.92, 0.78,0.83,0.90],   // shield   steel-blue → bone
+             [0.70,0.78,0.90, 0.95,0.93,0.85]];  // ascend   steel → warm white
 
     function size(){ cv.width=Math.floor(innerWidth*DPR); cv.height=Math.floor(innerHeight*DPR);
       cv.style.width='100%'; cv.style.height='100%'; gl.viewport(0,0,cv.width,cv.height); }
@@ -1844,13 +1861,14 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
   // primary/ghost buttons become magnetic
   [].slice.call(document.querySelectorAll('.btn')).forEach(function(b){ b.classList.add('mag'); });
 
-  /* ---------- 4. marquee band under the hero ---------- */
-  (function marquee(){
+  /* ---------- 4. system-status line under the hero (was a marquee ticker —
+     template-tell #4 per the OS-identity ruling; the register stays, the
+     agency motion goes; every word is an existing dictionary key) ---------- */
+  (function sysline(){
     var hero=document.querySelector('.hero'); if(!hero) return;
-    var words=['No account','No cloud','No bank connection','Works fully offline','Your device only','One app for all of you'];
-    var run=words.map(function(w){ return '<b>◆</b> '+w; }).join(' &nbsp; ');
-    var m=el('div','mx-marq','<div class="mx-marq-in"><span>'+run+' &nbsp; </span><span>'+run+' &nbsp; </span></div>');
-    m.setAttribute('aria-hidden','true');
+    var words=['No account','No cloud','No bank connection','Works fully offline'];
+    var m=el('div','mx-sys', words.map(function(w){ return '<span>'+w+'</span>'; })
+      .join('<span class="sep" aria-hidden="true">◆</span>'));
     hero.parentNode.insertBefore(m, hero.nextSibling);
   })();
 
@@ -1860,7 +1878,7 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
      measured from the real layout (re-measured on load + resize). */
   (function zonesInit(){
     var states=document.querySelectorAll('.mx-state');
-    var bright=[document.querySelector('.hero'), document.querySelector('.mx-marq'),
+    var bright=[document.querySelector('.hero'), document.querySelector('.mx-sys'),
                 states[0], document.querySelector('#why'), states[1]];
     bright.forEach(function(z){ if(z) z.classList.add('z-bright'); });
     function zones(){
