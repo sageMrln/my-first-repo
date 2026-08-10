@@ -690,6 +690,71 @@ body > .mx-cur, body > .mx-curR{ position:fixed; z-index:130; }
 .trustline .tl-dot{ display:none; }
 .trustline li+li::before{ content:""; width:5px; height:5px; border-radius:50%;
   background:var(--blue-300); flex:0 0 auto; margin-right:14px; }
+
+/* ===================== THE DESCENT — Osefe revision 2026-08-10 =================
+   "too dark now — revert the colors to brighter and mix it with darker as you
+   scroll down." The page now opens in daylight (the original cream palette) and
+   descends into the dark world: bright through hero → statement A → why, the
+   light dies across "Your data stays yours.", full dark from the privacy dome on.
+   Implemented as scoped token overrides (.z-bright) + ONE static document-length
+   gradient (zero per-frame paint cost) + depth-gated background layers. */
+
+/* the descent gradient — stops set from real section offsets by zones() in JS */
+body{
+  background:linear-gradient(180deg,
+    #FBF7EE 0,
+    #F7F2E8 calc(var(--dk0,1800)*1px),
+    #0B101C calc(var(--dk1,3600)*1px),
+    #070910 calc((var(--dk1,3600) + 900)*1px),
+    #070910 100%);
+}
+
+/* bright-zone scope: warm light ground, dark ink, warm layered shadows */
+.z-bright{
+  --bg:#F7F2E8; --surface:#FFFDF8; --bg-tint:#F3ECDD; --bg-tint-2:#EFE6D2;
+  --blue-50:#EDF2FB; --blue-100:#DFE8F7; --blue-200:#C9D8F0; --blue-300:#A9BFE3;
+  --accent:#2E5FBF; --accent-text:#24509E; --warm-text:#9A5A20; --gold:#B07A28; --gold-deep:#8F621C;
+  --ink:#241F16; --ink-body:#4C4536; --ink-muted:#7C7362;
+  --line:#E6DEC9; --line-strong:#D7CCB2; --gray-bg:#F3EDE0;
+  --peach-glow:#FBE3CC; --cream-glow:#F6EEDF;
+  --sh-sm:0 2px 6px rgba(90,70,35,.10);
+  --sh-md:0 10px 28px -6px rgba(90,70,35,.18);
+  --sh-lg:0 24px 60px -16px rgba(90,70,35,.24);
+  --sh-xl:0 48px 110px -24px rgba(80,60,30,.30);
+  --glow:0 0 0 1px rgba(46,95,191,.10), 0 20px 60px -18px rgba(46,95,191,.35);
+  color:var(--ink-body);
+}
+.z-bright ::selection{ background:rgba(46,95,191,.22); color:#111; }
+.z-bright .st-acc{ text-shadow:0 2px 30px rgba(46,95,191,.25); }
+.z-bright .lead, .z-bright .section-head .lead{ color:var(--ink-body); }
+
+/* shadows — "as much as you can get away with", both zones, layered and soft */
+.z-bright .browser-frame{
+  box-shadow:0 60px 140px -40px rgba(70,50,20,.38), 0 24px 60px -20px rgba(70,50,20,.28),
+             0 4px 16px rgba(70,50,20,.12); }
+.z-bright .mx-card{ box-shadow:var(--sh-md); }
+.z-bright .mx-card:hover{ box-shadow:var(--sh-xl), var(--glow); }
+.z-bright .btn-primary{ box-shadow:0 16px 40px -12px rgba(46,95,191,.45), 0 4px 12px rgba(46,95,191,.25); }
+.z-bright .st-line{ text-shadow:0 2px 24px rgba(90,70,35,.16); }
+.z-bright .faq-item, .z-bright .howto-card, .z-bright .area-card, .z-bright .privacy-tile{
+  background:linear-gradient(180deg, #FFFDF8, #FBF6EC) !important; border:1px solid var(--line) !important; }
+.howto-card, .area-card, .privacy-tile, .faq-item{
+  box-shadow:0 24px 70px -30px rgba(0,0,0,.65), 0 6px 20px -8px rgba(0,0,0,.5); }
+.price-card{ box-shadow:0 40px 100px -28px rgba(0,0,0,.75), 0 12px 36px -12px rgba(0,0,0,.6), var(--glow); }
+.mx-state .st-line{ text-shadow:0 4px 40px rgba(0,0,0,.55); }
+
+/* dark-world background layers stay OUT of the daylight — they fade in with depth
+   (opacity is compositor-cheap; these layers already own a compositing layer) */
+.mx-orb.a{ opacity:clamp(0, calc((var(--doc,0) - .10) * 3), .50); }
+.mx-orb.b{ opacity:clamp(0, calc((var(--doc,0) - .10) * 3), .38); }
+.mx-orb.c{ opacity:clamp(0, calc((var(--doc,0) - .10) * 3), .34); }
+.mx-grid { opacity:clamp(0, calc((var(--doc,0) - .08) * 3), .32); }
+.mx-vig  { opacity:clamp(0, calc((var(--doc,0) - .10) * 3), 1); }
+
+/* cursor reads on BOTH grounds: difference blend inverts against whatever is under it */
+.mx-cur{ background:#E8ECF5; mix-blend-mode:difference; }
+.mx-curR{ border-color:rgba(232,236,245,.9); mix-blend-mode:difference; }
+.mx-curR.hot{ background:rgba(232,236,245,.16); border-color:#E8ECF5; }
 </style>
 
 </head>
@@ -1358,7 +1423,7 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     var VS = [
     'precision highp float;',
     'attribute float a_i;',
-    'uniform float u_n, u_t, u_mix, u_px, u_born;',
+    'uniform float u_n, u_t, u_mix, u_px, u_born, u_ink;',
     'uniform int u_a, u_b;',
     'uniform vec3 u_cam, u_mouse;',
     'uniform mat4 u_vp;',
@@ -1405,6 +1470,7 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     /* birth: the world assembles from nothing on first load, particle by particle */
     ' v_b=clamp((u_born-h1(i*9.31))*2.4,0.0,1.0);',
     ' v_b*=1.0-0.2*sw;',
+    ' v_b*=1.0-0.45*u_ink;',   /* daylight acts draw as light ink, not smudges */
     ' p*=0.55+0.45*u_born;',
     /* breathing: the ring beats, everything drifts a little */
     ' float beat=(u_b==3||u_a==3)? (1.0+0.055*sin(u_t*3.4)) : 1.0;',
@@ -1424,7 +1490,7 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     ' v_d=length(p-u_cam);',
     ' v_life=h1(i*4.1);',
     ' v_shim=0.22*sin(u_t*1.6+v_life*6.28);',   /* computed here: sharing u_t with the FS is a precision-mismatch link error on ES */
-    ' gl_PointSize=max(1.0,(u_px*(MOBILEPS+ h1(i)*1.7))/max(1.0,v_d*0.34));',
+    ' gl_PointSize=max(1.0,(u_px*(MOBILEPS+ h1(i)*1.7)*(1.0-0.25*u_ink))/max(1.0,v_d*0.34));',
     '}'].join('\n').replace('MOBILEPS', MOBILE ? '2.1' : '1.55');
 
     var FS = [
@@ -1454,10 +1520,13 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     var aI=gl.getAttribLocation(pr,'a_i'); gl.enableVertexAttribArray(aI);
     gl.vertexAttribPointer(aI,1,gl.FLOAT,false,0,0);
 
-    var U={}; ['u_n','u_t','u_mix','u_px','u_a','u_b','u_cam','u_mouse','u_vp','u_c1','u_c2','u_born']
+    var U={}; ['u_n','u_t','u_mix','u_px','u_a','u_b','u_cam','u_mouse','u_vp','u_c1','u_c2','u_born','u_ink']
       .forEach(function(k){ U[k]=gl.getUniformLocation(pr,k); });
     gl.uniform1f(U.u_n,N);
-    gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE);   // additive glow
+    /* normal blending, not additive: the top of the page is now DAYLIGHT and
+       additive can only brighten — dark ink particles would vanish. Normal
+       alpha renders ink specks on cream AND luminous points on dark. */
+    gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.disable(gl.DEPTH_TEST);
 
     /* --- tiny matrix maths (no library) --- */
@@ -1476,8 +1545,10 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     }
 
     /* per-act palette — the world changes colour as the story moves */
-    var PAL=[[0.32,0.55,1.00, 0.55,0.35,0.95],   // scatter  blue → violet
-             [0.35,0.62,1.00, 0.45,0.85,0.95],   // converge blue → cyan
+    /* acts 0-1 play over the DAYLIGHT zone — deep ink tones, visible on cream;
+       acts 2-5 play over the dark world — luminous tones (the descent) */
+    var PAL=[[0.16,0.19,0.36, 0.34,0.23,0.50],   // scatter  indigo → violet ink
+             [0.12,0.24,0.47, 0.08,0.34,0.42],   // converge navy → teal ink
              [0.30,0.90,0.62, 0.85,0.78,0.35],   // grow     green → gold
              [1.00,0.42,0.52, 0.95,0.62,0.35],   // pulse    red → amber
              [0.45,0.70,1.00, 0.62,0.55,0.98],   // shield   blue → violet
@@ -1519,8 +1590,9 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
         /* u_n must follow DRAW: shapes normalize by u_n (k=i/n), so truncating the
            index range alone turns the sphere into a cap and deletes the stream's
            rise on exactly the weak hardware this protects (council P1.6, reproduced) */
-        if(!degraded && t>5 && ema>30){ degraded=1; DRAW=Math.floor(N*0.55); gl.uniform1f(U.u_n,DRAW); }
-        else if(degraded===1 && t>10 && ema>34){ degraded=2; DRAW=Math.floor(N*0.32); gl.uniform1f(U.u_n,DRAW); if(DPR>1){ DPR=1; size(); } }
+        /* thresholds bias toward 60fps: shed at a sustained ~45fps, again at ~38 */
+        if(!degraded && t>4 && ema>22){ degraded=1; DRAW=Math.floor(N*0.55); gl.uniform1f(U.u_n,DRAW); }
+        else if(degraded===1 && t>9 && ema>26){ degraded=2; DRAW=Math.floor(N*0.32); gl.uniform1f(U.u_n,DRAW); if(DPR>1){ DPR=1; size(); } }
       }
       var born=Math.min(1,(now-t0)/2400); born=1-Math.pow(1-born,3);
       /* act + mix from the section schedule: hold each shape while its section
@@ -1547,6 +1619,8 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
       gl.uniform3f(U.u_c1, pa[0]+(pb[0]-pa[0])*mixv, pa[1]+(pb[1]-pa[1])*mixv, pa[2]+(pb[2]-pa[2])*mixv);
       gl.uniform3f(U.u_c2, pa[3]+(pb[3]-pa[3])*mixv, pa[4]+(pb[4]-pa[4])*mixv, pa[5]+(pb[5]-pa[5])*mixv);
       gl.uniform1f(U.u_born,born);
+      var inkA=(a<=1)?1:0, inkB=(b<=1)?1:0;
+      gl.uniform1f(U.u_ink, inkA+(inkB-inkA)*mixv);
       gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
       gl.drawArrays(gl.POINTS,0,DRAW);
     };
@@ -1598,6 +1672,27 @@ window.__L10N = {"da":{"t":{"Your device only":"Kun din enhed","One app for all 
     var m=el('div','mx-marq','<div class="mx-marq-in"><span>'+run+' &nbsp; </span><span>'+run+' &nbsp; </span></div>');
     m.setAttribute('aria-hidden','true');
     hero.parentNode.insertBefore(m, hero.nextSibling);
+  })();
+
+  /* ---------- 4b. the descent: bright zone classes + gradient stops ----------
+     Daylight through hero → marquee → statement A → why → statement B; the body
+     gradient dies to dark between statement B and the privacy dome. Stops are
+     measured from the real layout (re-measured on load + resize). */
+  (function zonesInit(){
+    var states=document.querySelectorAll('.mx-state');
+    var bright=[document.querySelector('.hero'), document.querySelector('.mx-marq'),
+                states[0], document.querySelector('#why'), states[1]];
+    bright.forEach(function(z){ if(z) z.classList.add('z-bright'); });
+    function zones(){
+      var sB=states[1], pv=document.querySelector('#privacy');
+      if(sB && pv){
+        doc.style.setProperty('--dk0', String(Math.round(sB.offsetTop)));
+        doc.style.setProperty('--dk1', String(Math.round(pv.offsetTop + 200)));
+      }
+    }
+    zones();
+    addEventListener('load', zones);
+    addEventListener('resize', function(){ setTimeout(zones, 80); }, {passive:true});
   })();
 
   /* ---------- 5. reveal on enter (IntersectionObserver, one-shot) ---------- */

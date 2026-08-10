@@ -23,6 +23,8 @@ Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
+- LOCKED: landing.html — Kaito — Osefe revision: bright→dark scroll descent + shadows + 60fps, then ship — 2026-08-10
+
 
 
 ## 🚦 PENDING — LANDING v2 IMMERSIVE (candidate `2b7b237`) — SIGNED, AWAITING PUBLISH
