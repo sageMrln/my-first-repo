@@ -55,6 +55,20 @@ try {
   }
 }
 
+// Customer journey and all eight locales, including accessible attributes.
+section('landing completion — tools/test/landing_finish.js');
+try {
+  console.log(execFileSync('node', ['tools/test/landing_finish.js'], { cwd: root, encoding: 'utf8' }).trimEnd());
+} catch (e) {
+  if (e.status === 2) {
+    console.log('  ⚠ SKIPPED — no browser. This is NOT a pass; run landing_finish.js before release.');
+  } else {
+    console.log((e.stdout || '').trimEnd());
+    if (e.stderr) console.log(e.stderr.trimEnd());
+    failed = true;
+  }
+}
+
 // 0) HTML script-parse guard — every <script> in index.html must be valid JS (browser-load parity).
 //    Catches the class of bug where a minified/i18n merge leaves a stray brace and the WHOLE app
 //    script dies on load — invisible to function-extraction suites and to brace-BALANCE preflight.

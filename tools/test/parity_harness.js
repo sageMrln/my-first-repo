@@ -25,26 +25,14 @@ const fs = require('fs');
 const root = path.resolve(__dirname, '..', '..');
 const STAGE = JSON.parse(fs.readFileSync(path.join(__dirname, 'reskin_stage.json'), 'utf8')).stage;
 
-let chromium;
-try { chromium = require('playwright').chromium; }
-catch (_) { try { chromium = require('/opt/node22/lib/node_modules/playwright/index.js').chromium; } catch (_2) {} }
-const exe = (() => {
-  const base = '/opt/pw-browsers';
-  try {
-    const d = fs.readdirSync(base).find(n => n.startsWith('chromium'));
-    if (d) {
-      const p = path.join(base, d, 'chrome-linux', 'chrome');
-      if (fs.existsSync(p)) return p;
-      if (fs.existsSync(path.join(base, d))) return path.join(base, d);
-    }
-  } catch (_) {}
-  return null;
-})();
-if (!chromium || !exe) {
+const localBrowser = require('./browser')();
+if (!localBrowser) {
   console.log('PARITY HARNESS: SKIPPED — Playwright/Chromium not available in this environment.');
   console.log('  (Run on a machine with the browser; the gate treats this as a named skip, not a pass.)');
   process.exit(0);
 }
+const { chromium, executablePath: exe } = localBrowser;
+const APP_URL = require('url').pathToFileURL(path.join(root, 'index.html')).href;
 
 const WIDTHS = [320, 360, 390, 768, 1024, 1440];
 let failed = 0, held = 0;
@@ -59,7 +47,7 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
     const page = await (await browser.newContext({ viewport: { width: W, height: 844 } })).newPage();
     const errs = [];
     page.on('pageerror', e => errs.push(e.message));
-    await page.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
+    await page.goto(APP_URL, { waitUntil: 'load' });
     await page.waitForTimeout(1600);
     await page.evaluate(() => {
       const el = document.getElementById('lockScreen'); if (el) el.classList.add('unlocked');
@@ -145,7 +133,7 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
        BEFORE the marker bumps to 3, so activation adds checks, never silence).
        They assume the Stage-3 dock exists; a missing dock is a loud FAIL. */
     const boot = async (page) => {
-      await page.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
+      await page.goto(APP_URL, { waitUntil: 'load' });
       await page.waitForTimeout(1600);
       await page.evaluate(() => {
         document.getElementById('lockScreen')?.classList.add('unlocked');
@@ -207,7 +195,7 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
     /* #6 + #7 — IMPLEMENTED before the marker bumps (same rot-trap rule as #4/#2) */
     const b4 = await chromium.launch({ executablePath: exe });
     const page = await (await b4.newContext({ viewport: { width: 390, height: 844 } })).newPage();
-    await page.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
+    await page.goto(APP_URL, { waitUntil: 'load' });
     await page.waitForTimeout(1600);
     await page.evaluate(() => {
       document.getElementById('lockScreen')?.classList.add('unlocked');
@@ -327,7 +315,7 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
     /* #5 + #10 — one page, reduced-motion emulated (so the countUp settles the
        instant it is honest to do so, which IS the assertion). */
     const page5 = await (await b5.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' })).newPage();
-    await page5.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
+    await page5.goto(APP_URL, { waitUntil: 'load' });
     await page5.waitForTimeout(1600);
     const r5 = await page5.evaluate(async () => {
       document.getElementById('lockScreen')?.classList.add('unlocked');
@@ -374,7 +362,7 @@ const armed = (s, m) => { held++; console.log('  · ' + m + '   (armed at stage 
     /* #9 — keyboard-open stack: at keyboard height (390×460) a focused entry field
        must clear the dock and hit-test SELF. */
     const page9 = await (await b5.newContext({ viewport: { width: 390, height: 460 } })).newPage();
-    await page9.goto('file://' + path.join(root, 'index.html'), { waitUntil: 'load' });
+    await page9.goto(APP_URL, { waitUntil: 'load' });
     await page9.waitForTimeout(1600);
     const r9 = await page9.evaluate(async () => {
       document.getElementById('lockScreen')?.classList.add('unlocked');

@@ -9,25 +9,16 @@
  *
  * Needs Playwright + the pre-installed Chromium; run where a browser exists:
  *   node tools/test/landing_avail.js
- * Exit 0 = pass. Not wired into green.js (browserless environments must not
- * red the gate); Hugo runs it as part of GREEN wherever a browser exists.
+ * Wired into green.js: exit 0 = pass, exit 2 = unavailable (never a pass).
  *
  * KEY LESSON encoded here (Akashi's 8th instrument fault): opacity is NOT
  * inherited as a computed value — a child reads 1 while a 0-opacity ancestor
  * hides the subtree. Always multiply up the chain. */
-const fs = require('fs');
-let chromium;
-try { chromium = require('playwright').chromium; }
-catch (_) { try { chromium = require('/opt/node22/lib/node_modules/playwright/index.js').chromium; } catch (_2) {} }
-let exe = null;
-try {
-  const base = '/opt/pw-browsers';
-  const d = fs.readdirSync(base).find(n => n.startsWith('chromium-'));
-  if (d) exe = base + '/' + d + '/chrome-linux/chrome';
-} catch (_) {}
-if (!chromium || !exe) { console.error('landing_avail: no browser available — SKIP (not a pass)'); process.exit(2); }
+const localBrowser = require('./browser')();
+if (!localBrowser) { console.error('landing_avail: no browser available — SKIP (not a pass)'); process.exit(2); }
+const { chromium, executablePath: exe } = localBrowser;
 
-const URL = 'file://' + require('path').resolve(__dirname, '..', '..', 'landing.html');
+const URL = require('url').pathToFileURL(require('path').resolve(__dirname, '..', '..', 'landing.html')).href;
 let fails = 0;
 function check(ok, msg) { console.log((ok ? '  ✓ ' : '  ✗ ') + msg); if (!ok) fails++; }
 
