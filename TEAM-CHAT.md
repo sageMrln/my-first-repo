@@ -28,6 +28,31 @@ Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
 
 ## ✅ SHIPPED — LANDING v6 "DOCKET CLOSE" (source `b189551` → gh-pages `e05f3d2`, 2026-08-10)
+<!-- Current release record precedes the historical v6 entry. -->
+
+### Pending landing completion — 2026-09-10
+
+Frozen candidate: `11e70c10f355a25a4ef43b193ef93570c90f024f`.
+Owner request: "Update Mrln to test, the landing page and finish it off completely."
+Scope: factual storage/performance copy; seven translations; accessible names and
+image descriptions; progressive screenshot links; mobile/tablet purchase controls.
+Existing visual/council design remains. Four statements were replaced after source
+inspection and independent review; no new commercial claims or tracking added.
+
+Verification on candidate: Codex GREEN, canonical green.js exit 0; real Chromium
+landing availability passed, landing_finish passed eight languages at four widths,
+no-JS image links passed; app parity all active assertions passed, zero held checks.
+Known pre-existing allergen XFAIL baseline remains recorded by the gate; app bytes
+are unchanged. Independent landing_review seat: SAFE, localization MISSING:0, UX
+approved on exact candidate. These are actual Codex-session reviews, not signatures
+impersonating historical teammates. Council scope was concrete defect correction
+under the committed-test exemption, with independent factual/UX review.
+
+deploy.js --check verified 74 paths; --out materialized a separate publish worktree.
+Byte comparison after canonical line-ending materialization: ONLY landing.html
+differs. Previous live/rollback: `e05f3d27f91770c1a4dbd1246b33509bc08f26b5`.
+Live confirmation follows publication.
+
 Emoji strips ×42 (6 compound keys ×7, lossless — Mikoto: 203-key parity all langs, MISSING 0, clean run);
 full 13-glyph MRLN icon set (zero emoji visible page-wide); phase-A CTA inert while invisible (Akashi:
 tracking exact, no stranding branch); storage/get unfold coverage (Osefe's live report — .store-box/.move/
