@@ -5,7 +5,7 @@
 <script>if(location.hostname==='mrln.online'&&location.protocol==='http:')location.replace(location.href.replace(/^http:/,'https:'));</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MRLN — One app for all of you. Private and offline.</title>
-<meta name="description" content="MRLN brings your money, health, plans and notes into one private app that lives only on your device. No account, no cloud, no bank connection — your data never leaves your phone.">
+<meta name="description" content="MRLN brings your money, health, plans and notes into one private app that lives only on your device. No account, no cloud, no bank connection — MRLN records use this browser's storage and are not automatically sent to a MRLN backend.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MRLN">
 <meta property="og:url" content="https://mrln.online/landing.html">
@@ -296,7 +296,7 @@
     /* transform removed from these keyframes: the forwards fill froze transform:none
        on .hero-media forever, killing the scroll/pointer 3D (Arthur H5). The entry
        rise now lives on .browser-frame, whose transform nothing else drives. */
-    @keyframes heroMediaIn{ from{opacity:0; filter:blur(6px)} to{opacity:1; filter:blur(0)} }
+    @keyframes heroMediaIn{ from{opacity:0} to{opacity:1} }
     
     .hero-media figure{ animation:floatA 6s var(--ease-inout) 1s infinite; will-change:transform; }
     .showcase-media figure{ animation:floatB 6.4s var(--ease-inout) 1.4s infinite; will-change:transform; }
@@ -955,7 +955,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
 @media(max-width:900px){.hero{padding-top:92px!important}.hero-grid{grid-template-columns:1fr!important;gap:40px!important}.hero-copy,.hero-media{grid-column:1!important}.hero-h1{font-size:clamp(3.5rem,17vw,7rem)!important;max-width:12ch!important}.orbit-instrument{width:100%;box-shadow:12px 12px 0 var(--accent)!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-copy,.hero-media,.hero-h1,.hero-seq>*,.orbit-node{animation:none!important;transition:none!important;transform:none!important;opacity:1!important}.orbit-fallback{opacity:1!important}.orbit-node.is-active{transform:none!important}}
 .orbit-detail{text-align:left!important}.orbit-detail span{text-align:left!important}
-.orbit-stage.is-webgl .orbit-ring,.orbit-stage.is-webgl .orbit-core{display:none!important}.orbit-stage.is-webgl .orbit-node{background:rgba(23,23,20,.92);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.orbit-stage.is-webgl .orbit-ring,.orbit-stage.is-webgl .orbit-core{display:none!important}.orbit-stage.is-webgl .orbit-node{right:auto!important;bottom:auto!important;width:max-content;max-width:12rem;transform:translate(-50%,-50%);background:rgba(23,23,20,.92);box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .howto-grid{grid-template-columns:repeat(12,minmax(0,1fr))!important;gap:clamp(24px,4vw,64px)!important;border:0!important;align-items:start}.howto-card{grid-column:span 5!important;border:0!important;background:transparent!important}.howto-card:nth-child(even){grid-column:7/span 6!important;margin-top:clamp(72px,10vw,150px)}.howto-card:nth-child(3n){grid-column:2/span 6!important}.howto-shot{display:block;border:1px solid var(--ink)!important;box-shadow:18px 22px 0 rgba(212,59,32,.16);overflow:hidden}.howto-shot img{width:100%;height:auto;display:block}.howto-card-copy{padding:24px 0!important;max-width:58ch}.howto-card-copy h3{font-size:clamp(1.5rem,2.5vw,2.4rem)!important}.howto-card-copy p{font-size:1rem;line-height:1.65}.media-proof{grid-column:1/-1!important;margin:clamp(72px,10vw,140px) 0 0!important;padding:clamp(28px,5vw,64px)!important;background:#171714!important;color:#eee9df!important;display:grid!important;grid-template-columns:minmax(0,.8fr) minmax(300px,1.2fr)!important;gap:clamp(28px,6vw,88px)!important;align-items:center}.media-proof h3{color:#fff!important}.media-proof p{color:#cbc6bc!important}.rank-demo{border-top:1px solid #6f6d66}.rank-row{display:grid;grid-template-columns:3rem 1fr auto;gap:16px;align-items:center;padding:18px 0;border-bottom:1px solid #6f6d66}.rank-row strong{color:#ff7257;font:700 1.1rem/1 ui-monospace,monospace}.rank-row span{color:#fff}.rank-row small{color:#cbc6bc}.evidence-route{display:inline-flex;margin-top:16px;color:var(--accent);font-weight:750;text-underline-offset:4px}
 @media(max-width:700px){.howto-grid{display:block!important}.howto-card,.howto-card:nth-child(even),.howto-card:nth-child(3n){margin:0 0 64px!important}.howto-shot{box-shadow:9px 11px 0 rgba(212,59,32,.16)}.media-proof{display:block!important;margin-top:40px!important}.rank-demo{margin-top:28px}.rank-row{grid-template-columns:2.2rem 1fr}.rank-row small{grid-column:2}}
 </style>
@@ -993,11 +993,9 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
   <script>
   (function(){
     var rt=document.documentElement, L=document.getElementById('mrln-loader');
-    var rm=false; try{ rm=matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(_){}
-    var seen=false; try{ seen=sessionStorage.getItem('mrlnBoot')==='1'; }catch(_){}
-    if(rm||seen){ try{ L.parentNode.removeChild(L); }catch(_){} return; }
-    try{ sessionStorage.setItem('mrlnBoot','1'); }catch(_){}
-    rt.classList.add('mx-loading');
+    /* The landing is immediately usable; retire the obsolete decorative boot without writing browser storage. */
+    if(L){ try{ L.parentNode.removeChild(L); }catch(_){} }
+    return;
     var DUR=2200, TRANS=480, entered=false;
     function finish(){
       if(entered) return; entered=true;
@@ -1207,7 +1205,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
             <li>No account<span class="tl-dot" aria-hidden="true"></span></li>
             <li>No cloud<span class="tl-dot" aria-hidden="true"></span></li>
             <li>No bank connection<span class="tl-dot" aria-hidden="true"></span></li>
-            <li>Works fully offline</li>
+            <li>Offline after first load</li>
           </ul>
         </div>
         <div class="hero-media orbit-instrument" aria-labelledby="orbit-title">
@@ -1297,7 +1295,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
       <div class="section-head" style="margin-left:auto;margin-right:auto">
         <p class="eyebrow">The difference that matters</p>
         <h2 id="privacy-title">Private by architecture, not by promise.</h2>
-        <p class="lead">Most apps promise not to misuse your data. MRLN can't misuse it — there is no server, no account, and no copy of your life anywhere but your device.</p>
+        <p class="lead">MRLN records use this browser's storage and are not automatically sent to a MRLN backend. MRLN has no profile or login account.</p>
       </div>
       <div class="privacy-tiles">
         <div class="privacy-tile">
@@ -1305,19 +1303,19 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
           <p>MRLN never sees what you earn or spend, so it can never be turned into a targeted ad.</p>
         </div>
         <div class="privacy-tile">
-          <div class="plabel">No one reading your notes</div>
-          <p>Your journal and numbers sit on your device, not on our servers. There is no copy for anyone to read.</p>
+          <div class="plabel">Local journal storage</div>
+          <p>Your journal and numbers use this browser's storage and are not automatically sent to a MRLN backend.</p>
         </div>
         <div class="privacy-tile">
-          <div class="plabel">No cloud account to breach</div>
-          <p>No sign-up, no cloud, no password. There is no account to hack, leak, or reset.</p>
+          <div class="plabel">No MRLN login account</div>
+          <p>MRLN has no profile or login account and does not require an MRLN password.</p>
         </div>
         <div class="privacy-tile">
           <div class="plabel">No bank permissions</div>
           <p>MRLN never connects to your bank. You type what you want to track — nothing is pulled in behind your back.</p>
         </div>
       </div>
-      <p class="privacy-quiet pre-reveal">Prove it yourself: turn on airplane mode and open MRLN — everything you've saved still works, because your data never needed the network.</p>
+      <p class="privacy-quiet pre-reveal">After MRLN has loaded or been installed, core record-keeping works offline.</p>
 
       <!-- Containment, performed: the claims stand as translated DOM text (primary);
            the canvas nodes above them dissolve at the cursor — Arthur redline R1,
@@ -1326,9 +1324,9 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
       <div class="pv-null">
         <canvas class="pv-canvas" aria-hidden="true"></canvas>
         <ul class="pv-claims">
-          <li><span class="pv-k">No cloud</span><span class="pv-v">Nothing is uploaded, because there is nowhere to upload it.</span></li>
-          <li><span class="pv-k">No account</span><span class="pv-v">No sign-up and no password, so there is nothing to breach.</span></li>
-          <li><span class="pv-k">No tracking</span><span class="pv-v">No analytics and no ad identifiers, on this page or in the app.</span></li>
+          <li><span class="pv-k">Local records</span><span class="pv-v">MRLN records use this browser's storage and are not automatically sent to a MRLN backend.</span></li>
+          <li><span class="pv-k">No MRLN account</span><span class="pv-v">MRLN has no profile or login account.</span></li>
+          <li><span class="pv-k">No MRLN tracking</span><span class="pv-v">MRLN's code includes no analytics or advertising identifiers.</span></li>
         </ul>
       </div>
     </div>
@@ -1348,7 +1346,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
       <div class="section-head">
         <p class="eyebrow">One app, your whole life</p>
         <h2 class="h2" id="features-title">Everything you track, in five areas.</h2>
-        <p class="lead">Each area answers a real question — not just stores numbers. All of it runs offline on your device.</p>
+        <p class="lead">After MRLN has loaded or been installed, core record-keeping works offline.</p>
       </div>
       <div class="area-grid">
         <div class="area-card">
@@ -1411,8 +1409,8 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
     <div class="wrap">
       <div class="section-head center" style="margin-left:auto;margin-right:auto">
         <p class="eyebrow">The honest part</p>
-        <h2 class="h2" id="effort-title">About a minute a day.</h2>
-        <p class="lead">There are no bank connections, so you enter your own numbers — but far less often than you'd expect. Set up your fixed costs once; after that, logging a meal, a plan or an expense takes seconds.</p>
+        <h2 class="h2" id="effort-title">How it works</h2>
+        <p class="lead">Entries save in this browser. Export a file when you want a backup or transfer.</p>
       </div>
     </div>
   </section>
@@ -1422,13 +1420,13 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
     <div class="wrap">
       <div class="section-head">
         <p class="eyebrow">How it works</p>
-        <h2 class="h2" id="how-title">Three steps, then a minute a day.</h2>
+        <h2 class="h2" id="how-title">How it works</h2>
         <p class="lead">MRLN runs in your browser and saves to your device. Set it up once — after that, most days are just a few taps.</p>
       </div>
       <ol class="howto-steps">
         <li><span class="howto-num" aria-hidden="true">1</span><div><h3>Unlock with your key</h3><p>Open mrln.online and paste the access key from your welcome email. No account, no sign-up.</p></div></li>
         <li><span class="howto-num" aria-hidden="true">2</span><div><h3>Enter income and fixed costs</h3><p>Rent, subscriptions, transport. Every tab builds on these numbers, so you only enter them once.</p></div></li>
-        <li><span class="howto-num" aria-hidden="true">3</span><div><h3>Log as you live</h3><p>Meals, training, plans, films. Each entry takes seconds, and everything saves to your file.</p></div></li>
+        <li><span class="howto-num" aria-hidden="true">3</span><div><h3>Log as you live</h3><p>Entries save in this browser. Export a file when you want a backup or transfer.</p></div></li>
       </ol>
       <div class="howto-grid">
         <div class="howto-card">
@@ -1451,21 +1449,16 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
           <a class="howto-shot" href="assets/howto/notebook.png" aria-label="Enlarge screenshot"><img data-shot="notebook" src="assets/howto/notebook.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Notebook tab: saved notes with a search field."></a>
           <div class="howto-card-copy"><h3><span class="how-ico" aria-hidden="true"></span>Notes</h3><p>Lists, ideas, reminders. They save with your file on your device — not to a cloud.</p></div>
         </div>
-        <div class="howto-card">
-          <a class="howto-shot" href="assets/howto/media.png" aria-label="Enlarge screenshot"><img data-shot="media" src="assets/howto/media.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Media Log tab: a watch list and a ranked list of rated films and shows."></a>
-          <div class="howto-card-copy"><h3><span class="how-ico" aria-hidden="true"></span>Films, shows &amp; games</h3><p>Keep personal film, show and game lists, add your own ratings, and see each category ordered by your ratings.</p></div>
-        </div>
         <aside class="media-proof" id="media-ranking" aria-labelledby="media-ranking-title">
           <div>
             <p class="eyebrow">Personal media ranking</p>
             <h3 id="media-ranking-title">Your favourites, ordered by your ratings.</h3>
             <p>MRLN keeps separate personal rankings for films, shows and games. These demo entries illustrate the ranked-list behaviour; they are example data, not a social leaderboard or recommendations.</p>
-            <a class="evidence-route" href="assets/howto/media.png">Open the localized media screenshot →</a>
           </div>
           <div class="rank-demo" aria-label="Example personal media ranking">
-            <div class="rank-row"><strong>01</strong><span>Film — example entry</span><small>9.4 / 10</small></div>
-            <div class="rank-row"><strong>02</strong><span>Show — example entry</span><small>9.1 / 10</small></div>
-            <div class="rank-row"><strong>03</strong><span>Game — example entry</span><small>8.8 / 10</small></div>
+            <div class="rank-row"><strong>#1</strong><span>Film — example entry</span><small>9.4 / 10</small></div>
+            <div class="rank-row"><strong>#1</strong><span>Show — example entry</span><small>9.1 / 10</small></div>
+            <div class="rank-row"><strong>#1</strong><span>Game — example entry</span><small>8.8 / 10</small></div>
           </div>
         </aside>
       </div>
@@ -1481,7 +1474,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
       <div class="section-head" style="margin-left:auto;margin-right:auto">
         <p class="eyebrow">Where your data lives</p>
         <h2 class="h2" id="storage-title">Your data stays on the device you use — and you can move it yourself.</h2>
-        <p class="lead">Because nothing is stored on a server, your data lives in whatever you opened MRLN in. That's the whole point — and it means moving between devices is something you do, not something a cloud does for you.</p>
+        <p class="lead"><span>Entries save in this browser. Export a file when you want a backup or transfer.</span> <span>Exports are created only when you choose; where you store or share them is up to you.</span></p>
       </div>
       <div class="store-grid">
         <div class="store-box">
@@ -1499,7 +1492,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
           <span class="store-tag">Saved in the app</span>
         </div>
       </div>
-      <p class="store-note"><strong>Your data moves when you move it — and only you ever hold a copy.</strong> Export it to a file, open MRLN on the other device, and load it back in; nothing syncs behind your back. Even if your key lapses, you can export straight from the lock screen — it's yours to keep. <span class="store-warn">Keep a copy somewhere safe: because there's no server, if you clear your browser or lose the device, whatever was only there is gone.</span></p>
+      <p class="store-note"><strong>Exports are created only when you choose; where you store or share them is up to you.</strong> <span>Entries save in this browser. Export a file when you want a backup or transfer.</span></p>
     </div>
   </section>
 
@@ -1509,7 +1502,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
       <div class="section-head" style="margin-left:auto;margin-right:auto">
         <p class="eyebrow">Pricing</p>
         <h2 class="h2" id="pricing-title">One simple plan.</h2>
-        <p class="lead">MRLN is a paid app you unlock with an access key. It costs nothing to run — no ads, and your data is never sold, because it never leaves your device.</p>
+        <p class="lead"><span>MRLN is a paid app you unlock with an access key.</span> <span>MRLN's code includes no analytics or advertising identifiers.</span> <span>MRLN records use this browser's storage and are not automatically sent to a MRLN backend.</span></p>
       </div>
 
       <div class="price-card pre-reveal">
@@ -1523,14 +1516,14 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
           <ul class="price-list">
             <li><span class="check" aria-hidden="true">✓</span><span>One simple plan — every feature included</span></li>
             <li><span class="check" aria-hidden="true">✓</span><span><strong>30-day money-back guarantee</strong></span></li>
-            <li><span class="check" aria-hidden="true">✓</span><span>Cancel anytime</span></li>
-            <li><span class="check" aria-hidden="true">✓</span><span>Your data stays yours, on your device</span></li>
-            <li><span class="check" aria-hidden="true">✓</span><span>No ads, never sold</span></li>
+            <li><span class="check" aria-hidden="true">✓</span><span>After MRLN has loaded or been installed, core record-keeping works offline.</span></li>
+            <li><span class="check" aria-hidden="true">✓</span><span>Entries save in this browser. Export a file when you want a backup or transfer.</span></li>
+            <li><span class="check" aria-hidden="true">✓</span><span>MRLN's code includes no analytics or advertising identifiers.</span></li>
           </ul>
 
           <a class="btn btn-primary btn-block" href="https://buy.stripe.com/aFa7sE7Dp4A7buoc4t97G03">Get yearly — $69/year</a>
           <p style="text-align:center;margin:12px 0 0"><a href="https://buy.stripe.com/8x2aEQ8HteaHaqk5G597G02" style="font-weight:600">Prefer monthly? Get access for $9.99/month →</a></p>
-          <p class="price-note">Secure checkout · your access key emailed shortly after payment · shown in USD, local currency at checkout.</p>
+
         </div>
       </div>
       <p class="founder-note">Built by one person, not a company — no investors, no ad model, and no data to sell. You're the customer, not the product.</p>
@@ -1551,7 +1544,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
         </details>
         <details>
           <summary>Does MRLN connect to my bank?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <div class="answer">No — and there's no "connect your bank" button to hunt for. You type in what you want to track, and it never leaves your device.</div>
+          <div class="answer"><span>No bank connection</span> &middot; <span>MRLN records use this browser's storage and are not automatically sent to a MRLN backend.</span></div>
         </details>
         <details>
           <summary>Where is my data stored — the browser or the app?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
@@ -1559,7 +1552,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
         </details>
         <details>
           <summary>Can I move my data to a new phone?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <div class="answer">Yes — you carry it over yourself. Export a copy of your data to a file, open MRLN on the new phone, and load it back in. It takes seconds, and no copy ever passes through a server on the way.</div>
+          <div class="answer">Yes — you carry it over yourself. Use MRLN’s export control to create a file, then use its import control on the new device. Exported files leave browser storage only when you choose where to save or transfer them.</div>
         </details>
         <details>
           <summary>Is the assistant private?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
@@ -1567,7 +1560,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
         </details>
         <details>
           <summary>What happens if I stop paying, or MRLN disappears?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <div class="answer">The app locks without an active key — but your data is never held hostage. You can export every number you've entered straight from the lock screen, as a plain file that's yours to keep. Nothing is deleted, and there's no server holding a copy to lose. Your data was always on your device; it stays there.</div>
+          <div class="answer"><span>Entries save in this browser. Export a file when you want a backup or transfer.</span> <span>Exports are created only when you choose; where you store or share them is up to you.</span></div>
         </details>
         <details>
           <summary>Does it get slower as years of data build up?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
@@ -1595,7 +1588,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
         </details>
         <details>
           <summary>Can I try it before I buy?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-          <div class="answer">There's no separate free trial, but every purchase is covered by a 30-day money-back guarantee — so you can use the full app, and if it isn't for you, email us within 30 days for a refund. No risk either way.</div>
+          <div class="answer">30-day money-back guarantee.</div>
         </details>
         <details>
           <summary>Why pay when there are free budgeting apps?<svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
@@ -1617,7 +1610,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
         <a class="btn btn-primary" href="#pricing">Get access</a>
         <a class="btn btn-ghost" href="#how">See how it works</a>
       </div>
-      <p class="cta-guarantee">30-day money-back guarantee · cancel anytime · your data never leaves your device.</p>
+      <p class="cta-guarantee">30-day money-back guarantee · MRLN records stay in this browser unless you export them.</p>
     </div>
   </section>
 </main>
@@ -1714,7 +1707,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
 </script>
 <div class="lightbox" id="shotLightbox" role="dialog" aria-modal="true" aria-label="Enlarged screenshot">
   <button class="lb-close" type="button" aria-label="Close">✕</button>
-  <img id="shotLightboxImg" src="" alt="">
+  <img id="shotLightboxImg" alt="">
 </div>
 <script>
 /* ===== Screenshot lightbox — click any how-to screenshot to enlarge; click/Esc closes.
@@ -1724,7 +1717,7 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
   if(!lb||!im) return;
   var lastFocus=null;
   function open(src,alt){ im.src=src; im.alt=alt||''; lb.classList.add('open'); document.body.style.overflow='hidden'; lastFocus=document.activeElement; lb.querySelector('.lb-close').focus(); }
-  function close(){ lb.classList.remove('open'); im.src=''; document.body.style.overflow=''; if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
+  function close(){ lb.classList.remove('open'); im.removeAttribute('src'); document.body.style.overflow=''; if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
   document.addEventListener('click', function(e){
     var trig=e.target.closest('.howto-shot'); var img=trig&&trig.querySelector('img');
     if(img && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey){ e.preventDefault(); open(img.currentSrc||img.src, img.alt); return; }
@@ -1795,6 +1788,26 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","No tracking":
       hu:{'Inspect a life area':'Életterület felfedezése','The MRLN body-history view: personal weight and measurement records tracked over time.':'Az MRLN testtörténeti nézete: a személyes testsúly- és mérési adatok időbeli alakulása.','Body history':'Testtörténet','Keep your own weight, measurements and personal records together, so changes over time remain visible on your device.':'Tartsd együtt a testsúlyodat, méreteidet és személyes feljegyzéseidet, hogy az időbeli változások láthatók maradjanak az eszközödön.','Films, shows & games':'Filmek, sorozatok és játékok','Keep personal film, show and game lists, add your own ratings, and see each category ordered by your ratings.':'Vezess személyes film-, sorozat- és játéklistákat, adj hozzá saját értékeléseket, és lásd az egyes kategóriákat ezek szerint rendezve.','Personal media ranking':'Személyes médiaranglista','Your favourites, ordered by your ratings.':'Kedvenceid a saját értékeléseid szerint rendezve.','MRLN keeps separate personal rankings for films, shows and games. These demo entries illustrate the ranked-list behaviour; they are example data, not a social leaderboard or recommendations.':'Az MRLN külön személyes ranglistát vezet a filmekhez, sorozatokhoz és játékokhoz. Ezek a demóbejegyzések a rangsorolt lista működését szemléltetik; példaadatok, nem közösségi toplista vagy ajánlások.','Open the localized media screenshot →':'A lokalizált médiaképernyőkép megnyitása →','Example personal media ranking':'Példa személyes médiaranglistára','Film — example entry':'Film — példabejegyzés','Show — example entry':'Sorozat — példabejegyzés','Game — example entry':'Játék — példabejegyzés'},
       fr:{'Inspect a life area':'Explorer un domaine de vie','The MRLN body-history view: personal weight and measurement records tracked over time.':'La vue de l’historique corporel de MRLN : poids et mensurations personnels suivis au fil du temps.','Body history':'Historique corporel','Keep your own weight, measurements and personal records together, so changes over time remain visible on your device.':'Regroupez votre poids, vos mensurations et vos relevés personnels afin de voir leur évolution sur votre appareil.','Films, shows & games':'Films, séries et jeux','Keep personal film, show and game lists, add your own ratings, and see each category ordered by your ratings.':'Conservez des listes personnelles de films, séries et jeux, ajoutez vos propres notes et affichez chaque catégorie selon votre classement.','Personal media ranking':'Classement personnel des médias','Your favourites, ordered by your ratings.':'Vos favoris, classés selon vos notes.','MRLN keeps separate personal rankings for films, shows and games. These demo entries illustrate the ranked-list behaviour; they are example data, not a social leaderboard or recommendations.':'MRLN conserve des classements personnels distincts pour les films, les séries et les jeux. Ces entrées de démonstration illustrent le fonctionnement de la liste classée ; ce sont des exemples, pas un classement social ni des recommandations.','Open the localized media screenshot →':'Ouvrir la capture localisée des médias →','Example personal media ranking':'Exemple de classement personnel des médias','Film — example entry':'Film — exemple','Show — example entry':'Série — exemple','Game — example entry':'Jeu — exemple'}
     };
+    var factual={
+      da:{"MRLN records use this browser's storage and are not automatically sent to a MRLN backend.":"MRLN-registreringer bruger denne browsers lagring og sendes ikke automatisk til en MRLN-backend.","MRLN has no profile or login account.":"MRLN har ingen profil eller loginkonto.","MRLN's code includes no analytics or advertising identifiers.":"MRLN's kode indeholder ingen analyse- eller reklame-id'er.","After MRLN has loaded or been installed, core record-keeping works offline.":"Når MRLN er indlæst eller installeret, fungerer den grundlæggende registrering offline.","Loading, updates, checkout and optional external links require a connection.":"Indlæsning, opdateringer, betaling og valgfrie eksterne links kræver en forbindelse.","Entries save in this browser. Export a file when you want a backup or transfer.":"Poster gemmes i denne browser. Eksportér en fil, når du vil have en sikkerhedskopi eller overføre dem.","Exports are created only when you choose; where you store or share them is up to you.":"Eksporter oprettes kun, når du vælger det; hvor du gemmer eller deler dem, er op til dig.","30-day money-back guarantee.":"30 dages pengene-tilbage-garanti."},
+      de:{"MRLN records use this browser's storage and are not automatically sent to a MRLN backend.":"MRLN-Einträge nutzen den Speicher dieses Browsers und werden nicht automatisch an ein MRLN-Backend gesendet.","MRLN has no profile or login account.":"MRLN hat kein Profil und kein Anmeldekonto.","MRLN's code includes no analytics or advertising identifiers.":"Der Code von MRLN enthält keine Analyse- oder Werbekennungen.","After MRLN has loaded or been installed, core record-keeping works offline.":"Nachdem MRLN geladen oder installiert wurde, funktioniert die zentrale Erfassung offline.","Loading, updates, checkout and optional external links require a connection.":"Laden, Updates, Bezahlvorgang und optionale externe Links erfordern eine Verbindung.","Entries save in this browser. Export a file when you want a backup or transfer.":"Einträge werden in diesem Browser gespeichert. Exportieren Sie eine Datei, wenn Sie ein Backup oder eine Übertragung möchten.","Exports are created only when you choose; where you store or share them is up to you.":"Exporte werden nur erstellt, wenn Sie es wählen; wo Sie sie speichern oder teilen, bleibt Ihnen überlassen.","30-day money-back guarantee.":"30 Tage Geld-zurück-Garantie."},
+      es:{"MRLN records use this browser's storage and are not automatically sent to a MRLN backend.":"Los registros de MRLN usan el almacenamiento de este navegador y no se envían automáticamente a un backend de MRLN.","MRLN has no profile or login account.":"MRLN no tiene perfil ni cuenta de inicio de sesión.","MRLN's code includes no analytics or advertising identifiers.":"El código de MRLN no incluye identificadores de analítica ni de publicidad.","After MRLN has loaded or been installed, core record-keeping works offline.":"Una vez que MRLN se ha cargado o instalado, el registro básico funciona sin conexión.","Loading, updates, checkout and optional external links require a connection.":"La carga, las actualizaciones, el pago y los enlaces externos opcionales requieren conexión.","Entries save in this browser. Export a file when you want a backup or transfer.":"Las entradas se guardan en este navegador. Exporta un archivo cuando quieras una copia de seguridad o transferirlas.","Exports are created only when you choose; where you store or share them is up to you.":"Las exportaciones se crean solo cuando tú lo decides; dónde las guardas o las compartes depende de ti.","30-day money-back guarantee.":"Garantía de devolución del dinero de 30 días."},
+      sv:{"MRLN records use this browser's storage and are not automatically sent to a MRLN backend.":"MRLN-poster använder den här webbläsarens lagring och skickas inte automatiskt till en MRLN-backend.","MRLN has no profile or login account.":"MRLN har ingen profil eller inloggningskonto.","MRLN's code includes no analytics or advertising identifiers.":"MRLN:s kod innehåller inga analys- eller annons-id:n.","After MRLN has loaded or been installed, core record-keeping works offline.":"När MRLN har laddats eller installerats fungerar den grundläggande registreringen offline.","Loading, updates, checkout and optional external links require a connection.":"Inläsning, uppdateringar, betalning och valfria externa länkar kräver en anslutning.","Entries save in this browser. Export a file when you want a backup or transfer.":"Poster sparas i den här webbläsaren. Exportera en fil när du vill ha en säkerhetskopia eller överföra dem.","Exports are created only when you choose; where you store or share them is up to you.":"Exporter skapas endast när du väljer det; var du lagrar eller delar dem är upp till dig.","30-day money-back guarantee.":"30 dagars pengarna-tillbaka-garanti."},
+      nb:{"MRLN records use this browser's storage and are not automatically sent to a MRLN backend.":"MRLN-oppføringer bruker lagringen i denne nettleseren og sendes ikke automatisk til en MRLN-backend.","MRLN has no profile or login account.":"MRLN har ingen profil eller innloggingskonto.","MRLN's code includes no analytics or advertising identifiers.":"MRLNs kode inneholder ingen analyse- eller annonse-ID-er.","After MRLN has loaded or been installed, core record-keeping works offline.":"Når MRLN er lastet inn eller installert, fungerer den grunnleggende registreringen offline.","Loading, updates, checkout and optional external links require a connection.":"Innlasting, oppdateringer, betaling og valgfrie eksterne lenker krever en tilkobling.","Entries save in this browser. Export a file when you want a backup or transfer.":"Oppføringer lagres i denne nettleseren. Eksporter en fil når du vil ha en sikkerhetskopi eller overføre dem.","Exports are created only when you choose; where you store or share them is up to you.":"Eksporter opprettes bare når du velger det; hvor du lagrer eller deler dem, er opp til deg.","30-day money-back guarantee.":"30 dagers pengene-tilbake-garanti."},
+      hu:{"MRLN records use this browser's storage and are not automatically sent to a MRLN backend.":"Az MRLN-rekordok ennek a böngészőnek a tárhelyét használják, és nem kerülnek automatikusan MRLN-háttérrendszerbe.","MRLN has no profile or login account.":"Az MRLN nem rendelkezik profillal vagy bejelentkezési fiókkal.","MRLN's code includes no analytics or advertising identifiers.":"Az MRLN kódja nem tartalmaz analitikai vagy hirdetési azonosítókat.","After MRLN has loaded or been installed, core record-keeping works offline.":"Miután az MRLN betöltődött vagy telepítésre került, az alapvető rögzítés offline is működik.","Loading, updates, checkout and optional external links require a connection.":"A betöltés, a frissítések, a fizetés és az opcionális külső hivatkozások kapcsolatot igényelnek.","Entries save in this browser. Export a file when you want a backup or transfer.":"A bejegyzések ebben a böngészőben tárolódnak. Exportáljon fájlt, ha biztonsági mentést vagy átvitelt szeretne.","Exports are created only when you choose; where you store or share them is up to you.":"Export csak akkor készül, ha Ön ezt választja; hogy hol tárolja vagy osztja meg, az Önre van bízva.","30-day money-back guarantee.":"30 napos pénzvisszafizetési garancia."},
+      fr:{"MRLN records use this browser's storage and are not automatically sent to a MRLN backend.":"Les enregistrements MRLN utilisent le stockage de ce navigateur et ne sont pas envoyés automatiquement à un backend MRLN.","MRLN has no profile or login account.":"MRLN n'a ni profil ni compte de connexion.","MRLN's code includes no analytics or advertising identifiers.":"Le code de MRLN ne contient aucun identifiant d'analyse ou de publicité.","After MRLN has loaded or been installed, core record-keeping works offline.":"Une fois MRLN chargé ou installé, l'enregistrement principal fonctionne hors ligne.","Loading, updates, checkout and optional external links require a connection.":"Le chargement, les mises à jour, le paiement et les liens externes facultatifs nécessitent une connexion.","Entries save in this browser. Export a file when you want a backup or transfer.":"Les entrées sont enregistrées dans ce navigateur. Exportez un fichier lorsque vous souhaitez une sauvegarde ou un transfert.","Exports are created only when you choose; where you store or share them is up to you.":"Les exports ne sont créés que lorsque vous le décidez ; c'est à vous de choisir où les stocker ou les partager.","30-day money-back guarantee.":"Garantie satisfait ou remboursé de 30 jours."}
+    };
+    var compactFacts={
+      da:{"Offline after first load":"Offline efter første indlæsning"},
+      de:{"Offline after first load":"Nach dem ersten Laden offline"},
+      es:{"Offline after first load":"Sin conexión tras la primera carga"},
+      sv:{"Offline after first load":"Offline efter första inläsningen"},
+      nb:{"Offline after first load":"Frakoblet etter f?rste innlasting"},
+      hu:{"Offline after first load":"Az első betöltés után offline"},
+      fr:{"Offline after first load":"Hors ligne après le premier chargement"}
+    };
+    Object.keys(compactFacts).forEach(function(lang){Object.keys(compactFacts[lang]).forEach(function(k){factual[lang][k]=compactFacts[lang][k];});});
+    Object.keys(factual).forEach(function(lang){Object.keys(factual[lang]).forEach(function(k){extra[lang][k]=factual[lang][k];});});
     Object.keys(extra).forEach(function(lang){var d=window.__L10N&&window.__L10N[lang];if(!d)return;d.t=d.t||{};Object.keys(extra[lang]).forEach(function(k){d.t[k]=extra[lang][k];});});
   })();
   function apply(lang){
@@ -1824,7 +1837,6 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","No tracking":
     document.documentElement.setAttribute('lang', lang);
     updateShots(lang);
     var sw=document.getElementById('langSw'); if(sw && sw.value!==lang) sw.value=lang;
-    try{ localStorage.setItem(KEY, lang); }catch(_){}
   }
   window.__mrlnApplyLang = apply;   /* motion layer re-applies after it injects text */
   var saved=null; try{ saved=localStorage.getItem(KEY); }catch(_){}
@@ -1832,7 +1844,7 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","No tracking":
   var lang = saved || (function(){ var m=[['da','da'],['fr','fr'],['es','es'],['de','de'],['sv','sv'],['nb','nb'],['nn','nb'],['no','nb'],['hu','hu']]; for(var i=0;i<m.length;i++){ if(nav.indexOf(m[i][0])===0) return m[i][1]; } return 'en'; })();
   if(['en','es','da','de','sv','nb','hu','fr'].indexOf(lang)<0) lang='en';
   var sw=document.getElementById('langSw');
-  if(sw) sw.addEventListener('change', function(){ apply(this.value); });
+  if(sw) sw.addEventListener('change', function(){ apply(this.value); try{ localStorage.setItem(KEY,this.value); }catch(_){} });
   if(lang!=='en') apply(lang); else { if(sw) sw.value='en'; document.documentElement.setAttribute('lang','en'); updateShots('en'); }
 })();
 </script>
@@ -2161,7 +2173,7 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","No tracking":
      agency motion goes; every word is an existing dictionary key) ---------- */
   (function sysline(){
     var hero=document.querySelector('.hero'); if(!hero) return;
-    var words=['No account','No cloud','No bank connection','Works fully offline'];
+    var words=['No account','No cloud','No bank connection','Offline after first load'];
     var m=el('div','mx-sys', words.map(function(w){ return '<span>'+w+'</span>'; })
       .join('<span class="sep" aria-hidden="true">◆</span>'));
     hero.parentNode.insertBefore(m, hero.nextSibling);
@@ -2558,14 +2570,26 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","No tracking":
   function shader(t,s){var x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);return gl.getShaderParameter(x,gl.COMPILE_STATUS)?x:null;}
   var program=gl.createProgram(),v=shader(gl.VERTEX_SHADER,vs),f=shader(gl.FRAGMENT_SHADER,fs);if(!v||!f){cv.hidden=true;return;}gl.attachShader(program,v);gl.attachShader(program,f);gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS)){cv.hidden=true;return;}gl.useProgram(program);
   var loc=gl.getAttribLocation(program,'p'),mat=gl.getUniformLocation(program,'m'),color=gl.getUniformLocation(program,'color'),buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,3,gl.FLOAT,false,0,0);gl.enable(gl.DEPTH_TEST);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-  function matrix(ax,ay){var ca=Math.cos(ax),sa=Math.sin(ax),cb=Math.cos(ay),sb=Math.sin(ay),s=.68;return new Float32Array([s*cb,s*sa*sb,-s*ca*sb,0,0,s*ca,s*sa,0,s*sb,-s*sa*cb,s*ca*cb,0,0,0,0,1]);}
-  function batch(data,mode,rgba){gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.DYNAMIC_DRAW);gl.uniform4fv(color,new Float32Array(rgba));gl.drawArrays(mode,0,data.length/3);}
-  function ring(rx,ry,z,w){var out=[],steps=72;for(var i=0;i<steps;i++){var a=i/steps*Math.PI*2,b=(i+1)/steps*Math.PI*2;out.push(Math.cos(a)*rx,Math.sin(a)*ry,z+Math.sin(a*2)*w,Math.cos(b)*rx,Math.sin(b)*ry,z+Math.sin(b*2)*w);}return out;}
-  var core=[0,.31,0,-.27,-.15,.18,.27,-.15,.18,0,.31,0,.27,-.15,.18,.27,-.15,-.18,0,.31,0,.27,-.15,-.18,-.27,-.15,-.18,0,.31,0,-.27,-.15,-.18,-.27,-.15,.18,0,-.31,0,.27,.15,.18,-.27,.15,.18,0,-.31,0,.27,.15,-.18,.27,.15,.18,0,-.31,0,-.27,.15,-.18,.27,.15,-.18,0,-.31,0,-.27,.15,.18,-.27,.15,-.18];
-  function draw(){raf=0;if(!visible||!gl)return;active+=(target-active)*.12;var d=Math.min(devicePixelRatio||1,1.5),w=Math.max(1,cv.clientWidth),h=Math.max(1,cv.clientHeight);if(cv.width!==Math.floor(w*d)||cv.height!==Math.floor(h*d)){cv.width=Math.floor(w*d);cv.height=Math.floor(h*d);}gl.viewport(0,0,cv.width,cv.height);gl.clearColor(.09,.09,.075,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.uniformMatrix4fv(mat,false,matrix(-.38+my*.18,.34+mx*.24));batch(core,gl.TRIANGLES,[.84,.23,.12,.96]);batch(ring(.76,.46,.02,.08),gl.LINES,[.78,.75,.68,.72]);batch(ring(.48,.76,-.03,.06),gl.LINES,[.84,.23,.12,.72]);var spokes=[],sat=[];for(var i=0;i<5;i++){var a=i/5*Math.PI*2-Math.PI/2,r=i===Math.round(active)?.88:.78,x=Math.cos(a)*r,y=Math.sin(a)*r*.62,z=Math.sin(a*2)*.16,sz=i===Math.round(active)?.105:.072;spokes.push(0,0,0,x,y,z);sat.push(x,y+sz,z,x-sz,y-sz,z+sz,x+sz,y-sz,z+sz,x,y+sz,z,x+sz,y-sz,z+sz,x,y-sz,z-sz);}batch(spokes,gl.LINES,[.72,.69,.63,.55]);batch(sat,gl.TRIANGLES,[.94,.43,.30,.96]);if(Math.abs(active-target)>.01)raf=requestAnimationFrame(draw);}
+  function matrix(ax,ay){var ca=Math.cos(ax),sa=Math.sin(ax),cb=Math.cos(ay),sb=Math.sin(ay),s=.68,sx=s*Math.max(1,cv.clientHeight)/Math.max(1,cv.clientWidth);return new Float32Array([sx*cb,s*sa*sb,-s*ca*sb,0,0,s*ca,s*sa,0,sx*sb,-s*sa*cb,s*ca*cb,0,0,0,0,1]);}
+  function batch(data,mode,rgba){
+    if(mode!==gl.TRIANGLES){gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.DYNAMIC_DRAW);gl.uniform4fv(color,new Float32Array(rgba));gl.drawArrays(mode,0,data.length/3);return;}
+    for(var i=0;i<data.length;i+=9){
+      var ax=data[i+3]-data[i],ay=data[i+4]-data[i+1],az=data[i+5]-data[i+2],bx=data[i+6]-data[i],by=data[i+7]-data[i+1],bz=data[i+8]-data[i+2];
+      var nx=ay*bz-az*by,ny=az*bx-ax*bz,nz=ax*by-ay*bx,nl=Math.hypot(nx,ny,nz)||1;
+      nx/=nl;ny/=nl;nz/=nl;
+      var diffuse=Math.max(0,nx*-.38+ny*.62+nz*.69),rim=Math.pow(1-Math.abs(nz),2),light=.30+diffuse*.58+rim*.18;
+      gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data.slice(i,i+9)),gl.DYNAMIC_DRAW);
+      gl.uniform4fv(color,new Float32Array([Math.min(1,rgba[0]*light),Math.min(1,rgba[1]*light),Math.min(1,rgba[2]*light),rgba[3]]));
+      gl.drawArrays(gl.TRIANGLES,0,3);
+    }
+  }
+  function band(rx,ry,z,depth,thickness){var out=[],steps=72;for(var i=0;i<steps;i++){var a=i/steps*Math.PI*2,b=(i+1)/steps*Math.PI*2,za=z+Math.sin(a*2)*depth,zb=z+Math.sin(b*2)*depth,iax=Math.cos(a)*(rx-thickness),iay=Math.sin(a)*(ry-thickness),oax=Math.cos(a)*(rx+thickness),oay=Math.sin(a)*(ry+thickness),ibx=Math.cos(b)*(rx-thickness),iby=Math.sin(b)*(ry-thickness),obx=Math.cos(b)*(rx+thickness),oby=Math.sin(b)*(ry+thickness);out.push(iax,iay,za,oax,oay,za,obx,oby,zb,iax,iay,za,obx,oby,zb,ibx,iby,zb);}return out;}
+  function gem(x,y,z,s){var t=[x,y+s,z],b=[x,y-s,z],l=[x-s,y,z],r=[x+s,y,z],f=[x,y,z+s],k=[x,y,z-s];return [].concat(t,l,f,t,f,r,t,r,k,t,k,l,b,f,l,b,r,f,b,k,r,b,l,k);}
+  var core=gem(0,0,0,.34);
+  function draw(){raf=0;if(!visible||!gl)return;active+=(target-active)*.12;var d=Math.min(devicePixelRatio||1,1.5),w=Math.max(1,cv.clientWidth),h=Math.max(1,cv.clientHeight);if(cv.width!==Math.floor(w*d)||cv.height!==Math.floor(h*d)){cv.width=Math.floor(w*d);cv.height=Math.floor(h*d);}gl.viewport(0,0,cv.width,cv.height);gl.clearColor(.09,.09,.075,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);var m=matrix(-.38+my*.18,.34+mx*.24);gl.uniformMatrix4fv(mat,false,m);batch(band(.76,.46,.02,.08,.025),gl.TRIANGLES,[.72,.69,.62,.34]);batch(band(.48,.76,-.03,.06,.022),gl.TRIANGLES,[.84,.23,.12,.38]);batch(core,gl.TRIANGLES,[.84,.23,.12,.98]);var spokes=[];for(var i=0;i<5;i++){var a=i/5*Math.PI*2-Math.PI/2,r=i===Math.round(active)?.88:.78,x=Math.cos(a)*r,y=Math.sin(a)*r*.62,z=Math.sin(a*2)*.16,sz=i===Math.round(active)?.12:.078;spokes.push(0,0,0,x,y,z);batch(gem(x,y,z,sz),gl.TRIANGLES,i===Math.round(active)?[1,.47,.30,1]:[.78,.73,.64,.9]);if(nodes[i]){var clipX=m[0]*x+m[4]*y+m[8]*z+m[12],clipY=m[1]*x+m[5]*y+m[9]*z+m[13];nodes[i].style.left=(clipX*.5+.5)*100+'%';nodes[i].style.top=(-clipY*.5+.5)*100+'%';}}batch(spokes,gl.LINES,[.78,.74,.66,.58]);if(Math.abs(active-target)>.01)raf=requestAnimationFrame(draw);}
   function start(){if(gl&&!raf)raf=requestAnimationFrame(draw);}
   cv.parentNode.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect();mx=(e.clientX-r.left)/r.width-.5;my=(e.clientY-r.top)/r.height-.5;start();},{passive:true});
-  cv.addEventListener('webglcontextlost',function(e){e.preventDefault();gl=null;cv.hidden=true;fallback.style.opacity='1';fallback.style.visibility='visible';});
+  cv.addEventListener('webglcontextlost',function(e){e.preventDefault();if(raf){cancelAnimationFrame(raf);raf=0;}gl=null;cv.hidden=true;cv.parentNode.classList.remove('is-webgl');for(var i=0;i<nodes.length;i++){nodes[i].style.left='';nodes[i].style.top='';nodes[i].style.right='';nodes[i].style.bottom='';nodes[i].style.transform='';}fallback.style.opacity='1';fallback.style.visibility='visible';});
   new IntersectionObserver(function(es){visible=es[0].isIntersecting;if(visible)start();else if(raf){cancelAnimationFrame(raf);raf=0;}},{rootMargin:'80px'}).observe(cv);
   document.addEventListener('visibilitychange',function(){visible=!document.hidden;if(visible)start();});start();
 })();
