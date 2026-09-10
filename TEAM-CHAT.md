@@ -26,6 +26,8 @@ Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 
 
 
+- LOCKED: landing.html — Raphael Controller dd9eb47502c8 — owner-requested redesign
+
 ## ✅ SHIPPED — LANDING v6 "DOCKET CLOSE" (source `b189551` → gh-pages `e05f3d2`, 2026-08-10)
 <!-- Current release record precedes the historical v6 entry. -->
 
