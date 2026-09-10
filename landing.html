@@ -921,6 +921,25 @@ body{
 @media (max-width:719px){ .pv-claims{ grid-template-columns:minmax(0,1fr); } .pv-claims li{ text-align:left; padding:44px 0 20px; } }
 </style>
 
+<style id="personal-orbit">
+:root{--bg:#eee9df;--surface:#f8f4ec;--bg-tint:#e4ddd0;--bg-tint-2:#d9d0c1;--ink:#171714;--ink-body:#393832;--ink-muted:#68655c;--line:#bcb5a8;--line-strong:#8c867a;--accent:#d43b20;--accent-text:#aa2d18;--cta:#d43b20;--cta-hover:#b92f19;--cta-press:#942412;--rule-dark:#aaa397;--rule-dark-soft:#ccc5b9;--rule-bright:#8c867a;--rule-bright-soft:#bcb5a8;color-scheme:light}
+html,body{background:#eee9df!important;color:var(--ink-body)!important}
+body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65px)!important;background-size:5px 5px!important}
+.grain,.mx-spot,.mx-cursor,.mx-world-canvas,#mrln-loader{display:none!important}
+.site-header,.site-header.scrolled{background:rgba(238,233,223,.94)!important;border-bottom:1px solid #171714!important;box-shadow:none!important;backdrop-filter:blur(12px)}
+.header-inner{max-width:1480px}.brand{letter-spacing:.22em}.diamond{background:var(--accent)!important;transform:rotate(45deg);border-radius:0!important}
+.nav-links a,.brand{color:var(--ink)!important}.lang-sw select,.btn-ghost{background:transparent!important;color:var(--ink)!important;border:1px solid var(--ink)!important;border-radius:0!important}.btn{border-radius:0!important;box-shadow:none!important;text-transform:uppercase;letter-spacing:.1em;font-size:.76rem}.btn-primary{background:var(--accent)!important;color:#fff!important;border:1px solid var(--accent)!important}
+.hero{min-height:auto!important;padding:clamp(110px,14vw,190px) 0 clamp(72px,9vw,130px)!important;background:linear-gradient(105deg,transparent 0 60%,rgba(212,59,32,.065) 60% 100%)!important;border-bottom:1px solid var(--ink)}
+.js .hero>.wrap{position:static!important;min-height:0!important;padding-top:0!important;display:block!important}.hero-grid{grid-template-columns:minmax(0,.82fr) minmax(420px,1.18fr)!important;gap:clamp(40px,7vw,120px)!important;align-items:center}.hero-copy{opacity:1!important;transform:none!important}.hero-h1{font-size:clamp(4rem,8.8vw,9.5rem)!important;line-height:.82!important;letter-spacing:-.065em!important;max-width:7ch!important;font-weight:400!important}.warm-underline{background:none!important;color:var(--accent)!important;text-shadow:none!important}.hero-lead{max-width:44rem;border-left:1px solid var(--ink);padding-left:20px;margin-top:34px!important}.hero-cta,.trustline{opacity:1!important;transform:none!important}.trustline{border-top:1px solid var(--ink);padding-top:18px!important}.tl-dot{background:var(--accent)!important}
+.orbit-instrument{position:relative!important;transform:none!important;z-index:1!important;border:1px solid var(--ink);background:#171714;color:#eee9df;padding:18px;min-width:0;box-shadow:22px 22px 0 var(--accent)}.orbit-kicker{font:600 .7rem/1.2 ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;border-bottom:1px solid #6f6d66;padding:0 0 14px}.orbit-stage{position:relative;aspect-ratio:1;max-height:640px}.orbit-stage canvas,.orbit-fallback{position:absolute;inset:0;width:100%;height:100%}.orbit-fallback{display:block}.orbit-ring{position:absolute;left:50%;top:50%;border:1px solid #696760;border-radius:50%;transform:translate(-50%,-50%) rotate(-14deg)}.ring-a{width:72%;height:47%}.ring-b{width:47%;height:72%;transform:translate(-50%,-50%) rotate(24deg)}.orbit-core{position:absolute;left:50%;top:50%;width:25%;aspect-ratio:1;transform:translate(-50%,-50%);background:var(--accent);display:grid;place-content:center;text-align:center;border-radius:50%;color:#fff}.orbit-core strong{font:700 clamp(1rem,2.2vw,2rem)/1 system-ui}.orbit-core small{font:500 .58rem/1.2 ui-monospace,monospace;text-transform:uppercase;letter-spacing:.1em;margin-top:6px}.orbit-node{position:absolute;font:600 .64rem/1 ui-monospace,monospace;letter-spacing:.11em;text-transform:uppercase;color:#eee9df;background:#171714;border:1px solid #9a978e;padding:9px}.node-money{left:7%;top:45%}.node-health{right:9%;top:18%}.node-plans{right:4%;bottom:28%}.node-notes{left:24%;bottom:10%}.node-assistant{left:22%;top:15%}.orbit-controls{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid #6f6d66}.orbit-controls button{min-height:48px;border:0;border-right:1px solid #6f6d66;background:transparent;color:#c8c4bb;font:600 .58rem/1.2 ui-monospace,monospace;text-transform:uppercase;cursor:pointer}.orbit-controls button:last-child{border-right:0}.orbit-controls button[aria-pressed=true]{background:var(--accent);color:#fff}.orbit-instrument>.shot-note{color:#aaa69e!important;margin-top:14px}
+.mx-sys{background:var(--accent)!important;color:#fff!important;border:0!important}.mx-state,.section,.privacy,.site-footer{background:transparent!important;color:var(--ink-body)!important}.mx-state{border-bottom:1px solid var(--ink);padding:clamp(70px,10vw,150px) 0!important}.st-line,.h2,#privacy-title,.section h2{color:var(--ink)!important}.st-acc{color:var(--accent)!important}.section,.privacy{border-bottom:1px solid var(--ink)}.eyebrow{color:var(--accent)!important;font-family:ui-monospace,monospace!important;letter-spacing:.16em!important}.section-head.center{text-align:left!important;margin-left:0!important}.section-head{max-width:920px!important}.h2,#privacy-title{font-size:clamp(3rem,7vw,7rem)!important;line-height:.9!important;letter-spacing:-.055em!important}
+.scatter,.privacy-tiles,.howto-grid{border:1px solid var(--ink)!important;border-radius:0!important}.scatter-col,.privacy-tile,.howto-card,.price-card,.faq-item{border-radius:0!important;box-shadow:none!important;background:transparent!important}.privacy-tile{border-color:var(--ink)!important}.privacy{background:#171714!important}.privacy #privacy-title,.privacy .eyebrow,.privacy .plabel{color:#f2eee5!important}.privacy .lead,.privacy-tile p,.privacy-quiet,.pv-v{color:#bbb7ae!important}.privacy-tiles,.privacy-tile{border-color:#706d65!important}.pv-null{border-radius:0!important}
+#features .area-card{grid-template-columns:180px minmax(0,.9fr) minmax(0,1.3fr)!important;border-color:var(--ink)!important;padding:34px 0!important}.area-card,.area-card *{transform:none!important}.area-head h3,.area-outcome{color:var(--ink)!important}.area-ico{border-color:var(--accent)!important;color:var(--accent)!important}.howto-card{border:1px solid var(--ink)!important}.howto-shot{background:#d9d0c1!important}.price-card{border:2px solid var(--ink)!important;background:var(--surface)!important}.site-footer{border-top:0!important}.footer-legal{border-color:var(--ink)!important}
+.js .stg,.js .pre-reveal{opacity:1!important;transform:none!important}.tilt,.mag{transform:none!important}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr!important}.orbit-instrument{box-shadow:12px 12px 0 var(--accent)}#features .area-card{grid-template-columns:1fr!important;gap:16px!important}.orbit-controls{grid-template-columns:1fr 1fr}.orbit-controls button{border-bottom:1px solid #6f6d66}.orbit-controls button:last-child{grid-column:1/-1}.hero-h1{font-size:clamp(3.7rem,17vw,7rem)!important}}
+@media(max-width:480px){.orbit-node{font-size:.52rem;padding:6px}.orbit-instrument{padding:12px;box-shadow:7px 7px 0 var(--accent)}.hero{padding-top:95px!important}.hero-h1{font-size:3.75rem!important}.trustline{display:grid!important;grid-template-columns:1fr 1fr}.tl-dot{display:none!important}}
+@media(prefers-reduced-motion:reduce){#orbit-canvas{display:none!important}.orbit-fallback{display:block!important}.orbit-instrument,.hero-media{transform:none!important}.js .hero{min-height:auto!important}}
+</style>
 </head>
 <body>
 <!-- ===== BOOT SCREEN — the private OS initializing (Osefe brief 2026-08-10).
@@ -1172,18 +1191,29 @@ body{
             <li>Works fully offline</li>
           </ul>
         </div>
-        <div class="hero-media">
-          <figure style="margin:0">
-            <div class="browser-frame">
-              <div class="browser-bar" aria-hidden="true">
-                <span class="browser-dots"><i></i><i></i><i></i></span>
-                <span class="browser-url">mrln</span>
-              </div>
-              <img class="browser-screen" data-hero="ov_desktop" src="ov_desktop.png" width="2880" height="1800" loading="eager" decoding="async"
-                   alt="The MRLN Overview screen: one dashboard showing budget, income, savings and health at a glance.">
+        <div class="hero-media orbit-instrument" aria-labelledby="orbit-title">
+          <div class="orbit-kicker" id="orbit-title">Your private life instrument</div>
+          <div class="orbit-stage">
+            <canvas id="orbit-canvas" width="720" height="720" aria-hidden="true"></canvas>
+            <div class="orbit-fallback" role="img" aria-label="Five connected life areas orbit a sealed local core">
+              <span class="orbit-ring ring-a" aria-hidden="true"></span>
+              <span class="orbit-ring ring-b" aria-hidden="true"></span>
+              <span class="orbit-core"><strong>MRLN</strong><small>Local core</small></span>
+              <span class="orbit-node node-money">Money</span>
+              <span class="orbit-node node-health">Health</span>
+              <span class="orbit-node node-plans">Plans</span>
+              <span class="orbit-node node-notes">Notes</span>
+              <span class="orbit-node node-assistant">Assistant</span>
             </div>
-            <figcaption class="shot-note">Example data — a demo profile named Alex, not a real person.</figcaption>
-          </figure>
+          </div>
+          <div class="orbit-controls" aria-label="Inspect a life area">
+            <button type="button" data-orbit="0" aria-pressed="true">01 Money</button>
+            <button type="button" data-orbit="1" aria-pressed="false">02 Health</button>
+            <button type="button" data-orbit="2" aria-pressed="false">03 Plans</button>
+            <button type="button" data-orbit="3" aria-pressed="false">04 Notes</button>
+            <button type="button" data-orbit="4" aria-pressed="false">05 Assistant</button>
+          </div>
+          <p class="shot-note">Five parts of your life, held together on your device.</p>
         </div>
       </div>
     </div>
@@ -2413,5 +2443,50 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","No tracking":
 })();
 </script>
 
+<script id="personal-orbit-runtime">
+(function(){
+  var labels={
+    en:['Your private life instrument','Local core','Money','Health','Plans','Notes','Assistant','Inspect a life area','Five connected life areas orbit a sealed local core','Five parts of your life, held together on your device.'],
+    es:['Tu instrumento de vida privado','Núcleo local','Dinero','Salud','Planes','Notas','Asistente','Explora un área de tu vida','Cinco áreas conectadas orbitan un núcleo local sellado','Cinco partes de tu vida, reunidas en tu dispositivo.'],
+    da:['Dit private livsinstrument','Lokal kerne','Økonomi','Sundhed','Planer','Noter','Assistent','Udforsk et livsområde','Fem forbundne livsområder kredser om en lukket lokal kerne','Fem dele af dit liv, samlet på din enhed.'],
+    de:['Dein privates Lebensinstrument','Lokaler Kern','Finanzen','Gesundheit','Pläne','Notizen','Assistent','Lebensbereich erkunden','Fünf verbundene Lebensbereiche umkreisen einen geschützten lokalen Kern','Fünf Bereiche deines Lebens, vereint auf deinem Gerät.'],
+    sv:['Ditt privata livsinstrument','Lokal kärna','Ekonomi','Hälsa','Planer','Anteckningar','Assistent','Utforska ett livsområde','Fem sammanlänkade livsområden kretsar kring en sluten lokal kärna','Fem delar av ditt liv, samlade på din enhet.'],
+    nb:['Ditt private livsinstrument','Lokal kjerne','Økonomi','Helse','Planer','Notater','Assistent','Utforsk et livsområde','Fem sammenkoblede livsområder kretser rundt en lukket lokal kjerne','Fem deler av livet ditt, samlet på enheten din.'],
+    hu:['A privát életműszered','Helyi mag','Pénzügyek','Egészség','Tervek','Jegyzetek','Asszisztens','Életterület vizsgálata','Öt összekapcsolt életterület kering egy zárt helyi mag körül','Életed öt része, együtt az eszközödön.'],
+    fr:['Votre instrument de vie privé','Cœur local','Finances','Santé','Projets','Notes','Assistant','Explorer un domaine de vie','Cinq domaines de vie reliés gravitent autour d’un cœur local scellé','Cinq dimensions de votre vie, réunies sur votre appareil.']
+  };
+  function localize(lang){
+    var a=labels[lang]||labels.en, root=document.querySelector('.orbit-instrument'); if(!root)return;
+    root.querySelector('.orbit-kicker').textContent=a[0]; root.querySelector('.orbit-core small').textContent=a[1];
+    var nodes=root.querySelectorAll('.orbit-node'), buttons=root.querySelectorAll('[data-orbit]');
+    for(var i=0;i<5;i++){nodes[i].textContent=a[i+2];buttons[i].textContent=('0'+(i+1)).slice(-2)+' '+a[i+2];}
+    root.querySelector('.orbit-controls').setAttribute('aria-label',a[7]); root.querySelector('.orbit-fallback').setAttribute('aria-label',a[8]); root.querySelector('.shot-note').textContent=a[9];
+  }
+  var prior=window.__mrlnApplyLang; if(prior)window.__mrlnApplyLang=function(lang){prior(lang);localize(lang);};
+  var select=document.querySelector('.lang-sw select'); localize((select&&select.value)||document.documentElement.lang||'en');
+  if(select)select.addEventListener('change',function(){localize(this.value);});
+  var cv=document.getElementById('orbit-canvas'), fallback=document.querySelector('.orbit-fallback'), buttons=[].slice.call(document.querySelectorAll('[data-orbit]'));
+  if(!cv||!fallback||matchMedia('(prefers-reduced-motion: reduce)').matches||innerWidth<560)return;
+  var gl; try{gl=cv.getContext('webgl',{alpha:true,antialias:true,powerPreference:'low-power'});}catch(e){} if(!gl)return;
+  var vs='attribute vec3 p;uniform mat4 m;uniform float size;void main(){gl_Position=m*vec4(p,1.);gl_PointSize=size*(1.2-gl_Position.z*.18);}';
+  var fs='precision mediump float;uniform vec4 color;void main(){vec2 q=gl_PointCoord-.5;if(length(q)>.5)discard;gl_FragColor=color;}';
+  function shader(t,s){var x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);return gl.getShaderParameter(x,gl.COMPILE_STATUS)?x:null;}
+  var p=gl.createProgram(),v=shader(gl.VERTEX_SHADER,vs),f=shader(gl.FRAGMENT_SHADER,fs);if(!v||!f)return;gl.attachShader(p,v);gl.attachShader(p,f);gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))return;gl.useProgram(p);
+  var loc=gl.getAttribLocation(p,'p'), mat=gl.getUniformLocation(p,'m'), color=gl.getUniformLocation(p,'color'), size=gl.getUniformLocation(p,'size'), buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,3,gl.FLOAT,false,0,0);
+  var active=0, target=0, mx=0,my=0,visible=true,dirty=true,raf=0;
+  buttons.forEach(function(b,i){b.addEventListener('click',function(){target=i;buttons.forEach(function(x,j){x.setAttribute('aria-pressed',j===i?'true':'false');});dirty=true;start();});});
+  cv.parentNode.addEventListener('pointermove',function(e){var r=cv.getBoundingClientRect();mx=(e.clientX-r.left)/r.width-.5;my=(e.clientY-r.top)/r.height-.5;dirty=true;start();},{passive:true});
+  function matrix(ax,ay){var ca=Math.cos(ax),sa=Math.sin(ax),cb=Math.cos(ay),sb=Math.sin(ay),s=.62;return new Float32Array([s*cb,s*sa*sb,0,0,0,s*ca,s*sa,0,s*sb,-s*sa*cb,s*ca*cb,0,0,0,0,1]);}
+  function draw(now){raf=0;if(!visible)return;active+=(target-active)*.09;var n=180, pts=[],i,a,r,z;
+    for(i=0;i<n;i++){a=i/n*Math.PI*2;r=.72;z=Math.sin(a*3+active*.45)*.12;pts.push(Math.cos(a)*r,Math.sin(a)*r*.58,z);}
+    var nodes=[];for(i=0;i<5;i++){a=i/5*Math.PI*2-Math.PI/2;r=i===Math.round(active)?.78:.72;nodes.push(Math.cos(a)*r,Math.sin(a)*r*.58,Math.sin(a*2)*.18);}
+    function batch(data,mode,rgba,sz){gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.DYNAMIC_DRAW);gl.uniform4fv(color,rgba);gl.uniform1f(size,sz);gl.drawArrays(mode,0,data.length/3);}
+    var d=Math.min(devicePixelRatio||1,1.5),w=Math.max(1,cv.clientWidth),h=Math.max(1,cv.clientHeight);if(cv.width!==w*d||cv.height!==h*d){cv.width=w*d;cv.height=h*d;}gl.viewport(0,0,cv.width,cv.height);gl.clearColor(.09,.09,.08,1);gl.clear(gl.COLOR_BUFFER_BIT);gl.uniformMatrix4fv(mat,false,matrix(-.32+my*.22,.22+mx*.3));
+    batch(pts,gl.LINE_LOOP,new Float32Array([.72,.70,.65,.72]),2);var spokes=[];for(i=0;i<5;i++)spokes.push(0,0,0,nodes[i*3],nodes[i*3+1],nodes[i*3+2]);batch(spokes,gl.LINES,new Float32Array([.55,.53,.49,.55]),1);batch(nodes,gl.POINTS,new Float32Array([.83,.23,.12,1]),i===target?18:14);batch([0,0,0],gl.POINTS,new Float32Array([.93,.91,.86,1]),34);
+    fallback.style.opacity='0';fallback.style.pointerEvents='none';if(Math.abs(active-target)>.01){raf=requestAnimationFrame(draw);}else dirty=false;
+  }
+  function start(){if(!raf)raf=requestAnimationFrame(draw);} new IntersectionObserver(function(es){visible=es[0].isIntersecting;if(visible)start();else if(raf){cancelAnimationFrame(raf);raf=0;}},{rootMargin:'80px'}).observe(cv);document.addEventListener('visibilitychange',function(){visible=!document.hidden&&cv.getBoundingClientRect().bottom>0;if(visible)start();});start();
+})();
+</script>
 </body>
 </html>
