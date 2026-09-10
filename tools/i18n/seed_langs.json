@@ -1,0 +1,842 @@
+{
+ "da": {
+  "workouts": [
+   {
+    "day": "Mandag",
+    "title": "Push — bryst, skuldre, triceps",
+    "body": "Bænkpres 4×8\nMilitær pres 3×10\nSkrå håndvægtspres 3×12\nKablefluks 3×15"
+   },
+   {
+    "day": "Onsdag",
+    "title": "Pull — ryg og biceps",
+    "body": "Dødløft 3×5\nPullups 4×8\nStangrækning 3×10\nBiceps curls 3×12"
+   },
+   {
+    "day": "Fredag",
+    "title": "Ben og core",
+    "body": "Squat 4×6\nRumænsk dødløft 3×10\nBenbræt 3×12\nPlanche 3×60s"
+   }
+  ],
+  "calendar": [
+   "Husleje betaling",
+   "Ben dag 18:00",
+   "Telefonregning",
+   "Biograf med Ida",
+   "Forbered måltider søndag",
+   "Løn ankommer"
+  ],
+  "notes": [
+   {
+    "title": "Dagligvarer til ugen",
+    "body": "Kylling, ris, havregryn, æg, frosne bær, kaffe. Under 600 kr."
+   },
+   {
+    "title": "Fornyelsespåmindelse",
+    "body": "Gymmedlemskab fornyes på den 12. — tjek at studentprisen stadig gælder."
+   }
+  ],
+  "media": [
+   {
+    "title": "Oppenheimer",
+    "type": "film",
+    "status": "watched",
+    "rating": 9,
+    "comment": "Se igen med far",
+    "genre": "Drama"
+   },
+   {
+    "title": "Dune: Del To",
+    "type": "film",
+    "status": "watched",
+    "rating": 8.5,
+    "comment": "",
+    "genre": "Science fiction"
+   },
+   {
+    "title": "Breaking Bad",
+    "status": "watched",
+    "rating": 9.5,
+    "comment": "Færdige med sæson 5",
+    "genre": "Drama"
+   },
+   {
+    "title": "The Bear",
+    "status": "watched",
+    "rating": 8,
+    "comment": "",
+    "genre": "Drama"
+   },
+   {
+    "title": "Interstellar",
+    "type": "film",
+    "status": "towatch",
+    "comment": "Filmaften fredag",
+    "genre": "Science fiction"
+   },
+   {
+    "title": "Severance",
+    "status": "towatch",
+    "comment": "",
+    "genre": "Thriller"
+   }
+  ],
+  "food": [
+   {
+    "text": "Kylling, ris og broccoli",
+    "kcal": 640,
+    "p": 52,
+    "c": 68,
+    "f": 14
+   },
+   {
+    "text": "Havregryn med bær og skyr",
+    "kcal": 420,
+    "p": 24,
+    "c": 58,
+    "f": 9
+   },
+   {
+    "text": "Proteinshake efter gym",
+    "kcal": 210,
+    "p": 32,
+    "c": 8,
+    "f": 4
+   }
+  ]
+ },
+ "de": {
+  "workouts": [
+   {
+    "day": "Montag",
+    "title": "Push — Brust, Schultern, Trizeps",
+    "body": "Bankdrücken 4×8\nSchulterdrücken 3×10\nSchrägbank-Kurzhantel 3×12\nKabelzug-Flys 3×15"
+   },
+   {
+    "day": "Mittwoch",
+    "title": "Pull — Rücken und Bizeps",
+    "body": "Kreuzheben 3×5\nKlimmzüge 4×8\nLanghantelrudern 3×10\nCurls 3×12"
+   },
+   {
+    "day": "Freitag",
+    "title": "Beine und Rumpf",
+    "body": "Kniebeugen 4×6\nRumänisches Kreuzheben 3×10\nBeinpresse 3×12\nPlank 3×60s"
+   }
+  ],
+  "calendar": [
+   "Miete fällig",
+   "Beintag 18:00",
+   "Handyrechnung",
+   "Kino mit Ida",
+   "Meal Prep Sonntag",
+   "Gehalt kommt"
+  ],
+  "notes": [
+   {
+    "title": "Einkauf diese Woche",
+    "body": "Hähnchen, Reis, Haferflocken, Eier, gefrorene Beeren, Kaffee. Unter 600 kr bleiben."
+   },
+   {
+    "title": "Verlängerungs-Erinnerung",
+    "body": "Fitness-Abo verlängert sich am 12. — prüfen, ob der Studententarif noch gilt."
+   }
+  ],
+  "media": [
+   {
+    "title": "Oppenheimer",
+    "type": "film",
+    "status": "watched",
+    "rating": 9,
+    "comment": "Nochmal mit Papa",
+    "genre": "Drama"
+   },
+   {
+    "title": "Dune: Part Two",
+    "type": "film",
+    "status": "watched",
+    "rating": 8.5,
+    "comment": "",
+    "genre": "Sci-Fi"
+   },
+   {
+    "title": "Breaking Bad",
+    "status": "watched",
+    "rating": 9.5,
+    "comment": "Staffel 5 beendet",
+    "genre": "Drama"
+   },
+   {
+    "title": "The Bear",
+    "status": "watched",
+    "rating": 8,
+    "comment": "",
+    "genre": "Drama"
+   },
+   {
+    "title": "Interstellar",
+    "type": "film",
+    "status": "towatch",
+    "comment": "Freitag Filmabend",
+    "genre": "Sci-Fi"
+   },
+   {
+    "title": "Severance",
+    "status": "towatch",
+    "comment": "",
+    "genre": "Thriller"
+   }
+  ],
+  "food": [
+   {
+    "text": "Hähnchen, Reis und Brokkoli",
+    "kcal": 640,
+    "p": 52,
+    "c": 68,
+    "f": 14
+   },
+   {
+    "text": "Haferflocken mit Beeren und Skyr",
+    "kcal": 420,
+    "p": 24,
+    "c": 58,
+    "f": 9
+   },
+   {
+    "text": "Proteinshake nach dem Training",
+    "kcal": 210,
+    "p": 32,
+    "c": 8,
+    "f": 4
+   }
+  ]
+ },
+ "en": {
+  "workouts": [
+   {
+    "day": "Monday",
+    "title": "Push — chest, shoulders, triceps",
+    "body": "Bench press 4×8\nOverhead press 3×10\nIncline dumbbell press 3×12\nCable flys 3×15"
+   },
+   {
+    "day": "Wednesday",
+    "title": "Pull — back and biceps",
+    "body": "Deadlift 3×5\nPull-ups 4×8\nBarbell row 3×10\nCurls 3×12"
+   },
+   {
+    "day": "Friday",
+    "title": "Legs and core",
+    "body": "Squat 4×6\nRomanian deadlift 3×10\nLeg press 3×12\nPlank 3×60s"
+   }
+  ],
+  "calendar": [
+   "Rent due",
+   "Leg day 18:00",
+   "Phone bill",
+   "Cinema with Ida",
+   "Meal prep Sunday",
+   "Payday lands"
+  ],
+  "notes": [
+   {
+    "title": "Groceries for the week",
+    "body": "Chicken, rice, oats, eggs, frozen berries, coffee. Stay under 600."
+   },
+   {
+    "title": "Renewal reminder",
+    "body": "Gym membership renews on the 12th — check the student rate still applies."
+   }
+  ],
+  "media": [
+   {
+    "title": "Oppenheimer",
+    "type": "film",
+    "status": "watched",
+    "rating": 9,
+    "comment": "Watch again with dad",
+    "genre": "Drama"
+   },
+   {
+    "title": "Dune: Part Two",
+    "type": "film",
+    "status": "watched",
+    "rating": 8.5,
+    "comment": "",
+    "genre": "Sci-fi"
+   },
+   {
+    "title": "Breaking Bad",
+    "status": "watched",
+    "rating": 9.5,
+    "comment": "Finished season 5",
+    "genre": "Drama"
+   },
+   {
+    "title": "The Bear",
+    "status": "watched",
+    "rating": 8,
+    "comment": "",
+    "genre": "Drama"
+   },
+   {
+    "title": "Interstellar",
+    "type": "film",
+    "status": "towatch",
+    "comment": "Movie night on Friday",
+    "genre": "Sci-fi"
+   },
+   {
+    "title": "Severance",
+    "status": "towatch",
+    "comment": "",
+    "genre": "Thriller"
+   }
+  ],
+  "food": [
+   {
+    "text": "Chicken, rice and broccoli",
+    "kcal": 640,
+    "p": 52,
+    "c": 68,
+    "f": 14
+   },
+   {
+    "text": "Oats with berries and skyr",
+    "kcal": 420,
+    "p": 24,
+    "c": 58,
+    "f": 9
+   },
+   {
+    "text": "Protein shake after the gym",
+    "kcal": 210,
+    "p": 32,
+    "c": 8,
+    "f": 4
+   }
+  ]
+ },
+ "es": {
+  "workouts": [
+   {
+    "day": "Lunes",
+    "title": "Empuje — pecho, hombros, tríceps",
+    "body": "Press de banca 4×8\nPress militar 3×10\nPress inclinado con mancuernas 3×12\nAperturas en polea 3×15"
+   },
+   {
+    "day": "Miércoles",
+    "title": "Tirón — espalda y bíceps",
+    "body": "Peso muerto 3×5\nDominadas 4×8\nRemo con barra 3×10\nCurls 3×12"
+   },
+   {
+    "day": "Viernes",
+    "title": "Piernas y core",
+    "body": "Sentadilla 4×6\nPeso muerto rumano 3×10\nPrensa de piernas 3×12\nPlancha 3×60s"
+   }
+  ],
+  "calendar": [
+   "Pago de alquiler",
+   "Día de pierna 18:00",
+   "Factura del móvil",
+   "Cine con Ida",
+   "Preparar comidas el domingo",
+   "Llega la nómina"
+  ],
+  "notes": [
+   {
+    "title": "Compra de la semana",
+    "body": "Pollo, arroz, avena, huevos, frutos rojos congelados, café. No pasar de 600 kr."
+   },
+   {
+    "title": "Recordatorio de renovación",
+    "body": "El abono del gimnasio se renueva el día 12 — comprobar si sigue aplicando la tarifa de estudiante."
+   }
+  ],
+  "media": [
+   {
+    "title": "Oppenheimer",
+    "type": "film",
+    "status": "watched",
+    "rating": 9,
+    "comment": "Volver a verla con papá",
+    "genre": "Drama"
+   },
+   {
+    "title": "Dune: Part Two",
+    "type": "film",
+    "status": "watched",
+    "rating": 8.5,
+    "comment": "",
+    "genre": "Ciencia ficción"
+   },
+   {
+    "title": "Breaking Bad",
+    "status": "watched",
+    "rating": 9.5,
+    "comment": "Terminé la temporada 5",
+    "genre": "Drama"
+   },
+   {
+    "title": "The Bear",
+    "status": "watched",
+    "rating": 8,
+    "comment": "",
+    "genre": "Drama"
+   },
+   {
+    "title": "Interstellar",
+    "type": "film",
+    "status": "towatch",
+    "comment": "Noche de cine el viernes",
+    "genre": "Ciencia ficción"
+   },
+   {
+    "title": "Severance",
+    "status": "towatch",
+    "comment": "",
+    "genre": "Thriller"
+   }
+  ],
+  "food": [
+   {
+    "text": "Pollo, arroz y brócoli",
+    "kcal": 640,
+    "p": 52,
+    "c": 68,
+    "f": 14
+   },
+   {
+    "text": "Avena con frutos rojos y skyr",
+    "kcal": 420,
+    "p": 24,
+    "c": 58,
+    "f": 9
+   },
+   {
+    "text": "Batido de proteínas tras el gym",
+    "kcal": 210,
+    "p": 32,
+    "c": 8,
+    "f": 4
+   }
+  ]
+ },
+ "fr": {
+  "workouts": [
+   {
+    "day": "Lundi",
+    "title": "Poussée — pectoraux, épaules, triceps",
+    "body": "Développé couché 4×8\nDéveloppé militaire 3×10\nDéveloppé incliné haltères 3×12\nÉcartés à la poulie 3×15"
+   },
+   {
+    "day": "Mercredi",
+    "title": "Tirage — dos et biceps",
+    "body": "Soulevé de terre 3×5\nTractions 4×8\nRowing barre 3×10\nCurls 3×12"
+   },
+   {
+    "day": "Vendredi",
+    "title": "Jambes et gainage",
+    "body": "Squat 4×6\nSoulevé de terre roumain 3×10\nPresse à cuisses 3×12\nGainage 3×60s"
+   }
+  ],
+  "calendar": [
+   "Loyer à payer",
+   "Jour des jambes 18h00",
+   "Facture de mobile",
+   "Cinéma avec Ida",
+   "Préparer les repas dimanche",
+   "Arrivée du salaire"
+  ],
+  "notes": [
+   {
+    "title": "Courses de la semaine",
+    "body": "Poulet, riz, avoine, œufs, fruits rouges surgelés, café. Ne pas dépasser 600 kr."
+   },
+   {
+    "title": "Rappel de renouvellement",
+    "body": "L’abonnement à la salle se renouvelle le 12 — vérifier si le tarif étudiant s’applique toujours."
+   }
+  ],
+  "media": [
+   {
+    "title": "Oppenheimer",
+    "type": "film",
+    "status": "watched",
+    "rating": 9,
+    "comment": "À revoir avec papa",
+    "genre": "Drame"
+   },
+   {
+    "title": "Dune: Part Two",
+    "type": "film",
+    "status": "watched",
+    "rating": 8.5,
+    "comment": "",
+    "genre": "Science-fiction"
+   },
+   {
+    "title": "Breaking Bad",
+    "status": "watched",
+    "rating": 9.5,
+    "comment": "Saison 5 terminée",
+    "genre": "Drame"
+   },
+   {
+    "title": "The Bear",
+    "status": "watched",
+    "rating": 8,
+    "comment": "",
+    "genre": "Drame"
+   },
+   {
+    "title": "Interstellar",
+    "type": "film",
+    "status": "towatch",
+    "comment": "Soirée cinéma vendredi",
+    "genre": "Science-fiction"
+   },
+   {
+    "title": "Severance",
+    "status": "towatch",
+    "comment": "",
+    "genre": "Thriller"
+   }
+  ],
+  "food": [
+   {
+    "text": "Saumon, quinoa, brocoli",
+    "kcal": 508,
+    "p": 41,
+    "c": 28,
+    "f": 24
+   },
+   {
+    "text": "Yaourt, granola, banane",
+    "kcal": 678,
+    "p": 28,
+    "c": 98,
+    "f": 21
+   },
+   {
+    "text": "Salade, tomate, avocat, feta",
+    "kcal": 461,
+    "p": 18,
+    "c": 21,
+    "f": 36
+   }
+  ]
+ },
+ "hu": {
+  "workouts": [
+   {
+    "day": "Hétfő",
+    "title": "Nyomás — mell, váll, tricepsz",
+    "body": "Fekvenyomás 4×8\nVállból nyomás 3×10\nFerdepados kézisúlyzó 3×12\nKábeles tárogatás 3×15"
+   },
+   {
+    "day": "Szerda",
+    "title": "Húzás — hát és bicepsz",
+    "body": "Felhúzás 3×5\nHúzódzkodás 4×8\nRúdevezés 3×10\nBicepsz curl 3×12"
+   },
+   {
+    "day": "Péntek",
+    "title": "Láb és törzs",
+    "body": "Guggolás 4×6\nRomán felhúzás 3×10\nLábtoló 3×12\nPlank 3×60s"
+   }
+  ],
+  "calendar": [
+   "Lakbér esedékes",
+   "Lábnap 18:00",
+   "Telefonszámla",
+   "Mozi Idával",
+   "Ételkészítés vasárnap",
+   "Fizetés érkezik"
+  ],
+  "notes": [
+   {
+    "title": "Heti bevásárlás",
+    "body": "Csirke, rizs, zab, tojás, fagyasztott bogyós gyümölcs, kávé. Maradj 600 kr alatt."
+   },
+   {
+    "title": "Megújítási emlékeztető",
+    "body": "Az edzőtermi bérlet 12-én újul meg — ellenőrizd, hogy a diákár még érvényes-e."
+   }
+  ],
+  "media": [
+   {
+    "title": "Oppenheimer",
+    "type": "film",
+    "status": "watched",
+    "rating": 9,
+    "comment": "Újranézni apával",
+    "genre": "Dráma"
+   },
+   {
+    "title": "Dune: Part Two",
+    "type": "film",
+    "status": "watched",
+    "rating": 8.5,
+    "comment": "",
+    "genre": "Sci-fi"
+   },
+   {
+    "title": "Breaking Bad",
+    "status": "watched",
+    "rating": 9.5,
+    "comment": "5. évad kész",
+    "genre": "Dráma"
+   },
+   {
+    "title": "The Bear",
+    "status": "watched",
+    "rating": 8,
+    "comment": "",
+    "genre": "Dráma"
+   },
+   {
+    "title": "Interstellar",
+    "type": "film",
+    "status": "towatch",
+    "comment": "Pénteki filmest",
+    "genre": "Sci-fi"
+   },
+   {
+    "title": "Severance",
+    "status": "towatch",
+    "comment": "",
+    "genre": "Thriller"
+   }
+  ],
+  "food": [
+   {
+    "text": "Csirke, rizs és brokkoli",
+    "kcal": 640,
+    "p": 52,
+    "c": 68,
+    "f": 14
+   },
+   {
+    "text": "Zabkása bogyókkal és skyrrel",
+    "kcal": 420,
+    "p": 24,
+    "c": 58,
+    "f": 9
+   },
+   {
+    "text": "Fehérjeturmix edzés után",
+    "kcal": 210,
+    "p": 32,
+    "c": 8,
+    "f": 4
+   }
+  ]
+ },
+ "nb": {
+  "workouts": [
+   {
+    "day": "Mandag",
+    "title": "Push — bryst, skuldre, triceps",
+    "body": "Benkpress 4×8\nSkulderpress 3×10\nSkrå manualpress 3×12\nKabel-flyes 3×15"
+   },
+   {
+    "day": "Onsdag",
+    "title": "Pull — rygg og biceps",
+    "body": "Markløft 3×5\nPull-ups 4×8\nStangroing 3×10\nCurls 3×12"
+   },
+   {
+    "day": "Fredag",
+    "title": "Bein og kjerne",
+    "body": "Knebøy 4×6\nRumensk markløft 3×10\nBeinpress 3×12\nPlanke 3×60s"
+   }
+  ],
+  "calendar": [
+   "Husleie forfaller",
+   "Beindag 18:00",
+   "Telefonregning",
+   "Kino med Ida",
+   "Matprep søndag",
+   "Lønn kommer"
+  ],
+  "notes": [
+   {
+    "title": "Handleliste denne uka",
+    "body": "Kylling, ris, havregryn, egg, frosne bær, kaffe. Hold deg under 600 kr."
+   },
+   {
+    "title": "Påminnelse om fornyelse",
+    "body": "Treningsabonnementet fornyes den 12. — sjekk om studentprisen fortsatt gjelder."
+   }
+  ],
+  "media": [
+   {
+    "title": "Oppenheimer",
+    "type": "film",
+    "status": "watched",
+    "rating": 9,
+    "comment": "Se på nytt med pappa",
+    "genre": "Drama"
+   },
+   {
+    "title": "Dune: Part Two",
+    "type": "film",
+    "status": "watched",
+    "rating": 8.5,
+    "comment": "",
+    "genre": "Sci-fi"
+   },
+   {
+    "title": "Breaking Bad",
+    "status": "watched",
+    "rating": 9.5,
+    "comment": "Ferdig med sesong 5",
+    "genre": "Drama"
+   },
+   {
+    "title": "The Bear",
+    "status": "watched",
+    "rating": 8,
+    "comment": "",
+    "genre": "Drama"
+   },
+   {
+    "title": "Interstellar",
+    "type": "film",
+    "status": "towatch",
+    "comment": "Filmkveld fredag",
+    "genre": "Sci-fi"
+   },
+   {
+    "title": "Severance",
+    "status": "towatch",
+    "comment": "",
+    "genre": "Thriller"
+   }
+  ],
+  "food": [
+   {
+    "text": "Kylling, ris og brokkoli",
+    "kcal": 640,
+    "p": 52,
+    "c": 68,
+    "f": 14
+   },
+   {
+    "text": "Havregrøt med bær og skyr",
+    "kcal": 420,
+    "p": 24,
+    "c": 58,
+    "f": 9
+   },
+   {
+    "text": "Proteinshake etter trening",
+    "kcal": 210,
+    "p": 32,
+    "c": 8,
+    "f": 4
+   }
+  ]
+ },
+ "sv": {
+  "workouts": [
+   {
+    "day": "Måndag",
+    "title": "Push — bröst, axlar, triceps",
+    "body": "Bänkpress 4×8\nAxelpress 3×10\nLutande hantelpress 3×12\nKabelflyes 3×15"
+   },
+   {
+    "day": "Onsdag",
+    "title": "Pull — rygg och biceps",
+    "body": "Marklyft 3×5\nPull-ups 4×8\nSkivstångsrodd 3×10\nCurls 3×12"
+   },
+   {
+    "day": "Fredag",
+    "title": "Ben och bål",
+    "body": "Knäböj 4×6\nRumänsk marklyft 3×10\nBenpress 3×12\nPlanka 3×60s"
+   }
+  ],
+  "calendar": [
+   "Hyra förfaller",
+   "Bendag 18:00",
+   "Telefonräkning",
+   "Bio med Ida",
+   "Matlagning söndag",
+   "Lön kommer"
+  ],
+  "notes": [
+   {
+    "title": "Inköp denna vecka",
+    "body": "Kyckling, ris, havregryn, ägg, frysta bär, kaffe. Håll dig under 600 kr."
+   },
+   {
+    "title": "Påminnelse om förnyelse",
+    "body": "Gymkortet förnyas den 12:e — kolla om studentpriset fortfarande gäller."
+   }
+  ],
+  "media": [
+   {
+    "title": "Oppenheimer",
+    "type": "film",
+    "status": "watched",
+    "rating": 9,
+    "comment": "Se om med pappa",
+    "genre": "Drama"
+   },
+   {
+    "title": "Dune: Part Two",
+    "type": "film",
+    "status": "watched",
+    "rating": 8.5,
+    "comment": "",
+    "genre": "Sci-fi"
+   },
+   {
+    "title": "Breaking Bad",
+    "status": "watched",
+    "rating": 9.5,
+    "comment": "Klar med säsong 5",
+    "genre": "Drama"
+   },
+   {
+    "title": "The Bear",
+    "status": "watched",
+    "rating": 8,
+    "comment": "",
+    "genre": "Drama"
+   },
+   {
+    "title": "Interstellar",
+    "type": "film",
+    "status": "towatch",
+    "comment": "Filmkväll fredag",
+    "genre": "Sci-fi"
+   },
+   {
+    "title": "Severance",
+    "status": "towatch",
+    "comment": "",
+    "genre": "Thriller"
+   }
+  ],
+  "food": [
+   {
+    "text": "Kyckling, ris och broccoli",
+    "kcal": 640,
+    "p": 52,
+    "c": 68,
+    "f": 14
+   },
+   {
+    "text": "Havregröt med bär och skyr",
+    "kcal": 420,
+    "p": 24,
+    "c": 58,
+    "f": 9
+   },
+   {
+    "text": "Proteinshake efter gymmet",
+    "kcal": 210,
+    "p": 32,
+    "c": 8,
+    "f": 4
+   }
+  ]
+ }
+}

@@ -1,0 +1,391 @@
+{
+  "_comment": [
+    "MRLN deploy map \u2014 the single source of truth for what gh-pages serves.",
+    "SOURCE FILENAME != PUBLISHED FILENAME. Source keeps index.html for the app so that",
+    "green.js (APP_VER) and preflight.js (security profile by basename) keep working",
+    "untouched through the root migration; the rename happens ONLY here, at deploy time.",
+    "role: app | marketing | static | stub \u2014 preflight.js selects its profile from this,",
+    "and fails CLOSED to the full app profile when a file is not declared."
+  ],
+  "phase": 0,
+  "_phase_note": [
+    "0 = current live layout, app at the root. 1 = app also published at app.html.",
+    "2 = sw.js/manifest repointed at app.html (root is STILL the app). 3 = the swap.",
+    "tools/test/routing_test.js ARMS additional assertions as this number rises, and",
+    "prints which ones are armed \u2014 so a phase can never advance without its own guards."
+  ],
+  "entries": [
+    {
+      "source": ".nojekyll",
+      "published": ".nojekyll",
+      "role": "static"
+    },
+    {
+      "source": "CNAME",
+      "published": "CNAME",
+      "role": "static"
+    },
+    {
+      "source": "GUIDE.md",
+      "published": "GUIDE.md",
+      "role": "static"
+    },
+    {
+      "source": "MRLN-Guide.pdf",
+      "published": "MRLN-Guide.pdf",
+      "role": "static"
+    },
+    {
+      "source": "README.md",
+      "published": "README.md",
+      "role": "static"
+    },
+    {
+      "source": "assets/fonts/Cabin-OFL.txt",
+      "published": "assets/fonts/Cabin-OFL.txt",
+      "role": "static"
+    },
+    {
+      "source": "assets/fonts/InstrumentSerif-OFL.txt",
+      "published": "assets/fonts/InstrumentSerif-OFL.txt",
+      "role": "static"
+    },
+    {
+      "source": "assets/fonts/InstrumentSerif-Regular.woff2",
+      "published": "assets/fonts/InstrumentSerif-Regular.woff2",
+      "role": "static"
+    },
+    {
+      "source": "assets/fonts/YoungSerif-OFL.txt",
+      "published": "assets/fonts/YoungSerif-OFL.txt",
+      "role": "static"
+    },
+    {
+      "source": "assets/fonts/YoungSerif-Regular.woff2",
+      "published": "assets/fonts/YoungSerif-Regular.woff2",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/calendar.da.png",
+      "published": "assets/howto/calendar.da.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/calendar.de.png",
+      "published": "assets/howto/calendar.de.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/calendar.es.png",
+      "published": "assets/howto/calendar.es.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/calendar.fr.png",
+      "published": "assets/howto/calendar.fr.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/calendar.hu.png",
+      "published": "assets/howto/calendar.hu.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/calendar.nb.png",
+      "published": "assets/howto/calendar.nb.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/calendar.png",
+      "published": "assets/howto/calendar.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/calendar.sv.png",
+      "published": "assets/howto/calendar.sv.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/expenses.da.png",
+      "published": "assets/howto/expenses.da.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/expenses.de.png",
+      "published": "assets/howto/expenses.de.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/expenses.es.png",
+      "published": "assets/howto/expenses.es.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/expenses.fr.png",
+      "published": "assets/howto/expenses.fr.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/expenses.hu.png",
+      "published": "assets/howto/expenses.hu.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/expenses.nb.png",
+      "published": "assets/howto/expenses.nb.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/expenses.png",
+      "published": "assets/howto/expenses.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/expenses.sv.png",
+      "published": "assets/howto/expenses.sv.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/food.da.png",
+      "published": "assets/howto/food.da.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/food.de.png",
+      "published": "assets/howto/food.de.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/food.es.png",
+      "published": "assets/howto/food.es.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/food.fr.png",
+      "published": "assets/howto/food.fr.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/food.hu.png",
+      "published": "assets/howto/food.hu.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/food.nb.png",
+      "published": "assets/howto/food.nb.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/food.png",
+      "published": "assets/howto/food.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/food.sv.png",
+      "published": "assets/howto/food.sv.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/gym.da.png",
+      "published": "assets/howto/gym.da.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/gym.de.png",
+      "published": "assets/howto/gym.de.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/gym.es.png",
+      "published": "assets/howto/gym.es.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/gym.fr.png",
+      "published": "assets/howto/gym.fr.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/gym.hu.png",
+      "published": "assets/howto/gym.hu.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/gym.nb.png",
+      "published": "assets/howto/gym.nb.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/gym.png",
+      "published": "assets/howto/gym.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/gym.sv.png",
+      "published": "assets/howto/gym.sv.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/media.da.png",
+      "published": "assets/howto/media.da.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/media.de.png",
+      "published": "assets/howto/media.de.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/media.es.png",
+      "published": "assets/howto/media.es.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/media.fr.png",
+      "published": "assets/howto/media.fr.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/media.hu.png",
+      "published": "assets/howto/media.hu.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/media.nb.png",
+      "published": "assets/howto/media.nb.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/media.png",
+      "published": "assets/howto/media.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/media.sv.png",
+      "published": "assets/howto/media.sv.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/notebook.da.png",
+      "published": "assets/howto/notebook.da.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/notebook.de.png",
+      "published": "assets/howto/notebook.de.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/notebook.es.png",
+      "published": "assets/howto/notebook.es.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/notebook.fr.png",
+      "published": "assets/howto/notebook.fr.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/notebook.hu.png",
+      "published": "assets/howto/notebook.hu.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/notebook.nb.png",
+      "published": "assets/howto/notebook.nb.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/notebook.png",
+      "published": "assets/howto/notebook.png",
+      "role": "static"
+    },
+    {
+      "source": "assets/howto/notebook.sv.png",
+      "published": "assets/howto/notebook.sv.png",
+      "role": "static"
+    },
+    {
+      "source": "icon-192.png",
+      "published": "icon-192.png",
+      "role": "static"
+    },
+    {
+      "source": "icon-512.png",
+      "published": "icon-512.png",
+      "role": "static"
+    },
+    {
+      "source": "icon-maskable-512.png",
+      "published": "icon-maskable-512.png",
+      "role": "static"
+    },
+    {
+      "source": "index.html",
+      "published": "index.html",
+      "role": "app"
+    },
+    {
+      "source": "landing.html",
+      "published": "landing.html",
+      "role": "marketing"
+    },
+    {
+      "source": "legal.html",
+      "published": "legal.html",
+      "role": "marketing"
+    },
+    {
+      "source": "manifest.webmanifest",
+      "published": "manifest.webmanifest",
+      "role": "static"
+    },
+    {
+      "source": "ov_desktop.da.png",
+      "published": "ov_desktop.da.png",
+      "role": "static"
+    },
+    {
+      "source": "ov_desktop.de.png",
+      "published": "ov_desktop.de.png",
+      "role": "static"
+    },
+    {
+      "source": "ov_desktop.es.png",
+      "published": "ov_desktop.es.png",
+      "role": "static"
+    },
+    {
+      "source": "ov_desktop.fr.png",
+      "published": "ov_desktop.fr.png",
+      "role": "static"
+    },
+    {
+      "source": "ov_desktop.hu.png",
+      "published": "ov_desktop.hu.png",
+      "role": "static"
+    },
+    {
+      "source": "ov_desktop.nb.png",
+      "published": "ov_desktop.nb.png",
+      "role": "static"
+    },
+    {
+      "source": "ov_desktop.png",
+      "published": "ov_desktop.png",
+      "role": "static"
+    },
+    {
+      "source": "ov_desktop.sv.png",
+      "published": "ov_desktop.sv.png",
+      "role": "static"
+    },
+    {
+      "source": "sw.js",
+      "published": "sw.js",
+      "role": "static"
+    }
+  ],
+  "unpublish": [],
+  "_unpublish_note": "Council ruling 2026-08-06 \u00a7C: paths deliberately REMOVED from live. deploy.js --check treats these as expected removals instead of undeclared extras. Entries must be live-only; a stale entry fails the check. LIFECYCLE: an entry is retired once the removal is live \u2014 the stale-entry check fails the gate until it is cleaned (this fired on 2026-08-06 immediately after the v42 push, as designed)."
+}

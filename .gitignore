@@ -1,0 +1,4 @@
+package-lock.json
+# translation working/scratch files (belong in scratch, never in the app repo)
+malay_*.json
+*_translations.json
