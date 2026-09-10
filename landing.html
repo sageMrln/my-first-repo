@@ -954,6 +954,10 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
 @media(max-width:560px){.orbit-detail{grid-template-columns:1fr;gap:6px}.orbit-stage{height:390px}.orbit-stage canvas{display:none!important}.orbit-node{font-size:.66rem;max-width:15ch}.hero-copy .hero-cta{align-items:stretch}.hero-copy .hero-cta .btn{width:100%;justify-content:center}.hero-copy .trustline{width:100%}}
 @media(max-width:900px){.hero{padding-top:92px!important}.hero-grid{grid-template-columns:1fr!important;gap:40px!important}.hero-copy,.hero-media{grid-column:1!important}.hero-h1{font-size:clamp(3.5rem,17vw,7rem)!important;max-width:12ch!important}.orbit-instrument{width:100%;box-shadow:12px 12px 0 var(--accent)!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-copy,.hero-media,.hero-h1,.hero-seq>*,.orbit-node{animation:none!important;transition:none!important;transform:none!important;opacity:1!important}.orbit-fallback{opacity:1!important}.orbit-node.is-active{transform:none!important}}
+.orbit-detail{text-align:left!important}.orbit-detail span{text-align:left!important}
+.orbit-stage.is-webgl .orbit-ring,.orbit-stage.is-webgl .orbit-core{display:none!important}.orbit-stage.is-webgl .orbit-node{background:rgba(23,23,20,.92);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.howto-grid{grid-template-columns:repeat(12,minmax(0,1fr))!important;gap:clamp(24px,4vw,64px)!important;border:0!important;align-items:start}.howto-card{grid-column:span 5!important;border:0!important;background:transparent!important}.howto-card:nth-child(even){grid-column:7/span 6!important;margin-top:clamp(72px,10vw,150px)}.howto-card:nth-child(3n){grid-column:2/span 6!important}.howto-shot{display:block;border:1px solid var(--ink)!important;box-shadow:18px 22px 0 rgba(212,59,32,.16);overflow:hidden}.howto-shot img{width:100%;height:auto;display:block}.howto-card-copy{padding:24px 0!important;max-width:58ch}.howto-card-copy h3{font-size:clamp(1.5rem,2.5vw,2.4rem)!important}.howto-card-copy p{font-size:1rem;line-height:1.65}.media-proof{grid-column:1/-1!important;margin:clamp(72px,10vw,140px) 0 0!important;padding:clamp(28px,5vw,64px)!important;background:#171714!important;color:#eee9df!important;display:grid!important;grid-template-columns:minmax(0,.8fr) minmax(300px,1.2fr)!important;gap:clamp(28px,6vw,88px)!important;align-items:center}.media-proof h3{color:#fff!important}.media-proof p{color:#cbc6bc!important}.rank-demo{border-top:1px solid #6f6d66}.rank-row{display:grid;grid-template-columns:3rem 1fr auto;gap:16px;align-items:center;padding:18px 0;border-bottom:1px solid #6f6d66}.rank-row strong{color:#ff7257;font:700 1.1rem/1 ui-monospace,monospace}.rank-row span{color:#fff}.rank-row small{color:#cbc6bc}.evidence-route{display:inline-flex;margin-top:16px;color:var(--accent);font-weight:750;text-underline-offset:4px}
+@media(max-width:700px){.howto-grid{display:block!important}.howto-card,.howto-card:nth-child(even),.howto-card:nth-child(3n){margin:0 0 64px!important}.howto-shot{box-shadow:9px 11px 0 rgba(212,59,32,.16)}.media-proof{display:block!important;margin-top:40px!important}.rank-demo{margin-top:28px}.rank-row{grid-template-columns:2.2rem 1fr}.rank-row small{grid-column:2}}
 </style>
 </head>
 <body>
@@ -1432,8 +1436,8 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
           <div class="howto-card-copy"><h3><span class="how-ico" aria-hidden="true"></span>Budget</h3><p>Every recurring cost in one place. Change a number once and your cash flow, savings projection and grade update with it.</p></div>
         </div>
         <div class="howto-card">
-          <a class="howto-shot" href="assets/howto/gym.png" aria-label="Enlarge screenshot"><img data-shot="gym" src="assets/howto/gym.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Gym Plan tab: a weekly training split with days, exercises and sets."></a>
-          <div class="howto-card-copy"><h3><span class="how-ico" aria-hidden="true"></span>Training</h3><p>Write your split once — days, lifts, sets. It's in your pocket at the gym, next to your body stats and calorie targets.</p></div>
+          <a class="howto-shot" href="assets/howto/gym.png" aria-label="Enlarge screenshot"><img data-shot="gym" src="assets/howto/gym.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN body-history view: personal weight and measurement records tracked over time."></a>
+          <div class="howto-card-copy"><h3><span class="how-ico" aria-hidden="true"></span>Body history</h3><p>Keep your own weight, measurements and personal records together, so changes over time remain visible on your device.</p></div>
         </div>
         <div class="howto-card">
           <a class="howto-shot" href="assets/howto/food.png" aria-label="Enlarge screenshot"><img data-shot="food" src="assets/howto/food.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Food Log tab: today's logged meals with calories, protein, carbs and fat totals."></a>
@@ -1449,8 +1453,21 @@ body{background-image:radial-gradient(rgba(23,23,20,.055) .65px,transparent .65p
         </div>
         <div class="howto-card">
           <a class="howto-shot" href="assets/howto/media.png" aria-label="Enlarge screenshot"><img data-shot="media" src="assets/howto/media.png" width="780" height="1600" loading="lazy" decoding="async" alt="The MRLN Media Log tab: a watch list and a ranked list of rated films and shows."></a>
-          <div class="howto-card-copy"><h3><span class="how-ico" aria-hidden="true"></span>Films &amp; shows</h3><p>Log what you watch and rate it. A ranked list builds itself — ready the next time someone asks what's worth seeing.</p></div>
+          <div class="howto-card-copy"><h3><span class="how-ico" aria-hidden="true"></span>Films, shows &amp; games</h3><p>Keep personal film, show and game lists, add your own ratings, and see each category ordered by your ratings.</p></div>
         </div>
+        <aside class="media-proof" id="media-ranking" aria-labelledby="media-ranking-title">
+          <div>
+            <p class="eyebrow">Personal media ranking</p>
+            <h3 id="media-ranking-title">Your favourites, ordered by your ratings.</h3>
+            <p>MRLN keeps separate personal rankings for films, shows and games. These demo entries illustrate the ranked-list behaviour; they are example data, not a social leaderboard or recommendations.</p>
+            <a class="evidence-route" href="assets/howto/media.png">Open the localized media screenshot →</a>
+          </div>
+          <div class="rank-demo" aria-label="Example personal media ranking">
+            <div class="rank-row"><strong>01</strong><span>Film — example entry</span><small>9.4 / 10</small></div>
+            <div class="rank-row"><strong>02</strong><span>Show — example entry</span><small>9.1 / 10</small></div>
+            <div class="rank-row"><strong>03</strong><span>Game — example entry</span><small>8.8 / 10</small></div>
+          </div>
+        </aside>
       </div>
       <p class="shot-hint">Tap any screenshot to enlarge it.</p>
       <p class="shot-lang-note" id="shotLangNote"></p>
@@ -1750,6 +1767,8 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","No tracking":
       img.setAttribute('src', want);
     }
   });
+  var evidence=document.querySelector('.evidence-route');
+  if(evidence) evidence.setAttribute('href','assets/howto/media'+suf+'.png');
   var note=document.getElementById('shotLangNote');
   /* Every language now has its own screenshot set, so the "screenshots are in English"
      disclosure is retired. It was the sentence that also claimed "l'app elle-même est
@@ -2533,6 +2552,7 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","No tracking":
   if(reduced||innerWidth<560){cv.hidden=true;return;}
   try{gl=cv.getContext('webgl',{alpha:true,antialias:true,powerPreference:'low-power'});}catch(e){}
   if(!gl){cv.hidden=true;return;}
+  cv.parentNode.classList.add('is-webgl');
   var vs='attribute vec3 p;uniform mat4 m;void main(){gl_Position=m*vec4(p,1.);}';
   var fs='precision mediump float;uniform vec4 color;void main(){gl_FragColor=color;}';
   function shader(t,s){var x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);return gl.getShaderParameter(x,gl.COMPILE_STATUS)?x:null;}
