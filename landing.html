@@ -2463,7 +2463,7 @@ window.__L10N = {"da":{"t":{"1":"1","2":"2","3":"3","2026":"2026","No tracking":
     root.querySelector('.orbit-controls').setAttribute('aria-label',a[7]); root.querySelector('.orbit-fallback').setAttribute('aria-label',a[8]); root.querySelector('.shot-note').textContent=a[9];
   }
   var prior=window.__mrlnApplyLang; if(prior)window.__mrlnApplyLang=function(lang){prior(lang);localize(lang);};
-  var select=document.querySelector('.lang-sw select'); localize((select&&select.value)||document.documentElement.lang||'en');
+  var select=document.getElementById('langSw'); localize((select&&select.value)||document.documentElement.lang||'en');
   if(select)select.addEventListener('change',function(){localize(this.value);});
   var cv=document.getElementById('orbit-canvas'), fallback=document.querySelector('.orbit-fallback'), buttons=[].slice.call(document.querySelectorAll('[data-orbit]'));
   if(!cv||!fallback||matchMedia('(prefers-reduced-motion: reduce)').matches||innerWidth<560)return;
