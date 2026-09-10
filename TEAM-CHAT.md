@@ -22,7 +22,6 @@ It travels through git, so everyone sees it after a pull.
 Before editing any file, add a LOCK line here, commit, push. If a lock already
 exists, **do not start** — wait or pick different work. Remove your line when done.
 Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
-- LOCKED: landing.html, landing browser tests and release tooling — Codex — finish and browser-verify landing update requested by Osefe — 2026-09-10.
 
 
 
@@ -30,7 +29,7 @@ Only ONE lock should ever be active. (See GROUND RULES in `CLAUDE.md`.
 ## ✅ SHIPPED — LANDING v6 "DOCKET CLOSE" (source `b189551` → gh-pages `e05f3d2`, 2026-08-10)
 <!-- Current release record precedes the historical v6 entry. -->
 
-### Pending landing completion — 2026-09-10
+### Shipped landing completion — 2026-09-10
 
 Frozen candidate: `11e70c10f355a25a4ef43b193ef93570c90f024f`.
 Owner request: "Update Mrln to test, the landing page and finish it off completely."
@@ -51,7 +50,12 @@ under the committed-test exemption, with independent factual/UX review.
 deploy.js --check verified 74 paths; --out materialized a separate publish worktree.
 Byte comparison after canonical line-ending materialization: ONLY landing.html
 differs. Previous live/rollback: `e05f3d27f91770c1a4dbd1246b33509bc08f26b5`.
-Live confirmation follows publication.
+Published commit: `cb707474591f9a06c03aed2c2f299fc156688c8d`.
+Post-push deploy.js --check: all 74 published files byte-identical to candidate.
+Public https://mrln.online/landing returns HTTP 200 and the new 526,030-byte
+landing. Live Chromium journey passes all eight languages at 320/390/768/1440,
+local image links without JS, translated assets/accessibility, keyboard modal,
+FAQ and CTA layout; no unwanted external requests or page errors. Lock released.
 
 Emoji strips ×42 (6 compound keys ×7, lossless — Mikoto: 203-key parity all langs, MISSING 0, clean run);
 full 13-glyph MRLN icon set (zero emoji visible page-wide); phase-A CTA inert while invisible (Akashi:
