@@ -1003,8 +1003,8 @@ window.THREE={ACESFilmicToneMapping:et,AddEquation:y,AddOperation:J,AdditiveAnim
     var glassFar=new THREE.MeshPhysicalMaterial(Object.assign({},glassOpts,{transmission:0,opacity:0.22,roughness:0.2,envMapIntensity:0.8}));
     /* the chapter demonstrations: tinted so they read on ice, with their data marks in front of the glass */
     var objGlass=new THREE.MeshPhysicalMaterial(Object.assign({},glassOpts,{color:0xd6e9fc,transmission:MOBILE?0:0.72,thickness:0.6,attenuationColor:new THREE.Color(0x7cc4ff),attenuationDistance:0.9,opacity:MOBILE?0.7:1}));
-    var gemMat=new THREE.MeshPhysicalMaterial(Object.assign({},glassOpts,{color:MOBILE?0x9fd0ff:0xffffff,roughness:0.02,ior:2.3,thickness:2.0,attenuationColor:new THREE.Color(0x7fd0ff),attenuationDistance:1.1,iridescence:0.45,iridescenceIOR:1.4,envMapIntensity:MOBILE?2.2:1.8,opacity:MOBILE?0.82:1}));
-    if('dispersion' in gemMat) gemMat.dispersion=MOBILE?0:0.2;
+    var gemMat=new THREE.MeshPhysicalMaterial(Object.assign({},glassOpts,{color:MOBILE?0x9fd0ff:0xffffff,roughness:0.02,ior:2.3,thickness:2.0,attenuationColor:new THREE.Color(0x7fd0ff),attenuationDistance:1.1,iridescence:0.12,iridescenceIOR:1.3,envMapIntensity:MOBILE?2.2:1.8,opacity:MOBILE?0.82:1}));
+    if('dispersion' in gemMat) gemMat.dispersion=MOBILE?0:0.08;
     var core=new THREE.MeshStandardMaterial({color:0x2f6bd8,emissive:0x2f6bd8,emissiveIntensity:1.6,roughness:0.3,metalness:0});
     var coreSoft=new THREE.MeshStandardMaterial({color:0x8fd3ff,emissive:0x6fc4ff,emissiveIntensity:1.0,roughness:0.5,transparent:true,opacity:0.8});
     var inkMat=new THREE.MeshStandardMaterial({color:0x0b1526,roughness:0.6,metalness:0.1});
