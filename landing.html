@@ -123,6 +123,54 @@ html.js:not(.rm) [data-rv][data-d="1"]{transition-delay:.08s}
 html.js:not(.rm) [data-rv][data-d="2"]{transition-delay:.16s}
 html.js:not(.rm) [data-rv][data-d="3"]{transition-delay:.24s}
 @media (prefers-reduced-motion:reduce){[data-rv]{opacity:1!important;transform:none!important;transition:none!important}}
+/* words: each rises out of its own line mask, blur to sharp, one after another */
+.ws{display:inline}
+.w{display:inline-block;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+.fx-rise .w{overflow:hidden}
+.w>i{display:inline-block;font-style:normal;will-change:transform,opacity,filter;transition:transform 1s var(--ease),opacity .55s linear,filter .9s var(--ease);transition-delay:calc(var(--i,0)*var(--wd,60ms))}
+html.js:not(.rm) .fx-rise .w>i{transform:translateY(112%) rotate(2deg);opacity:0;filter:blur(8px)}
+html.js:not(.rm) .fx-flip .w>i{transform:perspective(700px) rotateX(-88deg) translateY(.25em);transform-origin:50% 100%;opacity:0}
+html.js:not(.rm) .fx-pop .w>i{transform:scale(.55) translateY(.1em);opacity:0;filter:blur(7px)}
+html.js:not(.rm) .fx-slide .w>i{transform:translateX(-.6em) skewX(-6deg);opacity:0;filter:blur(3px)}
+html.js:not(.rm) .in .w>i{transform:none;opacity:1;filter:blur(0)}
+html.js:not(.rm) [data-rv].split{opacity:1;transform:none}
+/* whole-line styles: tracking settle and clip wipe */
+html.js:not(.rm) .fx-track{transition:letter-spacing 1.4s var(--ease),opacity .9s linear,filter 1.2s var(--ease),transform 1.4s var(--ease)}
+html.js:not(.rm) .fx-track:not(.in){letter-spacing:.14em;opacity:0;filter:blur(12px);transform:scale(1.08)}
+html.js:not(.rm) .turn h2 .l2{transition-delay:.18s}
+html.js:not(.rm) [data-rv].fx-track{opacity:1;transform:none}
+html.js:not(.rm) [data-rv].fx-track:not(.in){opacity:0;transform:scale(1.08)}
+html.js:not(.rm) [data-rv].fx-wipe{opacity:1;transform:none;clip-path:inset(0 100% 0 0);transition:clip-path 1.2s var(--ease),transform 1.2s var(--ease)}
+html.js:not(.rm) [data-rv].fx-wipe:not(.in){transform:translateX(-6px)}
+html.js:not(.rm) [data-rv].fx-wipe.in{clip-path:inset(0 0 0 0)}
+/* rows, cards and answers: each family enters differently */
+html.js:not(.rm) .price-card,html.js:not(.rm) .store-box{transition-duration:1.1s}
+html.js:not(.rm) [data-rv].store-box:first-of-type:not(.in){transform:translateX(-40px) rotate(-1deg)}
+html.js:not(.rm) [data-rv].store-box:last-of-type:not(.in){transform:translateX(40px) rotate(1deg)}
+html.js:not(.rm) [data-rv].store-move:not(.in){transform:scale(.6)}
+html.js:not(.rm) #faq details{transition-delay:calc(var(--i,0)*70ms)}
+html.js:not(.rm) [data-rv]#faq details:nth-child(even):not(.in){transform:translateX(28px)}
+html.js:not(.rm) [data-rv]#faq details:nth-child(odd):not(.in){transform:translateX(-28px)}
+html.js:not(.rm) [data-rv].price-card:not(.in){transform:translateY(40px) scale(.96)}
+html.js:not(.rm) .price-amount{transform-origin:0 100%;transition:transform 1.1s var(--ease) .15s}
+html.js:not(.rm) .price-card:not(.in) .price-amount{transform:scale(.82)}
+html.js:not(.rm) [data-rv].price-list li:not(.in){transform:translateX(18px)}
+html.js:not(.rm) .facts li:nth-child(even){transform:translateX(16px)}
+html.js:not(.rm) .facts.in li{transform:none}
+html.js:not(.rm) [data-rv].example-rank:not(.in){transform:translateY(24px) scale(.97)}
+html.js:not(.rm) .rank-row{transition:opacity .6s var(--ease),transform .7s var(--ease);transition-delay:calc(var(--i,0)*120ms + .3s)}
+html.js:not(.rm) .example-rank:not(.in) .rank-row{opacity:0;transform:translateX(-12px)}
+html.js:not(.rm) [data-rv].hero-cta:not(.in){transform:translateY(14px) scale(.96)}
+html.js:not(.rm) [data-rv].hero-cta .btn{transition:transform .33s var(--ease),background .33s var(--ease),color .33s var(--ease),box-shadow .33s var(--ease),opacity .6s var(--ease)}
+html.js:not(.rm) .footer-cols>*:nth-child(2){transition-delay:.12s}html.js:not(.rm) .footer-cols>*:nth-child(3){transition-delay:.24s}
+html.js:not(.rm) .ch-facts li,html.js:not(.rm) .facts li,html.js:not(.rm) .trustline li,html.js:not(.rm) .how-card{opacity:0;transform:translateX(-16px);transition:opacity .7s var(--ease),transform .9s var(--ease)}
+html.js:not(.rm) .ch-facts.in li,html.js:not(.rm) .facts.in li,html.js:not(.rm) .trustline.in li,html.js:not(.rm) .how-grid.in .how-card{opacity:1;transform:none}
+html.js:not(.rm) .ch-facts li::before{transform:rotate(45deg) scale(0);transition:transform .6s var(--ease)}
+html.js:not(.rm) .ch-facts.in li::before{transform:rotate(45deg) scale(1);transition-delay:calc(var(--i,0)*110ms + .25s)}
+.ch-facts li,.facts li,.trustline li,.how-card{transition-delay:calc(var(--i,0)*110ms)}
+.ch-copy,.hero-copy{transform:translate3d(var(--px,0px),var(--tp,0px),0);will-change:transform}
+.turn h2 .l1,.turn h2 .l2{transform:translateY(calc(var(--turn-y,0)*1px));transition:none}
+@media (prefers-reduced-motion:reduce){.w>i,.ch-facts li,.facts li,.trustline li,.how-card{opacity:1!important;transform:none!important;filter:none!important;transition:none!important}.ch-facts li::before{transform:rotate(45deg)!important}}
 
 /* ---- the turn: statement while the crystal opens ----------------------- */
 .turn{min-height:170vh;position:relative}
@@ -154,6 +202,8 @@ html.gl .turn .pin{opacity:calc(var(--turn-o,1))}
 .ch-stage.two .device{width:min(100%,250px)}
 .device .howto-shot{display:block;border-radius:calc(var(--r-lg) - 8px);overflow:hidden;background:#061020;aspect-ratio:780/1600}
 .device .howto-shot img{width:100%;height:100%;object-fit:cover}
+html.js:not(.rm) img[data-shot]{opacity:0;transform:scale(1.04);transition:opacity .9s var(--ease),transform 1.3s var(--ease)}
+html.js:not(.rm) img[data-shot].ld{opacity:1;transform:none}
 .device::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.35) 46%,rgba(255,255,255,0) 58%);background-size:220% 100%;background-position:var(--sheen,120%) 0;mix-blend-mode:screen;opacity:.9}
 .device-cap{margin-top:12px;text-align:center;font-size:.85rem;color:var(--muted)}
 .howto-shot:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
@@ -345,7 +395,7 @@ html.gl .turn .pin{opacity:calc(var(--turn-o,1))}
 
   <div class="trust-band">
     <div class="wrap">
-      <ul class="trustline">
+      <ul class="trustline" data-rv>
         <li>No account<span class="tl-dot" aria-hidden="true"></span></li>
         <li>No cloud<span class="tl-dot" aria-hidden="true"></span></li>
         <li>No bank connection<span class="tl-dot" aria-hidden="true"></span></li>
@@ -493,10 +543,10 @@ html.gl .turn .pin{opacity:calc(var(--turn-o,1))}
   <section class="how" id="how" aria-labelledby="how-title">
     <div class="wrap">
       <h2 id="how-title" data-rv>Up and running in three steps.</h2>
-      <div class="how-grid">
-        <div class="how-card" data-rv><h3>Unlock with your key</h3><p>Open mrln.online and paste the access key from your welcome email. No account, no sign-up.</p></div>
-        <div class="how-card" data-rv data-d="1"><h3>Enter income and fixed costs</h3><p>Rent, subscriptions, transport. Every tab builds on these numbers, so you only enter them once.</p></div>
-        <div class="how-card" data-rv data-d="2"><h3>Log as you live</h3><p>Entries save in this browser. Export a file when you want a backup or transfer.</p></div>
+      <div class="how-grid" data-rv>
+        <div class="how-card"><h3>Unlock with your key</h3><p>Open mrln.online and paste the access key from your welcome email. No account, no sign-up.</p></div>
+        <div class="how-card"><h3>Enter income and fixed costs</h3><p>Rent, subscriptions, transport. Every tab builds on these numbers, so you only enter them once.</p></div>
+        <div class="how-card"><h3>Log as you live</h3><p>Entries save in this browser. Export a file when you want a backup or transfer.</p></div>
       </div>
     </div>
   </section>
@@ -869,12 +919,72 @@ window.THREE={ACESFilmicToneMapping:et,AddEquation:y,AddOperation:J,AdditiveAnim
   addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY;},{passive:true});
   document.addEventListener('pointerover',function(e){var h=e.target.closest&&e.target.closest('a,button,select,summary,.howto-shot');if(curR)curR.classList.toggle('hot',!!h);});
 
-  /* reveal: in-viewport now -> visible now; later -> observed */
+  /* ---- text life: nothing is simply there; it arrives as you reach it ----
+     Words rise out of line masks; rows, cards and FAQ entries stagger in;
+     prices and ratings count up. Wrapping happens AFTER translation and is
+     undone before every language switch, so the eight dictionaries keep
+     matching whole text nodes. Reduced motion: none of this runs. */
+  /* every text gets its own way of arriving; neighbours never share one.
+     rise: words climb out of a line mask · flip: words hinge up in 3D · pop: words
+     sharpen out of a blur · slide: words slip in from the left · track: the whole
+     line settles from wide letter-spacing · wipe: a clip reveals the paragraph */
+  var FX=[['.hero-h1','rise'],['.hero-lead','slide'],['.turn h2 .l1','track'],['.turn h2 .l2','track'],
+    ['#money-title','rise'],['#health-title','flip'],['#food-title','pop'],['#life-title','slide'],['#media-title','flip'],
+    ['.ch-sub','wipe'],['.ch-note','wipe'],['#privacy-title','flip'],['#how-title','pop'],['#storage-title','slide'],['#pricing-title','rise'],['#faq-title','pop'],['#get-title','track'],
+    ['.section-head .lead','wipe'],['.cta-band .lead','wipe'],['.founder-note','wipe'],['.cta-guarantee','wipe'],['.store-note','wipe'],['.example-rank p','wipe']];
+  var SPLIT_FX={rise:1,flip:1,pop:1,slide:1};
+  var RV_ADD=['.section-head .lead','.store-box','.store-move','.store-note','.price-card','.price-list li','.founder-note','#faq details','.cta-band .lead','.cta-band .hero-cta','.cta-guarantee','.footer-cols > *','.footer-legal','.footer-copy','.how-card h3','.how-card p'];
+  var STAGGER=['.ch-facts li','.facts li','.trustline li','.how-card','.price-list li','#faq details','.footer-cols > *','.store-box,.store-move','.rank-row'];
+  var splitEls=[];
+  if(!RM){
+    RV_ADD.forEach(function(sel){[].slice.call(document.querySelectorAll(sel)).forEach(function(el){if(!el.hasAttribute('data-rv'))el.setAttribute('data-rv','');});});
+    STAGGER.forEach(function(sel){[].slice.call(document.querySelectorAll(sel)).forEach(function(el,i){el.style.setProperty('--i',i%12);});});
+    FX.forEach(function(f){[].slice.call(document.querySelectorAll(f[0])).forEach(function(el){el.classList.add('fx-'+f[1]);if(SPLIT_FX[f[1]]&&splitEls.indexOf(el)<0)splitEls.push(el);});});
+  }
+  function splitWords(el){
+    if(el.__split||RM) return;
+    if(el.hasAttribute('data-i18n-html')&&!el.__o) el.__o=el.innerHTML;   /* the i18n layer restores from __o; capture it unsplit */
+    var tw=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null),nodes=[],n;
+    while((n=tw.nextNode())) if(n.nodeValue.trim()) nodes.push(n);
+    var idx=0,recs=[];
+    nodes.forEach(function(tn){
+      var holder=document.createElement('span');holder.className='ws';
+      tn.nodeValue.split(/(\s+)/).forEach(function(p){
+        if(!p) return;
+        if(/^\s+$/.test(p)){holder.appendChild(document.createTextNode(p));return;}
+        var w=document.createElement('span');w.className='w';var i=document.createElement('i');i.textContent=p;i.style.setProperty('--i',idx++);w.appendChild(i);holder.appendChild(w);
+      });
+      tn.parentNode.replaceChild(holder,tn);recs.push({node:tn,holder:holder});
+    });
+    el.__split=recs; el.classList.add('split');
+    el.style.setProperty('--wd',(el.tagName==='P'||el.classList.contains('lead')||el.classList.contains('ch-sub')||el.classList.contains('hero-lead'))?'26ms':'62ms');
+  }
+  function unsplit(el){ if(!el.__split) return; el.__split.forEach(function(r){if(r.holder.parentNode) r.holder.parentNode.replaceChild(r.node,r.holder);}); el.__split=null; el.classList.remove('split'); }
+  function splitAll(){splitEls.forEach(splitWords);} function unsplitAll(){splitEls.forEach(unsplit);}
+  /* product screens fade in as they decode instead of popping from black */
+  [].slice.call(document.querySelectorAll('img[data-shot]')).forEach(function(im){function ld(){im.classList.add('ld');} if(im.complete&&im.naturalWidth) ld(); else { im.addEventListener('load',ld,{once:true}); im.addEventListener('error',ld,{once:true}); }});
+  if(!RM) splitAll();
+  (function(){ var orig=window.__mrlnApplyLang; if(typeof orig!=='function') return;
+    window.__mrlnApplyLang=function(lang){unsplitAll();var r=orig.apply(this,arguments);if(!RM){splitAll();countReset();}return r;};
+    var sw=document.getElementById('langSw'); if(sw) sw.addEventListener('change',function(){ /* the i18n layer's own listener calls the original apply; ours re-wraps a tick later */ setTimeout(function(){unsplitAll();window.__mrlnApplyLang(sw.value);},0); });
+  })();
+  /* numbers count up to what they say, then settle on the exact original text */
+  var countEls=[].slice.call(document.querySelectorAll('.price-amount [data-price],[data-price-year],.rank-row small'));
+  function countReset(){countEls.forEach(function(el){el.__cu=0;});}
+  function countUp(el){
+    if(el.__cu||RM) return; el.__cu=1;
+    var tw=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null),tn=null,n; while((n=tw.nextNode())) if(/\d/.test(n.nodeValue)){tn=n;break;} if(!tn) return;
+    var orig=tn.nodeValue,m=orig.match(/^(\D*?)(\d[\d,]*(?:\.\d+)?)(.*)$/s); if(!m) return;
+    var target=parseFloat(m[2].replace(/,/g,'')),dec=(m[2].split('.')[1]||'').length,t0=performance.now(),dur=1100;
+    (function step(now){var q=clamp((now-t0)/dur,0,1);q=1-Math.pow(1-q,3);tn.nodeValue=m[1]+(target*q).toFixed(dec)+m[3];if(q<1)requestAnimationFrame(step);else tn.nodeValue=orig;})(t0);
+  }
+  function arrive(el){ el.classList.add('in'); countEls.forEach(function(c){ if(el===c||el.contains(c)) countUp(c); }); }
+  /* reveal: in-viewport now -> arrives now; later -> observed; leaving downward re-arms it */
   var rvs=[].slice.call(document.querySelectorAll('[data-rv]'));
-  rvs.forEach(function(el){ if(el.getBoundingClientRect().top<vh*0.98) el.classList.add('in'); });
+  rvs.forEach(function(el){ if(el.getBoundingClientRect().top<vh*0.98) arrive(el); });
   if('IntersectionObserver' in window && !RM){
-    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.12,rootMargin:'0px 0px -6% 0px'});
-    rvs.forEach(function(el){ if(!el.classList.contains('in')) io.observe(el); });
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting) arrive(e.target); else if(e.boundingClientRect.top>vh) e.target.classList.remove('in'); });},{threshold:0.05,rootMargin:'0px 0px -4% 0px'});
+    rvs.forEach(function(el){ io.observe(el); });
   } else rvs.forEach(function(el){el.classList.add('in');});
 
   /* ---- scroll geometry: the scenes, measured on resize ------------------- */
@@ -941,7 +1051,10 @@ window.THREE={ACESFilmicToneMapping:et,AddEquation:y,AddOperation:J,AdditiveAnim
       d.style.setProperty('--ry',ryv.toFixed(2)+'deg'); d.style.setProperty('--rx',rxv.toFixed(2)+'deg'); d.style.setProperty('--ty',ty.toFixed(1)+'px');
       d.style.setProperty('--sheen',(120-clamp((1-travel)/2,0,1)*180).toFixed(1)+'%');
     }
-    if(turn){ var o=ss(0.02,0.22,P.turn)*(1-ss(0.72,0.98,P.turn)); turn.style.setProperty('--turn-o',o.toFixed(3)); }
+    if(turn){ var o=ss(0.02,0.22,P.turn)*(1-ss(0.72,0.98,P.turn)); turn.style.setProperty('--turn-o',o.toFixed(3)); turn.style.setProperty('--turn-y',((0.5-P.turn)*40).toFixed(1));
+      var tl=turn.querySelectorAll('h2 .l1,h2 .l2'); for(var q=0;q<tl.length;q++){ if(P.turn>0.05&&!tl[q].classList.contains('in')) tl[q].classList.add('in'); else if(P.turn<0.02&&tl[q].classList.contains('in')) tl[q].classList.remove('in'); } }
+    for(var c=0;c<chInfo.length;c++){ var cp=chInfo[c].el.querySelector('.ch-copy'); if(!cp) continue; var v=P.chVis[c]; if(v<=0||v>=1) continue; cp.style.setProperty('--tp',((0.5-v)*70).toFixed(1)+'px'); cp.style.setProperty('--px',(px*-5).toFixed(1)+'px'); }
+    var hc=document.querySelector('.hero-copy'); if(hc&&y<vh){ hc.style.setProperty('--px',(px*-7).toFixed(1)+'px'); hc.style.setProperty('--tp',(py*-4+y*0.12).toFixed(1)+'px'); }
   }
 
   /* ---- the scene ---------------------------------------------------------- */
