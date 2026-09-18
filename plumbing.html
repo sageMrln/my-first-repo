@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NordVand VVS &mdash; 24/7 Emergency Plumber, Greater Copenhagen</title>
+<meta name="description" content="NordVand VVS is an authorised plumbing company covering Greater Copenhagen. Leaks, heating, bathrooms, drains and boilers &mdash; fast response, fixed prices, tidy work.">
+<meta name="theme-color" content="#0e2233">
+<style>
+  /* ---------- Reset & base ---------- */
+  *,*::before,*::after{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body,h1,h2,h3,p,ul,ol,li,figure,blockquote,form{margin:0;padding:0;}
+  ul,ol{list-style:none;}
+  a{color:inherit;text-decoration:none;}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;}
+  input,textarea{font:inherit;color:inherit;}
+  img{max-width:100%;display:block;}
+  :root{
+    --navy:#0e2233;
+    --navy-2:#132c42;
+    --navy-3:#183a56;
+    --navy-line:rgba(255,255,255,.14);
+    --paper:#f6f7f5;
+    --paper-2:#ffffff;
+    --ink:#0e2233;
+    --muted:#5c6b78;
+    --muted-light:#a9bccb;
+    --orange:#ff8f3f;
+    --orange-2:#ff7a1a;
+    --orange-dark:#c65e10;
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:10px;
+    --shadow-lg:0 30px 60px -25px rgba(6,16,26,.45);
+    --shadow-md:0 16px 32px -18px rgba(6,16,26,.35);
+    --topbar-h:64px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+  }
+  body{
+    font-family:var(--font);
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+    padding-top:var(--topbar-h);
+  }
+  section, header, footer{scroll-margin-top:calc(var(--topbar-h) + 12px);}
+  h1,h2,h3{line-height:1.15;font-weight:800;letter-spacing:-.01em;}
+  h1{font-size:clamp(2.1rem,5.4vw,3.4rem);}
+  h2{font-size:clamp(1.6rem,3.6vw,2.3rem);}
+  h3{font-size:1.15rem;}
+  p{color:inherit;}
+
+  /* skip link */
+  .skip-link{
+    position:absolute;left:8px;top:-60px;background:var(--orange);color:var(--navy);
+    padding:.7em 1.1em;border-radius:8px;font-weight:700;z-index:1000;transition:top .2s ease;
+  }
+  .skip-link:focus{top:8px;}
+
+  :focus-visible{outline:3px solid var(--orange);outline-offset:2px;}
+
+  .container{max-width:1180px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:.55em;
+    font-weight:700;border-radius:999px;padding:.85em 1.5em;
+    font-size:1rem;white-space:nowrap;transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+    border:2px solid transparent;
+  }
+  .btn--primary{background:var(--orange);color:#1a1006;box-shadow:0 12px 24px -10px rgba(255,122,26,.55);}
+  .btn--primary:hover{background:var(--orange-2);transform:translateY(-1px);}
+  .btn--ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.5);}
+  .btn--ghost:hover{background:rgba(255,255,255,.1);border-color:#fff;}
+  .btn--dark{background:var(--navy);color:#fff;}
+  .btn--dark:hover{background:var(--navy-2);}
+  .btn--lg{padding:1.05em 1.9em;font-size:1.08rem;}
+  .btn--block{width:100%;}
+  .btn--call{background:var(--orange);color:#1a1006;padding:.6em 1.1em;font-size:.92rem;}
+  .btn--call:hover{background:var(--orange-2);}
+
+  /* ---------- Icons ---------- */
+  .icon{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;display:block;}
+  .icon--sm{width:18px;height:18px;stroke-width:3;}
+  .icon--lg{width:40px;height:40px;stroke-width:2;}
+  .icon--brand{width:30px;height:30px;color:var(--orange);}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:fixed;top:0;left:0;right:0;z-index:500;
+    background:var(--navy);border-bottom:1px solid var(--navy-line);
+    height:var(--topbar-h);display:flex;align-items:center;
+    transition:box-shadow .2s ease;
+  }
+  .topbar.is-scrolled{box-shadow:0 8px 24px -12px rgba(0,0,0,.5);}
+  .topbar__inner{
+    width:100%;max-width:1180px;margin:0 auto;padding:0 16px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;color:#fff;
+  }
+  .brand{display:flex;align-items:center;gap:.5em;font-weight:800;font-size:1.05rem;color:#fff;}
+  .brand__accent{color:var(--orange);}
+  .topbar__nav{display:none;gap:1.6em;font-weight:600;font-size:.95rem;color:var(--muted-light);}
+  .topbar__nav a:hover{color:#fff;}
+  @media (min-width:920px){
+    .topbar__nav{display:flex;}
+  }
+
+  /* ---------- Mobile sticky call bar ---------- */
+  .callbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:499;
+    background:var(--navy);border-top:1px solid var(--navy-line);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  }
+  .callbar__btn{
+    display:flex;align-items:center;justify-content:center;gap:.6em;
+    background:var(--orange);color:#1a1006;font-weight:800;font-size:1.02rem;
+    padding:.85em 1em;border-radius:999px;
+  }
+  @media (min-width:920px){
+    .callbar{display:none;}
+    body{padding-bottom:0;}
+  }
+  body{padding-bottom:78px;}
+  @media (min-width:920px){body{padding-bottom:0;}}
+
+  /* ---------- Eyebrow / section heads ---------- */
+  .eyebrow{
+    display:inline-block;color:var(--orange);font-weight:800;letter-spacing:.06em;
+    text-transform:uppercase;font-size:.82rem;margin-bottom:.9em;
+  }
+  .eyebrow--dark{color:var(--orange-dark);}
+  .section__head{max-width:680px;margin:0 auto 3em;text-align:center;}
+  .section__head--light{color:#fff;}
+  .section__lede{color:var(--muted);font-size:1.05rem;margin-top:.6em;}
+  .section__head--light .section__lede{color:var(--muted-light);}
+  .section{padding:5.5em 0;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;overflow:hidden;
+    background:radial-gradient(1200px 600px at 85% -10%, var(--navy-3), transparent),
+               linear-gradient(180deg,var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;padding:4.5em 0 8em;
+  }
+  .hero__inner{max-width:760px;margin:0 auto;padding:0 20px;text-align:center;}
+  .hero__lede{margin-top:1.1em;font-size:1.15rem;color:var(--muted-light);max-width:600px;margin-left:auto;margin-right:auto;}
+  .hero__cta{display:flex;flex-wrap:wrap;gap:.9em;justify-content:center;margin-top:2em;}
+  .hero__points{
+    margin-top:2.6em;display:flex;flex-wrap:wrap;gap:1.4em 2em;justify-content:center;
+    font-weight:600;font-size:.98rem;color:#fff;
+  }
+  .hero__points li{display:flex;align-items:center;gap:.5em;}
+  .hero__points .icon{color:var(--orange);}
+  .hero__wave{display:block;width:100%;height:auto;margin-top:-6em;position:relative;color:var(--paper);}
+
+  /* ---------- Trust strip ---------- */
+  .trust{margin-top:-5.5em;position:relative;z-index:2;padding-bottom:2em;}
+  .trust__inner{
+    max-width:1180px;margin:0 auto;padding:0 20px;
+    display:grid;grid-template-columns:repeat(2,1fr);gap:1em;
+  }
+  @media (min-width:760px){
+    .trust__inner{grid-template-columns:repeat(4,1fr);gap:1.2em;}
+  }
+  .trust__item{
+    background:var(--paper-2);border-radius:var(--radius-md);padding:1.4em 1.2em;
+    box-shadow:var(--shadow-md);text-align:center;
+  }
+  .trust__item .icon{color:var(--orange-dark);margin:0 auto .5em;}
+  .trust__item h3{font-size:.98rem;margin-bottom:.25em;}
+  .trust__item p{font-size:.85rem;color:var(--muted);}
+
+  /* ---------- Services ---------- */
+  .services{background:var(--paper);}
+  .services__grid{
+    display:grid;grid-template-columns:1fr;gap:1.4em;
+  }
+  @media (min-width:640px){.services__grid{grid-template-columns:repeat(2,1fr);}}
+  @media (min-width:980px){.services__grid{grid-template-columns:repeat(3,1fr);}}
+  .service-card{
+    background:var(--paper-2);border:1px solid rgba(14,34,51,.08);border-radius:var(--radius-lg);
+    padding:1.8em 1.6em;box-shadow:var(--shadow-md);
+  }
+  .service-card__icon{
+    width:56px;height:56px;border-radius:14px;background:linear-gradient(145deg,var(--navy),var(--navy-2));
+    display:flex;align-items:center;justify-content:center;color:var(--orange);margin-bottom:1em;
+  }
+  .service-card h3{margin-bottom:.4em;}
+  .service-card p{color:var(--muted);font-size:.96rem;}
+
+  /* ---------- How it works ---------- */
+  .how{background:linear-gradient(180deg,var(--navy) 0%, var(--navy-2) 100%);color:#fff;}
+  .how__steps{
+    display:grid;grid-template-columns:1fr;gap:2em;max-width:980px;margin:0 auto;counter-reset:step;
+  }
+  @media (min-width:760px){.how__steps{grid-template-columns:repeat(3,1fr);}}
+  .how__step{text-align:center;position:relative;padding:0 1em;}
+  .how__num{
+    display:inline-flex;align-items:center;justify-content:center;width:2.4em;height:2.4em;
+    border-radius:50%;background:var(--orange);color:#1a1006;font-weight:800;margin-bottom:.9em;
+  }
+  .how__step h3{margin-bottom:.4em;}
+  .how__step p{color:var(--muted-light);font-size:.96rem;}
+
+  /* ---------- Testimonials ---------- */
+  .reviews{background:var(--paper);}
+  .reviews__grid{display:grid;grid-template-columns:1fr;gap:1.3em;}
+  @media (min-width:760px){.reviews__grid{grid-template-columns:repeat(3,1fr);}}
+  .review{
+    background:var(--paper-2);border-radius:var(--radius-lg);padding:1.8em;
+    box-shadow:var(--shadow-md);border-top:4px solid var(--orange);
+  }
+  .review blockquote{font-size:1.05rem;font-weight:600;color:var(--ink);}
+  .review figcaption{margin-top:1em;color:var(--muted);font-size:.9rem;}
+
+  /* ---------- Service area ---------- */
+  .areas{background:linear-gradient(180deg,var(--navy-2) 0%, var(--navy) 100%);color:#fff;}
+  .areas__inner{
+    display:grid;grid-template-columns:1fr;gap:2.6em;align-items:center;
+  }
+  @media (min-width:900px){.areas__inner{grid-template-columns:1.1fr 1fr;}}
+  .areas__text p{color:var(--muted-light);margin-top:.8em;max-width:520px;}
+  .areas__list{
+    margin-top:1.6em;display:grid;grid-template-columns:repeat(2,1fr);gap:.6em 1.4em;
+  }
+  .areas__list li{display:flex;align-items:center;gap:.5em;font-weight:600;font-size:.96rem;}
+  .areas__list .icon{color:var(--orange);}
+  .areas__map{
+    position:relative;aspect-ratio:1/1;max-width:420px;margin:0 auto;
+    border-radius:50%;
+    background:radial-gradient(circle at center, rgba(255,143,63,.14), transparent 70%);
+  }
+  .areas__map svg{width:100%;height:100%;}
+
+  /* ---------- Quote / final CTA ---------- */
+  .quote{background:var(--paper);}
+  .quote__inner{
+    display:grid;grid-template-columns:1fr;gap:2.6em;
+    background:linear-gradient(160deg,var(--navy) 0%, var(--navy-2) 100%);
+    color:#fff;border-radius:var(--radius-lg);padding:3em 1.8em;box-shadow:var(--shadow-lg);
+  }
+  @media (min-width:900px){.quote__inner{grid-template-columns:1fr 1fr;padding:3.6em;}}
+  .quote__text p{color:var(--muted-light);margin-top:.9em;max-width:460px;}
+  .quote__facts{margin-top:1.6em;display:flex;flex-direction:column;gap:.7em;font-weight:600;}
+  .quote__facts li{display:flex;gap:.6em;align-items:flex-start;}
+  .quote__facts .icon{color:var(--orange);margin-top:.15em;}
+  .quote__card{
+    background:var(--paper-2);color:var(--ink);border-radius:var(--radius-md);padding:1.8em;
+  }
+  .field{margin-bottom:1.1em;}
+  .field label{display:block;font-weight:700;font-size:.9rem;margin-bottom:.4em;}
+  .field input,.field textarea{
+    width:100%;padding:.8em .9em;border:1.5px solid #d8dee2;border-radius:var(--radius-sm);
+    background:#fff;font-size:1rem;
+  }
+  .field input:focus,.field textarea:focus{border-color:var(--orange);}
+  .form-note{margin-top:1em;font-size:.86rem;color:var(--muted);text-align:center;}
+  .form-note a{color:var(--orange-dark);font-weight:700;}
+  .form-success{
+    background:#0e2233;color:#fff;border-radius:var(--radius-md);padding:1.8em;text-align:center;font-weight:600;
+  }
+
+  /* ---------- Footer ---------- */
+  .site-footer{background:#0a1826;color:var(--muted-light);padding:3.5em 0 1.6em;}
+  .site-footer__inner{
+    display:grid;grid-template-columns:1fr;gap:2.2em;padding-bottom:2.4em;border-bottom:1px solid var(--navy-line);
+  }
+  @media (min-width:760px){.site-footer__inner{grid-template-columns:1.2fr 2fr;}}
+  .site-footer__cols{display:grid;grid-template-columns:repeat(1,1fr);gap:1.6em;}
+  @media (min-width:560px){.site-footer__cols{grid-template-columns:repeat(3,1fr);}}
+  .site-footer h3{color:#fff;font-size:.95rem;margin-bottom:.6em;}
+  .site-footer p,.site-footer a{font-size:.92rem;line-height:1.7;}
+  .site-footer a:hover{color:#fff;}
+  .site-footer__brand{display:flex;align-items:center;gap:.6em;font-weight:800;color:#fff;font-size:1.1rem;}
+  .site-footer__bottom{
+    padding-top:1.6em;display:flex;flex-wrap:wrap;gap:.6em 1.4em;justify-content:space-between;
+    font-size:.85rem;
+  }
+  .site-footer__bottom a{text-decoration:underline;text-underline-offset:3px;}
+
+  /* ---------- Progressive-enhancement animation (JS + motion allowed only) ---------- */
+  @media (prefers-reduced-motion: no-preference){
+    .js [data-animate]{
+      opacity:0;transform:translateY(18px);
+      transition:opacity .6s ease, transform .6s ease;
+    }
+    .js [data-animate].is-visible{opacity:1;transform:none;}
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- Icon sprite (decorative, built with inline SVG only) -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+<defs>
+<symbol id="i-phone" viewBox="0 0 48 48">
+  <g transform="rotate(-45 24 24)">
+    <rect x="13" y="19" width="22" height="10" rx="5"></rect>
+    <circle cx="16.5" cy="24" r="2.1" fill="currentColor" stroke="none"></circle>
+    <circle cx="31.5" cy="24" r="2.1" fill="currentColor" stroke="none"></circle>
+  </g>
+</symbol>
+<symbol id="i-drop" viewBox="0 0 48 48">
+  <path d="M24 6c-6 10-12 16-12 23a12 12 0 0 0 24 0c0-7-6-13-12-23z"></path>
+</symbol>
+<symbol id="i-radiator" viewBox="0 0 48 48">
+  <rect x="9" y="15" width="30" height="19" rx="3"></rect>
+  <line x1="15" y1="15" x2="15" y2="34"></line>
+  <line x1="21" y1="15" x2="21" y2="34"></line>
+  <line x1="27" y1="15" x2="27" y2="34"></line>
+  <line x1="33" y1="15" x2="33" y2="34"></line>
+  <line x1="14" y1="34" x2="14" y2="38"></line>
+  <line x1="34" y1="34" x2="34" y2="38"></line>
+  <path d="M11 6c1.6 1.6 1.6 3.4 0 5"></path>
+  <path d="M16 6c1.6 1.6 1.6 3.4 0 5"></path>
+</symbol>
+<symbol id="i-shower" viewBox="0 0 48 48">
+  <path d="M12 17c0-6 5.4-11 12-11s12 5 12 11"></path>
+  <line x1="11" y1="17" x2="37" y2="17"></line>
+  <line x1="17" y1="23" x2="16" y2="27"></line>
+  <line x1="24" y1="23" x2="23.3" y2="29"></line>
+  <line x1="31" y1="23" x2="30" y2="27"></line>
+  <line x1="19.5" y1="31" x2="19" y2="34"></line>
+  <line x1="28.5" y1="31" x2="28" y2="34"></line>
+</symbol>
+<symbol id="i-drain" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="14.5"></circle>
+  <circle cx="24" cy="24" r="2" fill="currentColor" stroke="none"></circle>
+  <circle cx="24" cy="15" r="1.5" fill="currentColor" stroke="none"></circle>
+  <circle cx="24" cy="33" r="1.5" fill="currentColor" stroke="none"></circle>
+  <circle cx="15" cy="24" r="1.5" fill="currentColor" stroke="none"></circle>
+  <circle cx="33" cy="24" r="1.5" fill="currentColor" stroke="none"></circle>
+  <circle cx="18" cy="18" r="1.3" fill="currentColor" stroke="none"></circle>
+  <circle cx="30" cy="18" r="1.3" fill="currentColor" stroke="none"></circle>
+  <circle cx="18" cy="30" r="1.3" fill="currentColor" stroke="none"></circle>
+  <circle cx="30" cy="30" r="1.3" fill="currentColor" stroke="none"></circle>
+</symbol>
+<symbol id="i-boiler" viewBox="0 0 48 48">
+  <rect x="14" y="7" width="20" height="34" rx="4"></rect>
+  <line x1="18" y1="35" x2="30" y2="35"></line>
+  <path d="M24 15c3 3.2 2.8 5-0.5 7.6-2.6 2-2.4 4 0 5.9 2.3-1 3.4-2.8 3.2-4.8 1.8 2 2.3 4.8 0.6 7.2-2 2.8-6.3 2.6-8-0.3-1.8-3-0.8-6 1.1-8.7 1-1.4 2.7-3.4 3.6-6.9z" fill="currentColor" stroke="none"></path>
+</symbol>
+<symbol id="i-alarm" viewBox="0 0 48 48">
+  <circle cx="24" cy="27" r="12.5"></circle>
+  <line x1="24" y1="20" x2="24" y2="27"></line>
+  <line x1="24" y1="27" x2="28.5" y2="30"></line>
+  <line x1="14.5" y1="10" x2="18.5" y2="14"></line>
+  <line x1="33.5" y1="10" x2="29.5" y2="14"></line>
+  <circle cx="14" cy="9" r="1.8" fill="currentColor" stroke="none"></circle>
+  <circle cx="34" cy="9" r="1.8" fill="currentColor" stroke="none"></circle>
+</symbol>
+<symbol id="i-shield" viewBox="0 0 48 48">
+  <path d="M24 6l14 5.2V21c0 10.4-6 17.6-14 21-8-3.4-14-10.6-14-21v-9.8z"></path>
+  <path d="M17 24l5 5 10-11"></path>
+</symbol>
+<symbol id="i-clock" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="15.5"></circle>
+  <line x1="24" y1="24" x2="24" y2="14"></line>
+  <line x1="24" y1="24" x2="31" y2="28"></line>
+</symbol>
+<symbol id="i-bolt" viewBox="0 0 48 48">
+  <path d="M26 5 13 27h9l-2.5 16L35 21h-9z" fill="currentColor" stroke="none"></path>
+</symbol>
+<symbol id="i-doc" viewBox="0 0 48 48">
+  <rect x="11" y="5" width="26" height="38" rx="3"></rect>
+  <line x1="16.5" y1="14" x2="31.5" y2="14"></line>
+  <line x1="16.5" y1="20.5" x2="31.5" y2="20.5"></line>
+  <path d="M16.5 29.5l4 4 9-9"></path>
+</symbol>
+<symbol id="i-pin" viewBox="0 0 48 48">
+  <path d="M24 43S12.5 30 12.5 21a11.5 11.5 0 0 1 23 0C35.5 30 24 43 24 43z"></path>
+  <circle cx="24" cy="21" r="4.3"></circle>
+</symbol>
+<symbol id="i-check" viewBox="0 0 48 48">
+  <path d="M11 25l8.5 8.5L37 15"></path>
+</symbol>
+<symbol id="i-arrow" viewBox="0 0 48 48">
+  <line x1="8" y1="24" x2="36" y2="24"></line>
+  <path d="M27 14l10 10-10 10"></path>
+</symbol>
+</defs>
+</svg>
+
+<!-- ============ TOP BAR ============ -->
+<div class="topbar" id="topbar">
+  <div class="topbar__inner">
+    <a class="brand" href="#top" aria-label="NordVand VVS &mdash; home">
+      <svg class="icon icon--brand" aria-hidden="true"><use href="#i-drop"></use></svg>
+      NordVand<span class="brand__accent">&nbsp;VVS</span>
+    </a>
+    <nav class="topbar__nav" aria-label="Primary">
+      <a href="#services">Services</a>
+      <a href="#how">How it works</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#areas">Areas</a>
+    </nav>
+    <a class="btn btn--call" href="tel:+4570123456">
+      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-phone"></use></svg>
+      <span>70&nbsp;12&nbsp;34&nbsp;56</span>
+    </a>
+  </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="hero__inner">
+    <p class="eyebrow">24/7 Emergency Plumbing &middot; Greater Copenhagen</p>
+    <h1>Burst pipe? We&rsquo;re on the way.</h1>
+    <p class="hero__lede">NordVand VVS sends a fully qualified plumber to your door &mdash; day or night &mdash; with a fixed price before we start, and no mess left behind.</p>
+    <div class="hero__cta">
+      <a class="btn btn--primary btn--lg" href="tel:+4570123456">
+        <svg class="icon" aria-hidden="true"><use href="#i-phone"></use></svg>
+        Call 70 12 34 56 now
+      </a>
+      <a class="btn btn--ghost btn--lg" href="#quote">
+        Get a fast quote
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"></use></svg>
+      </a>
+    </div>
+    <ul class="hero__points">
+      <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"></use></svg> Authorised VVS installer</li>
+      <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"></use></svg> 20+ years&rsquo; experience</li>
+      <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"></use></svg> Usually on-site within 60 minutes</li>
+    </ul>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="currentColor" d="M0,64L80,58.7C160,53,320,43,480,48C640,53,800,75,960,74.7C1120,75,1280,53,1360,42.7L1440,32L1440,100L0,100Z"></path>
+  </svg>
+</header>
+
+<main id="main">
+
+  <!-- ============ TRUST STRIP ============ -->
+  <section class="trust" aria-label="Why customers choose NordVand VVS">
+    <div class="trust__inner">
+      <div class="trust__item" data-animate>
+        <svg class="icon icon--lg" aria-hidden="true"><use href="#i-shield"></use></svg>
+        <h3>Authorised installer</h3>
+        <p>Certified &amp; fully insured VVS work.</p>
+      </div>
+      <div class="trust__item" data-animate>
+        <svg class="icon icon--lg" aria-hidden="true"><use href="#i-clock"></use></svg>
+        <h3>20+ years&rsquo; experience</h3>
+        <p>Family-run since 2004.</p>
+      </div>
+      <div class="trust__item" data-animate>
+        <svg class="icon icon--lg" aria-hidden="true"><use href="#i-bolt"></use></svg>
+        <h3>Fast local response</h3>
+        <p>Vans based across the region.</p>
+      </div>
+      <div class="trust__item" data-animate>
+        <svg class="icon icon--lg" aria-hidden="true"><use href="#i-doc"></use></svg>
+        <h3>Guaranteed work</h3>
+        <p>Every job tested before we leave.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SERVICES ============ -->
+  <section class="section services" id="services">
+    <div class="container">
+      <div class="section__head">
+        <p class="eyebrow eyebrow--dark">What we fix</p>
+        <h2>One call covers every job</h2>
+        <p class="section__lede">From a dripping tap to a full bathroom refit &mdash; our vans carry the parts to finish most jobs in a single visit.</p>
+      </div>
+      <div class="services__grid">
+        <article class="service-card" data-animate>
+          <div class="service-card__icon"><svg class="icon" aria-hidden="true"><use href="#i-drop"></use></svg></div>
+          <h3>Leaks &amp; repairs</h3>
+          <p>Dripping taps, burst pipes and hidden leaks found and fixed quickly.</p>
+        </article>
+        <article class="service-card" data-animate>
+          <div class="service-card__icon"><svg class="icon" aria-hidden="true"><use href="#i-radiator"></use></svg></div>
+          <h3>Heating &amp; radiators</h3>
+          <p>Cold radiators, noisy pipes and heating systems serviced or replaced.</p>
+        </article>
+        <article class="service-card" data-animate>
+          <div class="service-card__icon"><svg class="icon" aria-hidden="true"><use href="#i-shower"></use></svg></div>
+          <h3>Bathrooms &amp; renovations</h3>
+          <p>New showers, taps and full bathroom plumbing, fitted neatly.</p>
+        </article>
+        <article class="service-card" data-animate>
+          <div class="service-card__icon"><svg class="icon" aria-hidden="true"><use href="#i-drain"></use></svg></div>
+          <h3>Drains &amp; sewer</h3>
+          <p>Blocked drains and sewer lines cleared with camera inspection.</p>
+        </article>
+        <article class="service-card" data-animate>
+          <div class="service-card__icon"><svg class="icon" aria-hidden="true"><use href="#i-boiler"></use></svg></div>
+          <h3>Boilers &amp; water heaters</h3>
+          <p>Servicing, repair and replacement of boilers and hot-water tanks.</p>
+        </article>
+        <article class="service-card" data-animate>
+          <div class="service-card__icon"><svg class="icon" aria-hidden="true"><use href="#i-alarm"></use></svg></div>
+          <h3>24/7 emergency call-out</h3>
+          <p>Something serious? We answer the phone day and night, every day.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="section how" id="how">
+    <div class="container">
+      <div class="section__head section__head--light">
+        <p class="eyebrow">How it works</p>
+        <h2>Fixed in three simple steps</h2>
+      </div>
+      <ol class="how__steps">
+        <li class="how__step" data-animate>
+          <span class="how__num">1</span>
+          <h3>Call or send a request</h3>
+          <p>Tell us what&rsquo;s wrong and where you are. Emergencies are answered around the clock.</p>
+        </li>
+        <li class="how__step" data-animate>
+          <span class="how__num">2</span>
+          <h3>We assess &amp; quote</h3>
+          <p>You get a clear, fixed price before any work begins &mdash; no surprises on the invoice.</p>
+        </li>
+        <li class="how__step" data-animate>
+          <span class="how__num">3</span>
+          <h3>We fix it &amp; tidy up</h3>
+          <p>Work is tested before we leave, and every job is covered by our workmanship guarantee.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ TESTIMONIALS ============ -->
+  <section class="section reviews" id="reviews">
+    <div class="container">
+      <div class="section__head">
+        <p class="eyebrow eyebrow--dark">Customer feedback</p>
+        <h2>What people tell us</h2>
+        <p class="section__lede">A few examples of the kind of feedback we aim for on every visit.</p>
+      </div>
+      <div class="reviews__grid">
+        <figure class="review" data-animate>
+          <blockquote>&ldquo;Fast and tidy &mdash; sorted our leak the same day.&rdquo;</blockquote>
+          <figcaption>&mdash; A homeowner in Frederiksberg</figcaption>
+        </figure>
+        <figure class="review" data-animate>
+          <blockquote>&ldquo;Gave us a fixed price up front and stuck to it. No surprises.&rdquo;</blockquote>
+          <figcaption>&mdash; A caf&eacute; owner in K&oslash;benhavn K</figcaption>
+        </figure>
+        <figure class="review" data-animate>
+          <blockquote>&ldquo;Came out late on a Sunday and had the boiler running again within the hour.&rdquo;</blockquote>
+          <figcaption>&mdash; A landlord in R&oslash;dovre</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SERVICE AREA ============ -->
+  <section class="section areas" id="areas">
+    <div class="container areas__inner">
+      <div class="areas__text">
+        <p class="eyebrow">Service area</p>
+        <h2>Local plumbers, fast on the road</h2>
+        <p>Based in Glostrup, our vans cover the whole of Greater Copenhagen. Tell us your postcode and we&rsquo;ll give you our next available time.</p>
+        <ul class="areas__list">
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"></use></svg> K&oslash;benhavn</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"></use></svg> Frederiksberg</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"></use></svg> Gentofte</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"></use></svg> Lyngby-Taarb&aelig;k</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"></use></svg> R&oslash;dovre</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"></use></svg> Hvidovre</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"></use></svg> Glostrup</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"></use></svg> Br&oslash;ndby</li>
+        </ul>
+      </div>
+      <div class="areas__map" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.5"></circle>
+          <circle cx="100" cy="100" r="62" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="1.5"></circle>
+          <circle cx="100" cy="100" r="34" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1.5"></circle>
+          <circle cx="100" cy="100" r="6" fill="#ff8f3f"></circle>
+          <circle cx="140" cy="70" r="4" fill="#ffffff" opacity=".85"></circle>
+          <circle cx="60" cy="60" r="4" fill="#ffffff" opacity=".85"></circle>
+          <circle cx="150" cy="130" r="4" fill="#ffffff" opacity=".85"></circle>
+          <circle cx="55" cy="140" r="4" fill="#ffffff" opacity=".85"></circle>
+          <circle cx="100" cy="30" r="4" fill="#ffffff" opacity=".85"></circle>
+          <circle cx="170" cy="100" r="4" fill="#ffffff" opacity=".85"></circle>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUOTE CTA ============ -->
+  <section class="section quote" id="quote">
+    <div class="container">
+      <div class="quote__inner">
+        <div class="quote__text">
+          <p class="eyebrow">Get a fast quote</p>
+          <h2>Tell us the problem &mdash; we&rsquo;ll call you back</h2>
+          <p>Send a few details below and we&rsquo;ll get back to you with a fixed price, usually within the hour during business hours.</p>
+          <ul class="quote__facts">
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg> Mon&ndash;Fri 07:00&ndash;16:00, emergency call-out 24/7</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-doc"></use></svg> Fixed price agreed before any work starts</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-shield"></use></svg> Fully insured, authorised VVS installer</li>
+          </ul>
+        </div>
+        <div class="quote__card">
+          <form class="quote-form" id="quoteForm" action="#" method="post">
+            <div class="field">
+              <label for="qName">Your name</label>
+              <input type="text" id="qName" name="name" autocomplete="name" placeholder="e.g. Anna Nielsen" required>
+            </div>
+            <div class="field">
+              <label for="qPhone">Phone number</label>
+              <input type="tel" id="qPhone" name="phone" autocomplete="tel" placeholder="e.g. 20 12 34 56" required>
+            </div>
+            <div class="field">
+              <label for="qProblem">What&rsquo;s the problem?</label>
+              <textarea id="qProblem" name="problem" rows="4" placeholder="e.g. Leaking pipe under the kitchen sink"></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary btn--block">
+              Send my request
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"></use></svg>
+            </button>
+            <p class="form-note">Prefer to talk now? Call <a href="tel:+4570123456">70 12 34 56</a> &mdash; available 24 hours a day.</p>
+          </form>
+          <p class="form-success" id="formSuccess" hidden>Thanks &mdash; your request has been received. We&rsquo;ll call you back shortly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner">
+      <div>
+        <div class="site-footer__brand">
+          <svg class="icon icon--brand" aria-hidden="true"><use href="#i-drop"></use></svg>
+          NordVand VVS
+        </div>
+        <p style="margin-top:.9em;max-width:320px;">Authorised plumbing &amp; heating specialists serving Greater Copenhagen since 2004.</p>
+      </div>
+      <div class="site-footer__cols">
+        <div>
+          <h3>Address</h3>
+          <p>R&oslash;rvangsvej 8<br>2600 Glostrup<br>CVR 12 34 56 78</p>
+        </div>
+        <div>
+          <h3>Opening hours</h3>
+          <p>Mon&ndash;Fri: 07:00&ndash;16:00<br>Emergency call-out: 24/7, every day</p>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <p><a href="tel:+4570123456">70 12 34 56</a><br><a href="mailto:info@nordvandvvs.example">info@nordvandvvs.example</a></p>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <span>&copy; 2026 NordVand VVS. All rights reserved.</span>
+      <span>Website by MRLN &middot; mrln.online</span>
+      <a href="/portfolio.html">See more work &rarr;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // Mark JS as available so CSS can layer on non-essential motion.
+  document.documentElement.classList.add('js');
+
+  // Sticky top-bar shadow once the page is scrolled.
+  var topbar = document.getElementById('topbar');
+  if (topbar) {
+    var onScroll = function(){
+      if (window.scrollY > 8) { topbar.classList.add('is-scrolled'); }
+      else { topbar.classList.remove('is-scrolled'); }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // Subtle reveal-on-scroll, purely decorative: content is already
+  // fully visible by default (see @media prefers-reduced-motion CSS),
+  // this only adds a soft fade/slide when motion is allowed.
+  var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    var targets = document.querySelectorAll('[data-animate]');
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    targets.forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('[data-animate]').forEach(function(el){
+      el.classList.add('is-visible');
+    });
+  }
+
+  // Quote form: enhance with an inline confirmation instead of a real
+  // submit, since this is a self-contained demo with no backend.
+  var form = document.getElementById('quoteForm');
+  var success = document.getElementById('formSuccess');
+  if (form && success) {
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if (typeof form.reportValidity === 'function' && !form.reportValidity()) {
+        return;
+      }
+      form.hidden = true;
+      success.hidden = false;
+      success.setAttribute('tabindex', '-1');
+      success.focus();
+    });
+  }
+})();
+</script>
+</body>
+</html>

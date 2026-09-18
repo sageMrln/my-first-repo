@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>document.documentElement.classList.add('js')</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MRLN &mdash; Websites for local business</title>
+<meta name="description" content="MRLN builds, hosts and looks after websites for local businesses &mdash; simple sites that bring in more calls, bookings and customers. You rent it, I keep it working.">
+<style>
+:root{
+  --ink:#0b0b0f; --ink-2:#14151d; --panel:#171821;
+  --paper:#f5eedd; --paper-2:#ece1c9; --paper-ink:#241d13;
+  --brass:#c9a35b; --brass-2:#e7cb8b; --ember:#d8683a; --spot:#7fb4ff;
+  --txt:#f5f0e6; --dim:#b6ae9c; --faint:#847d6c;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --maxw:1180px; --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--txt);font-family:var(--sans);line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.06;letter-spacing:-.01em}
+:focus-visible{outline:2px solid var(--brass-2);outline-offset:3px;border-radius:2px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,56px)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--brass)}
+.btn{display:inline-flex;align-items:center;gap:.5em;font-weight:650;font-size:16px;
+  padding:15px 26px;border-radius:3px;transition:transform .2s var(--ease),background .2s,color .2s,border-color .2s}
+.btn-primary{background:var(--brass);color:#1a1206;box-shadow:0 12px 30px -12px rgba(201,163,91,.55)}
+.btn-primary:hover{transform:translateY(-2px);background:var(--brass-2)}
+.btn-ghost{border:1px solid rgba(245,240,230,.3)}
+.btn-ghost:hover{border-color:var(--brass);color:var(--brass-2);transform:translateY(-2px)}
+
+header.site{position:fixed;inset:0 0 auto 0;z-index:60;display:flex;align-items:center;justify-content:space-between;
+  padding:15px clamp(20px,5vw,56px);background:rgba(11,11,15,.8);backdrop-filter:blur(10px);border-bottom:1px solid rgba(245,240,230,.06)}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-size:22px}
+.brand .seal{width:28px;height:28px;flex:0 0 auto}
+.nav{display:flex;align-items:center;gap:24px;font-size:14px;color:var(--dim)}
+.nav a:hover{color:var(--brass-2)}
+.nav .home{font-family:var(--mono);font-size:12px;letter-spacing:.1em}
+@media(max-width:620px){.nav{gap:14px;font-size:13px}.nav .home{display:none}}
+
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;overflow:hidden}
+#gl{position:absolute;inset:0;width:100%;height:100%;z-index:0;background:radial-gradient(120% 90% at 76% 28%,#17222f,#0b0b0f 62%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(11,11,15,.94),rgba(11,11,15,.72) 40%,rgba(11,11,15,.1) 72%,transparent),
+             linear-gradient(0deg,var(--ink),transparent 42%)}
+.hero .wrap{position:relative;z-index:2;width:100%;padding-top:92px;padding-bottom:56px}
+.hero h1{font-size:clamp(38px,7vw,84px);max-width:15ch}
+.hero h1 em{font-style:normal;color:var(--brass-2)}
+.hero .lede{margin-top:24px;max-width:46ch;font-size:clamp(17px,2vw,21px);color:var(--dim)}
+.hero .cta{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap}
+.hero .trust{margin-top:40px;display:flex;gap:12px 26px;flex-wrap:wrap;font-family:var(--mono);
+  font-size:12px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase}
+.hero .trust span{display:flex;align-items:center;gap:8px}
+.hero .trust span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--brass);flex:0 0 auto}
+
+.section{padding:clamp(76px,11vh,140px) 0}
+section[id]{scroll-margin-top:74px}
+.section-head{max-width:56ch}
+.section-head h2{font-size:clamp(30px,5vw,52px);margin-top:14px}
+.section-head .sub{margin-top:16px;color:var(--dim);font-size:clamp(16px,2vw,19px);max-width:50ch}
+
+.work{background:linear-gradient(180deg,var(--ink),#08080c 50%,var(--ink))}
+.works{display:grid;gap:26px;margin-top:48px}
+.spread{display:grid;grid-template-columns:1.05fr 1fr;background:var(--paper);color:var(--paper-ink);
+  border-radius:10px;overflow:hidden;box-shadow:0 40px 80px -40px rgba(0,0,0,.7);position:relative}
+.spread:nth-child(even){grid-template-columns:1fr 1.05fr}
+.spread:nth-child(even) .spread-text{order:2}
+.spread::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;transform:translateX(-1px);
+  background:linear-gradient(rgba(0,0,0,.14),rgba(0,0,0,.05));z-index:3;opacity:.55}
+@media(max-width:800px){.spread,.spread:nth-child(even){grid-template-columns:1fr}.spread::before{display:none}.spread:nth-child(even) .spread-text{order:0}}
+.spread-text{padding:clamp(26px,4vw,52px);display:flex;flex-direction:column;position:relative}
+.spread-text .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#9a7a3a}
+.spread-text h3{font-family:var(--serif);color:#160f07;font-size:clamp(27px,3.6vw,40px);margin-top:12px}
+.spread-text .desc{margin-top:16px;color:#4b4030;font-size:clamp(15px,1.6vw,17px);max-width:38ch}
+.spread-text ul{margin-top:22px;list-style:none;display:grid;gap:10px}
+.spread-text li{font-size:15px;color:#3b3122;display:flex;gap:10px;align-items:flex-start}
+.spread-text li b{color:#160f07}
+.spread-text li::before{content:"";width:8px;height:8px;margin-top:7px;flex:0 0 auto;background:var(--ember);transform:rotate(45deg)}
+.spread-text .go{margin-top:auto;padding-top:24px}
+.spread-text .go a{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:15px;
+  background:#160f07;color:var(--paper);padding:13px 22px;border-radius:3px;transition:transform .2s var(--ease),background .2s}
+.spread-text .go a:hover{transform:translateY(-2px);background:#2a1d0e}
+.spread-text .pagenum{position:absolute;bottom:16px;right:22px;font-family:var(--serif);font-size:13px;color:#b0a17e}
+.spread-media{position:relative;display:flex;align-items:center;justify-content:center;padding:clamp(22px,3.5vw,46px);
+  background:var(--paper-2);background-image:repeating-linear-gradient(180deg,transparent,transparent 27px,rgba(0,0,0,.035) 28px)}
+
+.browser{width:100%;max-width:440px;border-radius:10px;overflow:hidden;box-shadow:0 24px 46px -20px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.07)}
+.browser .bar{height:28px;display:flex;align-items:center;gap:6px;padding:0 11px;background:#eae4d7}
+.browser .bar i{width:8px;height:8px;border-radius:50%;background:#c9c0aa}
+.browser .bar .url{margin-left:8px;font-family:var(--mono);font-size:10px;color:#8a836f;background:#fff;border-radius:20px;padding:3px 12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.view{aspect-ratio:16/11;position:relative;overflow:hidden;font-family:var(--sans)}
+.t-plumb{background:#0e2233;color:#eaf2f8;padding:18px}
+.t-plumb .k{font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;color:#5aa9d6;text-transform:uppercase}
+.t-plumb h4{font-weight:800;font-size:22px;line-height:1.04;margin-top:8px}
+.t-plumb .em{color:#ff8f3f}
+.t-plumb .grid{position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(90,169,214,.08) 0 1px,transparent 1px 36px);opacity:.6}
+.t-plumb .row{position:absolute;left:18px;right:18px;bottom:16px;display:flex;gap:8px}
+.t-plumb .pill{font-size:10px;font-weight:800;padding:9px 12px;border-radius:4px}
+.t-plumb .pill.a{background:#ff8f3f;color:#20120a}.t-plumb .pill.b{background:rgba(255,255,255,.1);color:#cfe2ee}
+.t-glass{background:linear-gradient(160deg,#eaf4ff,#cfe6ff);color:#0d2b4a;padding:18px}
+.t-glass .k{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;color:#2f7dc0;text-transform:uppercase}
+.t-glass h4{font-weight:300;font-size:23px;line-height:1.05;margin-top:10px}.t-glass h4 b{font-weight:800}
+.t-glass .sun{position:absolute;top:-34px;right:-34px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,255,255,0))}
+.t-glass .cta{position:absolute;left:18px;bottom:16px;font-size:11px;font-weight:700;background:#0d2b4a;color:#eaf4ff;padding:10px 16px;border-radius:30px}
+.t-call{background:#0c1a1c;color:#dff5f2;padding:18px}
+.t-call .k{font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;color:#37c4a8;text-transform:uppercase}
+.t-call h4{font-weight:700;font-size:20px;margin-top:8px;line-height:1.1}
+.t-call .stats{position:absolute;left:18px;right:18px;bottom:16px;display:flex;gap:10px}
+.t-call .stat{flex:1;background:rgba(55,196,168,.1);border-left:2px solid #37c4a8;padding:9px}
+.t-call .stat .n{font-weight:800;font-size:17px;color:#5fe0c6}.t-call .stat .l{font-size:8px;color:#8fb8b1;letter-spacing:.06em}
+.t-local{background:#f7efe4;color:#3a2a1c;padding:20px;font-family:var(--serif)}
+.t-local .k{font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;color:#b07d3c;text-transform:uppercase}
+.t-local h4{font-weight:600;font-style:italic;font-size:27px;margin-top:10px;line-height:1}
+.t-local .rule{width:40px;height:2px;background:#c98a3a;margin:13px 0}
+.t-local p{font-family:var(--sans);font-size:12px;color:#6b543f;max-width:26ch}
+.t-local .badge{position:absolute;left:20px;bottom:18px;font-family:var(--sans);font-size:10px;font-weight:700;background:#3a2a1c;color:#f7efe4;padding:8px 14px;border-radius:2px}
+.t-local .hours{position:absolute;right:20px;bottom:18px;text-align:right;font-family:var(--mono);font-size:9px;color:#8a6a47}
+
+.offer .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+@media(max-width:820px){.offer .cards{grid-template-columns:1fr}}
+.ocard{background:var(--panel);border:1px solid rgba(245,240,230,.08);border-radius:8px;padding:30px 26px;position:relative}
+.ocard::after{content:"";position:absolute;left:0;top:0;width:40px;height:3px;background:var(--brass)}
+.ocard .no{font-family:var(--serif);color:var(--brass);opacity:.75}
+.ocard h3{font-size:23px;margin-top:12px}
+.ocard p{margin-top:12px;color:var(--dim);font-size:15.5px}
+.rentline{margin-top:34px;padding:28px 30px;border:1px solid rgba(201,163,91,.32);border-radius:8px;
+  background:linear-gradient(120deg,rgba(201,163,91,.09),transparent);display:flex;gap:20px;justify-content:space-between;flex-wrap:wrap;align-items:center}
+.rentline .k{font-family:var(--serif);font-size:clamp(21px,3vw,30px)}
+.rentline .k em{font-style:normal;color:var(--brass-2)}
+.rentline p{color:var(--dim);max-width:42ch;font-size:15.5px}
+
+.contact{text-align:center;padding:clamp(90px,15vh,170px) 0}
+.contact h2{font-size:clamp(32px,6vw,66px);max-width:17ch;margin:14px auto 0}
+.contact .sub{margin:18px auto 0;color:var(--dim);max-width:48ch;font-size:18px}
+.contact .cta{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+footer{border-top:1px solid rgba(245,240,230,.08);padding:32px 0;color:var(--faint);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+footer .mono{font-family:var(--mono);letter-spacing:.08em}
+
+html.js [data-rv]{opacity:0;transform:translateY(20px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+[data-rv].in{opacity:1;transform:none}
+@media(max-width:820px){#gl{opacity:.5}.hero::after{background:linear-gradient(0deg,var(--ink),rgba(8,8,12,.5) 52%,rgba(8,8,12,.72))}}@media(max-width:520px){.hero .cta{flex-direction:column;align-items:stretch}.hero .cta .btn{justify-content:center}}
+@media (prefers-reduced-motion:reduce){
+  html.js [data-rv]{opacity:1!important;transform:none!important;transition:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="/"><svg class="seal" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 36 12v16L20 38 4 28V12Z" fill="none" stroke="#c9a35b" stroke-width="1.4"/><path d="M12 27V14l8 6 8-6v13" fill="none" stroke="#e6c884" stroke-width="1.8" stroke-linejoin="round"/></svg>MRLN</a>
+  <nav class="nav">
+    <a href="#work">Work</a>
+    <a href="#offer">What you get</a>
+    <a href="#contact">Contact</a>
+    <a class="home" href="/">mrln.online</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <canvas id="gl" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <p class="eyebrow">MRLN &middot; Websites for local business</p>
+    <h1>A website that brings your business <em>more customers.</em></h1>
+    <p class="lede">I build simple, good-looking websites for local trades and shops &mdash; easy for anyone to use, and made to turn visitors into calls, bookings and walk-ins. I build it, put it online, and keep it up to date. You just rent it.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#work">See example sites</a>
+      <a class="btn btn-ghost" href="#contact">Get yours built</a>
+    </div>
+    <p class="trust"><span>Built for you</span><span>Hosted &amp; kept up to date</span><span>Two changes a week</span><span>Rented, not sold</span></p>
+  </div>
+</section>
+
+<section class="section work" id="work" tabindex="-1">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">The work</p>
+      <h2>Example sites, ready for your name.</h2>
+      <p class="sub">Each one is a real, working design I can put your business into &mdash; your name, your services, your area and your phone number &mdash; usually within a day.</p>
+    </div>
+    <div class="works">
+
+      <article class="spread">
+        <div class="spread-text">
+          <p class="kicker">Plumbing &amp; heating</p>
+          <h3>The emergency-ready plumber site</h3>
+          <p class="desc">Bold and built on trust. Your phone number stays on the screen at all times, and the 24/7 line is the first thing anyone sees.</p>
+          <ul>
+            <li><b>Tap to call</b> on every screen, day or night</li>
+            <li><b>Your services and area</b> so locals find you</li>
+            <li><b>Quick quote form</b> that reaches your phone</li>
+          </ul>
+          <div class="go"><a href="plumbing.html">See this demo &rarr;</a></div>
+          <span class="pagenum">01</span>
+        </div>
+        <div class="spread-media"><div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">yourplumbing.dk</span></div>
+          <div class="view t-plumb"><div class="grid"></div><span class="k">24/7 &middot; Emergency call-out</span><h4>Burst pipe?<br><span class="em">We&rsquo;re on the way.</span></h4><div class="row"><span class="pill a">Call now</span><span class="pill b">Get a quote</span></div></div></div></div>
+      </article>
+
+      <article class="spread">
+        <div class="spread-text">
+          <p class="kicker">Vinduespudser &middot; Window cleaning</p>
+          <h3>The bright window-cleaning site</h3>
+          <p class="desc">Light, clean and spotless &mdash; the look says it all. Simple to read, with one clear button to book a clean.</p>
+          <ul>
+            <li><b>Instant price</b> by number of windows</li>
+            <li><b>The areas you cover</b>, plainly listed</li>
+            <li><b>Regular plans</b> made easy to choose</li>
+          </ul>
+          <div class="go"><a href="vinduespudser.html">See this demo &rarr;</a></div>
+          <span class="pagenum">02</span>
+        </div>
+        <div class="spread-media"><div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">klarsigt.dk</span></div>
+          <div class="view t-glass"><div class="sun"></div><span class="k">Vinduespudsning &middot; Fast &amp; forsikret</span><h4>Streak-free,<br><b>every time.</b></h4><div class="cta">Book a clean &rarr;</div></div></div></div>
+      </article>
+
+      <article class="spread">
+        <div class="spread-text">
+          <p class="kicker">Call centre &amp; services</p>
+          <h3>The sharp call-centre site</h3>
+          <p class="desc">Calm, professional and clear. Shows what you do and how to reach you, with one simple goal: book a call.</p>
+          <ul>
+            <li><b>What you offer</b>, in plain words</li>
+            <li><b>Hours and coverage</b> at a glance</li>
+            <li><b>Book a call</b> as the one clear step</li>
+          </ul>
+          <div class="go"><a href="callcenter.html">See this demo &rarr;</a></div>
+          <span class="pagenum">03</span>
+        </div>
+        <div class="spread-media"><div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">apexcontact.dk</span></div>
+          <div class="view t-call"><span class="k">Contact centre &middot; Always open</span><h4>Never miss<br>a customer call.</h4><div class="stats"><div class="stat"><div class="n">Fast</div><div class="l">PICK-UP</div></div><div class="stat"><div class="n">Local</div><div class="l">TEAM</div></div></div></div></div></div>
+      </article>
+
+      <article class="spread">
+        <div class="spread-text">
+          <p class="kicker">Caf&eacute;, salon &amp; shops</p>
+          <h3>The warm local-business site</h3>
+          <p class="desc">Inviting and easy on the eye &mdash; made for caf&eacute;s, salons and shops where the feeling is what sells. Your story, your menu, your hours.</p>
+          <ul>
+            <li><b>Your menu or services</b> as a real page</li>
+            <li><b>Opening hours and a map</b>, always right</li>
+            <li><b>A look and feel</b> that&rsquo;s truly yours</li>
+          </ul>
+          <div class="go"><a href="local.html">See this demo &rarr;</a></div>
+          <span class="pagenum">04</span>
+        </div>
+        <div class="spread-media"><div class="browser"><div class="bar"><i></i><i></i><i></i><span class="url">cafenordlys.dk</span></div>
+          <div class="view t-local"><span class="k">Neighbourhood caf&eacute;</span><h4>Slow mornings,<br>strong coffee.</h4><div class="rule"></div><p>Fresh bakes, good coffee, and a corner that feels like yours.</p><span class="badge">See the menu</span><span class="hours">OPEN TODAY<br>07&ndash;17</span></div></div></div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="section offer" id="offer" tabindex="-1">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">What you get</p>
+      <h2>Done for you. Kept for you.</h2>
+      <p class="sub">No big bill up front and nothing technical for you to deal with. I build the site around your business, put it online, and keep it working &mdash; you just tell me what to change.</p>
+    </div>
+    <div class="cards">
+      <div class="ocard"><div class="no">01</div><h3>Built around you</h3><p>Your services, your area, your hours and your phone number &mdash; laid out to send people straight to calling or booking you.</p></div>
+      <div class="ocard"><div class="no">02</div><h3>Hosted and handled</h3><p>It lives on a fast, safe web address. Backups and the technical side are mine to worry about &mdash; never yours.</p></div>
+      <div class="ocard"><div class="no">03</div><h3>Two changes a week</h3><p>New photos, a price change, a holiday notice, a fresh offer &mdash; send it over and it&rsquo;s done. Two updates every week, included.</p></div>
+    </div>
+    <div class="rentline">
+      <div class="k"><em>Rented, not sold.</em> One simple monthly price.</div>
+      <p>The site, the hosting and the upkeep together &mdash; cancel anytime, no lock-in and no surprise bills.</p>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact" tabindex="-1">
+  <div class="wrap">
+    <p class="eyebrow">Get started</p>
+    <h2>Let&rsquo;s get your business found and booked.</h2>
+    <p class="sub">Tell me your trade and your town. I&rsquo;ll build you an example site with your own name on it &mdash; then you decide.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="mailto:Kontaktmrln@gmail.com?subject=A%20website%20for%20my%20business">Email MRLN</a>
+      <a class="btn btn-ghost" href="/">Back to mrln.online</a>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span class="mono">MRLN &middot; Web Studio</span><span>Websites for local business &mdash; built, hosted and kept up to date.</span></div></footer>
+
+<script>
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+document.querySelectorAll('[data-rv]').forEach(function(el){io.observe(el);});
+
+(function(){
+  var canvas=document.getElementById('gl');
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(reduce) return;
+  import('./vendor/three.module.min.js').then(function(THREE){
+    var scene=new THREE.Scene();
+    var cam=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,0.1,100); cam.position.set(0,0,9);
+    var rnd=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+    rnd.setPixelRatio(Math.min(devicePixelRatio,2));
+    function size(){rnd.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();}
+    size(); addEventListener('resize',size);
+    var group=new THREE.Group(); group.position.x=1.5; scene.add(group);
+    var cols=[0x18263b,0x213650,0x2b4463];
+    for(var i=0;i<8;i++){
+      var g=new THREE.BoxGeometry(3.6,2.3,0.14);
+      var m=new THREE.MeshStandardMaterial({color:cols[i%3],emissive:(i===3?0x3f74d0:0x24406a),emissiveIntensity:.8,metalness:.45,roughness:.32});
+      var mesh=new THREE.Mesh(g,m);
+      mesh.position.set(Math.sin(i*0.8)*1.0,(i-3.5)*0.52,Math.cos(i*0.8)*0.6);
+      mesh.rotation.y=i*0.17; group.add(mesh);
+      mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0xe6c884,transparent:true,opacity:.6})));
+    }
+    var key=new THREE.DirectionalLight(0xfff0d2,2.0); key.position.set(4,6,7); scene.add(key);
+    var rim=new THREE.DirectionalLight(0x7fb4ff,1.1); rim.position.set(-6,-2,3); scene.add(rim);
+    scene.add(new THREE.AmbientLight(0x2b3d5a,1.5));
+    var mx=0,my=0; addEventListener('pointermove',function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;},{passive:true});
+    var t0=performance.now();
+    (function loop(now){var t=(now-t0)/1000;
+      group.rotation.y=t*0.16+mx*0.45; group.rotation.x=-0.16+my*0.26; group.position.y=Math.sin(t*0.5)*0.12;
+      rnd.render(scene,cam); requestAnimationFrame(loop);})(t0);
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>
