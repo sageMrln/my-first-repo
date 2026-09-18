@@ -4,9 +4,9 @@
    - Cache-first for static assets (icons/manifest) that rarely change.
    - Full offline fallback to the cached app when there's no network.
    Bump VERSION only to force-flush old caches (e.g. when the asset list changes). */
-var VERSION = 'v42';
+var VERSION = 'v43';
 var CACHE = 'mrln-' + VERSION;
-var CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
+var CORE = ['./', './index.html', './app.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', function(e){
   self.skipWaiting();

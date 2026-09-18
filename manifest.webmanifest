@@ -2,7 +2,7 @@
   "name": "MRLN — Finance & Health HUD",
   "short_name": "MRLN",
   "description": "Your private, offline finance, tax, gym, food and life dashboard.",
-  "start_url": ".",
+  "start_url": "app.html",
   "scope": ".",
   "display": "standalone",
   "orientation": "portrait",
