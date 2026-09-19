@@ -2,6 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>
+/* Installed / PWA users must open the APP, not this marketing chooser. Their
+   captured start_url is the site root (= this page), so when the app launches in
+   standalone mode we send them straight to app.html before anything renders.
+   Ordinary browser visitors fall through to the chooser as normal. */
+(function(){try{
+  var standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)
+    ||window.navigator.standalone===true
+    ||(document.referrer||'').indexOf('android-app://')===0;
+  if(standalone){ location.replace('./app.html'); }
+}catch(e){}})();
+</script>
 <script>document.documentElement.classList.add('js')</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MRLN</title>
@@ -55,7 +67,7 @@ a{color:inherit;text-decoration:none}
   border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 13px;background:rgba(255,255,255,.03)}
 @media(max-width:820px){.trust{display:none}}
 @media(max-width:820px){.hero{justify-content:flex-start;padding-top:6px}.hero .inner{max-width:100%}.tag{font-size:clamp(28px,7.5vw,40px)}
-  .sub{margin-top:12px;font-size:14px}.cap{margin-top:12px}}
+  .sub{display:none}.cap{margin-top:12px}}
 
 /* doors: solid bottom band, ALWAYS visible, two columns */
 .doors{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:clamp(18px,3vh,30px) clamp(18px,5vw,64px) clamp(22px,4vh,40px)}
@@ -306,10 +318,11 @@ var reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
     function place(){ rnd.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix();
       var wide=innerWidth>820;
       /* desktop: sit in the right half at a 3/4 angle; mobile: centred, near front-on so it fits */
-      rig.position.set(wide?1.9:0, wide?0.15:0.45, 0);
-      rig.scale.setScalar(wide?(innerWidth>1200?0.8:0.68):0.5);
+      rig.position.set(wide?1.9:0, wide?0.15:-0.35, 0);
+      rig.scale.setScalar(wide?(innerWidth>1200?0.8:0.68):0.34);
       yaw=wide?-0.26:-0.05; yawAmp=wide?0.18:0.06;
-      cam.position.y=wide?2.4:2.0;
+      cam.position.y=wide?2.4:1.9;
+      pts.material.opacity=wide?0.55:0.28;   /* quieter particle field on phones */
       paint(S[si]);
     }
     place(); addEventListener("resize",place);
