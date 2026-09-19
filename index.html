@@ -318,10 +318,17 @@ var reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
     function place(){ rnd.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix();
       var wide=innerWidth>820;
       /* desktop: sit in the right half at a 3/4 angle; mobile: centred, near front-on so it fits */
-      rig.position.set(wide?1.9:0, wide?0.15:-0.35, 0);
-      rig.scale.setScalar(wide?(innerWidth>1200?0.8:0.68):0.34);
+      /* mobile: the laptop must FILL the band between the headline copy and the
+         door cards on any phone. That band grows with viewport height, but the
+         laptop is a fixed 3D object, so scale + rig.y are interpolated on height:
+         taller phones -> bigger + lower (reaches the card), shorter phones (URL
+         bar) -> smaller + higher (never cropped by the top card). */
+      var f=Math.max(0,Math.min(1,(innerHeight-640)/260));   /* 0 @640px .. 1 @900px */
+      var mRy=0.82+(0.40-0.82)*f, mSc=0.32+(0.50-0.32)*f;
+      rig.position.set(wide?1.9:0, wide?0.15:mRy, 0);
+      rig.scale.setScalar(wide?(innerWidth>1200?0.8:0.68):mSc);
       yaw=wide?-0.26:-0.05; yawAmp=wide?0.18:0.06;
-      cam.position.y=wide?2.4:1.9;
+      cam.position.y=wide?2.4:1.7;
       pts.material.opacity=wide?0.55:0.28;   /* quieter particle field on phones */
       paint(S[si]);
     }
