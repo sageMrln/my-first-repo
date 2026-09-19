@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>document.documentElement.classList.add('js')</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MRLN</title>
-<meta name="description" content="MRLN &mdash; a private money &amp; health app, and a web studio building websites for local business. Choose where you're headed.">
+<meta name="description" content="MRLN &mdash; a private money &amp; health app, and a web studio that builds websites for local business. Choose where you're headed.">
 <link rel="canonical" href="https://mrln.online/">
 <style>
 :root{
-  --ink:#080a0f; --txt:#f3f1ea; --dim:#a9a595; --faint:#6f6a5c;
+  --ink:#06070c; --txt:#f3f1ea; --dim:#b3b1a3; --faint:#6c6a5e;
   --ice:#7fb4ff; --ice-2:#bcd9ff; --brass:#c9a35b; --brass-2:#e7cb8b;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
   --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -16,81 +17,313 @@
   --ease:cubic-bezier(.22,1,.36,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100svh;background:var(--ink);color:var(--txt);font-family:var(--sans);
-  -webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+html,body{height:100%}
+body{background:var(--ink);color:var(--txt);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
-:focus-visible{outline:2px solid var(--brass-2);outline-offset:4px;border-radius:4px}
-.top{padding:26px clamp(20px,5vw,56px);text-align:center}
-.brand{display:inline-flex;align-items:center;gap:12px;font-family:var(--serif);font-size:26px;letter-spacing:.02em}
-.brand .seal{width:32px;height:32px}
-.tag{margin-top:10px;font-family:var(--mono);font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint)}
-main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:rgba(255,255,255,.06)}
-@media(max-width:800px){main{grid-template-columns:1fr}}
-.door{position:relative;display:flex;flex-direction:column;justify-content:flex-end;
-  min-height:min(64svh,560px);padding:clamp(30px,5vw,64px);overflow:hidden;background:#0c0e14;
-  transition:transform .5s var(--ease)}
-.door .bg{position:absolute;inset:0;z-index:0;transition:opacity .5s var(--ease),transform .6s var(--ease)}
-.door-mrln .bg{background:radial-gradient(120% 90% at 30% 20%,rgba(127,180,255,.22),transparent 60%),linear-gradient(160deg,#0d1420,#0a0d14)}
-.door-work .bg{background:radial-gradient(120% 90% at 70% 20%,rgba(201,163,91,.2),transparent 60%),linear-gradient(160deg,#14110b,#0b0a08)}
-.door .art{position:absolute;inset:0;z-index:1;opacity:.5;transition:opacity .5s var(--ease),transform .8s var(--ease)}
-.door .inner{position:relative;z-index:2}
-.door .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase}
-.door-mrln .kicker{color:var(--ice)}
-.door-work .kicker{color:var(--brass)}
-.door h2{font-family:var(--serif);font-size:clamp(38px,6vw,64px);line-height:1;margin-top:14px}
-.door p{margin-top:16px;max-width:34ch;color:var(--dim);font-size:clamp(16px,1.7vw,19px);line-height:1.55}
-.door .cue{margin-top:26px;display:inline-flex;align-items:center;gap:10px;font-weight:650;font-size:16px;
-  padding:14px 24px;border-radius:3px;transition:transform .25s var(--ease),background .25s,color .25s}
-.door-mrln .cue{background:rgba(127,180,255,.14);color:var(--ice-2);border:1px solid rgba(127,180,255,.35)}
-.door-work .cue{background:var(--brass);color:#1a1206}
-.door:hover{transform:translateY(-4px)}
-.door:hover .bg{opacity:1}
-.door-mrln:hover .art{opacity:.85;transform:scale(1.04)}
-.door-work:hover .art{opacity:.85;transform:scale(1.04)}
-.door:hover .cue{transform:translateX(4px)}
-.door-work:hover .cue{background:var(--brass-2)}
-.foot{padding:18px clamp(20px,5vw,56px);text-align:center;color:var(--faint);font-size:12px;font-family:var(--mono);letter-spacing:.08em}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+:focus-visible{outline:2px solid var(--brass-2);outline-offset:4px;border-radius:6px}
+
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;
+  background:radial-gradient(120% 100% at 72% 40%,#16203a,#06070c 66%)}
+@media(max-width:820px){#gl{background:radial-gradient(90% 60% at 50% 44%,#18243f,#06070c 70%)}}
+/* scrims: darken where text sits (left + bottom) so the 3D never fights copy */
+.scrim{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(6,7,12,.92) 0%,rgba(6,7,12,.6) 34%,rgba(6,7,12,0) 62%),
+             linear-gradient(0deg,rgba(6,7,12,.96) 0%,rgba(6,7,12,.5) 24%,rgba(6,7,12,0) 44%)}
+@media(max-width:820px){.scrim{background:linear-gradient(0deg,rgba(6,7,12,.5) 0%,rgba(6,7,12,.2) 24%,rgba(6,7,12,0) 50%,rgba(6,7,12,.15) 72%,rgba(6,7,12,.55) 100%)}}
+
+.stage{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;min-height:100%}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:20px clamp(18px,4vw,44px)}
+.brand{display:inline-flex;align-items:center;gap:11px;font-family:var(--serif);font-size:23px;letter-spacing:.02em}
+.brand .seal{width:30px;height:30px}
+.langs{display:inline-flex;gap:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;padding:4px;backdrop-filter:blur(8px)}
+.langs button{font:inherit;font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--dim);
+  background:transparent;border:0;padding:7px 12px;border-radius:999px;cursor:pointer;transition:color .2s,background .2s}
+.langs button:hover{color:var(--txt)}
+.langs button[aria-pressed="true"]{background:var(--brass);color:#1a1206;font-weight:700}
+
+/* hero copy: pinned to the LEFT, vertically centred; 3D lives to the right */
+.hero{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(20px,5vw,64px)}
+.hero .inner{max-width:min(560px,90vw)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--brass)}
+.tag{font-family:var(--serif);font-size:clamp(34px,6vw,68px);line-height:1.0;letter-spacing:-.015em;margin-top:14px}
+.sub{margin-top:18px;font-size:clamp(15px,1.5vw,17px);line-height:1.55;color:var(--dim);max-width:40ch}
+.cap{margin-top:20px;font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;min-height:18px}
+.cap .cap-k{color:var(--faint)}.cap #cap{color:var(--brass-2)}
+.trust{list-style:none;display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
+.trust li{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--dim);
+  border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 13px;background:rgba(255,255,255,.03)}
+@media(max-width:820px){.trust{display:none}}
+@media(max-width:820px){.hero{justify-content:flex-start;padding-top:6px}.hero .inner{max-width:100%}.tag{font-size:clamp(28px,7.5vw,40px)}
+  .sub{margin-top:12px;font-size:14px}.cap{margin-top:12px}}
+
+/* doors: solid bottom band, ALWAYS visible, two columns */
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:clamp(18px,3vh,30px) clamp(18px,5vw,64px) clamp(22px,4vh,40px)}
+@media(max-width:680px){.doors{grid-template-columns:1fr;gap:11px;padding-bottom:20px}}
+.door{position:relative;display:block;padding:20px 22px;border-radius:16px;overflow:hidden;
+  background:rgba(10,12,20,.82);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(12px);
+  transition:transform .35s var(--ease),border-color .35s var(--ease),background .35s var(--ease)}
+.door::after{content:"";position:absolute;left:0;top:0;height:3px;width:46px;transition:width .35s var(--ease)}
+.door-work::after{background:var(--brass)} .door-mrln::after{background:var(--ice)}
+.door:hover{transform:translateY(-5px);background:rgba(14,17,27,.9)}
+.door-work:hover{border-color:rgba(201,163,91,.6)} .door-mrln:hover{border-color:rgba(127,180,255,.55)}
+.door:hover::after{width:96px}
+.door .k{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.door-work .k{color:var(--brass)} .door-mrln .k{color:var(--ice)}
+.door h2{font-family:var(--serif);font-size:clamp(24px,3vw,34px);margin-top:7px;line-height:1}
+.door p{margin-top:10px;color:#cfccbe;font-size:14.5px;line-height:1.5;max-width:40ch}
+.door .cue{margin-top:14px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.door-work .cue{color:var(--brass-2)} .door-mrln .cue{color:var(--ice-2)}
+.door .cue span{transition:transform .3s var(--ease)}
+.door:hover .cue span{transform:translateX(5px)}
+@media(max-width:680px){.door{padding:16px 18px}.door p{margin-top:7px;font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.door .cue{margin-top:11px}}
 </style>
 </head>
 <body>
-<div class="top">
-  <span class="brand"><svg class="seal" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 36 12v16L20 38 4 28V12Z" fill="none" stroke="#c9a35b" stroke-width="1.3"/><path d="M12 27V14l8 6 8-6v13" fill="none" stroke="#e6c884" stroke-width="1.7" stroke-linejoin="round"/></svg>MRLN</span>
-  <div class="tag">Where are you headed?</div>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="scrim"></div>
+
+<div class="stage">
+  <div class="bar">
+    <a class="brand" href="/"><svg class="seal" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 36 12v16L20 38 4 28V12Z" fill="none" stroke="#c9a35b" stroke-width="1.3"/><path d="M12 27V14l8 6 8-6v13" fill="none" stroke="#e6c884" stroke-width="1.7" stroke-linejoin="round"/></svg>MRLN</a>
+    <div class="langs" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="da" aria-pressed="false">DA</button>
+      <button type="button" data-lang="de" aria-pressed="false">DE</button>
+      <button type="button" data-lang="es" aria-pressed="false">ES</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="inner">
+      <p class="eyebrow" data-i18n="eyebrow">MRLN &middot; Studio</p>
+      <h1 class="tag" data-i18n="tag">Where are you headed?</h1>
+      <p class="sub" data-i18n="sub">A private money &amp; health app &mdash; and a web studio that builds sites which win local businesses more customers.</p>
+      <p class="cap"><span class="cap-k" data-i18n="cap_k">We build</span> <span id="cap" data-i18n="cap0">websites</span></p>
+      <ul class="trust">
+        <li data-i18n="tr0">Original &amp; bespoke</li>
+        <li data-i18n="tr1">Fast, mobile-first</li>
+        <li data-i18n="tr2">Hosting &amp; support</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="doors">
+    <a class="door door-work" href="portfolio.html" aria-label="MRLN Web Studio portfolio">
+      <span class="k" data-i18n="pf_k">Web Studio</span>
+      <h2 data-i18n="pf_t">Portfolio</h2>
+      <p data-i18n="pf_d">Websites that bring local businesses more customers &mdash; built, hosted and kept up to date.</p>
+      <span class="cue"><em data-i18n="pf_c" style="font-style:normal">See the work</em> <span>&rarr;</span></span>
+    </a>
+    <a class="door door-mrln" href="mrln.html" aria-label="The MRLN app">
+      <span class="k" data-i18n="ap_k">The App</span>
+      <h2 data-i18n="ap_t">MRLN</h2>
+      <p data-i18n="ap_d">Your private money &amp; health, in one app that lives only on your device.</p>
+      <span class="cue"><em data-i18n="ap_c" style="font-style:normal">Open MRLN</em> <span>&rarr;</span></span>
+    </a>
+  </div>
 </div>
 
-<main>
-  <a class="door door-work" href="portfolio.html" aria-label="MRLN Web Studio portfolio">
-    <div class="bg"></div>
-    <svg class="art" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <g fill="none" stroke="#c9a35b" stroke-width="1" opacity=".5">
-        <rect x="70" y="90" width="150" height="100" rx="6"/><rect x="120" y="150" width="180" height="120" rx="6"/><rect x="90" y="220" width="150" height="100" rx="6"/>
-      </g>
-    </svg>
-    <div class="inner">
-      <p class="kicker">Web Studio &middot; Portfolio</p>
-      <h2>Portfolio</h2>
-      <p>Websites that bring local businesses more customers &mdash; built, hosted and kept up to date. See the work.</p>
-      <span class="cue">See the work &rarr;</span>
-    </div>
-  </a>
+<script>
+var L10N = {
+  en:{eyebrow:"MRLN · Studio", tag:"Where are you headed?",
+      sub:"A private money & health app — and a web studio that builds sites which win local businesses more customers.",
+      cap_k:"We build",
+      pf_k:"Web Studio", pf_t:"Portfolio", pf_d:"Websites that bring local businesses more customers — built, hosted and kept up to date.", pf_c:"See the work",
+      ap_k:"The App", ap_t:"MRLN", ap_d:"Your private money & health, in one app that lives only on your device.", ap_c:"Open MRLN",
+      cw_site:"websites", cw_app:"web apps", cw_dash:"dashboards",
+      tr0:"Original & bespoke", tr1:"Fast, mobile-first", tr2:"Hosting & support"},
+  da:{eyebrow:"MRLN · Studie", tag:"Hvor skal du hen?",
+      sub:"En privat økonomi- og sundhedsapp — og et webbureau, der bygger sider, som giver lokale virksomheder flere kunder.",
+      cap_k:"Vi bygger",
+      pf_k:"Webbureau", pf_t:"Portefolio", pf_d:"Hjemmesider der giver lokale virksomheder flere kunder — bygget, hostet og altid opdateret.", pf_c:"Se arbejdet",
+      ap_k:"Appen", ap_t:"MRLN", ap_d:"Din private økonomi og sundhed i én app, der kun findes på din egen enhed.", ap_c:"Åbn MRLN",
+      cw_site:"hjemmesider", cw_app:"web-apps", cw_dash:"dashboards",
+      tr0:"Original & unik", tr1:"Hurtig, mobil-fokus", tr2:"Hosting & support"},
+  de:{eyebrow:"MRLN · Studio", tag:"Wohin möchten Sie?",
+      sub:"Eine private Finanz- und Gesundheits-App — und ein Web-Studio, das Seiten baut, die lokalen Unternehmen mehr Kunden bringen.",
+      cap_k:"Wir bauen",
+      pf_k:"Web-Studio", pf_t:"Portfolio", pf_d:"Websites, die lokalen Unternehmen mehr Kunden bringen — gebaut, gehostet und stets aktuell.", pf_c:"Arbeiten ansehen",
+      ap_k:"Die App", ap_t:"MRLN", ap_d:"Deine privaten Finanzen und Gesundheit in einer App, die nur auf deinem Gerät lebt.", ap_c:"MRLN öffnen",
+      cw_site:"Websites", cw_app:"Web-Apps", cw_dash:"Dashboards",
+      tr0:"Original & individuell", tr1:"Schnell, mobil-first", tr2:"Hosting & Support"},
+  es:{eyebrow:"MRLN · Estudio", tag:"¿A dónde vas?",
+      sub:"Una app privada de finanzas y salud — y un estudio web que crea sitios que atraen más clientes a negocios locales.",
+      cap_k:"Creamos",
+      pf_k:"Estudio Web", pf_t:"Portafolio", pf_d:"Sitios web que atraen más clientes a negocios locales — creados, alojados y siempre actualizados.", pf_c:"Ver el trabajo",
+      ap_k:"La App", ap_t:"MRLN", ap_d:"Tus finanzas y salud privadas en una app que vive solo en tu dispositivo.", ap_c:"Abrir MRLN",
+      cw_site:"sitios web", cw_app:"apps web", cw_dash:"paneles",
+      tr0:"Original y a medida", tr1:"Rapido, mobile-first", tr2:"Hosting y soporte"}
+};
+var lang="en", capEl=document.getElementById("cap"), curCwKey="cw_site";
+function refreshCap(){ if(capEl && L10N[lang][curCwKey]) capEl.textContent=L10N[lang][curCwKey]; }
+/* called by the 3D screen cycle so the "We build ___" word always matches what's on the laptop */
+window.setBuildWord=function(kind){ curCwKey=({site:"cw_site",app:"cw_app",dash:"cw_dash"})[kind]||"cw_site"; refreshCap(); };
+function applyLang(l){ if(!L10N[l])l="en"; lang=l; var t=L10N[l];
+  document.querySelectorAll("[data-i18n]").forEach(function(el){ var k=el.getAttribute("data-i18n"); if(t[k]!=null) el.textContent=t[k]; });
+  refreshCap();
+  if(window.repaintScreen) window.repaintScreen();
+  document.documentElement.lang=l;
+  document.querySelectorAll(".langs button").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-lang")===l?"true":"false"); });
+  try{ localStorage.setItem("mrln_lang",l); }catch(e){} }
+document.querySelectorAll(".langs button").forEach(function(b){ b.addEventListener("click",function(){ applyLang(b.getAttribute("data-lang")); }); });
+(function(){ var s; try{ s=localStorage.getItem("mrln_lang"); }catch(e){}
+  if(!s){ var n=(navigator.language||"en").slice(0,2).toLowerCase(); if(L10N[n])s=n; }
+  if(s&&s!=="en") applyLang(s); else refreshCap(); })();
 
-  <a class="door door-mrln" href="mrln.html" aria-label="The MRLN app">
-    <div class="bg"></div>
-    <svg class="art" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <g fill="none" stroke="#7fb4ff" stroke-width="1" opacity=".5">
-        <circle cx="230" cy="150" r="80"/><circle cx="230" cy="150" r="120"/><path d="M150 260h160M170 300h120"/>
-      </g>
-    </svg>
-    <div class="inner">
-      <p class="kicker">The App</p>
-      <h2>MRLN</h2>
-      <p>Your private money &amp; health, in one app that lives only on your device. No account, no cloud.</p>
-      <span class="cue">Open MRLN &rarr;</span>
-    </div>
-  </a>
-</main>
+var reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
 
-<div class="foot">MRLN &middot; mrln.online</div>
+/* ---------------- heavy 3D: a contained floating laptop cycling MRLN's work ---------------- */
+(function(){
+  var canvas=document.getElementById("gl"); if(reduce) return;
+  import("./vendor/three.module.min.js").then(function(THREE){
+    var scene=new THREE.Scene();
+    var cam=new THREE.PerspectiveCamera(44, innerWidth/innerHeight, 0.1, 100); cam.position.set(0,2.4,12);
+    var rnd=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true}); rnd.setPixelRatio(Math.min(devicePixelRatio,2));
+    var world=new THREE.Group(); scene.add(world);
+    var rig=new THREE.Group(); world.add(rig);   /* rig gets positioned right/centre by breakpoint */
+
+    var metal=new THREE.MeshStandardMaterial({color:0x191d25,metalness:.78,roughness:.46});
+    var deckMat=new THREE.MeshStandardMaterial({color:0x0c0f14,metalness:.4,roughness:.72});
+    var keyMat=new THREE.MeshStandardMaterial({color:0x4b5468,metalness:.3,roughness:.45});
+    var laptop=new THREE.Group(); laptop.position.y=-1.15; rig.add(laptop);
+    /* base slab (matched to lid width so the chassis reads as one machine) */
+    var base=new THREE.Mesh(new THREE.BoxGeometry(6.3,0.28,3.95),metal); laptop.add(base);
+    /* recessed dark keyboard deck covering most of the base top */
+    var deck=new THREE.Mesh(new THREE.BoxGeometry(5.95,0.06,3.5),deckMat); deck.position.set(0,0.17,0.1); laptop.add(deck);
+    /* raised, spaced keycaps (light) so gaps cast shadow and read as keys */
+    for(var kr=0;kr<4;kr++) for(var kc=0;kc<12;kc++){
+      var key=new THREE.Mesh(new THREE.BoxGeometry(0.36,0.11,0.32),keyMat);
+      key.position.set(-2.42+kc*0.44, 0.255, -0.95+kr*0.46); laptop.add(key);
+    }
+    /* framed trackpad: dark groove ring + lighter inset, reads from above */
+    var padFrame=new THREE.Mesh(new THREE.BoxGeometry(2.3,0.055,1.35),new THREE.MeshStandardMaterial({color:0x05070b,metalness:.4,roughness:.7}));
+    padFrame.position.set(0,0.2,1.45); laptop.add(padFrame);
+    var pad=new THREE.Mesh(new THREE.BoxGeometry(2.0,0.05,1.1),new THREE.MeshStandardMaterial({color:0x424b5e,metalness:.35,roughness:.5}));
+    pad.position.set(0,0.235,1.45); laptop.add(pad);
+    /* hinge */
+    var hinge=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,6.2,18),metal); hinge.rotation.z=Math.PI/2; hinge.position.set(0,0.18,-2.05); laptop.add(hinge);
+    /* lid with symmetric bezel */
+    var lid=new THREE.Group(); lid.position.set(0,0.18,-2.05); lid.rotation.x=-0.42; laptop.add(lid);
+    var panel=new THREE.Mesh(new THREE.BoxGeometry(6.3,3.9,0.16),new THREE.MeshStandardMaterial({color:0x191d25,metalness:.72,roughness:.5}));
+    panel.position.set(0,1.95,-0.06); lid.add(panel);
+    var SS=1.7, scv=document.createElement("canvas"); scv.width=Math.round(1024*SS); scv.height=Math.round(640*SS); var g=scv.getContext("2d");
+    var tex=new THREE.CanvasTexture(scv); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=rnd.capabilities.getMaxAnisotropy();
+    var screen=new THREE.Mesh(new THREE.PlaneGeometry(5.85,3.45), new THREE.MeshBasicMaterial({map:tex}));
+    screen.position.set(0,1.95,0.035); lid.add(screen);
+    /* soft floor glow to ground the device */
+    var fcv=document.createElement("canvas"); fcv.width=256; fcv.height=256; var fg=fcv.getContext("2d");
+    var grd=fg.createRadialGradient(128,128,8,128,128,128); grd.addColorStop(0,"rgba(120,158,255,.55)"); grd.addColorStop(1,"rgba(120,158,255,0)");
+    fg.fillStyle=grd; fg.fillRect(0,0,256,256);
+    var floor=new THREE.Mesh(new THREE.PlaneGeometry(11,8), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(fcv),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+    floor.rotation.x=-Math.PI/2; floor.position.set(0,-0.28,0.4); laptop.add(floor);
+
+    var S=[{bg:"#0e2233",ac:"#ff8f3f",t:"#eaf2f8",k:"site",ti:"NordVand VVS",sb:"VVS · Blik · Akut",tg:"24/7",cta:"Ring nu",
+            f:[["A","Akut","Døgnvagt"],["kr","Fast pris","Ingen skjulte gebyrer"],["★","4.9","120+ anmeldelser"]]},
+           {bg:"#0d2b4a",ac:"#8fd0ff",t:"#eaf4ff",k:"site",ti:"KlarSigt",sb:"Vinduespudsning i Aarhus",tg:"Book",cta:"Få tilbud",
+            f:[["+","Stribefrit","Hver gang"],["kr","Fra 249,-","Pr. besøg"],["★","4.8","Lokal favorit"]]},
+           {bg:"#0c1a1c",ac:"#5fe0c6",t:"#dff5f2",k:"dash",ti:"Apex Kontakt",sb:"Callcenter dashboard",tg:"Live",cta:"Se live"},
+           {bg:"#1a120b",ac:"#e6c98a",t:"#f4ead9",k:"site",ti:"Café Nordlys",sb:"Brunch · Kaffe · Vin",tg:"Menu",cta:"Reservér",
+            f:[["#","Bord","Book online"],["★","4.9","Anmeldelser"],["@","Aarhus C","Midt i byen"]]},
+           {bg:"#0b0d16",ac:"#7fb4ff",t:"#eef5ff",k:"app",ti:"MRLN",sb:"",tg:"",cta:""}];
+    function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+    var APPL={en:{sb:"Private money & health",cta:"Open",priv:"Private",mo:"this month",rows:[["Balance","kr 42,180"],["Sleep","7h 42m"],["Steps","9,204"],["Saved","kr 3,500"]]},
+              da:{sb:"Privat økonomi & sundhed",cta:"Åbn",priv:"Privat",mo:"denne måned",rows:[["Saldo","42.180 kr"],["Søvn","7t 42m"],["Skridt","9.204"],["Sparet","3.500 kr"]]},
+              de:{sb:"Private Finanzen & Gesundheit",cta:"Öffnen",priv:"Privat",mo:"diesen Monat",rows:[["Kontostand","42.180 kr"],["Schlaf","7 Std 42 m"],["Schritte","9.204"],["Gespart","3.500 kr"]]},
+              es:{sb:"Finanzas y salud privadas",cta:"Abrir",priv:"Privado",mo:"este mes",rows:[["Saldo","42.180 kr"],["Sueño","7 h 42 m"],["Pasos","9.204"],["Ahorrado","3.500 kr"]]}};
+    function paint(s){
+      g.setTransform(SS,0,0,SS,0,0);  /* supersample: draw in 1024x640 space, render at higher res */
+      var A=APPL[lang]||APPL.en, isApp=s.k==="app", sSb=isApp?A.sb:s.sb, sCta=isApp?A.cta:s.cta, sTg=isApp?A.priv:s.tg;
+      var bg=g.createLinearGradient(0,0,1024,640); bg.addColorStop(0,s.bg); bg.addColorStop(1,"#05070c");
+      g.fillStyle=bg; g.fillRect(0,0,1024,640);
+      if(innerWidth<=760){  /* simplified, large-type screen for small viewports */
+        g.textAlign="center"; g.textBaseline="alphabetic";
+        g.fillStyle=s.ac; rr(462,120,100,100,24); g.fill();
+        g.fillStyle=s.bg; g.font="800 64px Georgia,serif"; g.fillText(s.ti.charAt(0),512,192);
+        g.fillStyle=s.t; g.font="800 78px Georgia,serif"; g.fillText(s.ti,512,320);
+        g.fillStyle="rgba(255,255,255,.6)"; g.font="400 34px system-ui,Arial"; g.fillText(sSb,512,378);
+        g.fillStyle=s.ac; rr(342,430,340,84,42); g.fill(); g.fillStyle=s.bg; g.font="700 36px system-ui,Arial"; g.fillText(sCta,512,484);
+        g.textAlign="left"; tex.needsUpdate=true; return;
+      }
+      /* top bar */
+      g.fillStyle="rgba(255,255,255,.05)"; g.fillRect(0,0,1024,74);
+      g.fillStyle=s.ac; rr(60,26,22,22,6); g.fill();
+      g.textBaseline="middle"; g.textAlign="left";
+      g.fillStyle=s.t; g.font="600 27px system-ui,Arial"; g.fillText(s.ti,94,38);
+      g.fillStyle="rgba(255,255,255,.3)"; for(var n=0;n<3;n++){ rr(560+n*74,31,48,12,6); g.fill(); }
+      if(sTg){ g.fillStyle=s.ac; rr(838,20,126,34,17); g.fill(); g.fillStyle=s.bg; g.font="700 16px system-ui,Arial"; g.textAlign="center"; g.fillText(sTg,901,38); }
+      g.textAlign="left"; g.textBaseline="alphabetic";
+      if(s.k==="app"){
+        g.strokeStyle="rgba(255,255,255,.1)"; g.lineWidth=16; g.beginPath(); g.arc(280,362,124,0,6.283); g.stroke();
+        g.strokeStyle=s.ac; g.lineWidth=16; g.lineCap="round"; g.beginPath(); g.arc(280,362,124,-1.57,2.2); g.stroke(); g.lineCap="butt";
+        g.fillStyle=s.t; g.font="800 56px system-ui,Arial"; g.textAlign="center"; g.fillText("72%",280,378); g.textAlign="left";
+        g.fillStyle="rgba(255,255,255,.4)"; g.font="400 20px system-ui,Arial"; g.textAlign="center"; g.fillText(A.mo,280,430); g.textAlign="left";
+        var rows=A.rows;
+        for(var i=0;i<4;i++){ var ay=150+i*104;
+          g.fillStyle="rgba(255,255,255,.07)"; rr(548,ay,416,84,14); g.fill();
+          g.fillStyle=s.ac; rr(570,ay+22,40,40,10); g.fill();
+          g.fillStyle="rgba(255,255,255,.55)"; g.font="400 22px system-ui,Arial"; g.fillText(rows[i][0],628,ay+38);
+          g.fillStyle=s.t; g.font="700 26px system-ui,Arial"; g.fillText(rows[i][1],628,ay+68); }
+      } else if(s.k==="dash"){
+        var lab=["98%","24/7","3.2s"], sub=["uptime","support","svartid"]; for(var j=0;j<3;j++){ var dx=60+j*312;
+          g.fillStyle="rgba(255,255,255,.06)"; rr(dx,150,286,160,16); g.fill();
+          g.fillStyle=s.ac; g.font="800 52px system-ui,Arial"; g.fillText(lab[j],dx+26,232);
+          g.fillStyle="rgba(255,255,255,.4)"; g.font="400 20px system-ui,Arial"; g.fillText(sub[j],dx+26,270); }
+        g.fillStyle="rgba(255,255,255,.05)"; rr(60,340,904,236,16); g.fill();
+        g.strokeStyle=s.ac; g.lineWidth=6; g.beginPath();
+        for(var x=90;x<=930;x+=30){ var yy=520-Math.abs(Math.sin(x/90))*150; x===90?g.moveTo(x,yy):g.lineTo(x,yy); } g.stroke();
+      } else {  /* client website: hero (top) + distinct feature row (bottom), clear gutter */
+        g.fillStyle=s.t; g.font="800 60px Georgia,serif"; g.fillText(s.ti,64,182);
+        g.fillStyle="rgba(255,255,255,.55)"; g.font="400 26px system-ui,Arial"; g.fillText(s.sb,66,226);
+        g.fillStyle=s.ac; rr(64,262,228,62,31); g.fill(); g.fillStyle=s.bg; g.font="700 24px system-ui,Arial"; g.textAlign="center"; g.fillText(s.cta,178,301); g.textAlign="left";
+        for(var c=0;c<3;c++){ var fx=64+c*300, F=s.f[c];
+          g.fillStyle="rgba(255,255,255,.07)"; rr(fx,372,280,184,16); g.fill();
+          g.fillStyle=s.ac; rr(fx+26,398,54,54,14); g.fill();
+          g.fillStyle=s.bg; g.font="800 26px system-ui,Arial"; g.textAlign="center"; g.fillText(F[0],fx+53,437); g.textAlign="left";
+          g.fillStyle=s.t; g.font="700 25px system-ui,Arial"; g.fillText(F[1],fx+26,494);
+          g.fillStyle="rgba(255,255,255,.45)"; g.font="400 18px system-ui,Arial"; g.fillText(F[2],fx+26,524); }
+      }
+      tex.needsUpdate=true; }
+    var si=4; paint(S[si]); if(window.setBuildWord) setBuildWord(S[si].k);  /* open on the MRLN app */
+    window.repaintScreen=function(){ paint(S[si]); };  /* lang switch repaints the app screen live */
+    setInterval(function(){ si=(si+1)%S.length; paint(S[si]); if(window.setBuildWord) setBuildWord(S[si].k); },3000);
+
+    var dcv=document.createElement("canvas"); dcv.width=32; dcv.height=32; var dg=dcv.getContext("2d");
+    var dgr=dg.createRadialGradient(16,16,0,16,16,16); dgr.addColorStop(0,"rgba(255,235,190,1)"); dgr.addColorStop(1,"rgba(255,235,190,0)");
+    dg.fillStyle=dgr; dg.beginPath(); dg.arc(16,16,16,0,6.283); dg.fill();
+    var dot=new THREE.CanvasTexture(dcv);
+    var pc=320,pg=new THREE.BufferGeometry(),pp=new Float32Array(pc*3);
+    for(var p=0;p<pc;p++){ pp[p*3]=(Math.random()-.5)*40; pp[p*3+1]=(Math.random()-.5)*24; pp[p*3+2]=-3-Math.random()*22; }
+    pg.setAttribute("position",new THREE.BufferAttribute(pp,3));
+    var pts=new THREE.Points(pg,new THREE.PointsMaterial({map:dot,color:0xc9a35b,size:0.09,sizeAttenuation:true,transparent:true,opacity:.55,depthWrite:false})); world.add(pts);
+
+    var key=new THREE.DirectionalLight(0xfff0d2,2.3); key.position.set(5,7,8); scene.add(key);
+    var rim=new THREE.DirectionalLight(0x7fb4ff,1.7); rim.position.set(-7,-1,4); scene.add(rim);
+    var fill=new THREE.DirectionalLight(0xbcd4ff,1.0); fill.position.set(0,-3,7); scene.add(fill);
+    scene.add(new THREE.AmbientLight(0x33445f,1.7));
+
+    var yaw=-0.26, yawAmp=0.18;
+    function place(){ rnd.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix();
+      var wide=innerWidth>820;
+      /* desktop: sit in the right half at a 3/4 angle; mobile: centred, near front-on so it fits */
+      rig.position.set(wide?1.9:0, wide?0.15:0.45, 0);
+      rig.scale.setScalar(wide?(innerWidth>1200?0.8:0.68):0.5);
+      yaw=wide?-0.26:-0.05; yawAmp=wide?0.18:0.06;
+      cam.position.y=wide?2.4:2.0;
+      paint(S[si]);
+    }
+    place(); addEventListener("resize",place);
+
+    var mx=0,my=0; addEventListener("pointermove",function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;},{passive:true});
+    var t0=performance.now();
+    (function loop(now){ var t=(now-t0)/1000; var e=1-Math.pow(1-Math.min(t/1.5,1),3);
+      cam.position.z=12-e*1.6; cam.lookAt(0,-0.7,-1.2);
+      rig.rotation.y=yaw+Math.sin(t*0.18)*yawAmp+mx*0.25; rig.rotation.x=-0.05+my*0.14;
+      laptop.position.y=-1.2+Math.sin(t*0.6)*0.1;
+      pts.rotation.y=t*0.025; rnd.render(scene,cam); requestAnimationFrame(loop);
+    })(t0);
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>
